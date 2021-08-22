@@ -13,7 +13,6 @@ int main(int argc, char *argv[]) {
 	char *src = nullptr, *output = nullptr, *irfile = nullptr;
 
   	for (int ch; (ch = getopt(argc, argv, "Sl:o:O:h")) != -1;) {
-		printf("%c\n",ch);
 		switch (ch) {
 			case 'S':
 				//do nothing
