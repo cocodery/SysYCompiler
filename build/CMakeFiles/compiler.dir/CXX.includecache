@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/why/SysYCompiler/include/common/common.h
+cstdint
+-
+map
+-
+
+/home/why/SysYCompiler/source/main.cpp
+fcntl.h
+-
+sys/mman.h
+-
+sys/stat.h
+-
+unistd.h
+-
+cstdio
+-
+cstring
+-
+fstream
+-
+../include/common/common.h
+/home/why/SysYCompiler/include/common/common.h
+
