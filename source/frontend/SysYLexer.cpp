@@ -1,50 +1,50 @@
 
-// Generated from SysYParser.g4 by ANTLR 4.9.2
+// Generated from SysY.g4 by ANTLR 4.9.2
 
 
-#include "SysYParserLexer.h"
+#include "../../SysYLexer.h"
 
 
 using namespace antlr4;
 
 
-SysYParserLexer::SysYParserLexer(CharStream *input) : Lexer(input) {
+SysYLexer::SysYLexer(CharStream *input) : Lexer(input) {
   _interpreter = new atn::LexerATNSimulator(this, _atn, _decisionToDFA, _sharedContextCache);
 }
 
-SysYParserLexer::~SysYParserLexer() {
+SysYLexer::~SysYLexer() {
   delete _interpreter;
 }
 
-std::string SysYParserLexer::getGrammarFileName() const {
-  return "SysYParser.g4";
+std::string SysYLexer::getGrammarFileName() const {
+  return "SysY.g4";
 }
 
-const std::vector<std::string>& SysYParserLexer::getRuleNames() const {
+const std::vector<std::string>& SysYLexer::getRuleNames() const {
   return _ruleNames;
 }
 
-const std::vector<std::string>& SysYParserLexer::getChannelNames() const {
+const std::vector<std::string>& SysYLexer::getChannelNames() const {
   return _channelNames;
 }
 
-const std::vector<std::string>& SysYParserLexer::getModeNames() const {
+const std::vector<std::string>& SysYLexer::getModeNames() const {
   return _modeNames;
 }
 
-const std::vector<std::string>& SysYParserLexer::getTokenNames() const {
+const std::vector<std::string>& SysYLexer::getTokenNames() const {
   return _tokenNames;
 }
 
-dfa::Vocabulary& SysYParserLexer::getVocabulary() const {
+dfa::Vocabulary& SysYLexer::getVocabulary() const {
   return _vocabulary;
 }
 
-const std::vector<uint16_t> SysYParserLexer::getSerializedATN() const {
+const std::vector<uint16_t> SysYLexer::getSerializedATN() const {
   return _serializedATN;
 }
 
-const atn::ATN& SysYParserLexer::getATN() const {
+const atn::ATN& SysYLexer::getATN() const {
   return _atn;
 }
 
@@ -52,14 +52,14 @@ const atn::ATN& SysYParserLexer::getATN() const {
 
 
 // Static vars and initialization.
-std::vector<dfa::DFA> SysYParserLexer::_decisionToDFA;
-atn::PredictionContextCache SysYParserLexer::_sharedContextCache;
+std::vector<dfa::DFA> SysYLexer::_decisionToDFA;
+atn::PredictionContextCache SysYLexer::_sharedContextCache;
 
 // We own the ATN which in turn owns the ATN states.
-atn::ATN SysYParserLexer::_atn;
-std::vector<uint16_t> SysYParserLexer::_serializedATN;
+atn::ATN SysYLexer::_atn;
+std::vector<uint16_t> SysYLexer::_serializedATN;
 
-std::vector<std::string> SysYParserLexer::_ruleNames = {
+std::vector<std::string> SysYLexer::_ruleNames = {
   "T__0", "Int", "Void", "Const", "Return", "If", "Else", "While", "Break", 
   "Continue", "Lparen", "Rparen", "Lbrkt", "Rbrkt", "Lbrace", "Rbrace", 
   "Comma", "Semicolon", "Minus", "Addition", "Exclamation", "Multiplication", 
@@ -67,22 +67,22 @@ std::vector<std::string> SysYParserLexer::_ruleNames = {
   "IntLiteral", "Identifier", "WS", "LINE_COMMENT", "COMMENT"
 };
 
-std::vector<std::string> SysYParserLexer::_channelNames = {
+std::vector<std::string> SysYLexer::_channelNames = {
   "DEFAULT_TOKEN_CHANNEL", "HIDDEN"
 };
 
-std::vector<std::string> SysYParserLexer::_modeNames = {
+std::vector<std::string> SysYLexer::_modeNames = {
   "DEFAULT_MODE"
 };
 
-std::vector<std::string> SysYParserLexer::_literalNames = {
+std::vector<std::string> SysYLexer::_literalNames = {
   "", "'='", "'int'", "'void'", "'const'", "'return'", "'if'", "'else'", 
   "'while'", "'break'", "'continue'", "'('", "')'", "'['", "']'", "'{'", 
   "'}'", "','", "';'", "'-'", "'+'", "'!'", "'*'", "'/'", "'%'", "'&&'", 
   "'||'", "'=='", "'!='", "'<'", "'<='", "'>'", "'>='"
 };
 
-std::vector<std::string> SysYParserLexer::_symbolicNames = {
+std::vector<std::string> SysYLexer::_symbolicNames = {
   "", "", "Int", "Void", "Const", "Return", "If", "Else", "While", "Break", 
   "Continue", "Lparen", "Rparen", "Lbrkt", "Rbrkt", "Lbrace", "Rbrace", 
   "Comma", "Semicolon", "Minus", "Addition", "Exclamation", "Multiplication", 
@@ -90,11 +90,11 @@ std::vector<std::string> SysYParserLexer::_symbolicNames = {
   "IntLiteral", "Identifier", "WS", "LINE_COMMENT", "COMMENT"
 };
 
-dfa::Vocabulary SysYParserLexer::_vocabulary(_literalNames, _symbolicNames);
+dfa::Vocabulary SysYLexer::_vocabulary(_literalNames, _symbolicNames);
 
-std::vector<std::string> SysYParserLexer::_tokenNames;
+std::vector<std::string> SysYLexer::_tokenNames;
 
-SysYParserLexer::Initializer::Initializer() {
+SysYLexer::Initializer::Initializer() {
   // This code could be in a static initializer lambda, but VS doesn't allow access to private class members from there.
 	for (size_t i = 0; i < _symbolicNames.size(); ++i) {
 		std::string name = _vocabulary.getLiteralName(i);
@@ -299,4 +299,4 @@ SysYParserLexer::Initializer::Initializer() {
   }
 }
 
-SysYParserLexer::Initializer SysYParserLexer::_init;
+SysYLexer::Initializer SysYLexer::_init;

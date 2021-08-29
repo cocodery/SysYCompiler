@@ -1,5 +1,5 @@
 
-// Generated from SysYParser.g4 by ANTLR 4.9.2
+// Generated from SysY.g4 by ANTLR 4.9.2
 
 #pragma once
 
@@ -9,7 +9,7 @@
 
 
 
-class  SysYParserLexer : public antlr4::Lexer {
+class  SysYLexer : public antlr4::Lexer {
 public:
   enum {
     T__0 = 1, Int = 2, Void = 3, Const = 4, Return = 5, If = 6, Else = 7, 
@@ -21,8 +21,8 @@ public:
     COMMENT = 37
   };
 
-  explicit SysYParserLexer(antlr4::CharStream *input);
-  ~SysYParserLexer();
+  explicit SysYLexer(antlr4::CharStream *input);
+  ~SysYLexer();
 
   virtual std::string getGrammarFileName() const override;
   virtual const std::vector<std::string>& getRuleNames() const override;

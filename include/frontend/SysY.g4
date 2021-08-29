@@ -1,4 +1,4 @@
-grammar SysYParser;
+grammar SysY;
 
 import SysYToken;
 

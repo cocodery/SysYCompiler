@@ -1,5 +1,5 @@
 
-// Generated from SysYParser.g4 by ANTLR 4.9.2
+// Generated from SysY.g4 by ANTLR 4.9.2
 
 #pragma once
 
@@ -9,7 +9,7 @@
 
 
 
-class  SysYParserParser : public antlr4::Parser {
+class  SysYParser : public antlr4::Parser {
 public:
   enum {
     T__0 = 1, Int = 2, Void = 3, Const = 4, Return = 5, If = 6, Else = 7, 
@@ -32,8 +32,8 @@ public:
     RuleLOrExp = 30, RuleConstExp = 31
   };
 
-  explicit SysYParserParser(antlr4::TokenStream *input);
-  ~SysYParserParser();
+  explicit SysYParser(antlr4::TokenStream *input);
+  ~SysYParser();
 
   virtual std::string getGrammarFileName() const override;
   virtual const antlr4::atn::ATN& getATN() const override { return _atn; };

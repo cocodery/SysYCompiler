@@ -1,4 +1,4 @@
-// Generated from /home/why/SysYCompiler/include/frontend/SysYParser.g4 by ANTLR 4.8
+// Generated from /home/why/SysYCompiler/include/frontend/SysY.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class SysYParserParser extends Parser {
+public class SysYParser extends Parser {
 	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -94,7 +94,7 @@ public class SysYParserParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "SysYParser.g4"; }
+	public String getGrammarFileName() { return "SysY.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -105,13 +105,13 @@ public class SysYParserParser extends Parser {
 	@Override
 	public ATN getATN() { return _ATN; }
 
-	public SysYParserParser(TokenStream input) {
+	public SysYParser(TokenStream input) {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	public static class CompUnitContext extends ParserRuleContext {
-		public TerminalNode EOF() { return getToken(SysYParserParser.EOF, 0); }
+		public TerminalNode EOF() { return getToken(SysYParser.EOF, 0); }
 		public List<DeclContext> decl() {
 			return getRuleContexts(DeclContext.class);
 		}
@@ -228,7 +228,7 @@ public class SysYParserParser extends Parser {
 	}
 
 	public static class ConstDeclContext extends ParserRuleContext {
-		public TerminalNode Const() { return getToken(SysYParserParser.Const, 0); }
+		public TerminalNode Const() { return getToken(SysYParser.Const, 0); }
 		public BTypeContext bType() {
 			return getRuleContext(BTypeContext.class,0);
 		}
@@ -238,10 +238,10 @@ public class SysYParserParser extends Parser {
 		public ConstDefContext constDef(int i) {
 			return getRuleContext(ConstDefContext.class,i);
 		}
-		public TerminalNode Semicolon() { return getToken(SysYParserParser.Semicolon, 0); }
-		public List<TerminalNode> Comma() { return getTokens(SysYParserParser.Comma); }
+		public TerminalNode Semicolon() { return getToken(SysYParser.Semicolon, 0); }
+		public List<TerminalNode> Comma() { return getTokens(SysYParser.Comma); }
 		public TerminalNode Comma(int i) {
-			return getToken(SysYParserParser.Comma, i);
+			return getToken(SysYParser.Comma, i);
 		}
 		public ConstDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -294,7 +294,7 @@ public class SysYParserParser extends Parser {
 	}
 
 	public static class BTypeContext extends ParserRuleContext {
-		public TerminalNode Int() { return getToken(SysYParserParser.Int, 0); }
+		public TerminalNode Int() { return getToken(SysYParser.Int, 0); }
 		public BTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -323,13 +323,13 @@ public class SysYParserParser extends Parser {
 	}
 
 	public static class ConstDefContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(SysYParserParser.Identifier, 0); }
+		public TerminalNode Identifier() { return getToken(SysYParser.Identifier, 0); }
 		public ConstInitValContext constInitVal() {
 			return getRuleContext(ConstInitValContext.class,0);
 		}
-		public List<TerminalNode> Lbrkt() { return getTokens(SysYParserParser.Lbrkt); }
+		public List<TerminalNode> Lbrkt() { return getTokens(SysYParser.Lbrkt); }
 		public TerminalNode Lbrkt(int i) {
-			return getToken(SysYParserParser.Lbrkt, i);
+			return getToken(SysYParser.Lbrkt, i);
 		}
 		public List<ConstExpContext> constExp() {
 			return getRuleContexts(ConstExpContext.class);
@@ -337,9 +337,9 @@ public class SysYParserParser extends Parser {
 		public ConstExpContext constExp(int i) {
 			return getRuleContext(ConstExpContext.class,i);
 		}
-		public List<TerminalNode> Rbrkt() { return getTokens(SysYParserParser.Rbrkt); }
+		public List<TerminalNode> Rbrkt() { return getTokens(SysYParser.Rbrkt); }
 		public TerminalNode Rbrkt(int i) {
-			return getToken(SysYParserParser.Rbrkt, i);
+			return getToken(SysYParser.Rbrkt, i);
 		}
 		public ConstDefContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -403,17 +403,17 @@ public class SysYParserParser extends Parser {
 		}
 	}
 	public static class ListConstInitValContext extends ConstInitValContext {
-		public TerminalNode Lbrace() { return getToken(SysYParserParser.Lbrace, 0); }
-		public TerminalNode Rbrace() { return getToken(SysYParserParser.Rbrace, 0); }
+		public TerminalNode Lbrace() { return getToken(SysYParser.Lbrace, 0); }
+		public TerminalNode Rbrace() { return getToken(SysYParser.Rbrace, 0); }
 		public List<ConstInitValContext> constInitVal() {
 			return getRuleContexts(ConstInitValContext.class);
 		}
 		public ConstInitValContext constInitVal(int i) {
 			return getRuleContext(ConstInitValContext.class,i);
 		}
-		public List<TerminalNode> Comma() { return getTokens(SysYParserParser.Comma); }
+		public List<TerminalNode> Comma() { return getTokens(SysYParser.Comma); }
 		public TerminalNode Comma(int i) {
-			return getToken(SysYParserParser.Comma, i);
+			return getToken(SysYParser.Comma, i);
 		}
 		public ListConstInitValContext(ConstInitValContext ctx) { copyFrom(ctx); }
 	}
@@ -506,10 +506,10 @@ public class SysYParserParser extends Parser {
 		public VarDefContext varDef(int i) {
 			return getRuleContext(VarDefContext.class,i);
 		}
-		public TerminalNode Semicolon() { return getToken(SysYParserParser.Semicolon, 0); }
-		public List<TerminalNode> Comma() { return getTokens(SysYParserParser.Comma); }
+		public TerminalNode Semicolon() { return getToken(SysYParser.Semicolon, 0); }
+		public List<TerminalNode> Comma() { return getTokens(SysYParser.Comma); }
 		public TerminalNode Comma(int i) {
-			return getToken(SysYParserParser.Comma, i);
+			return getToken(SysYParser.Comma, i);
 		}
 		public VarDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -571,10 +571,10 @@ public class SysYParserParser extends Parser {
 		}
 	}
 	public static class UninitVarDefContext extends VarDefContext {
-		public TerminalNode Identifier() { return getToken(SysYParserParser.Identifier, 0); }
-		public List<TerminalNode> Lbrkt() { return getTokens(SysYParserParser.Lbrkt); }
+		public TerminalNode Identifier() { return getToken(SysYParser.Identifier, 0); }
+		public List<TerminalNode> Lbrkt() { return getTokens(SysYParser.Lbrkt); }
 		public TerminalNode Lbrkt(int i) {
-			return getToken(SysYParserParser.Lbrkt, i);
+			return getToken(SysYParser.Lbrkt, i);
 		}
 		public List<ConstExpContext> constExp() {
 			return getRuleContexts(ConstExpContext.class);
@@ -582,20 +582,20 @@ public class SysYParserParser extends Parser {
 		public ConstExpContext constExp(int i) {
 			return getRuleContext(ConstExpContext.class,i);
 		}
-		public List<TerminalNode> Rbrkt() { return getTokens(SysYParserParser.Rbrkt); }
+		public List<TerminalNode> Rbrkt() { return getTokens(SysYParser.Rbrkt); }
 		public TerminalNode Rbrkt(int i) {
-			return getToken(SysYParserParser.Rbrkt, i);
+			return getToken(SysYParser.Rbrkt, i);
 		}
 		public UninitVarDefContext(VarDefContext ctx) { copyFrom(ctx); }
 	}
 	public static class InitVarDefContext extends VarDefContext {
-		public TerminalNode Identifier() { return getToken(SysYParserParser.Identifier, 0); }
+		public TerminalNode Identifier() { return getToken(SysYParser.Identifier, 0); }
 		public InitValContext initVal() {
 			return getRuleContext(InitValContext.class,0);
 		}
-		public List<TerminalNode> Lbrkt() { return getTokens(SysYParserParser.Lbrkt); }
+		public List<TerminalNode> Lbrkt() { return getTokens(SysYParser.Lbrkt); }
 		public TerminalNode Lbrkt(int i) {
-			return getToken(SysYParserParser.Lbrkt, i);
+			return getToken(SysYParser.Lbrkt, i);
 		}
 		public List<ConstExpContext> constExp() {
 			return getRuleContexts(ConstExpContext.class);
@@ -603,9 +603,9 @@ public class SysYParserParser extends Parser {
 		public ConstExpContext constExp(int i) {
 			return getRuleContext(ConstExpContext.class,i);
 		}
-		public List<TerminalNode> Rbrkt() { return getTokens(SysYParserParser.Rbrkt); }
+		public List<TerminalNode> Rbrkt() { return getTokens(SysYParser.Rbrkt); }
 		public TerminalNode Rbrkt(int i) {
-			return getToken(SysYParserParser.Rbrkt, i);
+			return getToken(SysYParser.Rbrkt, i);
 		}
 		public InitVarDefContext(VarDefContext ctx) { copyFrom(ctx); }
 	}
@@ -705,17 +705,17 @@ public class SysYParserParser extends Parser {
 		public ScalarInitValContext(InitValContext ctx) { copyFrom(ctx); }
 	}
 	public static class ListInitvalContext extends InitValContext {
-		public TerminalNode Lbrace() { return getToken(SysYParserParser.Lbrace, 0); }
-		public TerminalNode Rbrace() { return getToken(SysYParserParser.Rbrace, 0); }
+		public TerminalNode Lbrace() { return getToken(SysYParser.Lbrace, 0); }
+		public TerminalNode Rbrace() { return getToken(SysYParser.Rbrace, 0); }
 		public List<InitValContext> initVal() {
 			return getRuleContexts(InitValContext.class);
 		}
 		public InitValContext initVal(int i) {
 			return getRuleContext(InitValContext.class,i);
 		}
-		public List<TerminalNode> Comma() { return getTokens(SysYParserParser.Comma); }
+		public List<TerminalNode> Comma() { return getTokens(SysYParser.Comma); }
 		public TerminalNode Comma(int i) {
-			return getToken(SysYParserParser.Comma, i);
+			return getToken(SysYParser.Comma, i);
 		}
 		public ListInitvalContext(InitValContext ctx) { copyFrom(ctx); }
 	}
@@ -796,9 +796,9 @@ public class SysYParserParser extends Parser {
 		public FuncTypeContext funcType() {
 			return getRuleContext(FuncTypeContext.class,0);
 		}
-		public TerminalNode Identifier() { return getToken(SysYParserParser.Identifier, 0); }
-		public TerminalNode Lparen() { return getToken(SysYParserParser.Lparen, 0); }
-		public TerminalNode Rparen() { return getToken(SysYParserParser.Rparen, 0); }
+		public TerminalNode Identifier() { return getToken(SysYParser.Identifier, 0); }
+		public TerminalNode Lparen() { return getToken(SysYParser.Lparen, 0); }
+		public TerminalNode Rparen() { return getToken(SysYParser.Rparen, 0); }
 		public BlockContext block() {
 			return getRuleContext(BlockContext.class,0);
 		}
@@ -852,8 +852,8 @@ public class SysYParserParser extends Parser {
 	}
 
 	public static class FuncTypeContext extends ParserRuleContext {
-		public TerminalNode Void() { return getToken(SysYParserParser.Void, 0); }
-		public TerminalNode Int() { return getToken(SysYParserParser.Int, 0); }
+		public TerminalNode Void() { return getToken(SysYParser.Void, 0); }
+		public TerminalNode Int() { return getToken(SysYParser.Int, 0); }
 		public FuncTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -897,9 +897,9 @@ public class SysYParserParser extends Parser {
 		public FuncFParamContext funcFParam(int i) {
 			return getRuleContext(FuncFParamContext.class,i);
 		}
-		public List<TerminalNode> Comma() { return getTokens(SysYParserParser.Comma); }
+		public List<TerminalNode> Comma() { return getTokens(SysYParser.Comma); }
 		public TerminalNode Comma(int i) {
-			return getToken(SysYParserParser.Comma, i);
+			return getToken(SysYParser.Comma, i);
 		}
 		public FuncFParamsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -949,14 +949,14 @@ public class SysYParserParser extends Parser {
 		public BTypeContext bType() {
 			return getRuleContext(BTypeContext.class,0);
 		}
-		public TerminalNode Identifier() { return getToken(SysYParserParser.Identifier, 0); }
-		public List<TerminalNode> Lbrkt() { return getTokens(SysYParserParser.Lbrkt); }
+		public TerminalNode Identifier() { return getToken(SysYParser.Identifier, 0); }
+		public List<TerminalNode> Lbrkt() { return getTokens(SysYParser.Lbrkt); }
 		public TerminalNode Lbrkt(int i) {
-			return getToken(SysYParserParser.Lbrkt, i);
+			return getToken(SysYParser.Lbrkt, i);
 		}
-		public List<TerminalNode> Rbrkt() { return getTokens(SysYParserParser.Rbrkt); }
+		public List<TerminalNode> Rbrkt() { return getTokens(SysYParser.Rbrkt); }
 		public TerminalNode Rbrkt(int i) {
-			return getToken(SysYParserParser.Rbrkt, i);
+			return getToken(SysYParser.Rbrkt, i);
 		}
 		public List<ConstExpContext> constExp() {
 			return getRuleContexts(ConstExpContext.class);
@@ -1025,8 +1025,8 @@ public class SysYParserParser extends Parser {
 	}
 
 	public static class BlockContext extends ParserRuleContext {
-		public TerminalNode Lbrace() { return getToken(SysYParserParser.Lbrace, 0); }
-		public TerminalNode Rbrace() { return getToken(SysYParserParser.Rbrace, 0); }
+		public TerminalNode Lbrace() { return getToken(SysYParser.Lbrace, 0); }
+		public TerminalNode Rbrace() { return getToken(SysYParser.Rbrace, 0); }
 		public List<BlockItemContext> blockItem() {
 			return getRuleContexts(BlockItemContext.class);
 		}
@@ -1151,12 +1151,12 @@ public class SysYParserParser extends Parser {
 		}
 	}
 	public static class WhileStmtContext extends StmtContext {
-		public TerminalNode While() { return getToken(SysYParserParser.While, 0); }
-		public TerminalNode Lparen() { return getToken(SysYParserParser.Lparen, 0); }
+		public TerminalNode While() { return getToken(SysYParser.While, 0); }
+		public TerminalNode Lparen() { return getToken(SysYParser.Lparen, 0); }
 		public CondContext cond() {
 			return getRuleContext(CondContext.class,0);
 		}
-		public TerminalNode Rparen() { return getToken(SysYParserParser.Rparen, 0); }
+		public TerminalNode Rparen() { return getToken(SysYParser.Rparen, 0); }
 		public StmtContext stmt() {
 			return getRuleContext(StmtContext.class,0);
 		}
@@ -1175,60 +1175,60 @@ public class SysYParserParser extends Parser {
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
 		}
-		public TerminalNode Semicolon() { return getToken(SysYParserParser.Semicolon, 0); }
+		public TerminalNode Semicolon() { return getToken(SysYParser.Semicolon, 0); }
 		public AssignmentContext(StmtContext ctx) { copyFrom(ctx); }
 	}
 	public static class IfStmt1Context extends StmtContext {
-		public TerminalNode If() { return getToken(SysYParserParser.If, 0); }
-		public TerminalNode Lparen() { return getToken(SysYParserParser.Lparen, 0); }
+		public TerminalNode If() { return getToken(SysYParser.If, 0); }
+		public TerminalNode Lparen() { return getToken(SysYParser.Lparen, 0); }
 		public CondContext cond() {
 			return getRuleContext(CondContext.class,0);
 		}
-		public TerminalNode Rparen() { return getToken(SysYParserParser.Rparen, 0); }
+		public TerminalNode Rparen() { return getToken(SysYParser.Rparen, 0); }
 		public StmtContext stmt() {
 			return getRuleContext(StmtContext.class,0);
 		}
 		public IfStmt1Context(StmtContext ctx) { copyFrom(ctx); }
 	}
 	public static class BreakStmtContext extends StmtContext {
-		public TerminalNode Break() { return getToken(SysYParserParser.Break, 0); }
-		public TerminalNode Semicolon() { return getToken(SysYParserParser.Semicolon, 0); }
+		public TerminalNode Break() { return getToken(SysYParser.Break, 0); }
+		public TerminalNode Semicolon() { return getToken(SysYParser.Semicolon, 0); }
 		public BreakStmtContext(StmtContext ctx) { copyFrom(ctx); }
 	}
 	public static class ExpStmtContext extends StmtContext {
-		public TerminalNode Semicolon() { return getToken(SysYParserParser.Semicolon, 0); }
+		public TerminalNode Semicolon() { return getToken(SysYParser.Semicolon, 0); }
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
 		}
 		public ExpStmtContext(StmtContext ctx) { copyFrom(ctx); }
 	}
 	public static class IfStmt2Context extends StmtContext {
-		public TerminalNode If() { return getToken(SysYParserParser.If, 0); }
-		public TerminalNode Lparen() { return getToken(SysYParserParser.Lparen, 0); }
+		public TerminalNode If() { return getToken(SysYParser.If, 0); }
+		public TerminalNode Lparen() { return getToken(SysYParser.Lparen, 0); }
 		public CondContext cond() {
 			return getRuleContext(CondContext.class,0);
 		}
-		public TerminalNode Rparen() { return getToken(SysYParserParser.Rparen, 0); }
+		public TerminalNode Rparen() { return getToken(SysYParser.Rparen, 0); }
 		public List<StmtContext> stmt() {
 			return getRuleContexts(StmtContext.class);
 		}
 		public StmtContext stmt(int i) {
 			return getRuleContext(StmtContext.class,i);
 		}
-		public TerminalNode Else() { return getToken(SysYParserParser.Else, 0); }
+		public TerminalNode Else() { return getToken(SysYParser.Else, 0); }
 		public IfStmt2Context(StmtContext ctx) { copyFrom(ctx); }
 	}
 	public static class ReturnStmtContext extends StmtContext {
-		public TerminalNode Return() { return getToken(SysYParserParser.Return, 0); }
-		public TerminalNode Semicolon() { return getToken(SysYParserParser.Semicolon, 0); }
+		public TerminalNode Return() { return getToken(SysYParser.Return, 0); }
+		public TerminalNode Semicolon() { return getToken(SysYParser.Semicolon, 0); }
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
 		}
 		public ReturnStmtContext(StmtContext ctx) { copyFrom(ctx); }
 	}
 	public static class ContinueStmtContext extends StmtContext {
-		public TerminalNode Continue() { return getToken(SysYParserParser.Continue, 0); }
-		public TerminalNode Semicolon() { return getToken(SysYParserParser.Semicolon, 0); }
+		public TerminalNode Continue() { return getToken(SysYParser.Continue, 0); }
+		public TerminalNode Semicolon() { return getToken(SysYParser.Semicolon, 0); }
 		public ContinueStmtContext(StmtContext ctx) { copyFrom(ctx); }
 	}
 
@@ -1448,10 +1448,10 @@ public class SysYParserParser extends Parser {
 	}
 
 	public static class LValContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(SysYParserParser.Identifier, 0); }
-		public List<TerminalNode> Lbrkt() { return getTokens(SysYParserParser.Lbrkt); }
+		public TerminalNode Identifier() { return getToken(SysYParser.Identifier, 0); }
+		public List<TerminalNode> Lbrkt() { return getTokens(SysYParser.Lbrkt); }
 		public TerminalNode Lbrkt(int i) {
-			return getToken(SysYParserParser.Lbrkt, i);
+			return getToken(SysYParser.Lbrkt, i);
 		}
 		public List<ExpContext> exp() {
 			return getRuleContexts(ExpContext.class);
@@ -1459,9 +1459,9 @@ public class SysYParserParser extends Parser {
 		public ExpContext exp(int i) {
 			return getRuleContext(ExpContext.class,i);
 		}
-		public List<TerminalNode> Rbrkt() { return getTokens(SysYParserParser.Rbrkt); }
+		public List<TerminalNode> Rbrkt() { return getTokens(SysYParser.Rbrkt); }
 		public TerminalNode Rbrkt(int i) {
-			return getToken(SysYParserParser.Rbrkt, i);
+			return getToken(SysYParser.Rbrkt, i);
 		}
 		public LValContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1529,11 +1529,11 @@ public class SysYParserParser extends Parser {
 		public PrimaryExp2Context(PrimaryExpContext ctx) { copyFrom(ctx); }
 	}
 	public static class PrimaryExp1Context extends PrimaryExpContext {
-		public TerminalNode Lparen() { return getToken(SysYParserParser.Lparen, 0); }
+		public TerminalNode Lparen() { return getToken(SysYParser.Lparen, 0); }
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
 		}
-		public TerminalNode Rparen() { return getToken(SysYParserParser.Rparen, 0); }
+		public TerminalNode Rparen() { return getToken(SysYParser.Rparen, 0); }
 		public PrimaryExp1Context(PrimaryExpContext ctx) { copyFrom(ctx); }
 	}
 	public static class PrimaryExp3Context extends PrimaryExpContext {
@@ -1594,7 +1594,7 @@ public class SysYParserParser extends Parser {
 	}
 
 	public static class NumberContext extends ParserRuleContext {
-		public TerminalNode IntLiteral() { return getToken(SysYParserParser.IntLiteral, 0); }
+		public TerminalNode IntLiteral() { return getToken(SysYParser.IntLiteral, 0); }
 		public NumberContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1640,9 +1640,9 @@ public class SysYParserParser extends Parser {
 		public Unary1Context(UnaryExpContext ctx) { copyFrom(ctx); }
 	}
 	public static class Unary2Context extends UnaryExpContext {
-		public TerminalNode Identifier() { return getToken(SysYParserParser.Identifier, 0); }
-		public TerminalNode Lparen() { return getToken(SysYParserParser.Lparen, 0); }
-		public TerminalNode Rparen() { return getToken(SysYParserParser.Rparen, 0); }
+		public TerminalNode Identifier() { return getToken(SysYParser.Identifier, 0); }
+		public TerminalNode Lparen() { return getToken(SysYParser.Lparen, 0); }
+		public TerminalNode Rparen() { return getToken(SysYParser.Rparen, 0); }
 		public FuncRParamsContext funcRParams() {
 			return getRuleContext(FuncRParamsContext.class,0);
 		}
@@ -1720,9 +1720,9 @@ public class SysYParserParser extends Parser {
 	}
 
 	public static class UnaryOpContext extends ParserRuleContext {
-		public TerminalNode Addition() { return getToken(SysYParserParser.Addition, 0); }
-		public TerminalNode Minus() { return getToken(SysYParserParser.Minus, 0); }
-		public TerminalNode Exclamation() { return getToken(SysYParserParser.Exclamation, 0); }
+		public TerminalNode Addition() { return getToken(SysYParser.Addition, 0); }
+		public TerminalNode Minus() { return getToken(SysYParser.Minus, 0); }
+		public TerminalNode Exclamation() { return getToken(SysYParser.Exclamation, 0); }
 		public UnaryOpContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1766,9 +1766,9 @@ public class SysYParserParser extends Parser {
 		public FuncRParamContext funcRParam(int i) {
 			return getRuleContext(FuncRParamContext.class,i);
 		}
-		public List<TerminalNode> Comma() { return getTokens(SysYParserParser.Comma); }
+		public List<TerminalNode> Comma() { return getTokens(SysYParser.Comma); }
 		public TerminalNode Comma(int i) {
-			return getToken(SysYParserParser.Comma, i);
+			return getToken(SysYParser.Comma, i);
 		}
 		public FuncRParamsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1872,9 +1872,9 @@ public class SysYParserParser extends Parser {
 		public UnaryExpContext unaryExp() {
 			return getRuleContext(UnaryExpContext.class,0);
 		}
-		public TerminalNode Multiplication() { return getToken(SysYParserParser.Multiplication, 0); }
-		public TerminalNode Division() { return getToken(SysYParserParser.Division, 0); }
-		public TerminalNode Modulo() { return getToken(SysYParserParser.Modulo, 0); }
+		public TerminalNode Multiplication() { return getToken(SysYParser.Multiplication, 0); }
+		public TerminalNode Division() { return getToken(SysYParser.Division, 0); }
+		public TerminalNode Modulo() { return getToken(SysYParser.Modulo, 0); }
 		public Mul2Context(MulExpContext ctx) { copyFrom(ctx); }
 	}
 	public static class Mul1Context extends MulExpContext {
@@ -1972,8 +1972,8 @@ public class SysYParserParser extends Parser {
 		public MulExpContext mulExp() {
 			return getRuleContext(MulExpContext.class,0);
 		}
-		public TerminalNode Addition() { return getToken(SysYParserParser.Addition, 0); }
-		public TerminalNode Minus() { return getToken(SysYParserParser.Minus, 0); }
+		public TerminalNode Addition() { return getToken(SysYParser.Addition, 0); }
+		public TerminalNode Minus() { return getToken(SysYParser.Minus, 0); }
 		public Add2Context(AddExpContext ctx) { copyFrom(ctx); }
 	}
 	public static class Add1Context extends AddExpContext {
@@ -2071,10 +2071,10 @@ public class SysYParserParser extends Parser {
 		public AddExpContext addExp() {
 			return getRuleContext(AddExpContext.class,0);
 		}
-		public TerminalNode LT() { return getToken(SysYParserParser.LT, 0); }
-		public TerminalNode GT() { return getToken(SysYParserParser.GT, 0); }
-		public TerminalNode LE() { return getToken(SysYParserParser.LE, 0); }
-		public TerminalNode GE() { return getToken(SysYParserParser.GE, 0); }
+		public TerminalNode LT() { return getToken(SysYParser.LT, 0); }
+		public TerminalNode GT() { return getToken(SysYParser.GT, 0); }
+		public TerminalNode LE() { return getToken(SysYParser.LE, 0); }
+		public TerminalNode GE() { return getToken(SysYParser.GE, 0); }
 		public Rel2Context(RelExpContext ctx) { copyFrom(ctx); }
 	}
 	public static class Rel1Context extends RelExpContext {
@@ -2178,8 +2178,8 @@ public class SysYParserParser extends Parser {
 		public RelExpContext relExp() {
 			return getRuleContext(RelExpContext.class,0);
 		}
-		public TerminalNode EQ() { return getToken(SysYParserParser.EQ, 0); }
-		public TerminalNode NEQ() { return getToken(SysYParserParser.NEQ, 0); }
+		public TerminalNode EQ() { return getToken(SysYParser.EQ, 0); }
+		public TerminalNode NEQ() { return getToken(SysYParser.NEQ, 0); }
 		public Eq2Context(EqExpContext ctx) { copyFrom(ctx); }
 	}
 
@@ -2268,7 +2268,7 @@ public class SysYParserParser extends Parser {
 		public LAndExpContext lAndExp() {
 			return getRuleContext(LAndExpContext.class,0);
 		}
-		public TerminalNode LAND() { return getToken(SysYParserParser.LAND, 0); }
+		public TerminalNode LAND() { return getToken(SysYParser.LAND, 0); }
 		public EqExpContext eqExp() {
 			return getRuleContext(EqExpContext.class,0);
 		}
@@ -2363,7 +2363,7 @@ public class SysYParserParser extends Parser {
 		public LOrExpContext lOrExp() {
 			return getRuleContext(LOrExpContext.class,0);
 		}
-		public TerminalNode LOR() { return getToken(SysYParserParser.LOR, 0); }
+		public TerminalNode LOR() { return getToken(SysYParser.LOR, 0); }
 		public LAndExpContext lAndExp() {
 			return getRuleContext(LAndExpContext.class,0);
 		}
