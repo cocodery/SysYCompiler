@@ -4,11 +4,11 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/why/SysYCompiler/src/SysYBaseListener.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o"
-  "/home/why/SysYCompiler/src/SysYLexer.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/SysYLexer.cpp.o"
-  "/home/why/SysYCompiler/src/SysYListener.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/SysYListener.cpp.o"
-  "/home/why/SysYCompiler/src/SysYParser.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/SysYParser.cpp.o"
-  "/home/why/SysYCompiler/src/main.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/main.cpp.o"
+  "/home/why/SysYCompiler/src/frontend/SysYBaseListener.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.o"
+  "/home/why/SysYCompiler/src/frontend/SysYLexer.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.o"
+  "/home/why/SysYCompiler/src/frontend/SysYListener.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.o"
+  "/home/why/SysYCompiler/src/frontend/SysYParser.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.o"
+  "/home/why/SysYCompiler/src/frontend/main.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/main.cpp.o"
   "/home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRErrorListener.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o"
   "/home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o"
   "/home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRFileStream.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.o"

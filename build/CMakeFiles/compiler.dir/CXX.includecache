@@ -1138,15 +1138,15 @@ XPathElement.h
 XPathElement.h
 ../third_party/antlr4-runtime/tree/xpath/XPathElement.h
 
-/home/why/SysYCompiler/src/SysYLexer.h
+/home/why/SysYCompiler/src/frontend/SysYLexer.h
 antlr4-runtime.h
-/home/why/SysYCompiler/src/antlr4-runtime.h
+/home/why/SysYCompiler/src/frontend/antlr4-runtime.h
 
-/home/why/SysYCompiler/src/SysYParser.h
+/home/why/SysYCompiler/src/frontend/SysYParser.h
 antlr4-runtime.h
-/home/why/SysYCompiler/src/antlr4-runtime.h
+/home/why/SysYCompiler/src/frontend/antlr4-runtime.h
 
-/home/why/SysYCompiler/src/main.cpp
+/home/why/SysYCompiler/src/frontend/main.cpp
 fcntl.h
 -
 sys/mman.h
@@ -1166,7 +1166,7 @@ string
 fstream
 -
 SysYLexer.h
-/home/why/SysYCompiler/src/SysYLexer.h
+/home/why/SysYCompiler/src/frontend/SysYLexer.h
 SysYParser.h
-/home/why/SysYCompiler/src/SysYParser.h
+/home/why/SysYCompiler/src/frontend/SysYParser.h
 

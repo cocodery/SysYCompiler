@@ -123,140 +123,140 @@ compiler/fast:
 	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/build
 .PHONY : compiler/fast
 
-src/SysYBaseListener.o: src/SysYBaseListener.cpp.o
+src/frontend/SysYBaseListener.o: src/frontend/SysYBaseListener.cpp.o
 
-.PHONY : src/SysYBaseListener.o
-
-# target to build an object file
-src/SysYBaseListener.cpp.o:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o
-.PHONY : src/SysYBaseListener.cpp.o
-
-src/SysYBaseListener.i: src/SysYBaseListener.cpp.i
-
-.PHONY : src/SysYBaseListener.i
-
-# target to preprocess a source file
-src/SysYBaseListener.cpp.i:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.i
-.PHONY : src/SysYBaseListener.cpp.i
-
-src/SysYBaseListener.s: src/SysYBaseListener.cpp.s
-
-.PHONY : src/SysYBaseListener.s
-
-# target to generate assembly for a file
-src/SysYBaseListener.cpp.s:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.s
-.PHONY : src/SysYBaseListener.cpp.s
-
-src/SysYLexer.o: src/SysYLexer.cpp.o
-
-.PHONY : src/SysYLexer.o
+.PHONY : src/frontend/SysYBaseListener.o
 
 # target to build an object file
-src/SysYLexer.cpp.o:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYLexer.cpp.o
-.PHONY : src/SysYLexer.cpp.o
+src/frontend/SysYBaseListener.cpp.o:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.o
+.PHONY : src/frontend/SysYBaseListener.cpp.o
 
-src/SysYLexer.i: src/SysYLexer.cpp.i
+src/frontend/SysYBaseListener.i: src/frontend/SysYBaseListener.cpp.i
 
-.PHONY : src/SysYLexer.i
+.PHONY : src/frontend/SysYBaseListener.i
 
 # target to preprocess a source file
-src/SysYLexer.cpp.i:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYLexer.cpp.i
-.PHONY : src/SysYLexer.cpp.i
+src/frontend/SysYBaseListener.cpp.i:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.i
+.PHONY : src/frontend/SysYBaseListener.cpp.i
 
-src/SysYLexer.s: src/SysYLexer.cpp.s
+src/frontend/SysYBaseListener.s: src/frontend/SysYBaseListener.cpp.s
 
-.PHONY : src/SysYLexer.s
+.PHONY : src/frontend/SysYBaseListener.s
 
 # target to generate assembly for a file
-src/SysYLexer.cpp.s:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYLexer.cpp.s
-.PHONY : src/SysYLexer.cpp.s
+src/frontend/SysYBaseListener.cpp.s:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.s
+.PHONY : src/frontend/SysYBaseListener.cpp.s
 
-src/SysYListener.o: src/SysYListener.cpp.o
+src/frontend/SysYLexer.o: src/frontend/SysYLexer.cpp.o
 
-.PHONY : src/SysYListener.o
+.PHONY : src/frontend/SysYLexer.o
 
 # target to build an object file
-src/SysYListener.cpp.o:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYListener.cpp.o
-.PHONY : src/SysYListener.cpp.o
+src/frontend/SysYLexer.cpp.o:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.o
+.PHONY : src/frontend/SysYLexer.cpp.o
 
-src/SysYListener.i: src/SysYListener.cpp.i
+src/frontend/SysYLexer.i: src/frontend/SysYLexer.cpp.i
 
-.PHONY : src/SysYListener.i
+.PHONY : src/frontend/SysYLexer.i
 
 # target to preprocess a source file
-src/SysYListener.cpp.i:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYListener.cpp.i
-.PHONY : src/SysYListener.cpp.i
+src/frontend/SysYLexer.cpp.i:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.i
+.PHONY : src/frontend/SysYLexer.cpp.i
 
-src/SysYListener.s: src/SysYListener.cpp.s
+src/frontend/SysYLexer.s: src/frontend/SysYLexer.cpp.s
 
-.PHONY : src/SysYListener.s
+.PHONY : src/frontend/SysYLexer.s
 
 # target to generate assembly for a file
-src/SysYListener.cpp.s:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYListener.cpp.s
-.PHONY : src/SysYListener.cpp.s
+src/frontend/SysYLexer.cpp.s:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.s
+.PHONY : src/frontend/SysYLexer.cpp.s
 
-src/SysYParser.o: src/SysYParser.cpp.o
+src/frontend/SysYListener.o: src/frontend/SysYListener.cpp.o
 
-.PHONY : src/SysYParser.o
+.PHONY : src/frontend/SysYListener.o
 
 # target to build an object file
-src/SysYParser.cpp.o:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYParser.cpp.o
-.PHONY : src/SysYParser.cpp.o
+src/frontend/SysYListener.cpp.o:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.o
+.PHONY : src/frontend/SysYListener.cpp.o
 
-src/SysYParser.i: src/SysYParser.cpp.i
+src/frontend/SysYListener.i: src/frontend/SysYListener.cpp.i
 
-.PHONY : src/SysYParser.i
+.PHONY : src/frontend/SysYListener.i
 
 # target to preprocess a source file
-src/SysYParser.cpp.i:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYParser.cpp.i
-.PHONY : src/SysYParser.cpp.i
+src/frontend/SysYListener.cpp.i:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.i
+.PHONY : src/frontend/SysYListener.cpp.i
 
-src/SysYParser.s: src/SysYParser.cpp.s
+src/frontend/SysYListener.s: src/frontend/SysYListener.cpp.s
 
-.PHONY : src/SysYParser.s
+.PHONY : src/frontend/SysYListener.s
 
 # target to generate assembly for a file
-src/SysYParser.cpp.s:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/SysYParser.cpp.s
-.PHONY : src/SysYParser.cpp.s
+src/frontend/SysYListener.cpp.s:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.s
+.PHONY : src/frontend/SysYListener.cpp.s
 
-src/main.o: src/main.cpp.o
+src/frontend/SysYParser.o: src/frontend/SysYParser.cpp.o
 
-.PHONY : src/main.o
+.PHONY : src/frontend/SysYParser.o
 
 # target to build an object file
-src/main.cpp.o:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/main.cpp.o
-.PHONY : src/main.cpp.o
+src/frontend/SysYParser.cpp.o:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.o
+.PHONY : src/frontend/SysYParser.cpp.o
 
-src/main.i: src/main.cpp.i
+src/frontend/SysYParser.i: src/frontend/SysYParser.cpp.i
 
-.PHONY : src/main.i
+.PHONY : src/frontend/SysYParser.i
 
 # target to preprocess a source file
-src/main.cpp.i:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/main.cpp.i
-.PHONY : src/main.cpp.i
+src/frontend/SysYParser.cpp.i:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.i
+.PHONY : src/frontend/SysYParser.cpp.i
 
-src/main.s: src/main.cpp.s
+src/frontend/SysYParser.s: src/frontend/SysYParser.cpp.s
 
-.PHONY : src/main.s
+.PHONY : src/frontend/SysYParser.s
 
 # target to generate assembly for a file
-src/main.cpp.s:
-	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/main.cpp.s
-.PHONY : src/main.cpp.s
+src/frontend/SysYParser.cpp.s:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.s
+.PHONY : src/frontend/SysYParser.cpp.s
+
+src/frontend/main.o: src/frontend/main.cpp.o
+
+.PHONY : src/frontend/main.o
+
+# target to build an object file
+src/frontend/main.cpp.o:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/main.cpp.o
+.PHONY : src/frontend/main.cpp.o
+
+src/frontend/main.i: src/frontend/main.cpp.i
+
+.PHONY : src/frontend/main.i
+
+# target to preprocess a source file
+src/frontend/main.cpp.i:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/main.cpp.i
+.PHONY : src/frontend/main.cpp.i
+
+src/frontend/main.s: src/frontend/main.cpp.s
+
+.PHONY : src/frontend/main.s
+
+# target to generate assembly for a file
+src/frontend/main.cpp.s:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/main.cpp.s
+.PHONY : src/frontend/main.cpp.s
 
 third_party/antlr4-runtime/ANTLRErrorListener.o: third_party/antlr4-runtime/ANTLRErrorListener.cpp.o
 
@@ -4263,21 +4263,21 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... compiler"
-	@echo "... src/SysYBaseListener.o"
-	@echo "... src/SysYBaseListener.i"
-	@echo "... src/SysYBaseListener.s"
-	@echo "... src/SysYLexer.o"
-	@echo "... src/SysYLexer.i"
-	@echo "... src/SysYLexer.s"
-	@echo "... src/SysYListener.o"
-	@echo "... src/SysYListener.i"
-	@echo "... src/SysYListener.s"
-	@echo "... src/SysYParser.o"
-	@echo "... src/SysYParser.i"
-	@echo "... src/SysYParser.s"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
+	@echo "... src/frontend/SysYBaseListener.o"
+	@echo "... src/frontend/SysYBaseListener.i"
+	@echo "... src/frontend/SysYBaseListener.s"
+	@echo "... src/frontend/SysYLexer.o"
+	@echo "... src/frontend/SysYLexer.i"
+	@echo "... src/frontend/SysYLexer.s"
+	@echo "... src/frontend/SysYListener.o"
+	@echo "... src/frontend/SysYListener.i"
+	@echo "... src/frontend/SysYListener.s"
+	@echo "... src/frontend/SysYParser.o"
+	@echo "... src/frontend/SysYParser.i"
+	@echo "... src/frontend/SysYParser.s"
+	@echo "... src/frontend/main.o"
+	@echo "... src/frontend/main.i"
+	@echo "... src/frontend/main.s"
 	@echo "... third_party/antlr4-runtime/ANTLRErrorListener.o"
 	@echo "... third_party/antlr4-runtime/ANTLRErrorListener.i"
 	@echo "... third_party/antlr4-runtime/ANTLRErrorListener.s"

@@ -57,70 +57,70 @@ include CMakeFiles/compiler.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/compiler.dir/flags.make
 
-CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o: CMakeFiles/compiler.dir/flags.make
-CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o: ../src/SysYBaseListener.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o -c /home/why/SysYCompiler/src/SysYBaseListener.cpp
+CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.o: ../src/frontend/SysYBaseListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.o -c /home/why/SysYCompiler/src/frontend/SysYBaseListener.cpp
 
-CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/SysYBaseListener.cpp > CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.i
+CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/frontend/SysYBaseListener.cpp > CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.i
 
-CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/SysYBaseListener.cpp -o CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.s
+CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/frontend/SysYBaseListener.cpp -o CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.s
 
-CMakeFiles/compiler.dir/src/SysYLexer.cpp.o: CMakeFiles/compiler.dir/flags.make
-CMakeFiles/compiler.dir/src/SysYLexer.cpp.o: ../src/SysYLexer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/compiler.dir/src/SysYLexer.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/SysYLexer.cpp.o -c /home/why/SysYCompiler/src/SysYLexer.cpp
+CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.o: ../src/frontend/SysYLexer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.o -c /home/why/SysYCompiler/src/frontend/SysYLexer.cpp
 
-CMakeFiles/compiler.dir/src/SysYLexer.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/SysYLexer.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/SysYLexer.cpp > CMakeFiles/compiler.dir/src/SysYLexer.cpp.i
+CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/frontend/SysYLexer.cpp > CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.i
 
-CMakeFiles/compiler.dir/src/SysYLexer.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/SysYLexer.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/SysYLexer.cpp -o CMakeFiles/compiler.dir/src/SysYLexer.cpp.s
+CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/frontend/SysYLexer.cpp -o CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.s
 
-CMakeFiles/compiler.dir/src/SysYListener.cpp.o: CMakeFiles/compiler.dir/flags.make
-CMakeFiles/compiler.dir/src/SysYListener.cpp.o: ../src/SysYListener.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/compiler.dir/src/SysYListener.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/SysYListener.cpp.o -c /home/why/SysYCompiler/src/SysYListener.cpp
+CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.o: ../src/frontend/SysYListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.o -c /home/why/SysYCompiler/src/frontend/SysYListener.cpp
 
-CMakeFiles/compiler.dir/src/SysYListener.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/SysYListener.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/SysYListener.cpp > CMakeFiles/compiler.dir/src/SysYListener.cpp.i
+CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/frontend/SysYListener.cpp > CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.i
 
-CMakeFiles/compiler.dir/src/SysYListener.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/SysYListener.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/SysYListener.cpp -o CMakeFiles/compiler.dir/src/SysYListener.cpp.s
+CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/frontend/SysYListener.cpp -o CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.s
 
-CMakeFiles/compiler.dir/src/SysYParser.cpp.o: CMakeFiles/compiler.dir/flags.make
-CMakeFiles/compiler.dir/src/SysYParser.cpp.o: ../src/SysYParser.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/compiler.dir/src/SysYParser.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/SysYParser.cpp.o -c /home/why/SysYCompiler/src/SysYParser.cpp
+CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.o: ../src/frontend/SysYParser.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.o -c /home/why/SysYCompiler/src/frontend/SysYParser.cpp
 
-CMakeFiles/compiler.dir/src/SysYParser.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/SysYParser.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/SysYParser.cpp > CMakeFiles/compiler.dir/src/SysYParser.cpp.i
+CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/frontend/SysYParser.cpp > CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.i
 
-CMakeFiles/compiler.dir/src/SysYParser.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/SysYParser.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/SysYParser.cpp -o CMakeFiles/compiler.dir/src/SysYParser.cpp.s
+CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/frontend/SysYParser.cpp -o CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.s
 
-CMakeFiles/compiler.dir/src/main.cpp.o: CMakeFiles/compiler.dir/flags.make
-CMakeFiles/compiler.dir/src/main.cpp.o: ../src/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/compiler.dir/src/main.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/main.cpp.o -c /home/why/SysYCompiler/src/main.cpp
+CMakeFiles/compiler.dir/src/frontend/main.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/src/frontend/main.cpp.o: ../src/frontend/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/compiler.dir/src/frontend/main.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/frontend/main.cpp.o -c /home/why/SysYCompiler/src/frontend/main.cpp
 
-CMakeFiles/compiler.dir/src/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/main.cpp > CMakeFiles/compiler.dir/src/main.cpp.i
+CMakeFiles/compiler.dir/src/frontend/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/frontend/main.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/frontend/main.cpp > CMakeFiles/compiler.dir/src/frontend/main.cpp.i
 
-CMakeFiles/compiler.dir/src/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/main.cpp -o CMakeFiles/compiler.dir/src/main.cpp.s
+CMakeFiles/compiler.dir/src/frontend/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/frontend/main.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/frontend/main.cpp -o CMakeFiles/compiler.dir/src/frontend/main.cpp.s
 
 CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o: CMakeFiles/compiler.dir/flags.make
 CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o: ../third_party/antlr4-runtime/ANTLRErrorListener.cpp
@@ -2048,11 +2048,11 @@ CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardEleme
 
 # Object files for target compiler
 compiler_OBJECTS = \
-"CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o" \
-"CMakeFiles/compiler.dir/src/SysYLexer.cpp.o" \
-"CMakeFiles/compiler.dir/src/SysYListener.cpp.o" \
-"CMakeFiles/compiler.dir/src/SysYParser.cpp.o" \
-"CMakeFiles/compiler.dir/src/main.cpp.o" \
+"CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.o" \
+"CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.o" \
+"CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.o" \
+"CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.o" \
+"CMakeFiles/compiler.dir/src/frontend/main.cpp.o" \
 "CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o" \
 "CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o" \
 "CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.o" \
@@ -2205,11 +2205,11 @@ compiler_OBJECTS = \
 # External object files for target compiler
 compiler_EXTERNAL_OBJECTS =
 
-compiler: CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o
-compiler: CMakeFiles/compiler.dir/src/SysYLexer.cpp.o
-compiler: CMakeFiles/compiler.dir/src/SysYListener.cpp.o
-compiler: CMakeFiles/compiler.dir/src/SysYParser.cpp.o
-compiler: CMakeFiles/compiler.dir/src/main.cpp.o
+compiler: CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.o
+compiler: CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.o
+compiler: CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.o
+compiler: CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.o
+compiler: CMakeFiles/compiler.dir/src/frontend/main.cpp.o
 compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o
 compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o
 compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.o
