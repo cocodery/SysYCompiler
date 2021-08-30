@@ -57,30 +57,2310 @@ include CMakeFiles/compiler.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/compiler.dir/flags.make
 
-CMakeFiles/compiler.dir/source/main.cpp.o: CMakeFiles/compiler.dir/flags.make
-CMakeFiles/compiler.dir/source/main.cpp.o: ../source/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/compiler.dir/source/main.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/source/main.cpp.o -c /home/why/SysYCompiler/source/main.cpp
+CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o: ../src/SysYBaseListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o -c /home/why/SysYCompiler/src/SysYBaseListener.cpp
 
-CMakeFiles/compiler.dir/source/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/source/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/source/main.cpp > CMakeFiles/compiler.dir/source/main.cpp.i
+CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/SysYBaseListener.cpp > CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.i
 
-CMakeFiles/compiler.dir/source/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/source/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/source/main.cpp -o CMakeFiles/compiler.dir/source/main.cpp.s
+CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/SysYBaseListener.cpp -o CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.s
+
+CMakeFiles/compiler.dir/src/SysYLexer.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/src/SysYLexer.cpp.o: ../src/SysYLexer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/compiler.dir/src/SysYLexer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/SysYLexer.cpp.o -c /home/why/SysYCompiler/src/SysYLexer.cpp
+
+CMakeFiles/compiler.dir/src/SysYLexer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/SysYLexer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/SysYLexer.cpp > CMakeFiles/compiler.dir/src/SysYLexer.cpp.i
+
+CMakeFiles/compiler.dir/src/SysYLexer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/SysYLexer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/SysYLexer.cpp -o CMakeFiles/compiler.dir/src/SysYLexer.cpp.s
+
+CMakeFiles/compiler.dir/src/SysYListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/src/SysYListener.cpp.o: ../src/SysYListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/compiler.dir/src/SysYListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/SysYListener.cpp.o -c /home/why/SysYCompiler/src/SysYListener.cpp
+
+CMakeFiles/compiler.dir/src/SysYListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/SysYListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/SysYListener.cpp > CMakeFiles/compiler.dir/src/SysYListener.cpp.i
+
+CMakeFiles/compiler.dir/src/SysYListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/SysYListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/SysYListener.cpp -o CMakeFiles/compiler.dir/src/SysYListener.cpp.s
+
+CMakeFiles/compiler.dir/src/SysYParser.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/src/SysYParser.cpp.o: ../src/SysYParser.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/compiler.dir/src/SysYParser.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/SysYParser.cpp.o -c /home/why/SysYCompiler/src/SysYParser.cpp
+
+CMakeFiles/compiler.dir/src/SysYParser.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/SysYParser.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/SysYParser.cpp > CMakeFiles/compiler.dir/src/SysYParser.cpp.i
+
+CMakeFiles/compiler.dir/src/SysYParser.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/SysYParser.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/SysYParser.cpp -o CMakeFiles/compiler.dir/src/SysYParser.cpp.s
+
+CMakeFiles/compiler.dir/src/main.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/src/main.cpp.o: ../src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/compiler.dir/src/main.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/src/main.cpp.o -c /home/why/SysYCompiler/src/main.cpp
+
+CMakeFiles/compiler.dir/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/src/main.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/src/main.cpp > CMakeFiles/compiler.dir/src/main.cpp.i
+
+CMakeFiles/compiler.dir/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/src/main.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/src/main.cpp -o CMakeFiles/compiler.dir/src/main.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o: ../third_party/antlr4-runtime/ANTLRErrorListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRErrorListener.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRErrorListener.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRErrorListener.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o: ../third_party/antlr4-runtime/ANTLRErrorStrategy.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.o: ../third_party/antlr4-runtime/ANTLRFileStream.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRFileStream.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRFileStream.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRFileStream.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.o: ../third_party/antlr4-runtime/ANTLRInputStream.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRInputStream.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRInputStream.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRInputStream.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.o: ../third_party/antlr4-runtime/BailErrorStrategy.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/BailErrorStrategy.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/BailErrorStrategy.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/BailErrorStrategy.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.o: ../third_party/antlr4-runtime/BaseErrorListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/BaseErrorListener.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/BaseErrorListener.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/BaseErrorListener.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.o: ../third_party/antlr4-runtime/BufferedTokenStream.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/BufferedTokenStream.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/BufferedTokenStream.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/BufferedTokenStream.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.o: ../third_party/antlr4-runtime/CharStream.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/CharStream.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/CharStream.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/CharStream.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.o: ../third_party/antlr4-runtime/CommonToken.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/CommonToken.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/CommonToken.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/CommonToken.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.o: ../third_party/antlr4-runtime/CommonTokenFactory.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/CommonTokenFactory.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/CommonTokenFactory.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/CommonTokenFactory.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.o: ../third_party/antlr4-runtime/CommonTokenStream.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/CommonTokenStream.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/CommonTokenStream.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/CommonTokenStream.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.o: ../third_party/antlr4-runtime/ConsoleErrorListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/ConsoleErrorListener.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/ConsoleErrorListener.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/ConsoleErrorListener.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.o: ../third_party/antlr4-runtime/DefaultErrorStrategy.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/DefaultErrorStrategy.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/DefaultErrorStrategy.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/DefaultErrorStrategy.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.o: ../third_party/antlr4-runtime/DiagnosticErrorListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/DiagnosticErrorListener.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/DiagnosticErrorListener.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/DiagnosticErrorListener.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.o: ../third_party/antlr4-runtime/Exceptions.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/Exceptions.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/Exceptions.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/Exceptions.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.o: ../third_party/antlr4-runtime/FailedPredicateException.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/FailedPredicateException.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/FailedPredicateException.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/FailedPredicateException.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.o: ../third_party/antlr4-runtime/InputMismatchException.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/InputMismatchException.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/InputMismatchException.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/InputMismatchException.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.o: ../third_party/antlr4-runtime/IntStream.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/IntStream.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/IntStream.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/IntStream.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.o: ../third_party/antlr4-runtime/InterpreterRuleContext.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/InterpreterRuleContext.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/InterpreterRuleContext.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/InterpreterRuleContext.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.o: ../third_party/antlr4-runtime/Lexer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/Lexer.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/Lexer.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/Lexer.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.o: ../third_party/antlr4-runtime/LexerInterpreter.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/LexerInterpreter.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/LexerInterpreter.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/LexerInterpreter.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.o: ../third_party/antlr4-runtime/LexerNoViableAltException.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/LexerNoViableAltException.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/LexerNoViableAltException.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/LexerNoViableAltException.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.o: ../third_party/antlr4-runtime/ListTokenSource.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/ListTokenSource.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/ListTokenSource.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/ListTokenSource.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.o: ../third_party/antlr4-runtime/NoViableAltException.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/NoViableAltException.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/NoViableAltException.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/NoViableAltException.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.o: ../third_party/antlr4-runtime/Parser.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/Parser.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/Parser.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/Parser.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.o: ../third_party/antlr4-runtime/ParserInterpreter.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/ParserInterpreter.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/ParserInterpreter.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/ParserInterpreter.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.o: ../third_party/antlr4-runtime/ParserRuleContext.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/ParserRuleContext.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/ParserRuleContext.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/ParserRuleContext.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.o: ../third_party/antlr4-runtime/ProxyErrorListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/ProxyErrorListener.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/ProxyErrorListener.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/ProxyErrorListener.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.o: ../third_party/antlr4-runtime/RecognitionException.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/RecognitionException.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/RecognitionException.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/RecognitionException.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.o: ../third_party/antlr4-runtime/Recognizer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/Recognizer.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/Recognizer.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/Recognizer.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.o: ../third_party/antlr4-runtime/RuleContext.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/RuleContext.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/RuleContext.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/RuleContext.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.o: ../third_party/antlr4-runtime/RuleContextWithAltNum.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/RuleContextWithAltNum.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/RuleContextWithAltNum.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/RuleContextWithAltNum.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.o: ../third_party/antlr4-runtime/RuntimeMetaData.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/RuntimeMetaData.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/RuntimeMetaData.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/RuntimeMetaData.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.o: ../third_party/antlr4-runtime/Token.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/Token.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/Token.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/Token.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.o: ../third_party/antlr4-runtime/TokenSource.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/TokenSource.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/TokenSource.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/TokenSource.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.o: ../third_party/antlr4-runtime/TokenStream.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/TokenStream.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/TokenStream.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/TokenStream.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.o: ../third_party/antlr4-runtime/TokenStreamRewriter.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/TokenStreamRewriter.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/TokenStreamRewriter.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/TokenStreamRewriter.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.o: ../third_party/antlr4-runtime/UnbufferedCharStream.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/UnbufferedCharStream.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/UnbufferedCharStream.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/UnbufferedCharStream.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.o: ../third_party/antlr4-runtime/UnbufferedTokenStream.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/UnbufferedTokenStream.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/UnbufferedTokenStream.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/UnbufferedTokenStream.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.o: ../third_party/antlr4-runtime/Vocabulary.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/Vocabulary.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/Vocabulary.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/Vocabulary.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.o: ../third_party/antlr4-runtime/WritableToken.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/WritableToken.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/WritableToken.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/WritableToken.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.o: ../third_party/antlr4-runtime/atn/ATN.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATN.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATN.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATN.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.o: ../third_party/antlr4-runtime/atn/ATNConfig.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNConfig.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNConfig.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNConfig.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.o: ../third_party/antlr4-runtime/atn/ATNConfigSet.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNConfigSet.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNConfigSet.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNConfigSet.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.o: ../third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.o: ../third_party/antlr4-runtime/atn/ATNDeserializer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNDeserializer.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNDeserializer.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNDeserializer.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.o: ../third_party/antlr4-runtime/atn/ATNSerializer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNSerializer.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNSerializer.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNSerializer.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.o: ../third_party/antlr4-runtime/atn/ATNSimulator.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNSimulator.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNSimulator.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNSimulator.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.o: ../third_party/antlr4-runtime/atn/ATNState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ATNState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.o: ../third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.o: ../third_party/antlr4-runtime/atn/ActionTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ActionTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ActionTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ActionTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.o: ../third_party/antlr4-runtime/atn/AmbiguityInfo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.o: ../third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.o: ../third_party/antlr4-runtime/atn/AtomTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/AtomTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/AtomTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/AtomTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.o: ../third_party/antlr4-runtime/atn/BasicBlockStartState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.o: ../third_party/antlr4-runtime/atn/BasicState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BasicState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BasicState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BasicState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.o: ../third_party/antlr4-runtime/atn/BlockEndState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BlockEndState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BlockEndState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BlockEndState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.o: ../third_party/antlr4-runtime/atn/BlockStartState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BlockStartState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BlockStartState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/BlockStartState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.o: ../third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.o: ../third_party/antlr4-runtime/atn/DecisionEventInfo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.o: ../third_party/antlr4-runtime/atn/DecisionInfo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/DecisionInfo.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/DecisionInfo.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/DecisionInfo.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.o: ../third_party/antlr4-runtime/atn/DecisionState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/DecisionState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/DecisionState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/DecisionState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.o: ../third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.o: ../third_party/antlr4-runtime/atn/EpsilonTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/EpsilonTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/EpsilonTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/EpsilonTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.o: ../third_party/antlr4-runtime/atn/ErrorInfo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ErrorInfo.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ErrorInfo.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ErrorInfo.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.o: ../third_party/antlr4-runtime/atn/LL1Analyzer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LL1Analyzer.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LL1Analyzer.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LL1Analyzer.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.o: ../third_party/antlr4-runtime/atn/LexerATNConfig.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerATNConfig.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerATNConfig.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerATNConfig.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.o: ../third_party/antlr4-runtime/atn/LexerATNSimulator.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.o: ../third_party/antlr4-runtime/atn/LexerAction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerAction.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerAction.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerAction.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.o: ../third_party/antlr4-runtime/atn/LexerActionExecutor.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.o: ../third_party/antlr4-runtime/atn/LexerChannelAction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerChannelAction.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerChannelAction.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerChannelAction.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.o: ../third_party/antlr4-runtime/atn/LexerCustomAction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerCustomAction.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerCustomAction.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerCustomAction.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.o: ../third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.o: ../third_party/antlr4-runtime/atn/LexerModeAction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerModeAction.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerModeAction.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerModeAction.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.o: ../third_party/antlr4-runtime/atn/LexerMoreAction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerMoreAction.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerMoreAction.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerMoreAction.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.o: ../third_party/antlr4-runtime/atn/LexerPopModeAction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.o: ../third_party/antlr4-runtime/atn/LexerPushModeAction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.o: ../third_party/antlr4-runtime/atn/LexerSkipAction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerSkipAction.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerSkipAction.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerSkipAction.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.o: ../third_party/antlr4-runtime/atn/LexerTypeAction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_84) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerTypeAction.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerTypeAction.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LexerTypeAction.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.o: ../third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_85) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.o: ../third_party/antlr4-runtime/atn/LoopEndState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_86) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LoopEndState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LoopEndState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/LoopEndState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.o: ../third_party/antlr4-runtime/atn/NotSetTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_87) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/NotSetTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/NotSetTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/NotSetTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.o: ../third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_88) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.o: ../third_party/antlr4-runtime/atn/ParseInfo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_89) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ParseInfo.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ParseInfo.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ParseInfo.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.o: ../third_party/antlr4-runtime/atn/ParserATNSimulator.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_90) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.o: ../third_party/antlr4-runtime/atn/PlusBlockStartState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_91) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.o: ../third_party/antlr4-runtime/atn/PlusLoopbackState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_92) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.o: ../third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_93) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.o: ../third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_94) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.o: ../third_party/antlr4-runtime/atn/PredicateTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_95) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredicateTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredicateTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredicateTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.o: ../third_party/antlr4-runtime/atn/PredictionContext.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_96) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredictionContext.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredictionContext.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredictionContext.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.o: ../third_party/antlr4-runtime/atn/PredictionMode.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_97) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredictionMode.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredictionMode.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/PredictionMode.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.o: ../third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_98) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.o: ../third_party/antlr4-runtime/atn/RangeTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_99) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RangeTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RangeTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RangeTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.o: ../third_party/antlr4-runtime/atn/RuleStartState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_100) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RuleStartState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RuleStartState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RuleStartState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.o: ../third_party/antlr4-runtime/atn/RuleStopState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_101) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RuleStopState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RuleStopState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RuleStopState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.o: ../third_party/antlr4-runtime/atn/RuleTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_102) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RuleTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RuleTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/RuleTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.o: ../third_party/antlr4-runtime/atn/SemanticContext.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_103) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/SemanticContext.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/SemanticContext.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/SemanticContext.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.o: ../third_party/antlr4-runtime/atn/SetTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_104) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/SetTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/SetTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/SetTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.o: ../third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_105) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.o: ../third_party/antlr4-runtime/atn/StarBlockStartState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_106) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/StarBlockStartState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/StarBlockStartState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/StarBlockStartState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.o: ../third_party/antlr4-runtime/atn/StarLoopEntryState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_107) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.o: ../third_party/antlr4-runtime/atn/StarLoopbackState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_108) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/StarLoopbackState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/StarLoopbackState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/StarLoopbackState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.o: ../third_party/antlr4-runtime/atn/TokensStartState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_109) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/TokensStartState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/TokensStartState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/TokensStartState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.o: ../third_party/antlr4-runtime/atn/Transition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_110) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/Transition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/Transition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/Transition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.o: ../third_party/antlr4-runtime/atn/WildcardTransition.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_111) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/atn/WildcardTransition.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/atn/WildcardTransition.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/atn/WildcardTransition.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.o: ../third_party/antlr4-runtime/dfa/DFA.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_112) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/DFA.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/DFA.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/DFA.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.o: ../third_party/antlr4-runtime/dfa/DFASerializer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_113) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/DFASerializer.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/DFASerializer.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/DFASerializer.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.o: ../third_party/antlr4-runtime/dfa/DFAState.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_114) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/DFAState.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/DFAState.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/DFAState.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.o: ../third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_115) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.o: ../third_party/antlr4-runtime/misc/InterpreterDataReader.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_116) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.o: ../third_party/antlr4-runtime/misc/Interval.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_117) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/misc/Interval.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/misc/Interval.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/misc/Interval.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.o: ../third_party/antlr4-runtime/misc/IntervalSet.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_118) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/misc/IntervalSet.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/misc/IntervalSet.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/misc/IntervalSet.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.o: ../third_party/antlr4-runtime/misc/MurmurHash.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_119) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/misc/MurmurHash.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/misc/MurmurHash.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/misc/MurmurHash.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.o: ../third_party/antlr4-runtime/misc/Predicate.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_120) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/misc/Predicate.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/misc/Predicate.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/misc/Predicate.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.o: ../third_party/antlr4-runtime/support/Any.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_121) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/support/Any.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/support/Any.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/support/Any.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.o: ../third_party/antlr4-runtime/support/Arrays.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_122) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/support/Arrays.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/support/Arrays.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/support/Arrays.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.o: ../third_party/antlr4-runtime/support/CPPUtils.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_123) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/support/CPPUtils.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/support/CPPUtils.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/support/CPPUtils.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.o: ../third_party/antlr4-runtime/support/StringUtils.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_124) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/support/StringUtils.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/support/StringUtils.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/support/StringUtils.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.o: ../third_party/antlr4-runtime/support/guid.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_125) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/support/guid.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/support/guid.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/support/guid.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.o: ../third_party/antlr4-runtime/tree/ErrorNode.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_126) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ErrorNode.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ErrorNode.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ErrorNode.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.o: ../third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_127) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.o: ../third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_128) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.o: ../third_party/antlr4-runtime/tree/ParseTree.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_129) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTree.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTree.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTree.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.o: ../third_party/antlr4-runtime/tree/ParseTreeListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_130) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTreeListener.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTreeListener.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTreeListener.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.o: ../third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_131) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.o: ../third_party/antlr4-runtime/tree/ParseTreeWalker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_132) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.o: ../third_party/antlr4-runtime/tree/TerminalNode.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_133) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/TerminalNode.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/TerminalNode.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/TerminalNode.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.o: ../third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_134) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.o: ../third_party/antlr4-runtime/tree/Trees.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_135) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/Trees.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/Trees.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/Trees.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.o: ../third_party/antlr4-runtime/tree/pattern/Chunk.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_136) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/Chunk.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/Chunk.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/Chunk.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.o: ../third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_137) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.o: ../third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_138) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.o: ../third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_139) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.o: ../third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_140) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.o: ../third_party/antlr4-runtime/tree/pattern/TagChunk.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_141) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.o: ../third_party/antlr4-runtime/tree/pattern/TextChunk.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_142) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.o: ../third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_143) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.o: ../third_party/antlr4-runtime/tree/xpath/XPath.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_144) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPath.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPath.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPath.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.o: ../third_party/antlr4-runtime/tree/xpath/XPathElement.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_145) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.o: ../third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_146) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.o: ../third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_147) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.o: ../third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_148) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.o: ../third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_149) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.o: ../third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_150) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.o: ../third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_151) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.o: ../third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_152) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.s
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.o: CMakeFiles/compiler.dir/flags.make
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.o: ../third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_153) "Building CXX object CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.o -c /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp > CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.i
+
+CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/why/SysYCompiler/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp -o CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.s
 
 # Object files for target compiler
 compiler_OBJECTS = \
-"CMakeFiles/compiler.dir/source/main.cpp.o"
+"CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o" \
+"CMakeFiles/compiler.dir/src/SysYLexer.cpp.o" \
+"CMakeFiles/compiler.dir/src/SysYListener.cpp.o" \
+"CMakeFiles/compiler.dir/src/SysYParser.cpp.o" \
+"CMakeFiles/compiler.dir/src/main.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.o" \
+"CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.o"
 
 # External object files for target compiler
 compiler_EXTERNAL_OBJECTS =
 
-compiler: CMakeFiles/compiler.dir/source/main.cpp.o
+compiler: CMakeFiles/compiler.dir/src/SysYBaseListener.cpp.o
+compiler: CMakeFiles/compiler.dir/src/SysYLexer.cpp.o
+compiler: CMakeFiles/compiler.dir/src/SysYListener.cpp.o
+compiler: CMakeFiles/compiler.dir/src/SysYParser.cpp.o
+compiler: CMakeFiles/compiler.dir/src/main.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRFileStream.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRInputStream.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/BailErrorStrategy.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/BaseErrorListener.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/BufferedTokenStream.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/CharStream.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonToken.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenFactory.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/CommonTokenStream.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ConsoleErrorListener.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/DefaultErrorStrategy.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/DiagnosticErrorListener.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/Exceptions.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/FailedPredicateException.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/InputMismatchException.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/IntStream.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/InterpreterRuleContext.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/Lexer.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerInterpreter.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/LexerNoViableAltException.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ListTokenSource.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/NoViableAltException.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/Parser.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserInterpreter.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ParserRuleContext.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/ProxyErrorListener.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/RecognitionException.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/Recognizer.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContext.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuleContextWithAltNum.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/RuntimeMetaData.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/Token.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenSource.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStream.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/TokenStreamRewriter.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedCharStream.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/UnbufferedTokenStream.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/Vocabulary.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/WritableToken.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATN.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfig.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNConfigSet.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializationOptions.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNDeserializer.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSerializer.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNSimulator.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ATNState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AbstractPredicateTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ActionTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AmbiguityInfo.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ArrayPredictionContext.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/AtomTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicBlockStartState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BasicState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockEndState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/BlockStartState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ContextSensitivityInfo.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionEventInfo.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionInfo.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/DecisionState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EmptyPredictionContext.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/EpsilonTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ErrorInfo.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LL1Analyzer.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNConfig.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerATNSimulator.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerAction.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerActionExecutor.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerChannelAction.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerCustomAction.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerIndexedCustomAction.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerModeAction.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerMoreAction.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPopModeAction.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerPushModeAction.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerSkipAction.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LexerTypeAction.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LookaheadEventInfo.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/LoopEndState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/NotSetTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/OrderedATNConfigSet.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParseInfo.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ParserATNSimulator.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusBlockStartState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PlusLoopbackState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PrecedencePredicateTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateEvalInfo.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredicateTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionContext.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/PredictionMode.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/ProfilingATNSimulator.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RangeTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStartState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleStopState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/RuleTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SemanticContext.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SetTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/SingletonPredictionContext.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarBlockStartState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopEntryState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/StarLoopbackState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/TokensStartState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/Transition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/atn/WildcardTransition.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFA.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFASerializer.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/DFAState.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/dfa/LexerDFASerializer.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/InterpreterDataReader.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Interval.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/IntervalSet.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/MurmurHash.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/misc/Predicate.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Any.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/Arrays.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/CPPUtils.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/StringUtils.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/support/guid.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNode.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ErrorNodeImpl.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/IterativeParseTreeWalker.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTree.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeListener.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeVisitor.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/ParseTreeWalker.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNode.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/TerminalNodeImpl.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/Trees.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/Chunk.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreeMatch.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePattern.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/ParseTreePatternMatcher.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/RuleTagToken.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TagChunk.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TextChunk.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/pattern/TokenTagToken.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPath.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathElement.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexer.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathLexerErrorListener.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleAnywhereElement.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathRuleElement.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenAnywhereElement.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathTokenElement.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardAnywhereElement.cpp.o
+compiler: CMakeFiles/compiler.dir/third_party/antlr4-runtime/tree/xpath/XPathWildcardElement.cpp.o
 compiler: CMakeFiles/compiler.dir/build.make
 compiler: CMakeFiles/compiler.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable compiler"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/why/SysYCompiler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_154) "Linking CXX executable compiler"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/compiler.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
