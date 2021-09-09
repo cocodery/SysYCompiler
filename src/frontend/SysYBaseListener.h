@@ -133,8 +133,8 @@ public:
   virtual void enterFuncRParams(SysYParser::FuncRParamsContext * /*ctx*/) override { }
   virtual void exitFuncRParams(SysYParser::FuncRParamsContext * /*ctx*/) override { }
 
-  virtual void enterExpAsRParam(SysYParser::ExpAsRParamContext * /*ctx*/) override { }
-  virtual void exitExpAsRParam(SysYParser::ExpAsRParamContext * /*ctx*/) override { }
+  virtual void enterFuncRParam(SysYParser::FuncRParamContext * /*ctx*/) override { }
+  virtual void exitFuncRParam(SysYParser::FuncRParamContext * /*ctx*/) override { }
 
   virtual void enterMul2(SysYParser::Mul2Context * /*ctx*/) override { }
   virtual void exitMul2(SysYParser::Mul2Context * /*ctx*/) override { }

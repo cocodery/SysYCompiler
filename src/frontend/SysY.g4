@@ -78,7 +78,7 @@ unaryOp : '+' | '-' | '!';
 funcRParams : funcRParam (',' funcRParam)*;
 
 funcRParam
-    : exp # expAsRParam
+    : exp
     ;
 
 mulExp

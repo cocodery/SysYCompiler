@@ -4,10 +4,13 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/why/SysYCompiler/src/frontend/ASTVisitor.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/ASTVisitor.cpp.o"
   "/home/why/SysYCompiler/src/frontend/SysYBaseListener.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.o"
+  "/home/why/SysYCompiler/src/frontend/SysYBaseVisitor.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/SysYBaseVisitor.cpp.o"
   "/home/why/SysYCompiler/src/frontend/SysYLexer.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.o"
   "/home/why/SysYCompiler/src/frontend/SysYListener.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.o"
   "/home/why/SysYCompiler/src/frontend/SysYParser.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.o"
+  "/home/why/SysYCompiler/src/frontend/SysYVisitor.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/SysYVisitor.cpp.o"
   "/home/why/SysYCompiler/src/frontend/main.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/src/frontend/main.cpp.o"
   "/home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRErrorListener.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o"
   "/home/why/SysYCompiler/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp" "/home/why/SysYCompiler/build/CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o"
@@ -162,6 +165,10 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "../src/common"
+  "../src/frontend"
+  "../src/optimizer"
+  "../src/backend"
   "../third_party/antlr4-runtime"
   )
 

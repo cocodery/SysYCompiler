@@ -1,8 +1,11 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/compiler.dir/src/frontend/ASTVisitor.cpp.o"
   "CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.o"
+  "CMakeFiles/compiler.dir/src/frontend/SysYBaseVisitor.cpp.o"
   "CMakeFiles/compiler.dir/src/frontend/SysYLexer.cpp.o"
   "CMakeFiles/compiler.dir/src/frontend/SysYListener.cpp.o"
   "CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.o"
+  "CMakeFiles/compiler.dir/src/frontend/SysYVisitor.cpp.o"
   "CMakeFiles/compiler.dir/src/frontend/main.cpp.o"
   "CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorListener.cpp.o"
   "CMakeFiles/compiler.dir/third_party/antlr4-runtime/ANTLRErrorStrategy.cpp.o"

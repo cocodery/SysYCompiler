@@ -123,6 +123,33 @@ compiler/fast:
 	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/build
 .PHONY : compiler/fast
 
+src/frontend/ASTVisitor.o: src/frontend/ASTVisitor.cpp.o
+
+.PHONY : src/frontend/ASTVisitor.o
+
+# target to build an object file
+src/frontend/ASTVisitor.cpp.o:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/ASTVisitor.cpp.o
+.PHONY : src/frontend/ASTVisitor.cpp.o
+
+src/frontend/ASTVisitor.i: src/frontend/ASTVisitor.cpp.i
+
+.PHONY : src/frontend/ASTVisitor.i
+
+# target to preprocess a source file
+src/frontend/ASTVisitor.cpp.i:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/ASTVisitor.cpp.i
+.PHONY : src/frontend/ASTVisitor.cpp.i
+
+src/frontend/ASTVisitor.s: src/frontend/ASTVisitor.cpp.s
+
+.PHONY : src/frontend/ASTVisitor.s
+
+# target to generate assembly for a file
+src/frontend/ASTVisitor.cpp.s:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/ASTVisitor.cpp.s
+.PHONY : src/frontend/ASTVisitor.cpp.s
+
 src/frontend/SysYBaseListener.o: src/frontend/SysYBaseListener.cpp.o
 
 .PHONY : src/frontend/SysYBaseListener.o
@@ -149,6 +176,33 @@ src/frontend/SysYBaseListener.s: src/frontend/SysYBaseListener.cpp.s
 src/frontend/SysYBaseListener.cpp.s:
 	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYBaseListener.cpp.s
 .PHONY : src/frontend/SysYBaseListener.cpp.s
+
+src/frontend/SysYBaseVisitor.o: src/frontend/SysYBaseVisitor.cpp.o
+
+.PHONY : src/frontend/SysYBaseVisitor.o
+
+# target to build an object file
+src/frontend/SysYBaseVisitor.cpp.o:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYBaseVisitor.cpp.o
+.PHONY : src/frontend/SysYBaseVisitor.cpp.o
+
+src/frontend/SysYBaseVisitor.i: src/frontend/SysYBaseVisitor.cpp.i
+
+.PHONY : src/frontend/SysYBaseVisitor.i
+
+# target to preprocess a source file
+src/frontend/SysYBaseVisitor.cpp.i:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYBaseVisitor.cpp.i
+.PHONY : src/frontend/SysYBaseVisitor.cpp.i
+
+src/frontend/SysYBaseVisitor.s: src/frontend/SysYBaseVisitor.cpp.s
+
+.PHONY : src/frontend/SysYBaseVisitor.s
+
+# target to generate assembly for a file
+src/frontend/SysYBaseVisitor.cpp.s:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYBaseVisitor.cpp.s
+.PHONY : src/frontend/SysYBaseVisitor.cpp.s
 
 src/frontend/SysYLexer.o: src/frontend/SysYLexer.cpp.o
 
@@ -230,6 +284,33 @@ src/frontend/SysYParser.s: src/frontend/SysYParser.cpp.s
 src/frontend/SysYParser.cpp.s:
 	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYParser.cpp.s
 .PHONY : src/frontend/SysYParser.cpp.s
+
+src/frontend/SysYVisitor.o: src/frontend/SysYVisitor.cpp.o
+
+.PHONY : src/frontend/SysYVisitor.o
+
+# target to build an object file
+src/frontend/SysYVisitor.cpp.o:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYVisitor.cpp.o
+.PHONY : src/frontend/SysYVisitor.cpp.o
+
+src/frontend/SysYVisitor.i: src/frontend/SysYVisitor.cpp.i
+
+.PHONY : src/frontend/SysYVisitor.i
+
+# target to preprocess a source file
+src/frontend/SysYVisitor.cpp.i:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYVisitor.cpp.i
+.PHONY : src/frontend/SysYVisitor.cpp.i
+
+src/frontend/SysYVisitor.s: src/frontend/SysYVisitor.cpp.s
+
+.PHONY : src/frontend/SysYVisitor.s
+
+# target to generate assembly for a file
+src/frontend/SysYVisitor.cpp.s:
+	$(MAKE) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/SysYVisitor.cpp.s
+.PHONY : src/frontend/SysYVisitor.cpp.s
 
 src/frontend/main.o: src/frontend/main.cpp.o
 
@@ -4263,9 +4344,15 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... compiler"
+	@echo "... src/frontend/ASTVisitor.o"
+	@echo "... src/frontend/ASTVisitor.i"
+	@echo "... src/frontend/ASTVisitor.s"
 	@echo "... src/frontend/SysYBaseListener.o"
 	@echo "... src/frontend/SysYBaseListener.i"
 	@echo "... src/frontend/SysYBaseListener.s"
+	@echo "... src/frontend/SysYBaseVisitor.o"
+	@echo "... src/frontend/SysYBaseVisitor.i"
+	@echo "... src/frontend/SysYBaseVisitor.s"
 	@echo "... src/frontend/SysYLexer.o"
 	@echo "... src/frontend/SysYLexer.i"
 	@echo "... src/frontend/SysYLexer.s"
@@ -4275,6 +4362,9 @@ help:
 	@echo "... src/frontend/SysYParser.o"
 	@echo "... src/frontend/SysYParser.i"
 	@echo "... src/frontend/SysYParser.s"
+	@echo "... src/frontend/SysYVisitor.o"
+	@echo "... src/frontend/SysYVisitor.i"
+	@echo "... src/frontend/SysYVisitor.s"
 	@echo "... src/frontend/main.o"
 	@echo "... src/frontend/main.i"
 	@echo "... src/frontend/main.s"

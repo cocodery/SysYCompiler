@@ -131,8 +131,8 @@ public:
   virtual void enterFuncRParams(SysYParser::FuncRParamsContext *ctx) = 0;
   virtual void exitFuncRParams(SysYParser::FuncRParamsContext *ctx) = 0;
 
-  virtual void enterExpAsRParam(SysYParser::ExpAsRParamContext *ctx) = 0;
-  virtual void exitExpAsRParam(SysYParser::ExpAsRParamContext *ctx) = 0;
+  virtual void enterFuncRParam(SysYParser::FuncRParamContext *ctx) = 0;
+  virtual void exitFuncRParam(SysYParser::FuncRParamContext *ctx) = 0;
 
   virtual void enterMul2(SysYParser::Mul2Context *ctx) = 0;
   virtual void exitMul2(SysYParser::Mul2Context *ctx) = 0;

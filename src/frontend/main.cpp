@@ -11,6 +11,7 @@
 
 #include "SysYLexer.h"
 #include "SysYParser.h"
+#include "ASTVisitor.hpp"
 
 using namespace antlr4;
 using namespace std;
@@ -61,6 +62,9 @@ int main(int argc, char *argv[]) {
     parser.setErrorHandler(make_shared<BailErrorStrategy>());
 
     SysYParser::CompUnitContext *root = parser.compUnit();
+
+    ASTVisitor visitor;
+    visitor.visitCompUnit(root);
 
     return 0;
 
