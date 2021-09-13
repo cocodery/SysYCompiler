@@ -31,7 +31,6 @@ int main(int argc, char *argv[]) {
                 break;
             case 'O':
                 opt = atoi(optarg);
-                opt = opt > 0 ? opt : 0;
                 break;
             case 'h':
                 print_usage = true; 
@@ -64,7 +63,12 @@ int main(int argc, char *argv[]) {
     SysYParser::CompUnitContext *root = parser.compUnit();
 
     ASTVisitor visitor;
+
+    cout << "Start Compiler" << endl;
+
     visitor.visitCompUnit(root);
+
+    cout << "Compiler Complete" << endl;
 
     return 0;
 

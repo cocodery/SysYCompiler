@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 #include "SysYBaseVisitor.h"
 
@@ -16,6 +17,14 @@ public:
 
     virtual antlrcpp::Any visitDecl(SysYParser::DeclContext *ctx) override;
 
+    virtual antlrcpp::Any visitConstDecl(SysYParser::ConstDeclContext *ctx) override;
+
+    virtual antlrcpp::Any visitVarDecl(SysYParser::VarDeclContext *ctx) override;
+
+    virtual antlrcpp::Any visitUninitVarDef(SysYParser::UninitVarDefContext *ctx) override;
+
+    virtual antlrcpp::Any visitInitVarDef(SysYParser::InitVarDefContext *ctx) override;
+
     virtual antlrcpp::Any visitBType(SysYParser::BTypeContext *ctx) override;
 
     virtual antlrcpp::Any visitFuncDef(SysYParser::FuncDefContext *ctx) override;
@@ -23,6 +32,8 @@ public:
     virtual antlrcpp::Any visitFuncType(SysYParser::FuncTypeContext *ctx) override;
 
     virtual antlrcpp::Any visitFuncFParams(SysYParser::FuncFParamsContext *ctx) override;
+
+    virtual antlrcpp::Any visitFuncFParam(SysYParser::FuncFParamContext *ctx) override;
 
     virtual antlrcpp::Any visitBlock(SysYParser::BlockContext *ctx) override;
 
