@@ -38,12 +38,10 @@ antlrcpp::Any ASTVisitor::visitVarDecl(SysYParser::VarDeclContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx) {
-    string name = ctx->Identifier()->getText();
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
-    string name = ctx->Identifier()->getText();
     return nullptr;
 }
 
@@ -52,9 +50,6 @@ antlrcpp::Any ASTVisitor::visitFuncType(SysYParser::FuncTypeContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
-    bool rettype = (ctx->funcType()->getText() == "int");
-    string name = ctx->Identifier()->getText();
-    ctx->block()->accept(this);
     return nullptr;
 }
 
