@@ -1156,10 +1156,6 @@ antlr4-runtime.h
 SysYVisitor.h
 /home/why/SysYCompiler/src/frontend/SysYVisitor.h
 
-/home/why/SysYCompiler/src/frontend/SysYLexer.h
-antlr4-runtime.h
-/home/why/SysYCompiler/src/frontend/antlr4-runtime.h
-
 /home/why/SysYCompiler/src/frontend/SysYParser.h
 antlr4-runtime.h
 /home/why/SysYCompiler/src/frontend/antlr4-runtime.h
@@ -1169,30 +1165,4 @@ antlr4-runtime.h
 /home/why/SysYCompiler/src/frontend/antlr4-runtime.h
 SysYParser.h
 /home/why/SysYCompiler/src/frontend/SysYParser.h
-
-/home/why/SysYCompiler/src/frontend/main.cpp
-fcntl.h
--
-sys/mman.h
--
-sys/stat.h
--
-unistd.h
--
-iostream
--
-cstdio
--
-cstring
--
-string
--
-fstream
--
-SysYLexer.h
-/home/why/SysYCompiler/src/frontend/SysYLexer.h
-SysYParser.h
-/home/why/SysYCompiler/src/frontend/SysYParser.h
-ASTVisitor.hpp
-/home/why/SysYCompiler/src/frontend/ASTVisitor.hpp
 

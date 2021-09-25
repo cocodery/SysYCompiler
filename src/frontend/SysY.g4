@@ -77,9 +77,7 @@ unaryOp : '+' | '-' | '!';
 
 funcRParams : funcRParam (',' funcRParam)*;
 
-funcRParam
-    : exp
-    ;
+funcRParam : exp ;
 
 mulExp
     : unaryExp # mul1
@@ -95,6 +93,7 @@ relExp
     : addExp # rel1
     | relExp ('<' | '>' | '<=' | '>=') addExp # rel2
     ;
+
 eqExp
     : relExp # eq1
     | eqExp ('==' | '!=') relExp # eq2
@@ -110,6 +109,4 @@ lOrExp
     | lOrExp '||' lAndExp # lOr2
     ;
 
-constExp
-    : addExp
-    ;
+constExp : addExp ;
