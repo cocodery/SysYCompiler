@@ -111,6 +111,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitForStmt(SysYParser::ForStmtContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitDowhileStmt(SysYParser::DowhileStmtContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitBreakStmt(SysYParser::BreakStmtContext *ctx) override {
     return visitChildren(ctx);
   }

@@ -8,8 +8,11 @@ Return : 'return';
 If : 'if';
 Else : 'else';
 While : 'while';
+For : 'for';
+Do : 'do';
 Break : 'break';
-Continue : 'continue'; 
+Continue : 'continue';
+
 
 // operator
 Lparen : '(' ;

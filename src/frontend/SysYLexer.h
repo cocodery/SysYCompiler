@@ -12,8 +12,8 @@
 class  SysYLexer : public antlr4::Lexer {
 public:
   enum {
-    T__0 = 1, T__1 = 2, T__2 = 3, Int = 4, Void = 5, Const = 6, Return = 7, 
-    If = 8, Else = 9, While = 10, Break = 11, Continue = 12, Lparen = 13, 
+    T__0 = 1, Int = 2, Void = 3, Const = 4, Return = 5, If = 6, Else = 7, 
+    While = 8, For = 9, Do = 10, Break = 11, Continue = 12, Lparen = 13, 
     Rparen = 14, Lbrkt = 15, Rbrkt = 16, Lbrace = 17, Rbrace = 18, Comma = 19, 
     Semicolon = 20, Minus = 21, Addition = 22, Exclamation = 23, Multiplication = 24, 
     Division = 25, Modulo = 26, LAND = 27, LOR = 28, EQ = 29, NEQ = 30, 

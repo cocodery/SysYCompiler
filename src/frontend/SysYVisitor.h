@@ -67,6 +67,10 @@ public:
 
     virtual antlrcpp::Any visitWhileStmt(SysYParser::WhileStmtContext *context) = 0;
 
+    virtual antlrcpp::Any visitForStmt(SysYParser::ForStmtContext *context) = 0;
+
+    virtual antlrcpp::Any visitDowhileStmt(SysYParser::DowhileStmtContext *context) = 0;
+
     virtual antlrcpp::Any visitBreakStmt(SysYParser::BreakStmtContext *context) = 0;
 
     virtual antlrcpp::Any visitContinueStmt(SysYParser::ContinueStmtContext *context) = 0;
