@@ -48,6 +48,8 @@ stmt
     | 'if' '(' cond ')' stmt # ifStmt1
     | 'if' '(' cond ')' stmt 'else' stmt # ifStmt2
     | 'while' '(' cond ')' stmt # whileStmt
+    | 'for' '(' (decl)? ';' (cond)? ';' ( exp(',' exp)* )? ')' stmt # forStmt
+    | 'do' stmt 'while' '(' cond ')' # dowhileStmt
     | 'break' ';' # breakStmt
     | 'continue' ';' # continueStmt
     | 'return' (exp)? ';' # returnStmt

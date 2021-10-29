@@ -86,6 +86,12 @@ public:
   virtual void enterWhileStmt(SysYParser::WhileStmtContext *ctx) = 0;
   virtual void exitWhileStmt(SysYParser::WhileStmtContext *ctx) = 0;
 
+  virtual void enterForStmt(SysYParser::ForStmtContext *ctx) = 0;
+  virtual void exitForStmt(SysYParser::ForStmtContext *ctx) = 0;
+
+  virtual void enterDowhileStmt(SysYParser::DowhileStmtContext *ctx) = 0;
+  virtual void exitDowhileStmt(SysYParser::DowhileStmtContext *ctx) = 0;
+
   virtual void enterBreakStmt(SysYParser::BreakStmtContext *ctx) = 0;
   virtual void exitBreakStmt(SysYParser::BreakStmtContext *ctx) = 0;
 

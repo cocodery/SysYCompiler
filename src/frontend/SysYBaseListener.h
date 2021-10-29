@@ -88,6 +88,12 @@ public:
   virtual void enterWhileStmt(SysYParser::WhileStmtContext * /*ctx*/) override { }
   virtual void exitWhileStmt(SysYParser::WhileStmtContext * /*ctx*/) override { }
 
+  virtual void enterForStmt(SysYParser::ForStmtContext * /*ctx*/) override { }
+  virtual void exitForStmt(SysYParser::ForStmtContext * /*ctx*/) override { }
+
+  virtual void enterDowhileStmt(SysYParser::DowhileStmtContext * /*ctx*/) override { }
+  virtual void exitDowhileStmt(SysYParser::DowhileStmtContext * /*ctx*/) override { }
+
   virtual void enterBreakStmt(SysYParser::BreakStmtContext * /*ctx*/) override { }
   virtual void exitBreakStmt(SysYParser::BreakStmtContext * /*ctx*/) override { }
 

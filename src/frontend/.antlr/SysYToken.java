@@ -1,4 +1,4 @@
-// Generated from /home/why/SysYCompiler/src/frontend/SysYToken.g4 by ANTLR 4.8
+// Generated from /home/why/workspace/Compiler/MyCompiler/SysYCompiler/src/frontend/SysYToken.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
