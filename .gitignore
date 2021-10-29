@@ -7,4 +7,4 @@ build/
 .vscode/
 
 # java
-src/.antlr/
+src/frontend/.antlr/
