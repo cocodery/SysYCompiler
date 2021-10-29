@@ -5,3 +5,6 @@ build/
 # IDE
 .idea/
 .vscode/
+
+# java
+src/.antlr/
