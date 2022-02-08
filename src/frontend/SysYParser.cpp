@@ -2,7 +2,6 @@
 // Generated from SysY.g4 by ANTLR 4.7.2
 
 
-#include "SysYListener.h"
 #include "SysYVisitor.h"
 
 #include "SysYParser.h"
@@ -62,19 +61,6 @@ SysYParser::FuncDefContext* SysYParser::CompUnitContext::funcDef(size_t i) {
 size_t SysYParser::CompUnitContext::getRuleIndex() const {
   return SysYParser::RuleCompUnit;
 }
-
-void SysYParser::CompUnitContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCompUnit(this);
-}
-
-void SysYParser::CompUnitContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCompUnit(this);
-}
-
 
 antlrcpp::Any SysYParser::CompUnitContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -151,19 +137,6 @@ SysYParser::VarDeclContext* SysYParser::DeclContext::varDecl() {
 size_t SysYParser::DeclContext::getRuleIndex() const {
   return SysYParser::RuleDecl;
 }
-
-void SysYParser::DeclContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterDecl(this);
-}
-
-void SysYParser::DeclContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitDecl(this);
-}
-
 
 antlrcpp::Any SysYParser::DeclContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -250,19 +223,6 @@ size_t SysYParser::ConstDeclContext::getRuleIndex() const {
   return SysYParser::RuleConstDecl;
 }
 
-void SysYParser::ConstDeclContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterConstDecl(this);
-}
-
-void SysYParser::ConstDeclContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitConstDecl(this);
-}
-
-
 antlrcpp::Any SysYParser::ConstDeclContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitConstDecl(this);
@@ -325,19 +285,6 @@ tree::TerminalNode* SysYParser::BTypeContext::Int() {
 size_t SysYParser::BTypeContext::getRuleIndex() const {
   return SysYParser::RuleBType;
 }
-
-void SysYParser::BTypeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterBType(this);
-}
-
-void SysYParser::BTypeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitBType(this);
-}
-
 
 antlrcpp::Any SysYParser::BTypeContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -410,19 +357,6 @@ tree::TerminalNode* SysYParser::ConstDefContext::Rbrkt(size_t i) {
 size_t SysYParser::ConstDefContext::getRuleIndex() const {
   return SysYParser::RuleConstDef;
 }
-
-void SysYParser::ConstDefContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterConstDef(this);
-}
-
-void SysYParser::ConstDefContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitConstDef(this);
-}
-
 
 antlrcpp::Any SysYParser::ConstDefContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -515,17 +449,6 @@ tree::TerminalNode* SysYParser::ListConstInitValContext::Comma(size_t i) {
 
 SysYParser::ListConstInitValContext::ListConstInitValContext(ConstInitValContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::ListConstInitValContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterListConstInitVal(this);
-}
-void SysYParser::ListConstInitValContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitListConstInitVal(this);
-}
-
 antlrcpp::Any SysYParser::ListConstInitValContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitListConstInitVal(this);
@@ -539,17 +462,6 @@ SysYParser::ConstExpContext* SysYParser::ScalarConstInitValContext::constExp() {
 }
 
 SysYParser::ScalarConstInitValContext::ScalarConstInitValContext(ConstInitValContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::ScalarConstInitValContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterScalarConstInitVal(this);
-}
-void SysYParser::ScalarConstInitValContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitScalarConstInitVal(this);
-}
 
 antlrcpp::Any SysYParser::ScalarConstInitValContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -668,19 +580,6 @@ size_t SysYParser::VarDeclContext::getRuleIndex() const {
   return SysYParser::RuleVarDecl;
 }
 
-void SysYParser::VarDeclContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterVarDecl(this);
-}
-
-void SysYParser::VarDeclContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitVarDecl(this);
-}
-
-
 antlrcpp::Any SysYParser::VarDeclContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitVarDecl(this);
@@ -774,17 +673,6 @@ tree::TerminalNode* SysYParser::UninitVarDefContext::Rbrkt(size_t i) {
 
 SysYParser::UninitVarDefContext::UninitVarDefContext(VarDefContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::UninitVarDefContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterUninitVarDef(this);
-}
-void SysYParser::UninitVarDefContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitUninitVarDef(this);
-}
-
 antlrcpp::Any SysYParser::UninitVarDefContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitUninitVarDef(this);
@@ -826,17 +714,6 @@ tree::TerminalNode* SysYParser::InitVarDefContext::Rbrkt(size_t i) {
 }
 
 SysYParser::InitVarDefContext::InitVarDefContext(VarDefContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::InitVarDefContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterInitVarDef(this);
-}
-void SysYParser::InitVarDefContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitInitVarDef(this);
-}
 
 antlrcpp::Any SysYParser::InitVarDefContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -939,17 +816,6 @@ SysYParser::ExpContext* SysYParser::ScalarInitValContext::exp() {
 
 SysYParser::ScalarInitValContext::ScalarInitValContext(InitValContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::ScalarInitValContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterScalarInitVal(this);
-}
-void SysYParser::ScalarInitValContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitScalarInitVal(this);
-}
-
 antlrcpp::Any SysYParser::ScalarInitValContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitScalarInitVal(this);
@@ -983,17 +849,6 @@ tree::TerminalNode* SysYParser::ListInitvalContext::Comma(size_t i) {
 }
 
 SysYParser::ListInitvalContext::ListInitvalContext(InitValContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::ListInitvalContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterListInitval(this);
-}
-void SysYParser::ListInitvalContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitListInitval(this);
-}
 
 antlrcpp::Any SysYParser::ListInitvalContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1112,19 +967,6 @@ size_t SysYParser::FuncDefContext::getRuleIndex() const {
   return SysYParser::RuleFuncDef;
 }
 
-void SysYParser::FuncDefContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFuncDef(this);
-}
-
-void SysYParser::FuncDefContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFuncDef(this);
-}
-
-
 antlrcpp::Any SysYParser::FuncDefContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitFuncDef(this);
@@ -1189,19 +1031,6 @@ tree::TerminalNode* SysYParser::FuncTypeContext::Int() {
 size_t SysYParser::FuncTypeContext::getRuleIndex() const {
   return SysYParser::RuleFuncType;
 }
-
-void SysYParser::FuncTypeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFuncType(this);
-}
-
-void SysYParser::FuncTypeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFuncType(this);
-}
-
 
 antlrcpp::Any SysYParser::FuncTypeContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1268,19 +1097,6 @@ tree::TerminalNode* SysYParser::FuncFParamsContext::Comma(size_t i) {
 size_t SysYParser::FuncFParamsContext::getRuleIndex() const {
   return SysYParser::RuleFuncFParams;
 }
-
-void SysYParser::FuncFParamsContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFuncFParams(this);
-}
-
-void SysYParser::FuncFParamsContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFuncFParams(this);
-}
-
 
 antlrcpp::Any SysYParser::FuncFParamsContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1367,19 +1183,6 @@ size_t SysYParser::FuncFParamContext::getRuleIndex() const {
   return SysYParser::RuleFuncFParam;
 }
 
-void SysYParser::FuncFParamContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFuncFParam(this);
-}
-
-void SysYParser::FuncFParamContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFuncFParam(this);
-}
-
-
 antlrcpp::Any SysYParser::FuncFParamContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitFuncFParam(this);
@@ -1463,19 +1266,6 @@ size_t SysYParser::BlockContext::getRuleIndex() const {
   return SysYParser::RuleBlock;
 }
 
-void SysYParser::BlockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterBlock(this);
-}
-
-void SysYParser::BlockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitBlock(this);
-}
-
-
 antlrcpp::Any SysYParser::BlockContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitBlock(this);
@@ -1553,19 +1343,6 @@ SysYParser::StmtContext* SysYParser::BlockItemContext::stmt() {
 size_t SysYParser::BlockItemContext::getRuleIndex() const {
   return SysYParser::RuleBlockItem;
 }
-
-void SysYParser::BlockItemContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterBlockItem(this);
-}
-
-void SysYParser::BlockItemContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitBlockItem(this);
-}
-
 
 antlrcpp::Any SysYParser::BlockItemContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1695,17 +1472,6 @@ tree::TerminalNode* SysYParser::ForStmtContext::Comma(size_t i) {
 
 SysYParser::ForStmtContext::ForStmtContext(StmtContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::ForStmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterForStmt(this);
-}
-void SysYParser::ForStmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitForStmt(this);
-}
-
 antlrcpp::Any SysYParser::ForStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitForStmt(this);
@@ -1736,17 +1502,6 @@ SysYParser::StmtContext* SysYParser::WhileStmtContext::stmt() {
 
 SysYParser::WhileStmtContext::WhileStmtContext(StmtContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::WhileStmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterWhileStmt(this);
-}
-void SysYParser::WhileStmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitWhileStmt(this);
-}
-
 antlrcpp::Any SysYParser::WhileStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitWhileStmt(this);
@@ -1760,17 +1515,6 @@ SysYParser::BlockContext* SysYParser::BlockStmtContext::block() {
 }
 
 SysYParser::BlockStmtContext::BlockStmtContext(StmtContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::BlockStmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterBlockStmt(this);
-}
-void SysYParser::BlockStmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitBlockStmt(this);
-}
 
 antlrcpp::Any SysYParser::BlockStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1793,17 +1537,6 @@ tree::TerminalNode* SysYParser::AssignmentContext::Semicolon() {
 }
 
 SysYParser::AssignmentContext::AssignmentContext(StmtContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::AssignmentContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssignment(this);
-}
-void SysYParser::AssignmentContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssignment(this);
-}
 
 antlrcpp::Any SysYParser::AssignmentContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1839,17 +1572,6 @@ tree::TerminalNode* SysYParser::DowhileStmtContext::Rparen() {
 
 SysYParser::DowhileStmtContext::DowhileStmtContext(StmtContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::DowhileStmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterDowhileStmt(this);
-}
-void SysYParser::DowhileStmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitDowhileStmt(this);
-}
-
 antlrcpp::Any SysYParser::DowhileStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitDowhileStmt(this);
@@ -1880,17 +1602,6 @@ SysYParser::StmtContext* SysYParser::IfStmt1Context::stmt() {
 
 SysYParser::IfStmt1Context::IfStmt1Context(StmtContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::IfStmt1Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIfStmt1(this);
-}
-void SysYParser::IfStmt1Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIfStmt1(this);
-}
-
 antlrcpp::Any SysYParser::IfStmt1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitIfStmt1(this);
@@ -1909,17 +1620,6 @@ tree::TerminalNode* SysYParser::BreakStmtContext::Semicolon() {
 
 SysYParser::BreakStmtContext::BreakStmtContext(StmtContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::BreakStmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterBreakStmt(this);
-}
-void SysYParser::BreakStmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitBreakStmt(this);
-}
-
 antlrcpp::Any SysYParser::BreakStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitBreakStmt(this);
@@ -1937,17 +1637,6 @@ SysYParser::ExpContext* SysYParser::ExpStmtContext::exp() {
 }
 
 SysYParser::ExpStmtContext::ExpStmtContext(StmtContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::ExpStmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterExpStmt(this);
-}
-void SysYParser::ExpStmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitExpStmt(this);
-}
 
 antlrcpp::Any SysYParser::ExpStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1987,17 +1676,6 @@ tree::TerminalNode* SysYParser::IfStmt2Context::Else() {
 
 SysYParser::IfStmt2Context::IfStmt2Context(StmtContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::IfStmt2Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIfStmt2(this);
-}
-void SysYParser::IfStmt2Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIfStmt2(this);
-}
-
 antlrcpp::Any SysYParser::IfStmt2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitIfStmt2(this);
@@ -2020,17 +1698,6 @@ SysYParser::ExpContext* SysYParser::ReturnStmtContext::exp() {
 
 SysYParser::ReturnStmtContext::ReturnStmtContext(StmtContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::ReturnStmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterReturnStmt(this);
-}
-void SysYParser::ReturnStmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitReturnStmt(this);
-}
-
 antlrcpp::Any SysYParser::ReturnStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitReturnStmt(this);
@@ -2048,17 +1715,6 @@ tree::TerminalNode* SysYParser::ContinueStmtContext::Semicolon() {
 }
 
 SysYParser::ContinueStmtContext::ContinueStmtContext(StmtContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::ContinueStmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterContinueStmt(this);
-}
-void SysYParser::ContinueStmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitContinueStmt(this);
-}
 
 antlrcpp::Any SysYParser::ContinueStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2331,19 +1987,6 @@ size_t SysYParser::ExpContext::getRuleIndex() const {
   return SysYParser::RuleExp;
 }
 
-void SysYParser::ExpContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterExp(this);
-}
-
-void SysYParser::ExpContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitExp(this);
-}
-
-
 antlrcpp::Any SysYParser::ExpContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitExp(this);
@@ -2387,19 +2030,6 @@ SysYParser::LOrExpContext* SysYParser::CondContext::lOrExp() {
 size_t SysYParser::CondContext::getRuleIndex() const {
   return SysYParser::RuleCond;
 }
-
-void SysYParser::CondContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCond(this);
-}
-
-void SysYParser::CondContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCond(this);
-}
-
 
 antlrcpp::Any SysYParser::CondContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2468,19 +2098,6 @@ tree::TerminalNode* SysYParser::LValContext::Rbrkt(size_t i) {
 size_t SysYParser::LValContext::getRuleIndex() const {
   return SysYParser::RuleLVal;
 }
-
-void SysYParser::LValContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLVal(this);
-}
-
-void SysYParser::LValContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLVal(this);
-}
-
 
 antlrcpp::Any SysYParser::LValContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2551,17 +2168,6 @@ SysYParser::LValContext* SysYParser::PrimaryExp2Context::lVal() {
 
 SysYParser::PrimaryExp2Context::PrimaryExp2Context(PrimaryExpContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::PrimaryExp2Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPrimaryExp2(this);
-}
-void SysYParser::PrimaryExp2Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPrimaryExp2(this);
-}
-
 antlrcpp::Any SysYParser::PrimaryExp2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitPrimaryExp2(this);
@@ -2584,17 +2190,6 @@ tree::TerminalNode* SysYParser::PrimaryExp1Context::Rparen() {
 
 SysYParser::PrimaryExp1Context::PrimaryExp1Context(PrimaryExpContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::PrimaryExp1Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPrimaryExp1(this);
-}
-void SysYParser::PrimaryExp1Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPrimaryExp1(this);
-}
-
 antlrcpp::Any SysYParser::PrimaryExp1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitPrimaryExp1(this);
@@ -2608,17 +2203,6 @@ SysYParser::NumberContext* SysYParser::PrimaryExp3Context::number() {
 }
 
 SysYParser::PrimaryExp3Context::PrimaryExp3Context(PrimaryExpContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::PrimaryExp3Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPrimaryExp3(this);
-}
-void SysYParser::PrimaryExp3Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPrimaryExp3(this);
-}
 
 antlrcpp::Any SysYParser::PrimaryExp3Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2694,19 +2278,6 @@ size_t SysYParser::NumberContext::getRuleIndex() const {
   return SysYParser::RuleNumber;
 }
 
-void SysYParser::NumberContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterNumber(this);
-}
-
-void SysYParser::NumberContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitNumber(this);
-}
-
-
 antlrcpp::Any SysYParser::NumberContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitNumber(this);
@@ -2759,17 +2330,6 @@ SysYParser::PrimaryExpContext* SysYParser::Unary1Context::primaryExp() {
 
 SysYParser::Unary1Context::Unary1Context(UnaryExpContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::Unary1Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterUnary1(this);
-}
-void SysYParser::Unary1Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitUnary1(this);
-}
-
 antlrcpp::Any SysYParser::Unary1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitUnary1(this);
@@ -2796,17 +2356,6 @@ SysYParser::FuncRParamsContext* SysYParser::Unary2Context::funcRParams() {
 
 SysYParser::Unary2Context::Unary2Context(UnaryExpContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::Unary2Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterUnary2(this);
-}
-void SysYParser::Unary2Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitUnary2(this);
-}
-
 antlrcpp::Any SysYParser::Unary2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitUnary2(this);
@@ -2824,17 +2373,6 @@ SysYParser::UnaryExpContext* SysYParser::Unary3Context::unaryExp() {
 }
 
 SysYParser::Unary3Context::Unary3Context(UnaryExpContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::Unary3Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterUnary3(this);
-}
-void SysYParser::Unary3Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitUnary3(this);
-}
 
 antlrcpp::Any SysYParser::Unary3Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2933,19 +2471,6 @@ size_t SysYParser::UnaryOpContext::getRuleIndex() const {
   return SysYParser::RuleUnaryOp;
 }
 
-void SysYParser::UnaryOpContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterUnaryOp(this);
-}
-
-void SysYParser::UnaryOpContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitUnaryOp(this);
-}
-
-
 antlrcpp::Any SysYParser::UnaryOpContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitUnaryOp(this);
@@ -3013,19 +2538,6 @@ size_t SysYParser::FuncRParamsContext::getRuleIndex() const {
   return SysYParser::RuleFuncRParams;
 }
 
-void SysYParser::FuncRParamsContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFuncRParams(this);
-}
-
-void SysYParser::FuncRParamsContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFuncRParams(this);
-}
-
-
 antlrcpp::Any SysYParser::FuncRParamsContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitFuncRParams(this);
@@ -3082,19 +2594,6 @@ SysYParser::ExpContext* SysYParser::FuncRParamContext::exp() {
 size_t SysYParser::FuncRParamContext::getRuleIndex() const {
   return SysYParser::RuleFuncRParam;
 }
-
-void SysYParser::FuncRParamContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFuncRParam(this);
-}
-
-void SysYParser::FuncRParamContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFuncRParam(this);
-}
-
 
 antlrcpp::Any SysYParser::FuncRParamContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -3164,17 +2663,6 @@ tree::TerminalNode* SysYParser::Mul2Context::Modulo() {
 
 SysYParser::Mul2Context::Mul2Context(MulExpContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::Mul2Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterMul2(this);
-}
-void SysYParser::Mul2Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitMul2(this);
-}
-
 antlrcpp::Any SysYParser::Mul2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitMul2(this);
@@ -3188,17 +2676,6 @@ SysYParser::UnaryExpContext* SysYParser::Mul1Context::unaryExp() {
 }
 
 SysYParser::Mul1Context::Mul1Context(MulExpContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::Mul1Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterMul1(this);
-}
-void SysYParser::Mul1Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitMul1(this);
-}
 
 antlrcpp::Any SysYParser::Mul1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -3312,17 +2789,6 @@ tree::TerminalNode* SysYParser::Add2Context::Minus() {
 
 SysYParser::Add2Context::Add2Context(AddExpContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::Add2Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAdd2(this);
-}
-void SysYParser::Add2Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAdd2(this);
-}
-
 antlrcpp::Any SysYParser::Add2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitAdd2(this);
@@ -3336,17 +2802,6 @@ SysYParser::MulExpContext* SysYParser::Add1Context::mulExp() {
 }
 
 SysYParser::Add1Context::Add1Context(AddExpContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::Add1Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAdd1(this);
-}
-void SysYParser::Add1Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAdd1(this);
-}
 
 antlrcpp::Any SysYParser::Add1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -3467,17 +2922,6 @@ tree::TerminalNode* SysYParser::Rel2Context::GE() {
 
 SysYParser::Rel2Context::Rel2Context(RelExpContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::Rel2Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterRel2(this);
-}
-void SysYParser::Rel2Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitRel2(this);
-}
-
 antlrcpp::Any SysYParser::Rel2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitRel2(this);
@@ -3491,17 +2935,6 @@ SysYParser::AddExpContext* SysYParser::Rel1Context::addExp() {
 }
 
 SysYParser::Rel1Context::Rel1Context(RelExpContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::Rel1Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterRel1(this);
-}
-void SysYParser::Rel1Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitRel1(this);
-}
 
 antlrcpp::Any SysYParser::Rel1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -3604,17 +3037,6 @@ SysYParser::RelExpContext* SysYParser::Eq1Context::relExp() {
 
 SysYParser::Eq1Context::Eq1Context(EqExpContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::Eq1Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterEq1(this);
-}
-void SysYParser::Eq1Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitEq1(this);
-}
-
 antlrcpp::Any SysYParser::Eq1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitEq1(this);
@@ -3640,17 +3062,6 @@ tree::TerminalNode* SysYParser::Eq2Context::NEQ() {
 }
 
 SysYParser::Eq2Context::Eq2Context(EqExpContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::Eq2Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterEq2(this);
-}
-void SysYParser::Eq2Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitEq2(this);
-}
 
 antlrcpp::Any SysYParser::Eq2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -3759,17 +3170,6 @@ SysYParser::EqExpContext* SysYParser::LAnd2Context::eqExp() {
 
 SysYParser::LAnd2Context::LAnd2Context(LAndExpContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::LAnd2Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLAnd2(this);
-}
-void SysYParser::LAnd2Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLAnd2(this);
-}
-
 antlrcpp::Any SysYParser::LAnd2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitLAnd2(this);
@@ -3783,17 +3183,6 @@ SysYParser::EqExpContext* SysYParser::LAnd1Context::eqExp() {
 }
 
 SysYParser::LAnd1Context::LAnd1Context(LAndExpContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::LAnd1Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLAnd1(this);
-}
-void SysYParser::LAnd1Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLAnd1(this);
-}
 
 antlrcpp::Any SysYParser::LAnd1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -3885,17 +3274,6 @@ SysYParser::LAndExpContext* SysYParser::LOr1Context::lAndExp() {
 
 SysYParser::LOr1Context::LOr1Context(LOrExpContext *ctx) { copyFrom(ctx); }
 
-void SysYParser::LOr1Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLOr1(this);
-}
-void SysYParser::LOr1Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLOr1(this);
-}
-
 antlrcpp::Any SysYParser::LOr1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitLOr1(this);
@@ -3917,17 +3295,6 @@ SysYParser::LAndExpContext* SysYParser::LOr2Context::lAndExp() {
 }
 
 SysYParser::LOr2Context::LOr2Context(LOrExpContext *ctx) { copyFrom(ctx); }
-
-void SysYParser::LOr2Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLOr2(this);
-}
-void SysYParser::LOr2Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLOr2(this);
-}
 
 antlrcpp::Any SysYParser::LOr2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -4010,19 +3377,6 @@ SysYParser::AddExpContext* SysYParser::ConstExpContext::addExp() {
 size_t SysYParser::ConstExpContext::getRuleIndex() const {
   return SysYParser::RuleConstExp;
 }
-
-void SysYParser::ConstExpContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterConstExp(this);
-}
-
-void SysYParser::ConstExpContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SysYListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitConstExp(this);
-}
-
 
 antlrcpp::Any SysYParser::ConstExpContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
