@@ -1,4 +1,4 @@
-#include "ASTVisitor.hpp"
+#include "ASTVisitor.h"
 
 using std::string;
 using std::cout;
