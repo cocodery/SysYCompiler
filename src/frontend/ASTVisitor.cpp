@@ -63,13 +63,13 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitScalarInitVal(SysYParser::ScalarInitValContext *ctx) {
-    // TODO:
-    return nullptr;
+    dbg("Program should never reach Function visitScalarInitVal");
+    exit(EXIT_FAILURE);
 }
 
 antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) {
-    // TODO:
-    return nullptr;
+    dbg("Program should never reach Function visitListInitval");
+    exit(EXIT_FAILURE);
 }
 
 
@@ -79,8 +79,8 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitFuncType(SysYParser::FuncTypeContext *ctx) {
-    // TODO:
-    return nullptr;
+    dbg("Program should never reach Function visitFuncType");
+    exit(EXIT_FAILURE);
 }
 
 antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) {
@@ -168,13 +168,15 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
 }
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
-    // TODO:
+    int32_t parse_number = ctx->number()->accept(this);
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitNumber(SysYParser::NumberContext *ctx) {
-    // TODO:
-    return nullptr;
+    const char *number_str = ctx->getText().c_str();
+    int result = parseNum(number_str);
+    dbg(result);
+    return result;
 }
 
 antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
