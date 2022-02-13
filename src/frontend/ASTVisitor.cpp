@@ -34,15 +34,18 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitScalarConstInitVal(SysYParser::ScalarConstInitValContext *ctx) {
-    return nullptr;
+    dbg("Program should never reach Function visitScalarConstInitVal");
+    exit(EXIT_FAILURE);
 }
 
 antlrcpp::Any ASTVisitor::visitListConstInitVal(SysYParser::ListConstInitValContext *ctx) {
-    return nullptr;
+    dbg("Program should never reach Function visitListConstInitVal");
+    exit(EXIT_FAILURE);
 }
 
 antlrcpp::Any ASTVisitor::visitVarDecl(SysYParser::VarDeclContext *ctx) {
@@ -50,35 +53,43 @@ antlrcpp::Any ASTVisitor::visitVarDecl(SysYParser::VarDeclContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitScalarInitVal(SysYParser::ScalarInitValContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitFuncType(SysYParser::FuncTypeContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
@@ -91,6 +102,7 @@ antlrcpp::Any ASTVisitor::visitBlockItem(SysYParser::BlockItemContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitAssignment(SysYParser::AssignmentContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
@@ -99,133 +111,156 @@ antlrcpp::Any ASTVisitor::visitExpStmt(SysYParser::ExpStmtContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitIfStmt1(SysYParser::IfStmt1Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitIfStmt2(SysYParser::IfStmt2Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitBreakStmt(SysYParser::BreakStmtContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitContinueStmt(SysYParser::ContinueStmtContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitExp(SysYParser::ExpContext *ctx) {
-    return nullptr;
+    return ctx->addExp()->accept(this);
 }
 
 antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
-  return nullptr;
+    // TODO:
+    return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp1(SysYParser::PrimaryExp1Context *ctx) {
-    return nullptr;
+    return ctx->exp()->accept(this);
 }
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) {
-    return nullptr;
+    return ctx->lVal()->accept(this);
 }
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitNumber(SysYParser::NumberContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
-    return nullptr;
+    return ctx->primaryExp()->accept(this);
 }
 
 antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitUnaryOp(SysYParser::UnaryOpContext *ctx) {
-    return nullptr;
+    dbg("Program should never reach Function visitListConstInitVal");
+    exit(EXIT_FAILURE);
 }
 
 antlrcpp::Any ASTVisitor::visitFuncRParams(SysYParser::FuncRParamsContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitFuncRParam(SysYParser::FuncRParamContext *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitMul1(SysYParser::Mul1Context *ctx) {
-    return nullptr;
+    return ctx->unaryExp()->accept(this);
 }
 
 antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitAdd1(SysYParser::Add1Context *ctx) {
-    return nullptr;
+    return ctx->mulExp()->accept(this);
 }
 
 antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitRel1(SysYParser::Rel1Context *ctx) {
-    return nullptr;
+    return ctx->addExp()->accept(this);
 }
 
 antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitEq1(SysYParser::Eq1Context *ctx) {
-    return nullptr;
+    return ctx->relExp()->accept(this);
 }
 
 antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitLAnd1(SysYParser::LAnd1Context *ctx) {
-    return nullptr;
+    return ctx->eqExp()->accept(this);
 }
 
 antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitLOr1(SysYParser::LOr1Context *ctx) {
-    return nullptr;
+    return ctx->lAndExp()->accept(this);
 }
 
 antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
+    // TODO:
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
+    // TODO:
     return nullptr;
 }

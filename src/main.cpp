@@ -9,11 +9,11 @@
 #include <string>
 #include <fstream>
 
-#include "SysYLexer.h"
-#include "SysYParser.h"
-#include "ASTVisitor.h"
+#include "frontend/SysYLexer.h"
+#include "frontend/SysYParser.h"
+#include "frontend/ASTVisitor.h"
 
-#include "dbg.h"
+#include "common.h"
 
 using namespace antlr4;
 using namespace std;
