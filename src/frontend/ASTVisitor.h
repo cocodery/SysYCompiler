@@ -8,7 +8,7 @@
 
 class ASTVisitor : public SysYBaseVisitor {
 private:
-
+    enum CompileMode { normal, const_value, contdition } mode;
 public:
     ASTVisitor();
     

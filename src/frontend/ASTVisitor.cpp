@@ -34,6 +34,7 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
+    string const_var_name =  ctx->Identifier()->getText();
     // TODO:
     return nullptr;
 }
@@ -169,13 +170,13 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
     int32_t parse_number = ctx->number()->accept(this);
+    dbg(parse_number);
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitNumber(SysYParser::NumberContext *ctx) {
     const char *number_str = ctx->getText().c_str();
     int result = parseNum(number_str);
-    dbg(result);
     return result;
 }
 
@@ -263,6 +264,6 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
-    // TODO:
-    return nullptr;
+    int32_t result = ctx->addExp()->accept(this);
+    return result;
 }
