@@ -7,7 +7,7 @@ int parseNum(const char *number_str) {
     else if (number_str[0] == '0')
         ret = strtoul(number_str, nullptr, 8);
     else
-        ret = strtoul(number_str, nullptr, 8);
+        ret = strtoul(number_str, nullptr, 10);
 
     if (ret > 2147483648ll) {
         dbg("interger is too big to fit in int32_t");
