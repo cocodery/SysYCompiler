@@ -5,7 +5,7 @@ using std::cout;
 using std::endl;
 
 ASTVisitor::ASTVisitor() {
-
+    mode = normal;
 }
 
 antlrcpp::Any ASTVisitor::visitChildren(antlr4::tree::ParseTree *ctx) {
@@ -26,6 +26,7 @@ antlrcpp::Any ASTVisitor::visitDecl(SysYParser::DeclContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitConstDecl(SysYParser::ConstDeclContext *ctx) {
+    dbg("In visitConstDecl");
     return visitChildren(ctx);
 }
 
@@ -171,6 +172,9 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
     int32_t parse_number = ctx->number()->accept(this);
     dbg(parse_number);
+    if (mode == compile_time) {
+        return parse_number;
+    }
     return nullptr;
 }
 
@@ -191,6 +195,16 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
 
 antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
     // TODO:
+    char op = ctx->unaryOp()->getText()[0];
+    if (mode == compile_time) {
+        int32_t rhs = ctx->unaryExp()->accept(this);
+        if (op == '-')
+            return -rhs;
+        else if (op == '!')
+            return !rhs;
+        else 
+            return rhs;
+    }
     return nullptr;
 }
 
@@ -215,6 +229,17 @@ antlrcpp::Any ASTVisitor::visitMul1(SysYParser::Mul1Context *ctx) {
 
 antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
     // TODO:
+    char op = ctx->children[1]->getText()[0];
+    if (mode == compile_time) {
+        int32_t lhs = ctx->mulExp()->accept(this);
+        int32_t rhs = ctx->unaryExp()->accept(this);
+        if (op == '*')
+            return lhs * rhs;
+        else if (op == '/')
+            return lhs / rhs;
+        else if (op == '%')
+            return lhs % rhs;
+    }
     return nullptr;
 }
 
@@ -224,6 +249,15 @@ antlrcpp::Any ASTVisitor::visitAdd1(SysYParser::Add1Context *ctx) {
 
 antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
     // TODO:
+    char op = ctx->children[1]->getText()[0];
+    if (mode == compile_time) {
+        int32_t lhs = ctx->addExp()->accept(this);
+        int32_t rhs = ctx->mulExp()->accept(this);
+        if (op == '+') 
+            return lhs + rhs;
+        else if (op == '-') 
+            return lhs - rhs;
+    }
     return nullptr;
 }
 
@@ -233,6 +267,7 @@ antlrcpp::Any ASTVisitor::visitRel1(SysYParser::Rel1Context *ctx) {
 
 antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
     // TODO:
+    string op = ctx->children[1]->getText();
     return nullptr;
 }
 
@@ -242,6 +277,7 @@ antlrcpp::Any ASTVisitor::visitEq1(SysYParser::Eq1Context *ctx) {
 
 antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
     // TODO:
+    string op = ctx->children[1]->getText();
     return nullptr;
 }
 
@@ -251,6 +287,7 @@ antlrcpp::Any ASTVisitor::visitLAnd1(SysYParser::LAnd1Context *ctx) {
 
 antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
     // TODO:
+    string op = ctx->children[1]->getText();
     return nullptr;
 }
 
@@ -260,10 +297,15 @@ antlrcpp::Any ASTVisitor::visitLOr1(SysYParser::LOr1Context *ctx) {
 
 antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
     // TODO:
+    string op = ctx->children[1]->getText();
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
+    dbg("In visitConstExp");
+    mode = compile_time;
     int32_t result = ctx->addExp()->accept(this);
+    mode = normal;
+    dbg(result);
     return result;
 }
