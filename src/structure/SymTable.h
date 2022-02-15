@@ -7,13 +7,13 @@
 
 using std::vector;
 
-class Type {
+class VarType {
 public:
-    bool is_variable;
     bool is_const;
+    bool is_array;
     bool is_func_args;
     vector<int32_t> array_dims;
 
-    Type();
+    VarType();
     int32_t elements_number();
 };
