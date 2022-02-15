@@ -1,11 +1,20 @@
 #include "ASTVisitor.h"
 
-using std::string;
-using std::cout;
-using std::endl;
-
 ASTVisitor::ASTVisitor() {
     mode = normal;
+}
+
+vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *> dims) {
+    vector<int32_t> array_dims;
+    for (auto i : dims) {
+        int32_t cur_dim = i->accept(this);
+        array_dims.push_back(cur_dim);
+    }
+    return array_dims;
+}
+
+vector<int32_t> ASTVisitor::parse_const_init(SysYParser::ConstInitValContext *init, const vector<int32_t> &array_dims) {
+    
 }
 
 antlrcpp::Any ASTVisitor::visitChildren(antlr4::tree::ParseTree *ctx) {
@@ -26,7 +35,6 @@ antlrcpp::Any ASTVisitor::visitDecl(SysYParser::DeclContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitConstDecl(SysYParser::ConstDeclContext *ctx) {
-    dbg("In visitConstDecl");
     return visitChildren(ctx);
 }
 
@@ -37,6 +45,15 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     string const_var_name =  ctx->Identifier()->getText();
     // TODO:
+    VarType var_type;
+    var_type.is_const = true;
+    var_type.is_array = !(ctx->constExp().size() == 0);
+    var_type.is_func_args = false;
+    if (var_type.is_array == true) {
+        var_type.array_dims = get_array_dims(ctx->constExp());
+    }
+    dbg(const_var_name ,var_type.is_const, var_type.is_array, var_type.is_func_args);    
+    dbg(var_type.array_dims);
     return nullptr;
 }
 
@@ -302,10 +319,8 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
-    dbg("In visitConstExp");
     mode = compile_time;
     int32_t result = ctx->addExp()->accept(this);
     mode = normal;
-    dbg(result);
     return result;
 }

@@ -2,18 +2,32 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
 #include "../common.h"
+#include "../structure/SymTable.h"
 
 #include "SysYBaseVisitor.h"
 
+using std::vector;
+
+using std::string;
+using std::cout;
+using std::endl;
+
 class ASTVisitor : public SysYBaseVisitor {
+// Some Useful Defination
 private:
     enum CompileMode { normal, compile_time, condition } mode;
+// Funtion for helping Build IR and Symbol Table
 public:
     ASTVisitor();
     
-    virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *ctx) override;
+    vector<int32_t> get_array_dims(vector<SysYParser::ConstExpContext *>);
 
+    vector<int32_t> parse_const_init(SysYParser::ConstInitValContext *init, const vector<int32_t> &array_dims);
+// Function for Abstract Syntax Tree
+public:
+    virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *ctx) override;
 //Node Visitors:
 
 //compUnit : (decl | funcDef)* EOF ;
