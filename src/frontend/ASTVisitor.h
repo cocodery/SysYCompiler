@@ -17,6 +17,7 @@ using std::endl;
 class ASTVisitor : public SysYBaseVisitor {
 // Some Useful Defination
 private:
+    int32_t whole_var_idx;
     enum CompileMode { normal, compile_time, condition } mode;
 // Funtion for helping Build IR and Symbol Table
 public:
@@ -24,7 +25,7 @@ public:
     
     vector<int32_t> get_array_dims(vector<SysYParser::ConstExpContext *>);
 
-    vector<int32_t> parse_const_init(SysYParser::ConstInitValContext *init, const vector<int32_t> &array_dims);
+    void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& list_init_value);
 // Function for Abstract Syntax Tree
 public:
     virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *ctx) override;

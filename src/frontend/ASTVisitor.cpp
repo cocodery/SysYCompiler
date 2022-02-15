@@ -13,8 +13,34 @@ vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *>
     return array_dims;
 }
 
-vector<int32_t> ASTVisitor::parse_const_init(SysYParser::ConstInitValContext *init, const vector<int32_t> &array_dims) {
-    
+void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& list_init_value) {
+    int32_t total_size = 1;
+    for (auto i: array_dims) {
+        total_size *= i;
+    }
+    if (total_size == 0) return;
+    int32_t child_size = total_size / array_dims[0];
+    vector<int32_t> child_array_dims = array_dims;
+    child_array_dims.erase(child_array_dims.begin());
+    int32_t cnt = 0;
+    for (auto child: node->constInitVal()) {
+        auto scalar_node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(child);
+        if (scalar_node != nullptr) {
+            int32_t scalar_value = scalar_node->constExp()->accept(this);
+            list_init_value.push_back(scalar_value);
+            ++cnt;
+        }
+        else {
+            auto list_node = dynamic_cast<SysYParser::ListConstInitValContext *>(child);
+            parse_const_init(list_node, child_array_dims, list_init_value);
+            cnt += total_size / array_dims[0];
+        }
+    }
+    while (cnt < total_size) {
+        list_init_value.push_back(0);
+        ++cnt;
+    }
+    return;
 }
 
 antlrcpp::Any ASTVisitor::visitChildren(antlr4::tree::ParseTree *ctx) {
@@ -54,6 +80,21 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     }
     dbg(const_var_name ,var_type.is_const, var_type.is_array, var_type.is_func_args);    
     dbg(var_type.array_dims);
+    InitValue const_init_value;
+    const_init_value.is_const = var_type.is_const;
+    const_init_value.is_array = var_type.is_array;
+    auto init_var_node = ctx->constInitVal();
+    if (const_init_value.is_array == false) {
+        auto node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(init_var_node);
+        const_init_value.scalar_init_value = node->constExp()->accept(this);
+        dbg(const_init_value.scalar_init_value);
+    }
+    else {
+        auto node = dynamic_cast<SysYParser::ListConstInitValContext *>(init_var_node);
+        parse_const_init(node, var_type.array_dims, const_init_value.list_init_value);
+        dbg(const_init_value.list_init_value);
+    }
+    Variable var(var_type, const_init_value);
     return nullptr;
 }
 
