@@ -66,7 +66,10 @@ int main(int argc, char *argv[]) {
 
     cout << "Start Compiler" << endl;
 
-    visitor.visitCompUnit(root);
+    if (!visitor.visitCompUnit(root)) {
+        dbg("No main Function Found");
+        exit(EXIT_FAILURE);
+    }
 
     cout << "Compiler Complete" << endl;
 

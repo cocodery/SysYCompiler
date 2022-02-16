@@ -1,6 +1,7 @@
 #include "ASTVisitor.h"
 
 ASTVisitor::ASTVisitor() {
+    have_main_func = false;
     mode = normal;
 }
 
@@ -53,7 +54,7 @@ antlrcpp::Any ASTVisitor::visitChildren(antlr4::tree::ParseTree *ctx) {
 
 antlrcpp::Any ASTVisitor::visitCompUnit(SysYParser::CompUnitContext *ctx) {
     visitChildren(ctx);
-    return nullptr;
+    return have_main_func;
 }
 
 antlrcpp::Any ASTVisitor::visitDecl(SysYParser::DeclContext *ctx) {
@@ -93,7 +94,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         parse_const_init(node, var_type.array_dims, const_init_value.list_init_value);
         dbg(const_init_value.list_init_value);
     }
-    Variable var(const_var_name, var_type, const_init_value);
+    Variable var(0, var_type, const_init_value);
     return nullptr;
 }
 
@@ -124,7 +125,7 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
     InitValue var_init_value;
     var_init_value.is_array = var_type.is_array;
     var_init_value.is_const = var_type.is_const;
-    Variable var(var_name, var_type, var_init_value);
+    Variable var(0, var_type, var_init_value);
     return nullptr;
 }
 
@@ -142,7 +143,7 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     var_init_value.is_array = var_type.is_array;
     var_init_value.is_const = var_type.is_const;
     // TODO: without init value;
-    Variable var(var_name, var_type, var_init_value);
+    Variable var(0, var_type, var_init_value);
     return nullptr;
 }
 
@@ -158,6 +159,12 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
 
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     // TODO:
+    string func_name = ctx->Identifier()->getText();
+    dbg(func_name);
+    if (func_name == "main") have_main_func = true;
+    FunctionInfo func_info;
+    func_info.return_type = (ctx->funcType()->getText() == "int");
+    func_info.func_args_type = ctx->funcFParams()->accept(this).as<vector<VarType>>();
     return nullptr;
 }
 
@@ -168,12 +175,25 @@ antlrcpp::Any ASTVisitor::visitFuncType(SysYParser::FuncTypeContext *ctx) {
 
 antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) {
     // TODO:
-    return nullptr;
+    vector<VarType> func_args_type;
+    for (auto i : ctx->funcFParam()) {
+        func_args_type.push_back(i->accept(this));
+    }
+    return func_args_type;
 }
 
 antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
     // TODO:
-    return nullptr;
+    VarType arg_type;
+    arg_type.is_const = false;
+    arg_type.is_array = (ctx->getText().find('['));
+    arg_type.is_func_args = true;
+    if (arg_type.is_array) {
+        arg_type.array_dims = get_array_dims(ctx->constExp());
+        arg_type.array_dims.insert(arg_type.array_dims.begin(), -1);
+    }
+    dbg(arg_type.array_dims);
+    return arg_type;
 }
 
 antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
