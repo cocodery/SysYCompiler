@@ -70,7 +70,6 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     string const_var_name =  ctx->Identifier()->getText();
-    // TODO:
     VarType var_type;
     var_type.is_const = true;
     var_type.is_array = !(ctx->constExp().size() == 0);
@@ -94,7 +93,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         parse_const_init(node, var_type.array_dims, const_init_value.list_init_value);
         dbg(const_init_value.list_init_value);
     }
-    Variable var(var_type, const_init_value);
+    Variable var(const_var_name, var_type, const_init_value);
     return nullptr;
 }
 
@@ -114,11 +113,36 @@ antlrcpp::Any ASTVisitor::visitVarDecl(SysYParser::VarDeclContext *ctx) {
 
 antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx) {
     // TODO:
+    string var_name = ctx->Identifier()->getText();
+    VarType var_type;
+    var_type.is_const = false;
+    var_type.is_array = !(ctx->constExp().size() == 0);
+    var_type.is_func_args = false;
+    if (var_type.is_array == true) {
+        var_type.array_dims = get_array_dims(ctx->constExp());
+    }
+    InitValue var_init_value;
+    var_init_value.is_array = var_type.is_array;
+    var_init_value.is_const = var_type.is_const;
+    Variable var(var_name, var_type, var_init_value);
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     // TODO:
+    string var_name = ctx->Identifier()->getText();
+    VarType var_type;
+    var_type.is_const = false;
+    var_type.is_array = !(ctx->constExp().size() == 0);
+    var_type.is_func_args = false;
+    if (var_type.is_array == true) {
+        var_type.array_dims = get_array_dims(ctx->constExp());
+    }
+    InitValue var_init_value;
+    var_init_value.is_array = var_type.is_array;
+    var_init_value.is_const = var_type.is_const;
+    // TODO: without init value;
+    Variable var(var_name, var_type, var_init_value);
     return nullptr;
 }
 
@@ -131,7 +155,6 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
     dbg("Program should never reach Function visitListInitval");
     exit(EXIT_FAILURE);
 }
-
 
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     // TODO:
@@ -238,7 +261,7 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) 
 
 antlrcpp::Any ASTVisitor::visitNumber(SysYParser::NumberContext *ctx) {
     const char *number_str = ctx->getText().c_str();
-    int result = parseNum(number_str);
+    int32_t result = parseNum(number_str);
     return result;
 }
 
