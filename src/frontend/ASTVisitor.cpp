@@ -158,7 +158,6 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
 }
 
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
-    // TODO:
     string func_name = ctx->Identifier()->getText();
     dbg(func_name);
     if (func_name == "main") have_main_func = true;
@@ -174,7 +173,6 @@ antlrcpp::Any ASTVisitor::visitFuncType(SysYParser::FuncTypeContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) {
-    // TODO:
     vector<VarType> func_args_type;
     for (auto i : ctx->funcFParam()) {
         func_args_type.push_back(i->accept(this));
@@ -183,10 +181,9 @@ antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) 
 }
 
 antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
-    // TODO:
     VarType arg_type;
     arg_type.is_const = false;
-    arg_type.is_array = (ctx->getText().find('['));
+    arg_type.is_array = (ctx->getText().find('[') != string::npos);
     arg_type.is_func_args = true;
     if (arg_type.is_array) {
         arg_type.array_dims = get_array_dims(ctx->constExp());
