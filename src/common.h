@@ -10,3 +10,12 @@
 using std::string;
 
 int parseNum(const char *number_str);
+
+enum Operator {
+    Add, Sub, Mul, Div, Mod,
+    Lt, Le, Ge, Gt, Eq, Ne, And, Orr,
+};
+
+class common {
+    virtual ~common() { };
+};
