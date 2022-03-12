@@ -1,3 +1,22 @@
+### Environment Config
+* **1. OS**
+    > Ubuntu 20.04 , or other Linux (develop environment)
+    > Windows
+* **2. Packages needed**
+    > build-essential
+    > git
+    > cmake
+    > antlr
+    > ..
+
+### Usages
+* 
+    > cd SysYCompiler
+    > mkdir build && cd build
+    > cmake ..
+    > make -j
+    > ./compiler -S -o [dst_file] [src_file]
+
 ### Commit Message Rules
 
 * **1. Add files** : 
