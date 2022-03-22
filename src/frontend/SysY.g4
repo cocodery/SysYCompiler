@@ -8,7 +8,7 @@ decl : constDecl | varDecl;
 
 constDecl : 'const' bType constDef (',' constDef)* ';' ;
 
-bType: 'int';
+bType: 'int' | 'float';
 
 constDef : Identifier ('[' constExp ']')* '=' constInitVal;
 
@@ -67,7 +67,10 @@ primaryExp
     | number # primaryExp3
     ;
 
-number : IntLiteral;
+number
+    : IntLiteral #number1
+    | FloatLiteral #number2
+    ; 
 
 unaryExp
     : primaryExp # unary1

@@ -1,6 +1,7 @@
 # build dir
 cmake-*/
 build/
+*.sy
 
 # IDE
 .idea/

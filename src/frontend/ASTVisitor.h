@@ -151,8 +151,15 @@ primaryExp
 
     virtual antlrcpp::Any visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) override;
 
-//number : IntLiteral;
-    virtual antlrcpp::Any visitNumber(SysYParser::NumberContext *ctx) override;
+/*
+number
+    : IntLiteral #number1
+    | FloatLiteral #number2
+    ; 
+*/
+    virtual antlrcpp::Any visitNumber1(SysYParser::Number1Context *ctx) override;
+    
+    virtual antlrcpp::Any visitNumber2(SysYParser::Number2Context *ctx) override;
 
 /*
 unaryExp

@@ -268,17 +268,27 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
 }
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
+    dbg("enter visitNmber");
     int32_t parse_number = ctx->number()->accept(this);
     dbg(parse_number);
+    dbg("exit visitNmber");
     if (mode == compile_time) {
         return parse_number;
     }
     return nullptr;
 }
 
-antlrcpp::Any ASTVisitor::visitNumber(SysYParser::NumberContext *ctx) {
+antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
     const char *number_str = ctx->getText().c_str();
     int32_t result = parseNum(number_str);
+    return result;
+}
+
+antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
+    const char *number_str = ctx->getText().c_str();
+    // int32_t result = parseNum(number_str);
+    float result = 1.0;
+    dbg(result);
     return result;
 }
 

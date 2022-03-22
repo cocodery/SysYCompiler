@@ -89,7 +89,9 @@ public:
 
     virtual antlrcpp::Any visitPrimaryExp3(SysYParser::PrimaryExp3Context *context) = 0;
 
-    virtual antlrcpp::Any visitNumber(SysYParser::NumberContext *context) = 0;
+    virtual antlrcpp::Any visitNumber1(SysYParser::Number1Context *context) = 0;
+
+    virtual antlrcpp::Any visitNumber2(SysYParser::Number2Context *context) = 0;
 
     virtual antlrcpp::Any visitUnary1(SysYParser::Unary1Context *context) = 0;
 

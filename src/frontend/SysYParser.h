@@ -12,13 +12,13 @@
 class  SysYParser : public antlr4::Parser {
 public:
   enum {
-    T__0 = 1, Int = 2, Void = 3, Const = 4, Return = 5, If = 6, Else = 7, 
-    While = 8, For = 9, Do = 10, Break = 11, Continue = 12, Lparen = 13, 
-    Rparen = 14, Lbrkt = 15, Rbrkt = 16, Lbrace = 17, Rbrace = 18, Comma = 19, 
-    Semicolon = 20, Minus = 21, Addition = 22, Exclamation = 23, Multiplication = 24, 
-    Division = 25, Modulo = 26, LAND = 27, LOR = 28, EQ = 29, NEQ = 30, 
-    LT = 31, LE = 32, GT = 33, GE = 34, IntLiteral = 35, Identifier = 36, 
-    WS = 37, LINE_COMMENT = 38, COMMENT = 39
+    T__0 = 1, T__1 = 2, Int = 3, Void = 4, Const = 5, Return = 6, If = 7, 
+    Else = 8, While = 9, For = 10, Do = 11, Break = 12, Continue = 13, Lparen = 14, 
+    Rparen = 15, Lbrkt = 16, Rbrkt = 17, Lbrace = 18, Rbrace = 19, Comma = 20, 
+    Semicolon = 21, Minus = 22, Addition = 23, Exclamation = 24, Multiplication = 25, 
+    Division = 26, Modulo = 27, LAND = 28, LOR = 29, EQ = 30, NEQ = 31, 
+    LT = 32, LE = 33, GT = 34, GE = 35, IntLiteral = 36, FloatLiteral = 37, 
+    Identifier = 38, WS = 39, LINE_COMMENT = 40, COMMENT = 41
   };
 
   enum {
@@ -604,11 +604,30 @@ public:
   class  NumberContext : public antlr4::ParserRuleContext {
   public:
     NumberContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *IntLiteral();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
    
+    NumberContext() = default;
+    void copyFrom(NumberContext *context);
+    using antlr4::ParserRuleContext::copyFrom;
+
+    virtual size_t getRuleIndex() const override;
+
+   
+  };
+
+  class  Number1Context : public NumberContext {
+  public:
+    Number1Context(NumberContext *ctx);
+
+    antlr4::tree::TerminalNode *IntLiteral();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Number2Context : public NumberContext {
+  public:
+    Number2Context(NumberContext *ctx);
+
+    antlr4::tree::TerminalNode *FloatLiteral();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
   NumberContext* number();

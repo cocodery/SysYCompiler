@@ -155,7 +155,11 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitNumber(SysYParser::NumberContext *ctx) override {
+  virtual antlrcpp::Any visitNumber1(SysYParser::Number1Context *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitNumber2(SysYParser::Number2Context *ctx) override {
     return visitChildren(ctx);
   }
 
