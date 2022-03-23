@@ -25,6 +25,7 @@ public:
     bool is_const;
     bool is_array;
     bool is_func_args; // is_array && is_func_args will omit first dim
+    SysYType type;
     vector<int32_t> array_dims;
 public:
     VarType();
@@ -35,8 +36,7 @@ class InitValue {
 public:
     bool is_const;
     bool is_array;
-    SysYType scalar_init_value;
-    vector<SysYType> list_init_value;
+    SysYInit init_value;
 public:
     InitValue();
 };
@@ -60,7 +60,7 @@ public:
 
 class FunctionInfo {
 public:
-    bool return_type; // 0 -> void, 1 -> int
+    SysYType return_type;
     vector<VarType> func_args_type;
 
     FunctionInfo();

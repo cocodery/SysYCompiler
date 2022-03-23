@@ -15,32 +15,7 @@ vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *>
 }
 
 void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<SysYType>& list_init_value) {
-    int32_t total_size = 1;
-    for (auto i: array_dims) {
-        total_size *= i;
-    }
-    if (total_size == 0) return;
-    int32_t child_size = total_size / array_dims[0];
-    vector<int32_t> child_array_dims = array_dims;
-    child_array_dims.erase(child_array_dims.begin());
-    int32_t cnt = 0;
-    for (auto child: node->constInitVal()) {
-        auto scalar_node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(child);
-        if (scalar_node != nullptr) {
-            SysYType scalar_value = scalar_node->constExp()->accept(this);
-            list_init_value.push_back(scalar_value);
-            ++cnt;
-        }
-        else {
-            auto list_node = dynamic_cast<SysYParser::ListConstInitValContext *>(child);
-            parse_const_init(list_node, child_array_dims, list_init_value);
-            cnt += total_size / array_dims[0];
-        }
-    }
-    while (cnt < total_size) {
-        list_init_value.push_back(0);
-        ++cnt;
-    }
+    
     return;
 }
 
@@ -70,31 +45,7 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
-    string const_var_name =  ctx->Identifier()->getText();
-    VarType var_type;
-    var_type.is_const = true;
-    var_type.is_array = !(ctx->constExp().size() == 0);
-    var_type.is_func_args = false;
-    if (var_type.is_array == true) {
-        var_type.array_dims = get_array_dims(ctx->constExp());
-    }
-    dbg(const_var_name ,var_type.is_const, var_type.is_array, var_type.is_func_args);    
-    dbg(var_type.array_dims);
-    InitValue const_init_value;
-    const_init_value.is_const = var_type.is_const;
-    const_init_value.is_array = var_type.is_array;
-    auto init_var_node = ctx->constInitVal();
-    if (const_init_value.is_array == false) {
-        auto node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(init_var_node);
-        const_init_value.scalar_init_value = node->constExp()->accept(this);
-        dbg(const_init_value.scalar_init_value);
-    }
-    else {
-        auto node = dynamic_cast<SysYParser::ListConstInitValContext *>(init_var_node);
-        parse_const_init(node, var_type.array_dims, const_init_value.list_init_value);
-        dbg(const_init_value.list_init_value);
-    }
-    Variable var(0, var_type, const_init_value);
+    
     return nullptr;
 }
 
@@ -114,36 +65,11 @@ antlrcpp::Any ASTVisitor::visitVarDecl(SysYParser::VarDeclContext *ctx) {
 
 antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx) {
     // TODO:
-    string var_name = ctx->Identifier()->getText();
-    VarType var_type;
-    var_type.is_const = false;
-    var_type.is_array = !(ctx->constExp().size() == 0);
-    var_type.is_func_args = false;
-    if (var_type.is_array == true) {
-        var_type.array_dims = get_array_dims(ctx->constExp());
-    }
-    InitValue var_init_value;
-    var_init_value.is_array = var_type.is_array;
-    var_init_value.is_const = var_type.is_const;
-    Variable var(0, var_type, var_init_value);
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     // TODO:
-    string var_name = ctx->Identifier()->getText();
-    VarType var_type;
-    var_type.is_const = false;
-    var_type.is_array = !(ctx->constExp().size() == 0);
-    var_type.is_func_args = false;
-    if (var_type.is_array == true) {
-        var_type.array_dims = get_array_dims(ctx->constExp());
-    }
-    InitValue var_init_value;
-    var_init_value.is_array = var_type.is_array;
-    var_init_value.is_const = var_type.is_const;
-    // TODO: without init value;
-    Variable var(0, var_type, var_init_value);
     return nullptr;
 }
 
@@ -176,24 +102,11 @@ antlrcpp::Any ASTVisitor::visitFuncType(SysYParser::FuncTypeContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) {
-    vector<VarType> func_args_type;
-    for (auto i : ctx->funcFParam()) {
-        func_args_type.push_back(i->accept(this));
-    }
-    return func_args_type;
+    return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
-    VarType arg_type;
-    arg_type.is_const = false;
-    arg_type.is_array = (ctx->getText().find('[') != string::npos);
-    arg_type.is_func_args = true;
-    if (arg_type.is_array) {
-        arg_type.array_dims = get_array_dims(ctx->constExp());
-        arg_type.array_dims.insert(arg_type.array_dims.begin(), -1);
-    }
-    dbg(arg_type.array_dims);
-    return arg_type;
+    return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
@@ -284,8 +197,8 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) 
         float parse_number = ctx->number()->accept(this);
         dbg(parse_number);
         if (mode == compile_time) {
-        return parse_number;
-    }
+            return parse_number;
+        }
     }
     dbg("exit visitNmber");
     return nullptr;

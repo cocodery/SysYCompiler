@@ -12,9 +12,7 @@ int32_t VarType::elements_number() {
     return number;
 }
 
-InitValue::InitValue() : is_const(false), is_array(false), scalar_init_value(0) {
-    list_init_value.reserve(0);
-}
+InitValue::InitValue() : is_const(false), is_array(false) { }
 
 Variable::Variable(int vi, VarType vt, InitValue iv) : var_idx(vi), type(vt), init(iv) { }
 

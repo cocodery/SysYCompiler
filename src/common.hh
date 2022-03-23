@@ -5,11 +5,14 @@
 
 #include <cstdlib>
 #include <string>
+#include <vector>
 #include <variant>
 #include <cassert>
 
 using std::string;
+using std::vector;
 using SysYType = std::variant<int32_t, float>;
+using SysYInit = std::variant<SysYType, vector<SysYType>>;
 
 int parseNum(const char *number_str);
 
