@@ -2,6 +2,7 @@
 * **1. OS**
     > Ubuntu 20.04 , or other Linux (develop environment)
     > Windows
+
 * **2. Packages needed**
     > build-essential
     > git
@@ -38,7 +39,7 @@
 * **3. Modify files** :
     > Modify a function in some file.
 
-    > **Mod Func xxx**
+    > **Mod File xxx, Mod Func xxx**
     not need to modify the arguments type and return type, just optimize the performance of these function.
 
 
