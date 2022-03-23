@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hh"
 
 int parseNum(const char *number_str) {
     int64_t ret = 0;
@@ -15,3 +15,4 @@ int parseNum(const char *number_str) {
     }
     return static_cast<int32_t>(ret);
 }
+

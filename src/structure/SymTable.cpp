@@ -1,4 +1,4 @@
-#include "SymTable.h"
+#include "SymTable.hh"
 
 VarType::VarType() : is_const(false), is_array(false), is_func_args(false) { 
     array_dims.reserve(0);

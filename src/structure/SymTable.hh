@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-#include "../common.h"
+#include "../common.hh"
 
 using std::vector;
 using std::string;

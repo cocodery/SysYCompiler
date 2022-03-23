@@ -3,8 +3,8 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include "../common.h"
-#include "../structure/SymTable.h"
+#include "../common.hh"
+#include "../structure/SymTable.hh"
 
 #include "SysYBaseVisitor.h"
 

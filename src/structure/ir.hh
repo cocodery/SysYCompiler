@@ -4,8 +4,8 @@
 #include <string>
 #include <map>
 
-#include "../common.h"
-#include "SymTable.h"
+#include "../common.hh"
+#include "SymTable.hh"
 
 using std::vector;
 /*

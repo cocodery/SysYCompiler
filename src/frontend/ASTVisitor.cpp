@@ -1,4 +1,4 @@
-#include "ASTVisitor.h"
+#include "ASTVisitor.hh"
 
 ASTVisitor::ASTVisitor() {
     have_main_func = false;

@@ -11,9 +11,9 @@
 
 #include "frontend/SysYLexer.h"
 #include "frontend/SysYParser.h"
-#include "frontend/ASTVisitor.h"
+#include "frontend/ASTVisitor.hh"
 
-#include "common.h"
+#include "common.hh"
 
 using namespace antlr4;
 using namespace std;
