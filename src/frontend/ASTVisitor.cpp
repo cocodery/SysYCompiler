@@ -14,7 +14,7 @@ vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *>
     return array_dims;
 }
 
-void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& list_init_value) {
+void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<SysYType>& list_init_value) {
     int32_t total_size = 1;
     for (auto i: array_dims) {
         total_size *= i;
@@ -27,7 +27,7 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
     for (auto child: node->constInitVal()) {
         auto scalar_node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(child);
         if (scalar_node != nullptr) {
-            int32_t scalar_value = scalar_node->constExp()->accept(this);
+            SysYType scalar_value = scalar_node->constExp()->accept(this);
             list_init_value.push_back(scalar_value);
             ++cnt;
         }
