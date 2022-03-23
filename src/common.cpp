@@ -16,3 +16,9 @@ int parseNum(const char *number_str) {
     return static_cast<int32_t>(ret);
 }
 
+DeclType getDeclType(string type_str) {
+    if (type_str == "int") return TypeInt;
+    else if (type_str == "float") return TypeFloat;
+    else return TypeVoid;
+}
+

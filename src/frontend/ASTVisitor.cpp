@@ -37,6 +37,7 @@ antlrcpp::Any ASTVisitor::visitDecl(SysYParser::DeclContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitConstDecl(SysYParser::ConstDeclContext *ctx) {
+    type = getDeclType(ctx->children[1]->getText());
     return visitChildren(ctx);
 }
 
@@ -45,7 +46,23 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
-    
+    string var_name = ctx->children[0]->getText();
+    VarType const_var;
+    const_var.is_const = true;
+    const_var.is_array = !(ctx->constExp().size() == 0);
+    const_var.decl_type = type;
+    dbg(const_var.decl_type);
+    dbg(const_var.is_array);
+    if (const_var.is_array == true) {
+        const_var.array_dims = get_array_dims(ctx->constExp());
+        dbg(const_var.array_dims);
+    }
+    auto init_node = ctx->constInitVal();
+    if (const_var.is_array == false) {
+        auto node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(init_node);
+        const_var.init_value = node->constExp()->accept(this);
+        // dbg(const_var.init_value);
+    }
     return nullptr;
 }
 
@@ -185,40 +202,34 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
     dbg("enter visitNmber");
-    auto node = dynamic_cast<SysYParser::Number1Context *>(ctx->children[0]);
+    auto node = dynamic_cast<SysYParser::Number1Context *>(ctx->number());
+    SysYType parse_number;
     if (node != nullptr) {
-        int32_t parse_number = ctx->number()->accept(this);
-        dbg(parse_number);
+        parse_number = ctx->number()->accept(this);
+        // dbg(parse_number);
         if (mode == compile_time) {
+            dbg("exit visitNmber");
             return parse_number;
         }
     }
-    else {
-        float parse_number = ctx->number()->accept(this);
-        dbg(parse_number);
-        if (mode == compile_time) {
-            return parse_number;
-        }
-    }
-    dbg("exit visitNmber");
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
-    dbg("enter number1");
+    dbg("enter int number");
     const char *number_str = ctx->IntLiteral()->getText().c_str();
     int32_t result = parseNum(number_str);
-    dbg("exit number1");
+    dbg("exit int number");
     return result;
 }
 
 antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
-    dbg("enter number2");
+    dbg("enter float number");
     const char *number_str = ctx->FloatLiteral()->getText().c_str();
     // int32_t result = parseNum(number_str);
     float result = 1.0;
     dbg(result);
-    dbg("exit number2");
+    dbg("exit float number");
     return result;
 }
 

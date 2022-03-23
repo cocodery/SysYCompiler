@@ -17,7 +17,7 @@ using SysYInit = std::variant<SysYType, vector<SysYType>>;
 int parseNum(const char *number_str);
 
 enum DeclType {
-    Void, Int, Float
+    TypeVoid, TypeInt, TypeFloat,
 };
 
 enum Operator {
@@ -25,6 +25,4 @@ enum Operator {
     Lt, Le, Ge, Gt, Eq, Ne, And, Orr,
 };
 
-class common {
-    virtual ~common() { };
-};
+DeclType getDeclType(string type_str);

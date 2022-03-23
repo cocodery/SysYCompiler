@@ -24,31 +24,21 @@ class VarType {
 public:
     bool is_const;
     bool is_array;
-    bool is_func_args; // is_array && is_func_args will omit first dim
-    SysYType type;
     vector<int32_t> array_dims;
+    DeclType decl_type;
+    SysYInit init_value;
 public:
     VarType();
     int32_t elements_number();
-};
-
-class InitValue {
-public:
-    bool is_const;
-    bool is_array;
-    SysYInit init_value;
-public:
-    InitValue();
 };
 
 class Variable {
 public:
     int var_idx;
     VarType type;
-    InitValue init;
 public:
     Variable() : var_idx(-1) { };
-    Variable(int vi, VarType vt, InitValue iv);
+    Variable(int vi, VarType vt);
 };
 
 class VariableTable {

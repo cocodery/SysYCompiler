@@ -1,6 +1,6 @@
 #include "SymTable.hh"
 
-VarType::VarType() : is_const(false), is_array(false), is_func_args(false) { 
+VarType::VarType() : is_const(false), is_array(false) { 
     array_dims.reserve(0);
 }
 
@@ -12,9 +12,7 @@ int32_t VarType::elements_number() {
     return number;
 }
 
-InitValue::InitValue() : is_const(false), is_array(false) { }
-
-Variable::Variable(int vi, VarType vt, InitValue iv) : var_idx(vi), type(vt), init(iv) { }
+Variable::Variable(int vi, VarType vt) : var_idx(vi), type(vt) { }
 
 VariableTable::VariableTable() {
     var_table.reserve(0);

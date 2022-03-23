@@ -19,8 +19,9 @@ class ASTVisitor : public SysYBaseVisitor {
 // Some Useful Defination
 private:
     bool have_main_func;
+    DeclType type;
     int32_t whole_var_idx;
-    enum CompileMode { normal, compile_time, condition } mode;
+    enum CompileMode { normal , compile_time, condition  } mode;
 // Funtion for helping Build IR and Symbol Table
 public:
     ASTVisitor();
