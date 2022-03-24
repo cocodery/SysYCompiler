@@ -26,28 +26,21 @@ public:
     bool is_array;
     vector<int32_t> array_dims;
     DeclType decl_type;
-    VarType();
-    int32_t elements_number();
-};
-
-class InitValue {
-public:
     int32_t int_scalar;
     float float_scalar;
     vector<int32_t> int_list;
     vector<float> float_list;
-public:
-    InitValue();
+    VarType();
+    int32_t elements_number();
 };
 
 class Variable {
 public:
     int var_idx;
     VarType type;
-    InitValue value;
 public:
     Variable() : var_idx(-1) { };
-    Variable(int vi, VarType vt, InitValue iv);
+    Variable(int vi, VarType vt);
 };
 
 class VariableTable {

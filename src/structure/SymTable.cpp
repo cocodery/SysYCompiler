@@ -10,7 +10,6 @@ int32_t VarType::elements_number() {
     return number;
 }
 
-Variable::Variable(int vi, VarType vt, InitValue iv) : 
-    var_idx(vi), type(vt), value(iv) { }
+Variable::Variable(int vi, VarType vt) : var_idx(vi), type(vt) { }
 
 FunctionInfo::FunctionInfo() : return_type(TypeVoid) { }

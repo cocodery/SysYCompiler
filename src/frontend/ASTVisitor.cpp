@@ -14,7 +14,37 @@ vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *>
     return array_dims;
 }
 
-void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<SysYType>& list_init_value) {
+void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& int_list) {
+    int32_t total_size = 1;
+    for (auto i: array_dims) {
+        total_size *= i;
+    }
+    if (total_size == 0) return;
+    int32_t child_size = total_size / array_dims[0];
+    vector<int32_t> child_array_dims = array_dims;
+    child_array_dims.erase(child_array_dims.begin());
+    int32_t cnt = 0;
+    for (auto child: node->constInitVal()) {
+        auto scalar_node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(child);
+        if (scalar_node != nullptr) {
+            int32_t scalar_value = scalar_node->constExp()->accept(this);
+            int_list.push_back(scalar_value);
+            ++cnt;
+        }
+        else {
+            auto list_node = dynamic_cast<SysYParser::ListConstInitValContext *>(child);
+            parse_const_init(list_node, child_array_dims, int_list);
+            cnt += total_size / array_dims[0];
+        }
+    }
+    while (cnt < total_size) {
+        int_list.push_back(0);
+        ++cnt;
+    }
+    return;
+}
+
+void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<float>& int_list) {
     
     return;
 }
@@ -60,8 +90,13 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     auto init_node = ctx->constInitVal();
     if (const_var.is_array == false) {
         auto node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(init_node);
-        const_var.init_value = node->constExp()->accept(this);
-        // dbg(const_var.init_value);
+        const_var.int_scalar = node->constExp()->accept(this);
+        dbg(const_var.int_scalar);
+    }
+    else {
+        auto node = dynamic_cast<SysYParser::ListConstInitValContext *>(init_node);
+        parse_const_init(node, const_var.array_dims, const_var.int_list);
+        dbg(const_var.int_list);
     }
     return nullptr;
 }
@@ -203,9 +238,10 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
     dbg("enter visitNmber");
     auto node = dynamic_cast<SysYParser::Number1Context *>(ctx->number());
-    SysYType parse_number;
     if (node != nullptr) {
-        parse_number = ctx->number()->accept(this);
+        dbg("enter pass int number");
+        int32_t parse_number = ctx->number()->accept(this);
+        dbg("eixt  pass int number");
         // dbg(parse_number);
         if (mode == compile_time) {
             dbg("exit visitNmber");
@@ -219,7 +255,7 @@ antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
     dbg("enter int number");
     const char *number_str = ctx->IntLiteral()->getText().c_str();
     int32_t result = parseNum(number_str);
-    dbg("exit int number");
+    dbg("exit  int number");
     return result;
 }
 

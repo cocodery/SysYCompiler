@@ -19,7 +19,7 @@ using namespace antlr4;
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    int opt = 0;
+    /*int opt = 0;
     bool print_usage = false;
     string input, output, irfile;
 
@@ -46,9 +46,9 @@ int main(int argc, char *argv[]) {
         input = argv[optind];
     }
     
-    dbg(input, output, irfile, opt, print_usage);
+    dbg(input, output, irfile, opt, print_usage);*/
 
-    ifstream src{input};
+    ifstream src{"../main.sy"};
     if (!src.is_open()) {
         cerr << "cannot open input file" << endl;
         return EXIT_FAILURE;
