@@ -236,15 +236,11 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
 }
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
-    dbg("enter visitNmber");
     auto node = dynamic_cast<SysYParser::Number1Context *>(ctx->number());
     if (node != nullptr) {
-        dbg("enter pass int number");
         int32_t parse_number = ctx->number()->accept(this);
-        dbg("eixt  pass int number");
         // dbg(parse_number);
         if (mode == compile_time) {
-            dbg("exit visitNmber");
             return parse_number;
         }
     }
@@ -252,20 +248,21 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) 
 }
 
 antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
-    dbg("enter int number");
+    // dbg("enter int number");
     const char *number_str = ctx->IntLiteral()->getText().c_str();
     int32_t result = parseNum(number_str);
-    dbg("exit  int number");
+    dbg(result);
+    // dbg("exit  int number");
     return result;
 }
 
 antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
-    dbg("enter float number");
+    // dbg("enter float number");
     const char *number_str = ctx->FloatLiteral()->getText().c_str();
     // int32_t result = parseNum(number_str);
     float result = 1.0;
     dbg(result);
-    dbg("exit float number");
+    // dbg("exit float number");
     return result;
 }
 
