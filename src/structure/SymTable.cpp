@@ -1,8 +1,6 @@
 #include "SymTable.hh"
 
-VarType::VarType() : is_const(false), is_array(false) { 
-    array_dims.reserve(0);
-}
+VarType::VarType() : is_const(false), is_array(false), decl_type(TypeVoid) { }
 
 int32_t VarType::elements_number() {
     int32_t number = 1;
@@ -12,16 +10,7 @@ int32_t VarType::elements_number() {
     return number;
 }
 
-Variable::Variable(int vi, VarType vt) : var_idx(vi), type(vt) { }
+Variable::Variable(int vi, VarType vt, InitValue iv) : 
+    var_idx(vi), type(vt), value(iv) { }
 
-VariableTable::VariableTable() {
-    var_table.reserve(0);
-}
-
-FunctionInfo::FunctionInfo() : return_type(false) {
-    func_args_type.reserve(0);
-}
-
-FunctionTable::FunctionTable() {
-    func_table.reserve(0);
-}
+FunctionInfo::FunctionInfo() : return_type(TypeVoid) { }

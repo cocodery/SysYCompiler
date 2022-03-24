@@ -26,31 +26,40 @@ public:
     bool is_array;
     vector<int32_t> array_dims;
     DeclType decl_type;
-    SysYInit init_value;
-public:
     VarType();
     int32_t elements_number();
+};
+
+class InitValue {
+public:
+    int32_t int_scalar;
+    float float_scalar;
+    vector<int32_t> int_list;
+    vector<float> float_list;
+public:
+    InitValue();
 };
 
 class Variable {
 public:
     int var_idx;
     VarType type;
+    InitValue value;
 public:
     Variable() : var_idx(-1) { };
-    Variable(int vi, VarType vt);
+    Variable(int vi, VarType vt, InitValue iv);
 };
 
 class VariableTable {
 public:
     vector<VarMap> var_table;
 public:
-    VariableTable();
+    VariableTable() { };
 };
 
 class FunctionInfo {
 public:
-    SysYType return_type;
+    DeclType return_type;
     vector<VarType> func_args_type;
 
     FunctionInfo();
@@ -60,5 +69,5 @@ class FunctionTable {
 public:
     vector<FuncMap> func_table;
 public:
-    FunctionTable();
+    FunctionTable() { };
 };
