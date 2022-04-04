@@ -14,7 +14,7 @@ vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *>
     return array_dims;
 }
 
-void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& int_list) {
+void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& list) {
     int32_t total_size = 1;
     for (auto i: array_dims) {
         total_size *= i;
@@ -28,24 +28,50 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
         auto scalar_node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(child);
         if (scalar_node != nullptr) {
             int32_t scalar_value = scalar_node->constExp()->accept(this);
-            int_list.push_back(scalar_value);
+            list.push_back(scalar_value);
             ++cnt;
         }
         else {
             auto list_node = dynamic_cast<SysYParser::ListConstInitValContext *>(child);
-            parse_const_init(list_node, child_array_dims, int_list);
+            parse_const_init(list_node, child_array_dims, list);
             cnt += total_size / array_dims[0];
         }
     }
     while (cnt < total_size) {
-        int_list.push_back(0);
+        list.push_back(0);
         ++cnt;
     }
     return;
 }
 
-void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<float>& int_list) {
-    
+void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<float>& list) {
+    int32_t total_size = 1;
+    for (auto i: array_dims) {
+        total_size *= i;
+    }
+    if (total_size == 0) return;
+    int32_t child_size = total_size / array_dims[0];
+    vector<int32_t> child_array_dims = array_dims;
+    child_array_dims.erase(child_array_dims.begin());
+    int32_t cnt = 0;
+    for (auto child: node->constInitVal()) {
+        auto scalar_node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(child);
+        if (scalar_node != nullptr) {
+            float scalar_value = scalar_node->constExp()->accept(this);
+            list.push_back(scalar_value);
+            ++cnt;
+        }
+        else {
+            auto list_node = dynamic_cast<SysYParser::ListConstInitValContext *>(child);
+            parse_const_init(list_node, child_array_dims, list);
+            cnt += total_size / array_dims[0];
+        }
+    }
+    while (cnt < total_size) {
+        list.push_back(0);
+        ++cnt;
+    }
+    dbg(list);
     return;
 }
 
@@ -90,13 +116,27 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     auto init_node = ctx->constInitVal();
     if (const_var.is_array == false) {
         auto node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(init_node);
-        const_var.int_scalar = node->constExp()->accept(this);
-        dbg(const_var.int_scalar);
+        if (type == TypeInt) {
+            const_var.int_scalar = node->constExp()->accept(this);
+            dbg(const_var.int_scalar);
+        }
+        else if (type == TypeFloat) {
+            const_var.float_scalar = node->constExp()->accept(this);
+            dbg(const_var.float_scalar);
+        }
     }
     else {
         auto node = dynamic_cast<SysYParser::ListConstInitValContext *>(init_node);
-        parse_const_init(node, const_var.array_dims, const_var.int_list);
-        dbg(const_var.int_list);
+        if (type == TypeInt) {
+            dbg("parsing int list");
+            parse_const_init(node, const_var.array_dims, const_var.int_list);
+            dbg(const_var.int_list);
+        }
+        else if (type == TypeFloat) {
+            dbg("parsing float list");
+            parse_const_init(node, const_var.array_dims, const_var.float_list);
+            dbg(const_var.float_list);
+        }
     }
     return nullptr;
 }
@@ -279,13 +319,18 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
     // TODO:
     char op = ctx->unaryOp()->getText()[0];
     if (mode == compile_time) {
-        int32_t rhs = ctx->unaryExp()->accept(this);
-        if (op == '-')
-            return -rhs;
-        else if (op == '!')
-            return !rhs;
-        else 
-            return rhs;
+        if (type == TypeInt) {
+            int32_t rhs = ctx->unaryExp()->accept(this);
+            if (op == '-') return -rhs;
+            else if (op == '!') return !rhs;
+            else  return rhs;
+        }
+        else if (type == TypeFloat) {
+            float rhs = ctx->unaryExp()->accept(this);
+            if (op == '-') return -rhs;
+            else if (op == '!') return !rhs;
+            else  return rhs;
+        }
     }
     return nullptr;
 }
@@ -313,14 +358,20 @@ antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
     // TODO:
     char op = ctx->children[1]->getText()[0];
     if (mode == compile_time) {
-        int32_t lhs = ctx->mulExp()->accept(this);
-        int32_t rhs = ctx->unaryExp()->accept(this);
-        if (op == '*')
-            return lhs * rhs;
-        else if (op == '/')
-            return lhs / rhs;
-        else if (op == '%')
-            return lhs % rhs;
+        if (type == TypeInt) {
+            int32_t lhs = ctx->mulExp()->accept(this);
+            int32_t rhs = ctx->unaryExp()->accept(this);
+            if (op == '*') return lhs * rhs;
+            else if (op == '/') return lhs / rhs;
+            else if (op == '%') return lhs % rhs;
+        }
+        else if (type ==TypeFloat) {
+            float lhs = ctx->mulExp()->accept(this);
+            float rhs = ctx->unaryExp()->accept(this);
+            if (op == '*') return lhs * rhs;
+            else if (op == '/') return lhs / rhs;
+            // else if (op == '%') return lhs % rhs;
+        }
     }
     return nullptr;
 }
@@ -333,12 +384,18 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
     // TODO:
     char op = ctx->children[1]->getText()[0];
     if (mode == compile_time) {
-        int32_t lhs = ctx->addExp()->accept(this);
-        int32_t rhs = ctx->mulExp()->accept(this);
-        if (op == '+') 
-            return lhs + rhs;
-        else if (op == '-') 
-            return lhs - rhs;
+        if (type == TypeInt) {
+            int32_t lhs = ctx->addExp()->accept(this);
+            int32_t rhs = ctx->mulExp()->accept(this);
+            if (op == '+')  return lhs + rhs;
+            else if (op == '-')  return lhs - rhs;
+        }
+        else if (type == TypeFloat) {
+            float lhs = ctx->addExp()->accept(this);
+            float rhs = ctx->mulExp()->accept(this);
+            if (op == '+')  return lhs + rhs;
+            else if (op == '-')  return lhs - rhs;
+        }
     }
     return nullptr;
 }
@@ -385,7 +442,14 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
 
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
     mode = compile_time;
-    int32_t result = ctx->addExp()->accept(this);
-    mode = normal;
-    return result;
+    if (type == TypeInt) {
+        int32_t result = ctx->addExp()->accept(this);
+        mode = normal;
+        return result;
+    }
+    else if (type == TypeFloat) {
+        float result = ctx->addExp()->accept(this);
+        mode = normal;
+        return result;
+    }
 }

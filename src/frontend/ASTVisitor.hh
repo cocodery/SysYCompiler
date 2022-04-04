@@ -5,7 +5,6 @@
 #include <vector>
 #include "../common.hh"
 #include "../structure/SymTable.hh"
-
 #include "SysYBaseVisitor.h"
 
 using std::vector;
@@ -27,9 +26,9 @@ public:
     
     vector<int32_t> get_array_dims(vector<SysYParser::ConstExpContext *>);
     
-    void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& int_list);
+    void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& list);
 
-    void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<float>& int_list);
+    void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<float>& list);
 // Function for Abstract Syntax Tree
 public:
     virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *ctx) override;
