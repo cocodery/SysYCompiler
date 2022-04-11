@@ -121,7 +121,9 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
             dbg(const_var.int_scalar);
         }
         else if (type == TypeFloat) {
+            dbg(type);
             const_var.float_scalar = node->constExp()->accept(this);
+        dbg("In const scalar parse");
             dbg(const_var.float_scalar);
         }
     }
@@ -275,12 +277,16 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
     return ctx->lVal()->accept(this);
 }
 
-antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
-    auto node = dynamic_cast<SysYParser::Number1Context *>(ctx->number());
-    if (node != nullptr) {
-        int32_t parse_number = ctx->number()->accept(this);
-        // dbg(parse_number);
-        if (mode == compile_time) {
+antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {    
+    if (mode == compile_time) {
+        if (type == TypeInt) {
+            int32_t parse_number = ctx->number()->accept(this);
+            // dbg(parse_number);
+            return parse_number;
+        }
+        else if (type == TypeFloat) {
+            float parse_number = ctx->number()->accept(this);
+            dbg(parse_number);
             return parse_number;
         }
     }
@@ -299,7 +305,7 @@ antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
 antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
     // dbg("enter float number");
     const char *number_str = ctx->FloatLiteral()->getText().c_str();
-    // int32_t result = parseNum(number_str);
+    // float result = parseNum(number_str);
     float result = 1.0;
     dbg(result);
     // dbg("exit float number");
