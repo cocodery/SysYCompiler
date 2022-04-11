@@ -4,10 +4,12 @@ BINARY := $(BUILD_DIR)/$(TOPNAME)
 CMAKE := cmake
 MAKE := make
 
+$(shell mkdir -p $(BUILD_DIR))
+
 .PHONY: build
 build:
 	$(CMAKE) -S . -B $(BUILD_DIR)
-	$(MAKE) -C $(BUILD_DIR) --file=Makefile -j -s
+	$(MAKE) -C $(BUILD_DIR) --file=Makefile -j2 -s
 
 .PHONY: run
 run:
