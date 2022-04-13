@@ -1,8 +1,9 @@
 #include "ASTVisitor.hh"
 
-ASTVisitor::ASTVisitor() {
+ASTVisitor::ASTVisitor(CompUnit &_ir) {
     have_main_func = false;
     mode = normal;
+    ir = _ir;
 }
 
 vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *> dims) {

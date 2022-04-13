@@ -92,5 +92,7 @@ class CompUnit: public Info {
 public:
     VariableTable global_table;
     vector<Function> functions;
-    vector<LibFunction> lib_functions;
+    LibFunction lib_functions[11];
+public:
+    CompUnit();
 };

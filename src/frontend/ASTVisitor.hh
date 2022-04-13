@@ -17,13 +17,14 @@ using std::endl;
 class ASTVisitor : public SysYBaseVisitor {
 // Some Useful Defination
 private:
+    enum CompileMode { normal , compile_time, condition  } mode;
     bool have_main_func;
     DeclType type;
     int32_t whole_var_idx;
-    enum CompileMode { normal , compile_time, condition  } mode;
+    CompUnit ir;
 // Funtion for helping Build IR and Symbol Table
 public:
-    ASTVisitor();
+    ASTVisitor(CompUnit &_ir);
     
     vector<int32_t> get_array_dims(vector<SysYParser::ConstExpContext *>);
     

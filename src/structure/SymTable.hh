@@ -21,13 +21,16 @@ class VarType {
 public:
     bool is_const;
     bool is_array;
+    bool is_args;
     vector<int32_t> array_dims;
     DeclType decl_type;
     int32_t int_scalar;
     float float_scalar;
     vector<int32_t> int_list;
     vector<float> float_list;
+public:
     VarType();
+    VarType(bool _const, bool _arr, bool _args, bool _dims, DeclType _type);
     int32_t elements_number();
 };
 
@@ -51,7 +54,8 @@ class FunctionInfo {
 public:
     string func_name;
     DeclType return_type;
-    vector<VarType> func_args_type;
+    vector<VarType> func_args;
 
     FunctionInfo();
+    FunctionInfo(string _name, DeclType _type, vector<VarType> _args);
 };

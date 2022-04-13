@@ -62,7 +62,8 @@ int main(int argc, char *argv[]) {
 
     SysYParser::CompUnitContext *root = parser.compUnit();
 
-    ASTVisitor visitor;
+    CompUnit ir;
+    ASTVisitor visitor(ir);
 
     cout << "Start Compiler" << endl;
 
