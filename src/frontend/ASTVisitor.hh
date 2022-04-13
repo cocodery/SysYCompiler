@@ -5,6 +5,7 @@
 #include <vector>
 #include "../common.hh"
 #include "../structure/SymTable.hh"
+#include "../structure/ir.hh"
 #include "SysYBaseVisitor.h"
 
 using std::vector;

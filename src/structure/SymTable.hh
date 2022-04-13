@@ -14,11 +14,8 @@ class VarTypee;
 class InitValue;
 class Variable;
 class FunctionInfo;
-class FunctionTable;
 
 using VarMap = map<string, Variable>;
-
-using FuncMap = map<string, FunctionInfo>;
 
 class VarType {
 public:
@@ -52,15 +49,9 @@ public:
 
 class FunctionInfo {
 public:
+    string func_name;
     DeclType return_type;
     vector<VarType> func_args_type;
 
     FunctionInfo();
-};
-
-class FunctionTable {
-public:
-    vector<FuncMap> func_table;
-public:
-    FunctionTable() { };
 };
