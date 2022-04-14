@@ -63,6 +63,11 @@ int main(int argc, char *argv[]) {
     SysYParser::CompUnitContext *root = parser.compUnit();
 
     CompUnit ir;
+    /*
+    for (int i = 0; i < 10; ++i) {
+       ir.lib_functions[i].libfunc_info.printFunction();
+    }
+    */
     ASTVisitor visitor(ir);
 
     cout << "Start Compiler" << endl;

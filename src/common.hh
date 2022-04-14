@@ -17,9 +17,11 @@ enum DeclType {
     TypeVoid, TypeInt, TypeFloat,
 };
 
+DeclType getDeclType(string type_str);
+
+string DeclTypeToStr(DeclType type);
+
 enum Operator {
     Add, Sub, Mul, Div, Mod,
     Lt, Le, Ge, Gt, Eq, Ne, And, Orr,
 };
-
-DeclType getDeclType(string type_str);

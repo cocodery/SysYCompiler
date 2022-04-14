@@ -1,11 +1,14 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 #include <string>
 #include <map>
 
 #include "../common.hh"
 
+using std::cout;
+using std::endl;
 using std::vector;
 using std::string;
 using std::map;
@@ -30,8 +33,9 @@ public:
     vector<float> float_list;
 public:
     VarType();
-    VarType(bool _const, bool _arr, bool _args, bool _dims, DeclType _type);
+    VarType(bool _const, bool _arr, bool _args, DeclType _type);
     int32_t elements_number();
+    string printVarType();
 };
 
 class Variable {
@@ -55,7 +59,9 @@ public:
     string func_name;
     DeclType return_type;
     vector<VarType> func_args;
-
+public:
     FunctionInfo();
     FunctionInfo(string _name, DeclType _type, vector<VarType> _args);
+    bool has_args();
+    void printFunction();
 };

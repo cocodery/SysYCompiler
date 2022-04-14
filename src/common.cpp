@@ -19,6 +19,18 @@ int parseNum(const char *number_str) {
 DeclType getDeclType(string type_str) {
     if (type_str == "int") return TypeInt;
     else if (type_str == "float") return TypeFloat;
-    else return TypeVoid;
+    else if (type_str == "void") return TypeVoid;
+    dbg("Unknown String DeclType");
+    exit(EXIT_FAILURE);
 }
 
+string DeclTypeToStr(DeclType type) {
+    switch (type) {
+        case TypeInt: return "int";
+        case TypeFloat: return "float";
+        case TypeVoid: return "void";
+        default: break;
+    }
+    dbg("Unknown Declare Type");
+    exit(EXIT_FAILURE);
+}
