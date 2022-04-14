@@ -11,14 +11,14 @@ using std::cout;
 using std::endl;
 using std::vector;
 using std::string;
-using std::map;
+using std::pair;
 
 class VarTypee;
 class InitValue;
 class Variable;
 class FunctionInfo;
 
-using VarMap = map<string, Variable>;
+using VarPair = pair<string, Variable>;
 
 class VarType {
 public:
@@ -49,7 +49,7 @@ public:
 
 class VariableTable {
 public:
-    vector<VarMap> var_table;
+    vector<VarPair> var_table;
 public:
     VariableTable() { };
 };

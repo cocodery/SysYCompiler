@@ -181,12 +181,13 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     string func_name = ctx->Identifier()->getText();
     dbg(func_name);
-    if (func_name == "main") have_main_func = true;
-    /*
     FunctionInfo func_info;
-    func_info.return_type = (ctx->funcType()->getText() == "int");
-    func_info.func_args_type = ctx->funcFParams()->accept(this).as<vector<VarType>>();
-    */
+    func_info.func_name = func_name;
+    func_info.return_type = getDeclType(ctx->funcType()->getText());
+    if (ctx->funcFParams() != nullptr) {
+        func_info.func_args = ctx->funcFParams()->accept(this).as<vector<VarType>>();
+    }
+    if (func_name == "main") have_main_func = true;
     dbg("exit FuncDef");
     return nullptr;
 }
@@ -197,11 +198,24 @@ antlrcpp::Any ASTVisitor::visitFuncType(SysYParser::FuncTypeContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) {
-    return nullptr;
+    vector<VarType> func_args;
+    for (auto arg: ctx->funcFParam()) {
+        func_args.push_back(arg->accept(this));
+    }
+    return func_args;
 }
 
 antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
-    return nullptr;
+    VarType func_arg;
+    func_arg.is_args = true;
+    func_arg.decl_type = getDeclType(ctx->children[0]->getText());
+    DeclType temp_type = type;
+    type = TypeInt;
+    func_arg.array_dims = get_array_dims(ctx->constExp());
+    func_arg.array_dims.insert(func_arg.array_dims.begin(), -1);
+    type = temp_type;
+    dbg(func_arg.array_dims);
+    return func_arg;
 }
 
 antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
