@@ -1,6 +1,7 @@
 ### Environment Config
 * **1. OS**
     > Ubuntu 20.04 , or other Linux (develop environment)
+
     > Windows
 
 * **2. Packages needed**
@@ -12,6 +13,7 @@
 
 * **3. Test Platform**
     > Raspberrypi
+
     > Qemu
 
 * **4. Qemu Config**
@@ -24,7 +26,9 @@
 ### Usages
 * Make Commands
     > cd SysYCompiler
+
     > make build
+    
     > make run
 
 ### Commit Message Rules
