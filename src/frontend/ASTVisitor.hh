@@ -9,7 +9,6 @@
 #include "SysYBaseVisitor.h"
 
 using std::vector;
-
 using std::string;
 using std::cout;
 using std::endl;
@@ -21,7 +20,7 @@ private:
     bool have_main_func;
     DeclType type;
     int32_t whole_var_idx;
-    CompUnit ir;
+    CompUnit &ir;
 // Funtion for helping Build IR and Symbol Table
 public:
     ASTVisitor(CompUnit &_ir);

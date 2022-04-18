@@ -57,8 +57,8 @@ void Variable::printVariable() {
 void VariableTable::printVariableTable() {
     int size = var_table.size();
     for (int i = 0; i < size; ++i) {
-        cout << var_table[i]->first << " = ";
-        var_table[i]->second.printVariable();
+        cout << var_table[i].first << " = ";
+        var_table[i].second.printVariable();
     }
 }
 

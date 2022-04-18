@@ -53,7 +53,7 @@ public:
 
 class VariableTable {
 public:
-    vector<VarPair *> var_table;
+    vector<VarPair> var_table;
 public:
     VariableTable() { };
     void printVariableTable();

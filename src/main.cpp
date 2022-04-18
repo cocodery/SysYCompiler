@@ -63,18 +63,20 @@ int main(int argc, char *argv[]) {
     SysYParser::CompUnitContext *root = parser.compUnit();
 
     CompUnit ir;
-    /*
-    for (int i = 0; i < 10; ++i) {
-       ir.lib_functions[i].libfunc_info.printFunction();
-    }
-    */
+    
     ASTVisitor visitor(ir);
 
     cout << "Start Compiler" << endl;
 
     if (!visitor.visitCompUnit(root)) {
         dbg("No main Function Found");
-        exit(EXIT_FAILURE);
+        // exit(EXIT_FAILURE);
+    }
+
+    cout << "User Functions" << endl;
+    for (int i = 0; i < ir.functions.size(); ++i) {
+        cout << '\t';
+        ir.functions[i].func_info.printFunction();
     }
 
     cout << "Compiler Complete" << endl;

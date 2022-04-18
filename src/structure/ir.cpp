@@ -35,3 +35,11 @@ CompUnit::CompUnit() {
     lib_functions[9].libfunc_info.func_args.push_back(VarType(false, false, true, TypeInt));
     lib_functions[9].libfunc_info.func_args.push_back(VarType(false, true, true, TypeFloat));
 }
+
+void CompUnit::DebugLibFuncs() {
+    cout << "Init Lib Functions" << endl;
+    for (int i = 0; i < 10; ++i) {
+        cout << '\t';
+        lib_functions[i].libfunc_info.printFunction();
+    }
+}

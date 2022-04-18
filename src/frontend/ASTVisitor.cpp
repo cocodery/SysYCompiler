@@ -1,9 +1,8 @@
 #include "ASTVisitor.hh"
 
-ASTVisitor::ASTVisitor(CompUnit &_ir) {
+ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
     mode = normal;
-    ir = _ir;
 }
 
 vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *> dims) {
@@ -106,6 +105,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     string var_name = ctx->children[0]->getText();
     VarType const_var;
     const_var.is_const = true;
+    const_var.is_init = true;
     const_var.is_array = !(ctx->constExp().size() == 0);
     const_var.decl_type = type;
     dbg(const_var.decl_type);
@@ -179,6 +179,7 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
 }
 
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
+    Function func;
     string func_name = ctx->Identifier()->getText();
     dbg(func_name);
     FunctionInfo func_info;
@@ -189,6 +190,8 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     }
     if (func_name == "main") have_main_func = true;
     dbg("exit FuncDef");
+    func.func_info = func_info;
+    ir.functions.push_back(func);
     return nullptr;
 }
 

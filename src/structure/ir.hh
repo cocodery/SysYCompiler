@@ -95,4 +95,5 @@ public:
     LibFunction lib_functions[11];
 public:
     CompUnit();
+    void DebugLibFuncs();
 };
