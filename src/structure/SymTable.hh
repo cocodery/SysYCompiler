@@ -25,6 +25,7 @@ public:
     bool is_const;
     bool is_array;
     bool is_args;
+    bool is_init;
     vector<int32_t> array_dims;
     DeclType decl_type;
     int32_t int_scalar;
@@ -35,7 +36,8 @@ public:
     VarType();
     VarType(bool _const, bool _arr, bool _args, DeclType _type);
     int32_t elements_number();
-    string printVarType();
+    string printVarTypeForArg();
+    void printVarTypeForSym();
 };
 
 class Variable {
@@ -43,15 +45,18 @@ public:
     int var_idx;
     VarType type;
 public:
+    void printVariable();
     Variable() : var_idx(-1) { };
-    Variable(int vi, VarType vt);
+    Variable(VarType vt) : var_idx(-1), type(vt) { }
+    Variable(int vi, VarType vt) : var_idx(vi), type(vt) { }
 };
 
 class VariableTable {
 public:
-    vector<VarPair> var_table;
+    vector<VarPair *> var_table;
 public:
     VariableTable() { };
+    void printVariableTable();
 };
 
 class FunctionInfo {
