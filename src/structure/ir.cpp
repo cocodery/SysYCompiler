@@ -56,3 +56,17 @@ void CompUnit::DebugLibFuncs() {
         lib_functions[i].printFunction();
     }
 }
+
+void CompUnit::DebugUserFuncs() {
+    cout << "User Functions" << endl;
+    int size = functions.size();
+    for (int i = 0; i < size; ++i) {
+        cout << '\t';
+        functions[i]->printFunction();
+    }
+}
+
+void CompUnit::DebugGlobalTable() {
+    cout << "Global Variable" << endl;
+    global_table->printVaribaleTable();
+}

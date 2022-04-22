@@ -75,11 +75,9 @@ int main(int argc, char *argv[]) {
         // exit(EXIT_FAILURE);
     }
 
-    cout << "User Functions" << endl;
-    for (int i = 0; i < ir.functions.size(); ++i) {
-        cout << '\t';
-        ir.functions[i]->printFunction();
-    }
+    ir.DebugGlobalTable();
+
+    ir.DebugUserFuncs();
 
     cout << "Compiler Complete" << endl;
 

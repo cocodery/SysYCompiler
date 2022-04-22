@@ -100,4 +100,6 @@ public:
 public:
     CompUnit();
     void DebugLibFuncs();
+    void DebugUserFuncs();
+    void DebugGlobalTable();
 };

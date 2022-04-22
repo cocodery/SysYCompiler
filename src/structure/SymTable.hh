@@ -35,7 +35,8 @@ public:
     VarType();
     VarType(bool _const, bool _arr, bool _args, DeclType _type);
     int32_t elements_number();
-    string printVarTypeForArg();
+    void printVarTypeForArg();
+    void printVarTypeForSym(string var_name);
 };
 
 class Variable {
@@ -43,7 +44,7 @@ public:
     int var_idx;
     VarType type;
 public:
-    void printVariable();
+    void printVariable(string var_name);
     Variable() : var_idx(-1) { };
     Variable(VarType vt) : var_idx(-1), type(vt) { }
     Variable(int vi, VarType vt) : var_idx(vi), type(vt) { }
@@ -54,6 +55,7 @@ public:
     vector<VarPair> var_table;
 public:
     VariableTable() { };
+    void printVaribaleTable();
 };
 
 class FunctionInfo {

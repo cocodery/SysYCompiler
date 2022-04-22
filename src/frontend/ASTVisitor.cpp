@@ -3,6 +3,8 @@
 ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
     mode = normal;
+    cur_vartable = ir.global_table;
+    cur_function = nullptr;
 }
 
 vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *> dims) {
@@ -141,6 +143,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
             dbg(const_var.float_list);
         }
     }
+    cur_vartable->var_table.push_back(std::make_pair(var_name, const_var));
     return nullptr;
 }
 
