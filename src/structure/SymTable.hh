@@ -3,7 +3,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <map>
 
 #include "../common.hh"
 
@@ -37,7 +36,6 @@ public:
     VarType(bool _const, bool _arr, bool _args, DeclType _type);
     int32_t elements_number();
     string printVarTypeForArg();
-    void printVarTypeForSym();
 };
 
 class Variable {
@@ -56,7 +54,6 @@ public:
     vector<VarPair> var_table;
 public:
     VariableTable() { };
-    void printVariableTable();
 };
 
 class FunctionInfo {
@@ -68,5 +65,5 @@ public:
     FunctionInfo();
     FunctionInfo(string _name, DeclType _type, vector<VarType> _args);
     bool has_args();
-    void printFunction();
+    void printFunctionInfo();
 };

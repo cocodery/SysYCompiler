@@ -66,6 +66,8 @@ int main(int argc, char *argv[]) {
     
     ASTVisitor visitor(ir);
 
+    ir.DebugLibFuncs();
+
     cout << "Start Compiler" << endl;
 
     if (!visitor.visitCompUnit(root)) {
@@ -76,7 +78,7 @@ int main(int argc, char *argv[]) {
     cout << "User Functions" << endl;
     for (int i = 0; i < ir.functions.size(); ++i) {
         cout << '\t';
-        ir.functions[i].func_info.printFunction();
+        ir.functions[i]->printFunction();
     }
 
     cout << "Compiler Complete" << endl;
