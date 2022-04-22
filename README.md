@@ -54,3 +54,14 @@
 
 
 **TIPS:** if your commit refer to not one commit message above, you can use **&&** to connect them.
+
+**Log**
+> **2021.09.09** : can parser `SysY2021`
+
+> **~ 2022.2.15**: add functions to parse `ConstDef`
+
+> **~** : add structures like `Function`, `SymTable`, .. for parser
+
+> **2022.3.22**: can parser `SysY2022v1`
+
+> **~ 2022.4.22**: add functions to debug `FuncDecl` and `Global ConstDef`
