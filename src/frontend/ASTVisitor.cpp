@@ -179,7 +179,7 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
 }
 
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
-    Function func;
+    Function *func = new Function;
     string func_name = ctx->Identifier()->getText();
     dbg(func_name);
     FunctionInfo func_info;
@@ -190,7 +190,7 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     }
     if (func_name == "main") have_main_func = true;
     dbg("exit FuncDef");
-    func.func_info = func_info;
+    func->func_info = func_info;
     ir.functions.push_back(func);
     return nullptr;
 }
@@ -215,9 +215,10 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
     DeclType temp_type = type;
     type = TypeInt;
     func_arg.array_dims = get_array_dims(ctx->constExp());
+    func_arg.is_array = func_arg.array_dims.size();
     func_arg.array_dims.insert(func_arg.array_dims.begin(), -1);
     type = temp_type;
-    dbg(func_arg.array_dims);
+    // dbg(func_arg.array_dims);
     return func_arg;
 }
 

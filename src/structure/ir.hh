@@ -80,18 +80,22 @@ class Function {
 public:
     FunctionInfo func_info;
     Scope main_scope;
+public:
+    void printFunction();
 };
 
 class LibFunction {
 public:
     FunctionInfo libfunc_info;
     bool is_used;
+public:
+    void printFunction();
 };
 
 class CompUnit: public Info {
 public:
-    VariableTable global_table;
-    vector<Function> functions;
+    VariableTable *global_table;
+    vector<Function *> functions;
     LibFunction lib_functions[11];
 public:
     CompUnit();
