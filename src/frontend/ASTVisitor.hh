@@ -21,8 +21,9 @@ private:
     DeclType type;
     int32_t whole_var_idx;
     CompUnit &ir;
-    VariableTable *cur_vartable;
-    Function      *cur_function;
+    vector<Info *> *cur_scope_elements;
+    Scope          *cur_scope;
+    VariableTable  *cur_vartable;
 // Funtion for helping Build IR and Symbol Table
 public:
     ASTVisitor(CompUnit &_ir);
