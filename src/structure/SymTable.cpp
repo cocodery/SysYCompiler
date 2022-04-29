@@ -29,6 +29,7 @@ void VarType::printVarTypeForArg() {
 }
 
 void VarType::printVarTypeForSym(string var_name) {
+    if (is_const == true) cout << "const ";
     cout << DeclTypeToStr(decl_type) << ' ' << var_name;
     if (is_array) {
         for (int i = 0; i < array_dims.size(); ++i) {
