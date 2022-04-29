@@ -60,6 +60,7 @@ class UnaryOpInst: public Inst {
 public:
     UnaryOp op;
     Reg dst, src;
+public:
     UnaryOpInst(UnaryOp _op, Reg _dst, Reg _src) : op(_op), dst(_dst), src(_src) { }
 };
 
@@ -67,19 +68,35 @@ class BinaryOpInst: public Inst {
 public:
     BinaryOP op;
     Reg dst, src1, src2;
+public:
     BinaryOpInst(BinaryOP _op, Reg _dst, Reg _src1, Reg _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+};
+
+class ReturnInst: public Inst {
+public:
+    bool has_retvalue;
+    Reg dst;
+public:
+    ReturnInst(bool _ret_v = false) : has_retvalue(_ret_v) { }
+};
+
+class BasicBlock: public Info {
+public:
+    vector<Inst *> basic_block; 
 };
 
 class Scope: public Info {
 public:
-    VariableTable local_table;
-    vector<variant<Inst *, Scope *>> elements;
+    VariableTable *local_table;
+    vector<Info *> *elements;
+public:
+    void printScope();
 };
 
 class Function {
 public:
     FunctionInfo func_info;
-    Scope main_scope;
+    Scope *main_scope;
 public:
     void printFunction();
 };

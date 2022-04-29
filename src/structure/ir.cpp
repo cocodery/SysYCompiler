@@ -1,7 +1,15 @@
 #include "ir.hh"
 
+void Scope::printScope() {
+    cout << "\t{" << endl;
+    cout << "\t// `VariableTable` of current `Scope" << endl;
+    local_table->printVaribaleTable();
+    cout << "\t}" << endl;
+}
+
 void Function::printFunction() {
     func_info.printFunctionInfo();
+    main_scope->printScope();
 }
 
 void LibFunction::printFunction() {
