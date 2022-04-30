@@ -193,10 +193,9 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
         func_info.func_args = ctx->funcFParams()->accept(this).as<vector<VarType>>();
     }
     if (func_name == "main") have_main_func = true;
-    dbg("exit FuncDef");
     func->func_info = func_info;
 
-    func->main_scope = ctx->block()->accept(this);;
+    func->main_scope = ctx->block()->accept(this);
     ir.functions.push_back(func);
     return nullptr;
 }
@@ -229,17 +228,25 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
-    // save `cur_vartable`
-    VariableTable *last_vartable = cur_vartable;
+    // save `cur_scope` `cur_vartable` `cur_elements`
+    Scope          *last_scope = cur_scope;
+    VariableTable  *last_vartable = cur_vartable;
+    vector<Info *> *last_scope_elements = cur_scope_elements;
     // process `Block` part
     Scope *block_scope = new Scope;
     block_scope->local_table = new VariableTable;
     block_scope->elements = new vector<Info *>;
+    BasicBlock *scope_block = new BasicBlock;
+    // cur_* point to current *
+    cur_scope = block_scope;
     cur_vartable = block_scope->local_table;
     cur_scope_elements = block_scope->elements;
+    cur_basicblock = scope_block;
     visitChildren(ctx);
-    // restore `cur_vartable`
+    // restore `cur_scope` `cur_vartable` `cur_elements`
+    cur_scope = last_scope;
     cur_vartable = last_vartable;
+    cur_scope_elements = last_scope_elements;
     return block_scope;
 }
 
@@ -290,7 +297,11 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
     // TODO:
     // if ctx->exp() == nullptr, means it's a function without return value
     ReturnInst *ret_inst = new ReturnInst(ctx->exp() != nullptr);
-    cur_scope_elements->push_back(ret_inst);
+    if (ret_inst->has_retvalue == true) {
+        
+    }
+    cur_basicblock->basic_block.push_back(ret_inst);
+    cur_scope_elements->push_back(cur_basicblock);
     return nullptr;
 }
 

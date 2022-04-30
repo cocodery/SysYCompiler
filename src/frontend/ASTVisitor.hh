@@ -24,6 +24,7 @@ private:
     vector<Info *> *cur_scope_elements;
     Scope          *cur_scope;
     VariableTable  *cur_vartable;
+    BasicBlock     *cur_basicblock;
 // Funtion for helping Build IR and Symbol Table
 public:
     ASTVisitor(CompUnit &_ir);
