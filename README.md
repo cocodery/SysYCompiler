@@ -53,7 +53,7 @@
     not need to modify the arguments type and return type, just optimize the performance of these function.
 
 
-**TIPS:** if your commit refer to not one commit message above, you can use **&&** to connect them.
+**TIPS:** if your commit involves multiple message, you can use **&&** to connect them.
 
 **Log**
 > **2021.09.09** : can parser `SysY2021`
@@ -65,3 +65,7 @@
 > **2022.3.22**: can parser `SysY2022v1`
 
 > **~ 2022.4.22**: add functions to debug `FuncDecl` and `Global ConstDef`
+
+> **~ 2022.4.28**: add functions to parse local `ConstDef`
+
+> **~ 2022.4.30**: add functions to parse `ReturnStmt` 
