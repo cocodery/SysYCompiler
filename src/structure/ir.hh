@@ -9,6 +9,8 @@
 #include "../common.hh"
 #include "SymTable.hh"
 
+#define Case(Type, dst, src) if (auto dst = dynamic_cast<Type *>(src))
+
 using std::ostream;
 using std::vector;
 using std::variant;
@@ -17,8 +19,7 @@ using std::map;
 
 class Info {
 public:
-    // virtual void print(ostream &os) const = 0;
-    // virtual ~Info() { }
+    virtual ~Info() { }
 };
 
 class Reg: public Info {
@@ -54,6 +55,7 @@ class BinaryOP: public Info {
 
 class Inst: public Info {
 public:
+    Inst() { }
 };
 
 class UnaryOpInst: public Inst {
@@ -78,18 +80,24 @@ public:
     Reg dst;
 public:
     ReturnInst(bool _ret_v = false) : has_retvalue(_ret_v) { }
+    void printRetInst();
 };
 
 class BasicBlock: public Info {
 public:
     vector<Inst *> basic_block; 
+public:
+    BasicBlock() { }
+    void printBlock();
 };
 
 class Scope: public Info {
 public:
-    VariableTable *local_table;
-    vector<Info *> *elements;
+    VariableTable  *local_table;
+    vector<Info *> *elements; // `Info` -> `Scope` or `BasicBlock`
 public:
+    Scope() { }
+    void printElements();
     void printScope();
 };
 

@@ -1,9 +1,39 @@
 #include "ir.hh"
 
+void ReturnInst::printRetInst() {
+    cout << "\t" << "return ";
+    if (has_retvalue) {
+
+    }
+    cout << ";\n";
+}
+
+void BasicBlock::printBlock() {
+    cout << "\t// `BasicBlock` of current `Scope" << endl;
+    for (auto inst: basic_block) {
+        Case(ReturnInst, ret_inst, inst) {
+            ret_inst->printRetInst();
+        }
+    }
+}
+
+void Scope::printElements() {
+    for (auto iter = elements->begin(); iter != elements->end(); ++iter) {
+        if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
+            scope_node->printScope();
+        }
+        else {
+            BasicBlock *bb_node = dynamic_cast<BasicBlock *>(*iter);
+            bb_node->printBlock();
+        }
+    }
+}
+
 void Scope::printScope() {
     cout << "\t{" << endl;
     cout << "\t// `VariableTable` of current `Scope" << endl;
     local_table->printVaribaleTable();
+    printElements();
     cout << "\t}" << endl;
 }
 
