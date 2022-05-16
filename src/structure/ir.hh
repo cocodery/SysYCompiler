@@ -17,6 +17,16 @@ using std::variant;
 using std::string;
 using std::map;
 
+class IRValue {
+public:
+    DeclType type;
+    int32_t int_value;
+    float float_value;
+public:
+    IRValue(): type(TypeVoid), int_value(0), float_value(0) { }
+    IRValue(DeclType t, int32_t iv, float fv);
+};
+
 class Info {
 public:
     virtual ~Info() { }

@@ -1,5 +1,7 @@
 #include "ir.hh"
 
+IRValue::IRValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), float_value(fv) { }
+
 void ReturnInst::printRetInst() {
     cout << "\t" << "return ";
     if (has_retvalue) {
