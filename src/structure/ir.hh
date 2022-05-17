@@ -24,7 +24,7 @@ public:
     float float_value;
 public:
     IRValue(): type(TypeVoid), int_value(0), float_value(0) { }
-    IRValue(DeclType t, int32_t iv, float fv);
+    IRValue(DeclType t = TypeVoid, int32_t iv = 0, float fv = 0);
 };
 
 class Info {
@@ -138,3 +138,9 @@ public:
     void DebugUserFuncs();
     void DebugGlobalTable();
 };
+
+IRValue operator + (IRValue lhs, IRValue rhs);
+IRValue operator - (IRValue lhs, IRValue rhs);
+IRValue operator * (IRValue lhs, IRValue rhs);
+IRValue operator / (IRValue lhs, IRValue rhs);
+IRValue operator % (IRValue lhs, IRValue rhs);

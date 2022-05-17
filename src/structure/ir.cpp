@@ -110,3 +110,89 @@ void CompUnit::DebugGlobalTable() {
     cout << "Global Variable" << endl;
     global_table->printVaribaleTable();
 }
+
+IRValue operator + (IRValue lhs, IRValue rhs) {
+    if (lhs.type == rhs.type) {
+        if (lhs.type == TypeInt) {
+            return IRValue(TypeInt, lhs.int_value + rhs.int_value, 0);
+        } 
+        else if (lhs.type == TypeFloat) {
+            return IRValue(TypeFloat, 0, lhs.float_value + rhs.float_value);
+        }
+    } 
+    else {
+        if (lhs.type == TypeInt) {
+            return IRValue(TypeFloat, 0, lhs.int_value + rhs.float_value);
+        } 
+        else if (lhs.type == TypeFloat) {
+            return IRValue(TypeFloat, 0, lhs.float_value + rhs.int_value);
+        }
+    }
+}
+
+IRValue operator - (IRValue lhs, IRValue rhs) {
+    if (lhs.type == rhs.type) {
+        if (lhs.type == TypeInt) {
+            return IRValue(TypeInt, lhs.int_value - rhs.int_value, 0);
+        } 
+        else if (lhs.type == TypeFloat) {
+            return IRValue(TypeFloat, 0, lhs.float_value - rhs.float_value);
+        }
+    } 
+    else {
+        if (lhs.type == TypeInt) {
+            return IRValue(TypeFloat, 0, lhs.int_value - rhs.float_value);
+        } 
+        else if (lhs.type == TypeFloat) {
+            return IRValue(TypeFloat, 0, lhs.float_value - rhs.int_value);
+        }
+    }
+}
+
+IRValue operator * (IRValue lhs, IRValue rhs) {
+    if (lhs.type == rhs.type) {
+        if (lhs.type == TypeInt) {
+            return IRValue(TypeInt, lhs.int_value * rhs.int_value, 0);
+        } 
+        else if (lhs.type == TypeFloat) {
+            return IRValue(TypeFloat, 0, lhs.float_value * rhs.float_value);
+        }
+    } 
+    else {
+        if (lhs.type == TypeInt) {
+            return IRValue(TypeFloat, 0, lhs.int_value * rhs.float_value);
+        } 
+        else if (lhs.type == TypeFloat) {
+            return IRValue(TypeFloat, 0, lhs.float_value * rhs.int_value);
+        }
+    }
+}
+
+IRValue operator / (IRValue lhs, IRValue rhs) {
+    if (lhs.type == rhs.type) {
+        if (lhs.type == TypeInt) {
+            return IRValue(TypeInt, lhs.int_value - rhs.int_value, 0);
+        } 
+        else if (lhs.type == TypeFloat) {
+            return IRValue(TypeFloat, 0, lhs.float_value - rhs.float_value);
+        }
+    } 
+    else {
+        if (lhs.type == TypeInt) {
+            return IRValue(TypeFloat, 0, lhs.int_value - rhs.float_value);
+        } 
+        else if (lhs.type == TypeFloat) {
+            return IRValue(TypeFloat, 0, lhs.float_value - rhs.int_value);
+        }
+    }
+}
+
+IRValue operator % (IRValue lhs, IRValue rhs) {
+    if (lhs.type == TypeInt && rhs.type == TypeInt) {
+        return IRValue(TypeInt, lhs.int_value % rhs.int_value, 0);
+    } 
+    else {
+        dbg("invalid operands of types to binary 'operator%'");
+        exit(EXIT_FAILURE);
+    }
+}
