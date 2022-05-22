@@ -2,12 +2,14 @@
 
 ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
+    type = TypeVoid;
     mode = normal;
     cur_scope_elements = nullptr;
     cur_scope = nullptr;
     cur_vartable = ir.global_table;
 }
 
+// 假定所有的数组的维度的定义都是`ConstExp`
 vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *> dims) {
     vector<int32_t> array_dims;
     for (auto i : dims) {
@@ -17,6 +19,8 @@ vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *>
     return array_dims;
 }
 
+// 递归的对数组初始化进行分析
+// int type
 void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& list) {
     int32_t total_size = 1;
     for (auto i: array_dims) {
@@ -47,6 +51,7 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
     return;
 }
 
+// float type
 void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<float>& list) {
     int32_t total_size = 1;
     for (auto i: array_dims) {
@@ -95,8 +100,10 @@ antlrcpp::Any ASTVisitor::visitDecl(SysYParser::DeclContext *ctx) {
     return visitChildren(ctx);
 }
 
+// 设置全局变量`type`, 这个变量仅在变量生命时起作用
 antlrcpp::Any ASTVisitor::visitConstDecl(SysYParser::ConstDeclContext *ctx) {
     type = getDeclType(ctx->children[1]->getText());
+    cout << "Current Type is " << DeclTypeToStr(type) << endl;
     return visitChildren(ctx);
 }
 
@@ -104,6 +111,9 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
     return visitChildren(ctx);
 }
 
+// 获取变量的声明，包括变量名，类型，初值
+// 若有初值则会进行初始化
+// 将变量插入当前作用域的符号表
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     string var_name = ctx->children[0]->getText();
     VarType const_var;
@@ -125,9 +135,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
             dbg(const_var.int_scalar);
         }
         else if (type == TypeFloat) {
-            dbg(type);
             const_var.float_scalar = node->constExp()->accept(this);
-        dbg("In const scalar parse");
             dbg(const_var.float_scalar);
         }
     }
@@ -182,6 +190,8 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
     exit(EXIT_FAILURE);
 }
 
+// 函数声明分析，获取函数声明，返回类型，参数表
+// 将函数定义插入函数表
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     Function *func = new Function;
     string func_name = ctx->Identifier()->getText();
@@ -205,6 +215,7 @@ antlrcpp::Any ASTVisitor::visitFuncType(SysYParser::FuncTypeContext *ctx) {
     exit(EXIT_FAILURE);
 }
 
+// 遍历函数参数，将其类型记录并保存进数组
 antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) {
     vector<VarType> func_args;
     for (auto arg: ctx->funcFParam()) {
@@ -213,6 +224,7 @@ antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) 
     return func_args;
 }
 
+// 分析单个函数参数，包括类型，是否为数组，数组的维度
 antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
     VarType func_arg;
     func_arg.is_args = true;
@@ -227,6 +239,8 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
     return func_arg;
 }
 
+// `Block`分析
+// 将该作用域下的符号表，指令保存
 antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     // save `cur_scope` `cur_vartable` `cur_elements`
     Scope          *last_scope = cur_scope;
@@ -336,20 +350,27 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) 
 
 antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
     dbg("enter int number");
-    cout << ctx->IntLiteral()->getText().c_str() << endl;
-    const char *number_str = ctx->IntLiteral()->getText().c_str();
-    int32_t result = parseNum(number_str);
-    dbg(result);
+    int int_literal = parseNum(ctx->IntLiteral()->getText().c_str());
+    dbg(int_literal);
     dbg("exit int number");
-    return IRValue(type, result, 0);
+    if (type == TypeInt) {
+        return IRValue(type, int_literal, 0);
+    } else if (type == TypeFloat) {
+        return IRValue(TypeFloat, 0, float(int_literal));
+    }
 }
 
 antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
     dbg("enter float number");
     float float_literal = 0;
     sscanf(ctx->FloatLiteral()->getText().c_str(), "%f", &float_literal);
+    dbg(float_literal);
     dbg("exit float number");
-    return IRValue(type, 0, float_literal);
+    if (type == TypeFloat) { 
+        return IRValue(type, 0, float_literal);
+    } else if (type == TypeInt) {
+        return IRValue(TypeInt, int(float_literal), 0);
+    }
 }
 
 antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
