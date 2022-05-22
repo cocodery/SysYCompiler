@@ -329,40 +329,31 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {    
     if (mode == compile_time) {
-        if (type == TypeInt) {
-            int32_t parse_number = ctx->number()->accept(this);
-            // dbg(parse_number);
-            return parse_number;
-        }
-        else if (type == TypeFloat) {
-            float parse_number = ctx->number()->accept(this);
-            dbg(parse_number);
-            return parse_number;
-        }
+        return ctx->number()->accept(this);
     }
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
-    // dbg("enter int number");
+    dbg("enter int number");
+    cout << ctx->IntLiteral()->getText().c_str() << endl;
     const char *number_str = ctx->IntLiteral()->getText().c_str();
     int32_t result = parseNum(number_str);
     dbg(result);
-    // dbg("exit  int number");
-    return result;
+    dbg("exit int number");
+    return IRValue(type, result, 0);
 }
 
 antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
-    // dbg("enter float number");
-    const char *number_str = ctx->FloatLiteral()->getText().c_str();
-    // float result = parseNum(number_str);
-    float result = 1.0;
-    dbg(result);
-    // dbg("exit float number");
-    return result;
+    dbg("enter float number");
+    float float_literal = 0;
+    sscanf(ctx->FloatLiteral()->getText().c_str(), "%f", &float_literal);
+    dbg("exit float number");
+    return IRValue(type, 0, float_literal);
 }
 
 antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
+    dbg("enter unary1");
     return ctx->primaryExp()->accept(this);
 }
 
@@ -373,20 +364,12 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
 
 antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
     // TODO:
+    dbg("enter unary3");
     char op = ctx->unaryOp()->getText()[0];
     if (mode == compile_time) {
-        if (type == TypeInt) {
-            int32_t rhs = ctx->unaryExp()->accept(this);
-            if (op == '-') return -rhs;
-            else if (op == '!') return !rhs;
-            else  return rhs;
-        }
-        else if (type == TypeFloat) {
-            float rhs = ctx->unaryExp()->accept(this);
-            if (op == '-') return -rhs;
-            else if (op == '!') return !rhs;
-            else  return rhs;
-        }
+        IRValue rhs = ctx->unaryExp()->accept(this);
+        if (op == '-') return -rhs;
+        else return rhs;
     }
     return nullptr;
 }
@@ -407,6 +390,7 @@ antlrcpp::Any ASTVisitor::visitFuncRParam(SysYParser::FuncRParamContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitMul1(SysYParser::Mul1Context *ctx) {
+    dbg("enter mul1");
     return ctx->unaryExp()->accept(this);
 }
 
@@ -414,25 +398,19 @@ antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
     // TODO:
     char op = ctx->children[1]->getText()[0];
     if (mode == compile_time) {
-        if (type == TypeInt) {
-            int32_t lhs = ctx->mulExp()->accept(this);
-            int32_t rhs = ctx->unaryExp()->accept(this);
-            if (op == '*') return lhs * rhs;
-            else if (op == '/') return lhs / rhs;
-            else if (op == '%') return lhs % rhs;
-        }
-        else if (type ==TypeFloat) {
-            float lhs = ctx->mulExp()->accept(this);
-            float rhs = ctx->unaryExp()->accept(this);
-            if (op == '*') return lhs * rhs;
-            else if (op == '/') return lhs / rhs;
-            // else if (op == '%') return lhs % rhs;
-        }
+        dbg("enter mul2");
+        IRValue lhs = ctx->mulExp()->accept(this);
+        IRValue rhs = ctx->unaryExp()->accept(this);
+        if (op == '*') return lhs * rhs;
+        else if (op == '/') return lhs / rhs;
+        else if (op == '%') return lhs % rhs;
+        dbg("exit mul2");
     }
     return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitAdd1(SysYParser::Add1Context *ctx) {
+    dbg("enter add1");
     return ctx->mulExp()->accept(this);
 }
 
@@ -440,18 +418,12 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
     // TODO:
     char op = ctx->children[1]->getText()[0];
     if (mode == compile_time) {
-        if (type == TypeInt) {
-            int32_t lhs = ctx->addExp()->accept(this);
-            int32_t rhs = ctx->mulExp()->accept(this);
-            if (op == '+')  return lhs + rhs;
-            else if (op == '-')  return lhs - rhs;
-        }
-        else if (type == TypeFloat) {
-            float lhs = ctx->addExp()->accept(this);
-            float rhs = ctx->mulExp()->accept(this);
-            if (op == '+')  return lhs + rhs;
-            else if (op == '-')  return lhs - rhs;
-        }
+        dbg("enter add2");
+        IRValue lhs = ctx->addExp()->accept(this);
+        IRValue rhs = ctx->mulExp()->accept(this);
+        dbg("exit add2");
+        if (op == '+')  return lhs + rhs;
+        else if (op == '-')  return lhs - rhs;
     }
     return nullptr;
 }
@@ -497,15 +469,12 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
+    dbg("enter constexp");
     mode = compile_time;
-    if (type == TypeInt) {
-        int32_t result = ctx->addExp()->accept(this);
-        mode = normal;
-        return result;
-    }
-    else if (type == TypeFloat) {
-        float result = ctx->addExp()->accept(this);
-        mode = normal;
-        return result;
-    }
+    cout << DeclTypeToStr(type) << endl;
+    IRValue result = ctx->addExp()->accept(this);
+    mode = normal;
+    dbg("exit constexp");
+    if (result.type == TypeInt) return result.int_value;
+    else if (result.type == TypeFloat) return result.float_value;
 }
