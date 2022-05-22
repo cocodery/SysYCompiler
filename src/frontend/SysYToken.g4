@@ -42,13 +42,14 @@ GE : '>=';
 // integer, identifier
 IntLiteral
     : [0-9]+
-    | '0x'[0-9a-fA-F]+
-    | '0X'[0-9a-fA-F]+
+    | ('0x'|'0X')[0-9a-fA-F]+
     ;
 
 FloatLiteral
-    : [0-9]+'.'[0-9]+
+    : ([0-9]+|[0-9]*'.'[0-9]*)([eE]('+'|'-')?[0-9]+)?[fFlL]?
+    | ('0x'|'0X')([0-9a-fA-F]*'.'[0-9a-fA-F]*)([pP]('+'|'-')?[0-9]+)?[fFlL]?
     ;
+
 
 Identifier
     : [a-zA-Z_][a-zA-Z_0-9]*
