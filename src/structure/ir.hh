@@ -144,3 +144,4 @@ IRValue operator - (IRValue lhs, IRValue rhs);
 IRValue operator * (IRValue lhs, IRValue rhs);
 IRValue operator / (IRValue lhs, IRValue rhs);
 IRValue operator % (IRValue lhs, IRValue rhs);
+IRValue operator - (IRValue rhs);

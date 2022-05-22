@@ -196,3 +196,12 @@ IRValue operator % (IRValue lhs, IRValue rhs) {
         exit(EXIT_FAILURE);
     }
 }
+
+IRValue operator - (IRValue rhs) {
+    if (rhs.type == TypeInt) {
+        return IRValue(TypeInt, -rhs.int_value, 0);
+    } 
+    else {
+        return IRValue(TypeFloat, 0, -rhs.float_value);
+    }
+}
