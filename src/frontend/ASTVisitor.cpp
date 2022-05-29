@@ -37,8 +37,7 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
             int32_t scalar_value = scalar_node->constExp()->accept(this);
             list.push_back(scalar_value);
             ++cnt;
-        }
-        else {
+        } else {
             auto list_node = dynamic_cast<SysYParser::ListConstInitValContext *>(child);
             parse_const_init(list_node, child_array_dims, list);
             cnt += total_size / array_dims[0];
@@ -68,8 +67,7 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
             float scalar_value = scalar_node->constExp()->accept(this);
             list.push_back(scalar_value);
             ++cnt;
-        }
-        else {
+        } else {
             auto list_node = dynamic_cast<SysYParser::ListConstInitValContext *>(child);
             parse_const_init(list_node, child_array_dims, list);
             cnt += total_size / array_dims[0];
@@ -100,11 +98,13 @@ antlrcpp::Any ASTVisitor::visitDecl(SysYParser::DeclContext *ctx) {
     return visitChildren(ctx);
 }
 
-// 设置全局变量`type`, 这个变量仅在变量生命时起作用
+// 设置全局变量`type`, 这个变量仅在变量声明时起作用，结束后恢复
 antlrcpp::Any ASTVisitor::visitConstDecl(SysYParser::ConstDeclContext *ctx) {
+    DeclType last_type = type;
     type = getDeclType(ctx->children[1]->getText());
     cout << "Current Type is " << DeclTypeToStr(type) << endl;
-    return visitChildren(ctx);
+    visitChildren(ctx);
+    type = last_type;
 }
 
 antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
@@ -127,31 +127,30 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         const_var.array_dims = get_array_dims(ctx->constExp());
         dbg(const_var.array_dims);
     }
+    // 分析`const`变量的初值
     auto init_node = ctx->constInitVal();
     if (const_var.is_array == false) {
         auto node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(init_node);
         if (type == TypeInt) {
             const_var.int_scalar = node->constExp()->accept(this);
             dbg(const_var.int_scalar);
-        }
-        else if (type == TypeFloat) {
+        } else if (type == TypeFloat) {
             const_var.float_scalar = node->constExp()->accept(this);
             dbg(const_var.float_scalar);
         }
-    }
-    else {
+    } else {
         auto node = dynamic_cast<SysYParser::ListConstInitValContext *>(init_node);
         if (type == TypeInt) {
             dbg("parsing int list");
             parse_const_init(node, const_var.array_dims, const_var.int_list);
             dbg(const_var.int_list);
-        }
-        else if (type == TypeFloat) {
+        } else if (type == TypeFloat) {
             dbg("parsing float list");
             parse_const_init(node, const_var.array_dims, const_var.float_list);
             dbg(const_var.float_list);
         }
     }
+    // 写入当前作用域的符号表
     cur_vartable->var_table.push_back(std::make_pair(var_name, const_var));
     return nullptr;
 }
@@ -191,21 +190,26 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
 }
 
 // 函数声明分析，获取函数声明，返回类型，参数表
-// 将函数定义插入函数表
+// 因为不存在函数内声明函数的情况，因此直接将函数定义插入函数表
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     Function *func = new Function;
     string func_name = ctx->Identifier()->getText();
     dbg(func_name);
     FunctionInfo func_info;
-    func_info.func_name = func_name;
+    // get function name
+    func_info.func_name = func_name; 
+    // get function ret_type
     func_info.return_type = getDeclType(ctx->funcType()->getText());
+    // parse function arguments
     if (ctx->funcFParams() != nullptr) {
         func_info.func_args = ctx->funcFParams()->accept(this).as<vector<VarType>>();
     }
+    // tag we have `main function`
     if (func_name == "main") have_main_func = true;
     func->func_info = func_info;
-
+    // parse function body
     func->main_scope = ctx->block()->accept(this);
+    // push to function table
     ir.functions.push_back(func);
     return nullptr;
 }
@@ -229,12 +233,14 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
     VarType func_arg;
     func_arg.is_args = true;
     func_arg.decl_type = getDeclType(ctx->children[0]->getText());
-    DeclType temp_type = type;
-    type = TypeInt;
-    func_arg.array_dims = get_array_dims(ctx->constExp());
-    func_arg.is_array = func_arg.array_dims.size();
-    func_arg.array_dims.insert(func_arg.array_dims.begin(), -1);
-    type = temp_type;
+    if (ctx->getText().find("[") != string::npos) {
+        DeclType last_type = type;
+        type = func_arg.decl_type;
+        func_arg.is_array = true;
+        func_arg.array_dims = get_array_dims(ctx->constExp());
+        func_arg.array_dims.insert(func_arg.array_dims.begin(), -1);
+        type = last_type;
+    }
     // dbg(func_arg.array_dims);
     return func_arg;
 }
