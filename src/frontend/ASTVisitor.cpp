@@ -11,11 +11,14 @@ ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
 
 // 假定所有的数组的维度的定义都是`ConstExp`
 vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *> dims) {
+    DeclType last_type = type;
+    type = TypeInt;
     vector<int32_t> array_dims;
     for (auto i : dims) {
         int32_t cur_dim = i->accept(this);
         array_dims.push_back(cur_dim);
     }
+    type = last_type;
     return array_dims;
 }
 
@@ -98,6 +101,7 @@ antlrcpp::Any ASTVisitor::visitDecl(SysYParser::DeclContext *ctx) {
     dbg("enter Decl");
     visitChildren(ctx);
     dbg("exit Decl");
+    return nullptr;
 }
 
 // 设置全局变量`type`, 这个变量仅在变量声明时起作用，结束后恢复
@@ -109,6 +113,7 @@ antlrcpp::Any ASTVisitor::visitConstDecl(SysYParser::ConstDeclContext *ctx) {
     visitChildren(ctx);
     type = last_type;
     dbg("exit ConstDecl");
+    return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
@@ -158,6 +163,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     // 写入当前作用域的符号表
     cur_vartable->var_table.push_back(std::make_pair(var_name, const_var));
     dbg("exit ConstDef");
+    return nullptr;
 }
 
 antlrcpp::Any ASTVisitor::visitScalarConstInitVal(SysYParser::ScalarConstInitValContext *ctx) {
