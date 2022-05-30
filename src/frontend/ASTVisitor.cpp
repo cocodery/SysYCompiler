@@ -95,16 +95,20 @@ antlrcpp::Any ASTVisitor::visitCompUnit(SysYParser::CompUnitContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitDecl(SysYParser::DeclContext *ctx) {
-    return visitChildren(ctx);
+    dbg("enter Decl");
+    visitChildren(ctx);
+    dbg("exit Decl");
 }
 
 // 设置全局变量`type`, 这个变量仅在变量声明时起作用，结束后恢复
 antlrcpp::Any ASTVisitor::visitConstDecl(SysYParser::ConstDeclContext *ctx) {
+    dbg("enter ConstDecl");
     DeclType last_type = type;
     type = getDeclType(ctx->children[1]->getText());
     cout << "Current Type is " << DeclTypeToStr(type) << endl;
     visitChildren(ctx);
     type = last_type;
+    dbg("exit ConstDecl");
 }
 
 antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
@@ -115,13 +119,14 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 // 若有初值则会进行初始化
 // 将变量插入当前作用域的符号表
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
+    dbg("enter ConstDef");
     string var_name = ctx->children[0]->getText();
     VarType const_var;
     const_var.is_const = true;
     const_var.is_init = true;
     const_var.is_array = !(ctx->constExp().size() == 0);
     const_var.decl_type = type;
-    dbg(const_var.decl_type);
+    dbg(DeclTypeToStr(const_var.decl_type));
     dbg(const_var.is_array);
     if (const_var.is_array == true) {
         const_var.array_dims = get_array_dims(ctx->constExp());
@@ -152,7 +157,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     }
     // 写入当前作用域的符号表
     cur_vartable->var_table.push_back(std::make_pair(var_name, const_var));
-    return nullptr;
+    dbg("exit ConstDef");
 }
 
 antlrcpp::Any ASTVisitor::visitScalarConstInitVal(SysYParser::ScalarConstInitValContext *ctx) {
@@ -498,8 +503,8 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
     dbg("enter constexp");
     mode = compile_time;
-    cout << DeclTypeToStr(type) << endl;
     IRValue result = ctx->addExp()->accept(this);
+    result.type = type;
     mode = normal;
     dbg("exit constexp");
     if (result.type == TypeInt) return result.int_value;

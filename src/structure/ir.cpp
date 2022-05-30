@@ -5,7 +5,7 @@ IRValue::IRValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), floa
 void ReturnInst::printRetInst() {
     cout << "\t" << "return ";
     if (has_retvalue) {
-
+        // TODO:
     }
     cout << ";\n";
 }
@@ -23,8 +23,7 @@ void Scope::printElements() {
     for (auto iter = elements->begin(); iter != elements->end(); ++iter) {
         if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
             scope_node->printScope();
-        }
-        else {
+        } else {
             BasicBlock *bb_node = dynamic_cast<BasicBlock *>(*iter);
             bb_node->printBlock();
         }
@@ -111,20 +110,18 @@ void CompUnit::DebugGlobalTable() {
     global_table->printVaribaleTable();
 }
 
+// override operators for `IRValue`
 IRValue operator + (IRValue lhs, IRValue rhs) {
     if (lhs.type == rhs.type) {
         if (lhs.type == TypeInt) {
             return IRValue(TypeInt, lhs.int_value + rhs.int_value, 0);
-        } 
-        else if (lhs.type == TypeFloat) {
+        } else if (lhs.type == TypeFloat) {
             return IRValue(TypeFloat, 0, lhs.float_value + rhs.float_value);
         }
-    } 
-    else {
+    } else {
         if (lhs.type == TypeInt) {
             return IRValue(TypeFloat, 0, lhs.int_value + rhs.float_value);
-        } 
-        else if (lhs.type == TypeFloat) {
+        } else if (lhs.type == TypeFloat) {
             return IRValue(TypeFloat, 0, lhs.float_value + rhs.int_value);
         }
     }
@@ -134,16 +131,13 @@ IRValue operator - (IRValue lhs, IRValue rhs) {
     if (lhs.type == rhs.type) {
         if (lhs.type == TypeInt) {
             return IRValue(TypeInt, lhs.int_value - rhs.int_value, 0);
-        } 
-        else if (lhs.type == TypeFloat) {
+        } else if (lhs.type == TypeFloat) {
             return IRValue(TypeFloat, 0, lhs.float_value - rhs.float_value);
         }
-    } 
-    else {
+    } else {
         if (lhs.type == TypeInt) {
             return IRValue(TypeFloat, 0, lhs.int_value - rhs.float_value);
-        } 
-        else if (lhs.type == TypeFloat) {
+        }  else if (lhs.type == TypeFloat) {
             return IRValue(TypeFloat, 0, lhs.float_value - rhs.int_value);
         }
     }
@@ -153,16 +147,13 @@ IRValue operator * (IRValue lhs, IRValue rhs) {
     if (lhs.type == rhs.type) {
         if (lhs.type == TypeInt) {
             return IRValue(TypeInt, lhs.int_value * rhs.int_value, 0);
-        } 
-        else if (lhs.type == TypeFloat) {
+        } else if (lhs.type == TypeFloat) {
             return IRValue(TypeFloat, 0, lhs.float_value * rhs.float_value);
         }
-    } 
-    else {
+    } else {
         if (lhs.type == TypeInt) {
             return IRValue(TypeFloat, 0, lhs.int_value * rhs.float_value);
-        } 
-        else if (lhs.type == TypeFloat) {
+        } else if (lhs.type == TypeFloat) {
             return IRValue(TypeFloat, 0, lhs.float_value * rhs.int_value);
         }
     }
@@ -172,16 +163,13 @@ IRValue operator / (IRValue lhs, IRValue rhs) {
     if (lhs.type == rhs.type) {
         if (lhs.type == TypeInt) {
             return IRValue(TypeInt, lhs.int_value - rhs.int_value, 0);
-        } 
-        else if (lhs.type == TypeFloat) {
+        } else if (lhs.type == TypeFloat) {
             return IRValue(TypeFloat, 0, lhs.float_value - rhs.float_value);
         }
-    } 
-    else {
+    } else {
         if (lhs.type == TypeInt) {
             return IRValue(TypeFloat, 0, lhs.int_value - rhs.float_value);
-        } 
-        else if (lhs.type == TypeFloat) {
+        } else if (lhs.type == TypeFloat) {
             return IRValue(TypeFloat, 0, lhs.float_value - rhs.int_value);
         }
     }
@@ -190,8 +178,7 @@ IRValue operator / (IRValue lhs, IRValue rhs) {
 IRValue operator % (IRValue lhs, IRValue rhs) {
     if (lhs.type == TypeInt && rhs.type == TypeInt) {
         return IRValue(TypeInt, lhs.int_value % rhs.int_value, 0);
-    } 
-    else {
+    } else {
         dbg("invalid operands of types to binary 'operator%'");
         exit(EXIT_FAILURE);
     }
@@ -200,8 +187,7 @@ IRValue operator % (IRValue lhs, IRValue rhs) {
 IRValue operator - (IRValue rhs) {
     if (rhs.type == TypeInt) {
         return IRValue(TypeInt, -rhs.int_value, 0);
-    } 
-    else {
+    } else {
         return IRValue(TypeFloat, 0, -rhs.float_value);
     }
 }
