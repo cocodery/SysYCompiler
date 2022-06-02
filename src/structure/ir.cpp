@@ -1,6 +1,6 @@
 #include "ir.hh"
 
-IRValue::IRValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), float_value(fv) { }
+CTValue::CTValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), float_value(fv) { }
 
 void ReturnInst::printRetInst() {
     cout << "\t" << "return ";
@@ -15,6 +15,18 @@ void BasicBlock::printBlock() {
     for (auto inst: basic_block) {
         Case(ReturnInst, ret_inst, inst) {
             ret_inst->printRetInst();
+        }
+    }
+}
+
+Variable *Scope::resolve(string var_name) {
+    if (local_table != nullptr){
+        if (local_table->findInCurTable(var_name)) {
+            cout << "find in cur scope's var_table" << endl;
+            return local_table->getInCurTable(var_name);
+        } else {
+            cout << "not find in cur scope's var_table, goto parent table" << endl;
+            return parent->resolve(var_name);
         }
     }
 }
@@ -49,7 +61,9 @@ void LibFunction::printFunction() {
 
 CompUnit::CompUnit() {
 // Global  SymTable Init Part
-    global_table = new VariableTable;
+    global_scope = new Scope;
+    global_scope->local_table = new VariableTable;
+    global_scope->elements = new vector<Info *>;
 // Global  Function Init Part
     functions.empty();
 // Library Funtions Init Part
@@ -107,87 +121,87 @@ void CompUnit::DebugUserFuncs() {
 
 void CompUnit::DebugGlobalTable() {
     cout << "Global Variable" << endl;
-    global_table->printVaribaleTable();
+    global_scope->local_table->printVaribaleTable();
 }
 
-// override operators for `IRValue`
-IRValue operator + (IRValue lhs, IRValue rhs) {
+// override operators for `CTValue`
+CTValue operator + (CTValue lhs, CTValue rhs) {
     if (lhs.type == rhs.type) {
         if (lhs.type == TypeInt) {
-            return IRValue(TypeInt, lhs.int_value + rhs.int_value, 0);
+            return CTValue(TypeInt, lhs.int_value + rhs.int_value, 0);
         } else if (lhs.type == TypeFloat) {
-            return IRValue(TypeFloat, 0, lhs.float_value + rhs.float_value);
+            return CTValue(TypeFloat, 0, lhs.float_value + rhs.float_value);
         }
     } else {
         if (lhs.type == TypeInt) {
-            return IRValue(TypeFloat, 0, lhs.int_value + rhs.float_value);
+            return CTValue(TypeFloat, 0, lhs.int_value + rhs.float_value);
         } else if (lhs.type == TypeFloat) {
-            return IRValue(TypeFloat, 0, lhs.float_value + rhs.int_value);
+            return CTValue(TypeFloat, 0, lhs.float_value + rhs.int_value);
         }
     }
 }
 
-IRValue operator - (IRValue lhs, IRValue rhs) {
+CTValue operator - (CTValue lhs, CTValue rhs) {
     if (lhs.type == rhs.type) {
         if (lhs.type == TypeInt) {
-            return IRValue(TypeInt, lhs.int_value - rhs.int_value, 0);
+            return CTValue(TypeInt, lhs.int_value - rhs.int_value, 0);
         } else if (lhs.type == TypeFloat) {
-            return IRValue(TypeFloat, 0, lhs.float_value - rhs.float_value);
+            return CTValue(TypeFloat, 0, lhs.float_value - rhs.float_value);
         }
     } else {
         if (lhs.type == TypeInt) {
-            return IRValue(TypeFloat, 0, lhs.int_value - rhs.float_value);
+            return CTValue(TypeFloat, 0, lhs.int_value - rhs.float_value);
         }  else if (lhs.type == TypeFloat) {
-            return IRValue(TypeFloat, 0, lhs.float_value - rhs.int_value);
+            return CTValue(TypeFloat, 0, lhs.float_value - rhs.int_value);
         }
     }
 }
 
-IRValue operator * (IRValue lhs, IRValue rhs) {
+CTValue operator * (CTValue lhs, CTValue rhs) {
     if (lhs.type == rhs.type) {
         if (lhs.type == TypeInt) {
-            return IRValue(TypeInt, lhs.int_value * rhs.int_value, 0);
+            return CTValue(TypeInt, lhs.int_value * rhs.int_value, 0);
         } else if (lhs.type == TypeFloat) {
-            return IRValue(TypeFloat, 0, lhs.float_value * rhs.float_value);
+            return CTValue(TypeFloat, 0, lhs.float_value * rhs.float_value);
         }
     } else {
         if (lhs.type == TypeInt) {
-            return IRValue(TypeFloat, 0, lhs.int_value * rhs.float_value);
+            return CTValue(TypeFloat, 0, lhs.int_value * rhs.float_value);
         } else if (lhs.type == TypeFloat) {
-            return IRValue(TypeFloat, 0, lhs.float_value * rhs.int_value);
+            return CTValue(TypeFloat, 0, lhs.float_value * rhs.int_value);
         }
     }
 }
 
-IRValue operator / (IRValue lhs, IRValue rhs) {
+CTValue operator / (CTValue lhs, CTValue rhs) {
     if (lhs.type == rhs.type) {
         if (lhs.type == TypeInt) {
-            return IRValue(TypeInt, lhs.int_value - rhs.int_value, 0);
+            return CTValue(TypeInt, lhs.int_value - rhs.int_value, 0);
         } else if (lhs.type == TypeFloat) {
-            return IRValue(TypeFloat, 0, lhs.float_value - rhs.float_value);
+            return CTValue(TypeFloat, 0, lhs.float_value - rhs.float_value);
         }
     } else {
         if (lhs.type == TypeInt) {
-            return IRValue(TypeFloat, 0, lhs.int_value - rhs.float_value);
+            return CTValue(TypeFloat, 0, lhs.int_value - rhs.float_value);
         } else if (lhs.type == TypeFloat) {
-            return IRValue(TypeFloat, 0, lhs.float_value - rhs.int_value);
+            return CTValue(TypeFloat, 0, lhs.float_value - rhs.int_value);
         }
     }
 }
 
-IRValue operator % (IRValue lhs, IRValue rhs) {
+CTValue operator % (CTValue lhs, CTValue rhs) {
     if (lhs.type == TypeInt && rhs.type == TypeInt) {
-        return IRValue(TypeInt, lhs.int_value % rhs.int_value, 0);
+        return CTValue(TypeInt, lhs.int_value % rhs.int_value, 0);
     } else {
         dbg("invalid operands of types to binary 'operator%'");
         exit(EXIT_FAILURE);
     }
 }
 
-IRValue operator - (IRValue rhs) {
+CTValue operator - (CTValue rhs) {
     if (rhs.type == TypeInt) {
-        return IRValue(TypeInt, -rhs.int_value, 0);
+        return CTValue(TypeInt, -rhs.int_value, 0);
     } else {
-        return IRValue(TypeFloat, 0, -rhs.float_value);
+        return CTValue(TypeFloat, 0, -rhs.float_value);
     }
 }

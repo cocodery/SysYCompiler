@@ -70,6 +70,23 @@ void Variable::printVariable(string var_name) {
     type.printVarTypeForSym(var_name);
 }
 
+bool VariableTable::findInCurTable(string name) {
+    for (auto one: var_table) {
+        if (name == one.first) {
+            return true;
+        }
+    }
+    return false;
+}
+
+Variable *VariableTable::getInCurTable(string name) {
+    for (auto one: var_table) {
+        if (name == one.first) {
+            return &one.second;
+        }
+    }
+}
+
 void VariableTable::printVaribaleTable() {
     int size = var_table.size();
     for (int i = 0; i < size; ++i) {

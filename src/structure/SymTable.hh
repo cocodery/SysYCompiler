@@ -55,6 +55,8 @@ public:
     vector<VarPair> var_table;
 public:
     VariableTable() { };
+    bool findInCurTable(string name);
+    Variable *getInCurTable(string name);
     void printVaribaleTable();
 };
 

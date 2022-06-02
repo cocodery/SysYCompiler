@@ -17,14 +17,14 @@ using std::variant;
 using std::string;
 using std::map;
 
-class IRValue {
+class CTValue {
 public:
     DeclType type;
     int32_t int_value;
     float float_value;
 public:
-    IRValue(): type(TypeVoid), int_value(0), float_value(0) { }
-    IRValue(DeclType t = TypeVoid, int32_t iv = 0, float fv = 0);
+    CTValue(): type(TypeVoid), int_value(0), float_value(0) { }
+    CTValue(DeclType t = TypeVoid, int32_t iv = 0, float fv = 0);
 };
 
 class Info {
@@ -105,8 +105,10 @@ class Scope: public Info {
 public:
     VariableTable  *local_table;
     vector<Info *> *elements; // `Info` -> `Scope` or `BasicBlock`
+    Scope* parent;
 public:
-    Scope() { }
+    Scope() { local_table = nullptr; elements = nullptr; parent = nullptr; }
+    Variable *resolve(string var_name);
     void printElements();
     void printScope();
 };
@@ -129,7 +131,7 @@ public:
 
 class CompUnit: public Info {
 public:
-    VariableTable *global_table;
+    Scope *global_scope;
     vector<Function *> functions;
     LibFunction lib_functions[11];
 public:
@@ -139,9 +141,9 @@ public:
     void DebugGlobalTable();
 };
 
-IRValue operator + (IRValue lhs, IRValue rhs);
-IRValue operator - (IRValue lhs, IRValue rhs);
-IRValue operator * (IRValue lhs, IRValue rhs);
-IRValue operator / (IRValue lhs, IRValue rhs);
-IRValue operator % (IRValue lhs, IRValue rhs);
-IRValue operator - (IRValue rhs);
+CTValue operator + (CTValue lhs, CTValue rhs);
+CTValue operator - (CTValue lhs, CTValue rhs);
+CTValue operator * (CTValue lhs, CTValue rhs);
+CTValue operator / (CTValue lhs, CTValue rhs);
+CTValue operator % (CTValue lhs, CTValue rhs);
+CTValue operator - (CTValue rhs);
