@@ -17,7 +17,7 @@ class InitValue;
 class Variable;
 class FunctionInfo;
 
-using VarPair = pair<string, Variable>;
+using VarPair = pair<string, Variable *>;
 
 class VarType {
 public:
@@ -35,6 +35,7 @@ public:
     VarType();
     VarType(bool _const, bool _arr, bool _args, DeclType _type);
     int32_t elements_number();
+    int32_t get_index(vector<int32_t>& arr_idx);
     void printVarTypeForArg();
     void printVarTypeForSym(string var_name);
 };

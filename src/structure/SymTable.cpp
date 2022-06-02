@@ -13,6 +13,21 @@ int32_t VarType::elements_number() {
     return number;
 }
 
+int32_t VarType::get_index(vector<int32_t>& arr_idx) {
+    dbg(array_dims);
+    int32_t step = 1, ret = 0;
+    size_t next = array_dims.size() - 1;
+    for (size_t i = arr_idx.size() - 1; i < arr_idx.size(); --i) {
+        ret += arr_idx[i] * step;
+        if (next < array_dims.size()) {
+        step *= array_dims[next];
+        --next;
+        }
+    }
+    dbg(ret);
+    return ret;
+}
+
 void VarType::printVarTypeForArg() {
     string ret;
     if (is_args) {
@@ -82,16 +97,17 @@ bool VariableTable::findInCurTable(string name) {
 Variable *VariableTable::getInCurTable(string name) {
     for (auto one: var_table) {
         if (name == one.first) {
-            return &one.second;
+            return one.second;
         }
     }
+    return nullptr;
 }
 
 void VariableTable::printVaribaleTable() {
     int size = var_table.size();
     for (int i = 0; i < size; ++i) {
         cout << '\t';
-        var_table[i].second.printVariable(var_table[i].first);
+        var_table[i].second->printVariable(var_table[i].first);
     }
 }
 

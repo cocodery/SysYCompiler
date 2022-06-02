@@ -28,6 +28,8 @@ Variable *Scope::resolve(string var_name) {
             cout << "not find in cur scope's var_table, goto parent table" << endl;
             return parent->resolve(var_name);
         }
+    } else {
+        return nullptr;
     }
 }
 
