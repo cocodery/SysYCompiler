@@ -4,9 +4,9 @@ ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
     type = TypeVoid;
     mode = normal;
-    cur_scope_elements = nullptr;
-    cur_scope = nullptr;
-    cur_vartable = ir.global_table;
+    cur_scope = ir.global_scope;
+    cur_scope_elements = ir.global_scope->elements;
+    cur_vartable = ir.global_scope->local_table;
 }
 
 // 假定所有的数组的维度的定义都是`ConstExp`
@@ -126,6 +126,7 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     dbg("enter ConstDef");
     string var_name = ctx->children[0]->getText();
+    Variable *const_variable = new Variable;
     VarType const_var;
     const_var.is_const = true;
     const_var.is_init = true;
@@ -160,8 +161,9 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
             dbg(const_var.float_list);
         }
     }
+    const_variable->type = const_var;
     // 写入当前作用域的符号表
-    cur_vartable->var_table.push_back(std::make_pair(var_name, const_var));
+    cur_vartable->var_table.push_back(std::make_pair(var_name, const_variable));
     dbg("exit ConstDef");
     return nullptr;
 }
@@ -267,6 +269,7 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     Scope *block_scope = new Scope;
     block_scope->local_table = new VariableTable;
     block_scope->elements = new vector<Info *>;
+    block_scope->parent = last_scope;
     BasicBlock *scope_block = new BasicBlock;
     // cur_* point to current *
     cur_scope = block_scope;
@@ -347,7 +350,59 @@ antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
 
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     // TODO:
-    return nullptr;
+    dbg("enter LVal");
+    if (mode == compile_time) { // 编译期可计算的值
+        Variable *variable = cur_scope->resolve(ctx->Identifier()->getText());
+        if (variable == nullptr) {
+            cout << "Not find in SymTable" << endl;
+            exit(EXIT_FAILURE);
+        }
+        dbg(variable);
+        // 分析要读取的数组的下标数组
+        vector<int32_t> arr_idx;
+        DeclType last_type = type;
+        type = TypeInt;
+        for (auto i: ctx->exp()) {
+            CTValue idx = i->accept(this);
+            arr_idx.push_back(idx.int_value);
+        }
+        type = last_type;
+        int32_t idx = variable->type.get_index(arr_idx); // 获取下标
+        CTValue ret(TypeVoid);
+        if (type == TypeInt){
+            if (variable->type.decl_type == TypeInt) {
+                if (arr_idx.size() == 0) {
+                    ret.int_value = variable->type.int_scalar;
+                } else {
+                    ret.int_value = variable->type.int_list[idx];
+                }
+            } else {
+                if (arr_idx.size() == 0) {
+                    ret.int_value = variable->type.float_scalar;
+                } else {
+                    ret.int_value = variable->type.float_list[idx];
+                }
+            }
+        } else if (type == TypeFloat){
+            if (variable->type.decl_type == TypeInt) {
+                if (arr_idx.size() == 0) {
+                    ret.float_value = variable->type.int_scalar;
+                } else {
+                    ret.float_value = variable->type.int_list[idx];
+                }
+            } else {
+                if (arr_idx.size() == 0) {
+                    ret.float_value = variable->type.float_scalar;
+                } else {
+                    ret.float_value = variable->type.float_list[idx];
+                }
+            }
+        }
+        ret.type = type;
+        return ret;
+    }
+    dbg("exit LVal");
+    return CTValue(TypeInt);
 }
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp1(SysYParser::PrimaryExp1Context *ctx) {
@@ -371,9 +426,9 @@ antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
     dbg(int_literal);
     dbg("exit int number");
     if (type == TypeInt) {
-        return IRValue(type, int_literal, 0);
+        return CTValue(type, int_literal, 0);
     } else if (type == TypeFloat) {
-        return IRValue(TypeFloat, 0, float(int_literal));
+        return CTValue(TypeFloat, 0, float(int_literal));
     }
 }
 
@@ -384,9 +439,9 @@ antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
     dbg(float_literal);
     dbg("exit float number");
     if (type == TypeFloat) { 
-        return IRValue(type, 0, float_literal);
+        return CTValue(type, 0, float_literal);
     } else if (type == TypeInt) {
-        return IRValue(TypeInt, int(float_literal), 0);
+        return CTValue(TypeInt, int(float_literal), 0);
     }
 }
 
@@ -405,7 +460,7 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
     dbg("enter unary3");
     char op = ctx->unaryOp()->getText()[0];
     if (mode == compile_time) {
-        IRValue rhs = ctx->unaryExp()->accept(this);
+        CTValue rhs = ctx->unaryExp()->accept(this);
         if (op == '-') return -rhs;
         else return rhs;
     }
@@ -437,8 +492,8 @@ antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
     char op = ctx->children[1]->getText()[0];
     if (mode == compile_time) {
         dbg("enter mul2");
-        IRValue lhs = ctx->mulExp()->accept(this);
-        IRValue rhs = ctx->unaryExp()->accept(this);
+        CTValue lhs = ctx->mulExp()->accept(this);
+        CTValue rhs = ctx->unaryExp()->accept(this);
         if (op == '*') return lhs * rhs;
         else if (op == '/') return lhs / rhs;
         else if (op == '%') return lhs % rhs;
@@ -457,8 +512,8 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
     char op = ctx->children[1]->getText()[0];
     if (mode == compile_time) {
         dbg("enter add2");
-        IRValue lhs = ctx->addExp()->accept(this);
-        IRValue rhs = ctx->mulExp()->accept(this);
+        CTValue lhs = ctx->addExp()->accept(this);
+        CTValue rhs = ctx->mulExp()->accept(this);
         dbg("exit add2");
         if (op == '+')  return lhs + rhs;
         else if (op == '-')  return lhs - rhs;
@@ -509,7 +564,7 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
     dbg("enter constexp");
     mode = compile_time;
-    IRValue result = ctx->addExp()->accept(this);
+    CTValue result = ctx->addExp()->accept(this);
     result.type = type;
     mode = normal;
     dbg("exit constexp");
