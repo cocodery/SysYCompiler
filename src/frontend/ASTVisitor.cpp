@@ -55,6 +55,7 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
     return;
 }
 
+// finished
 // float type
 void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<float>& list) {
     int32_t total_size = 1;
@@ -133,12 +134,9 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 // 将变量插入当前作用域的符号表
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     cout << "enter ConstDef" << endl;
-    string var_name = ctx->children[0]->getText();
+    string var_name = ctx->Identifier()->getText();
     Variable *const_variable = new Variable;
-    VarType const_var;
-    const_var.is_const = true;
-    const_var.is_array = !(ctx->constExp().size() == 0);
-    const_var.decl_type = type;
+    VarType const_var(true, !(ctx->constExp().size() == 0), false, type);
     dbg(DeclTypeToStr(const_var.decl_type), const_var.is_array);
     if (const_var.is_array == true) {
         const_var.array_dims = get_array_dims(ctx->constExp());
@@ -186,11 +184,30 @@ antlrcpp::Any ASTVisitor::visitListConstInitVal(SysYParser::ListConstInitValCont
 
 // finished
 antlrcpp::Any ASTVisitor::visitVarDecl(SysYParser::VarDeclContext *ctx) {
-    return visitChildren(ctx);
+    cout << "enter VarDecl" << endl;
+    DeclType last_type = type;
+    type = getDeclType(ctx->children[0]->getText());
+    cout << "Current Type is " << DeclTypeToStr(type) << endl;
+    visitChildren(ctx);
+    type = last_type;
+    cout << "exit VarDecl" << endl;
+    return nullptr;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx) {
-    // TODO:
+    cout << "enter UninitVarDef" << endl;
+    string var_name = ctx->Identifier()->getText();
+    Variable *variable = new Variable;
+    VarType var(false, !(ctx->constExp().size() == 0), false, type);
+    dbg(DeclTypeToStr(var.decl_type), var.is_array);
+    if (var.is_array) {
+        var.array_dims = get_array_dims(ctx->constExp());
+        dbg(var.array_dims);
+    }
+    variable->type = var;
+    cur_vartable->var_table.push_back(std::make_pair(var_name, variable));
+    cout << "exit UninitVarDef" << endl;
     return nullptr;
 }
 
@@ -256,10 +273,8 @@ antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) 
 // finished
 // 分析单个函数参数，包括类型，是否为数组，数组的维度
 antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
-    VarType func_arg;
-    func_arg.is_args = true;
-    func_arg.decl_type = getDeclType(ctx->children[0]->getText());
-    if (ctx->getText().find("[") != string::npos) {
+    VarType func_arg(false, ctx->getText().find("[") != string::npos, true, getDeclType(ctx->children[0]->getText()));
+    if (func_arg.is_array) {
         DeclType last_type = type;
         type = func_arg.decl_type;
         func_arg.is_array = true;
