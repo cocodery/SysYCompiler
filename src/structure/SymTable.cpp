@@ -1,6 +1,6 @@
 #include "SymTable.hh"
 
-VarType::VarType() : is_const(false), is_array(false), is_args(false), is_init(false), decl_type(TypeVoid) { }
+VarType::VarType() : is_const(false), is_array(false), is_args(false), decl_type(TypeVoid) { }
 
 VarType::VarType(bool _const, bool _arr, bool _args, DeclType _type)
     : is_const(_const), is_array(_arr), is_args(_args), decl_type(_type) { }

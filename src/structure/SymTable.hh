@@ -12,8 +12,7 @@ using std::vector;
 using std::string;
 using std::pair;
 
-class VarTypee;
-class InitValue;
+class VarType;
 class Variable;
 class FunctionInfo;
 
@@ -24,7 +23,6 @@ public:
     bool is_const;
     bool is_array;
     bool is_args;
-    bool is_init;
     vector<int32_t> array_dims;
     DeclType decl_type;
     int32_t int_scalar;
