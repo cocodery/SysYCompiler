@@ -55,6 +55,11 @@
 
 **TIPS:** if your commit involves multiple message, you can use **&&** to connect them.
 
+**Docs Standard**
+> 不要使用中文逗号, 用英文逗号和空格代替, ", "
+
+> please decribe the data structure you design, about what it do, what main functions it has, and whether have some key algorithm at `README` in that directory
+
 **Log**
 > **2021.09.09** : can parser `SysY2021`
 
