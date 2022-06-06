@@ -147,3 +147,4 @@ CTValue operator * (CTValue lhs, CTValue rhs);
 CTValue operator / (CTValue lhs, CTValue rhs);
 CTValue operator % (CTValue lhs, CTValue rhs);
 CTValue operator - (CTValue rhs);
+CTValue operator ! (CTValue rhs);

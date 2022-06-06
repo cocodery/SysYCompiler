@@ -165,6 +165,10 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     }
     const_variable->type = const_var;
     // 写入当前作用域的符号表
+    if (cur_vartable->findInCurTable(var_name)) {
+        dbg(var_name + " is in cur_vartable");
+        exit(EXIT_FAILURE);
+    }
     cur_vartable->var_table.push_back(std::make_pair(var_name, const_variable));
     cout << "exit ConstDef" << endl;
     return nullptr;
@@ -206,6 +210,10 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
         dbg(var.array_dims);
     }
     variable->type = var;
+    if (cur_vartable->findInCurTable(var_name)) {
+        dbg(var_name + " is in cur_vartable");
+        exit(EXIT_FAILURE);
+    }
     cur_vartable->var_table.push_back(std::make_pair(var_name, variable));
     cout << "exit UninitVarDef" << endl;
     return nullptr;
@@ -381,8 +389,13 @@ antlrcpp::Any ASTVisitor::visitExp(SysYParser::ExpContext *ctx) {
     return ctx->addExp()->accept(this);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
-    // TODO:
+    mode = condition;
+    // we will push instructions to block's elements
+    // so we dont need do extra process
+    ctx->lOrExp()->accept(this);
+    mode = normal;
     return nullptr;
 }
 
@@ -505,6 +518,7 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
     if (mode == compile_time) {
         CTValue rhs = ctx->unaryExp()->accept(this);
         if (op == '-') return -rhs;
+        else if (op == '!') return !rhs;
         else return rhs;
     }
     return nullptr;

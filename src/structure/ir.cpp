@@ -207,3 +207,11 @@ CTValue operator - (CTValue rhs) {
         return CTValue(TypeFloat, 0, -rhs.float_value);
     }
 }
+
+CTValue operator ! (CTValue rhs) {
+    if (rhs.type == TypeInt) {
+        return CTValue(TypeInt, !rhs.int_value, 0);
+    } else {
+        return CTValue(TypeFloat, 0, !rhs.float_value);
+    }
+}
