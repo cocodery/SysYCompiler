@@ -27,10 +27,6 @@ public:
     bool is_args;
     vector<int32_t> array_dims;
     DeclType decl_type;
-    int32_t int_scalar;
-    float float_scalar;
-    vector<int32_t> int_list;
-    vector<float> float_list;
 public:
     VarType();
     VarType(bool _const, bool _arr, bool _args, DeclType _type);
@@ -44,6 +40,10 @@ class Variable {
 public:
     int32_t var_idx;
     VarType type;
+    int32_t int_scalar;
+    float float_scalar;
+    vector<int32_t> int_list;
+    vector<float> float_list;
 public:
     void printVariable(string var_name);
     Variable() : var_idx(var_index++) { };

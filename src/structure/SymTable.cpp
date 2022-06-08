@@ -43,29 +43,32 @@ void VarType::printVarTypeForArg() {
     cout << ret;
 }
 
-void VarType::printVarTypeForSym(string var_name) {
-    if (is_const == true) cout << "const ";
-    cout << DeclTypeToStr(decl_type) << ' ' << var_name;
-    if (is_array) {
-        for (int i = 0; i < array_dims.size(); ++i) {
-            cout << '[' << array_dims[i] << ']';
+FunctionInfo::FunctionInfo() : return_type(TypeVoid) { }
+
+FunctionInfo::FunctionInfo(string _name, DeclType _type, vector<VarType> _args)
+    : func_name(_name), return_type(_type), func_args(_args) { }
+
+void Variable::printVariable(string var_name) {
+    if (type.is_const == true) cout << "const ";
+    cout << DeclTypeToStr(type.decl_type) << ' ' << var_name;
+    if (type.is_array) {
+        for (int i = 0; i < type.array_dims.size(); ++i) {
+            cout << '[' << type.array_dims[i] << ']';
         }
     }
     cout << ' ';
-    if (is_const) {
+    if (type.is_const) {
         cout << "= ";
-        if (!is_array) {
-            if (decl_type == TypeInt) cout << int_scalar;
-            else if (decl_type == TypeFloat) cout << float_scalar;
-        }
-        else {
+        if (!type.is_array) {
+            if (type.decl_type == TypeInt) cout << int_scalar;
+            else if (type.decl_type == TypeFloat) cout << float_scalar;
+        } else {
             cout << "{ ";
-            if (decl_type == TypeInt) {
+            if (type.decl_type == TypeInt) {
                 for (int i = 0; i < int_list.size(); ++i) {
                     cout << int_list[i] << ' ';
                 }
-            }
-            else if (decl_type == TypeFloat) {
+            } else if (type.decl_type == TypeFloat) {
                 for (int i = 0; i < float_list.size(); ++i) {
                     cout << float_list[i] << ' ';
                 }
@@ -74,15 +77,6 @@ void VarType::printVarTypeForSym(string var_name) {
         }
     }
     cout << ';' << endl;
-}
-
-FunctionInfo::FunctionInfo() : return_type(TypeVoid) { }
-
-FunctionInfo::FunctionInfo(string _name, DeclType _type, vector<VarType> _args)
-    : func_name(_name), return_type(_type), func_args(_args) { }
-
-void Variable::printVariable(string var_name) {
-    type.printVarTypeForSym(var_name);
 }
 
 bool VariableTable::findInCurTable(string name) {
