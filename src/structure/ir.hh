@@ -17,15 +17,7 @@ using std::variant;
 using std::string;
 using std::map;
 
-class CTValue {
-public:
-    DeclType type;
-    int32_t int_value;
-    float float_value;
-public:
-    CTValue(): type(TypeVoid), int_value(0), float_value(0) { }
-    CTValue(DeclType t = TypeVoid, int32_t iv = 0, float fv = 0);
-};
+static int32_t reg_idx = 0;
 
 class Info {
 public:
@@ -34,14 +26,11 @@ public:
 
 class VirtReg: public Info {
 public:
-    static int32_t reg_idx;
     int32_t reg_id;
 public:
     VirtReg() : reg_id(reg_id = reg_idx++) { }
     bool operator == (const VirtReg &r) { return reg_id == r.reg_id; }
 };
-
-int32_t VirtReg::reg_idx = 0;
 
 class UnaryOp: public Info {
 public:
@@ -143,11 +132,3 @@ public:
     void DebugUserFuncs();
     void DebugGlobalTable();
 };
-
-CTValue operator + (CTValue lhs, CTValue rhs);
-CTValue operator - (CTValue lhs, CTValue rhs);
-CTValue operator * (CTValue lhs, CTValue rhs);
-CTValue operator / (CTValue lhs, CTValue rhs);
-CTValue operator % (CTValue lhs, CTValue rhs);
-CTValue operator - (CTValue rhs);
-CTValue operator ! (CTValue rhs);

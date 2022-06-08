@@ -18,6 +18,8 @@ class FunctionInfo;
 
 using VarPair = pair<string, Variable *>;
 
+static int32_t var_index = 0;
+
 class VarType {
 public:
     bool is_const;
@@ -40,7 +42,6 @@ public:
 
 class Variable {
 public:
-    static int32_t var_index;
     int32_t var_idx;
     VarType type;
 public:
@@ -49,8 +50,6 @@ public:
     Variable(VarType vt) : var_idx(var_index++), type(vt) { }
     Variable(int vi, VarType vt) : var_idx(var_index++), type(vt) { }
 };
-
-int32_t Variable::var_index = 0;
 
 class VariableTable {
 public:
