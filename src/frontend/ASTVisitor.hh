@@ -6,6 +6,7 @@
 #include "../common.hh"
 #include "../structure/SymTable.hh"
 #include "../structure/ir.hh"
+#include "../structure/value.hh"
 #include "SysYBaseVisitor.h"
 
 using std::vector;
@@ -17,7 +18,6 @@ class ASTVisitor : public SysYBaseVisitor {
 // Some Useful Defination
 private:
     enum CompileMode { normal , compile_time, condition  } mode;
-    bool have_main_func;
     DeclType type;
     int32_t whole_var_idx;
     CompUnit &ir;
@@ -27,6 +27,7 @@ private:
     BasicBlock     *cur_basicblock;
 // Funtion for helping Build IR and Symbol Table
 public:
+    bool have_main_func;
     ASTVisitor(CompUnit &_ir);
     
     vector<int32_t> get_array_dims(vector<SysYParser::ConstExpContext *>);

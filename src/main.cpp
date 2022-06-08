@@ -70,7 +70,8 @@ int main(int argc, char *argv[]) {
 
     cout << "Start Compiler" << endl;
 
-    if (!visitor.visitCompUnit(root)) {
+    visitor.visitCompUnit(root);
+    if (visitor.have_main_func == false) {
         dbg("No main Function Found");
         // exit(EXIT_FAILURE);
     }
