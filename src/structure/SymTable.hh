@@ -40,14 +40,17 @@ public:
 
 class Variable {
 public:
-    int var_idx;
+    static int32_t var_index;
+    int32_t var_idx;
     VarType type;
 public:
     void printVariable(string var_name);
-    Variable() : var_idx(-1) { };
-    Variable(VarType vt) : var_idx(-1), type(vt) { }
-    Variable(int vi, VarType vt) : var_idx(vi), type(vt) { }
+    Variable() : var_idx(var_index++) { };
+    Variable(VarType vt) : var_idx(var_index++), type(vt) { }
+    Variable(int vi, VarType vt) : var_idx(var_index++), type(vt) { }
 };
+
+int32_t Variable::var_index = 0;
 
 class VariableTable {
 public:
