@@ -32,13 +32,16 @@ public:
     virtual ~Info() { }
 };
 
-class Reg: public Info {
+class VirtReg: public Info {
 public:
-    int reg_id;
+    static int32_t reg_idx;
+    int32_t reg_id;
 public:
-    Reg(int id = 0) : reg_id(id) { }
-    bool operator == (const Reg &r) { return reg_id == r.reg_id; }
+    VirtReg() : reg_id(reg_id = reg_idx++) { }
+    bool operator == (const VirtReg &r) { return reg_id == r.reg_id; }
 };
+
+int32_t VirtReg::reg_idx = 0;
 
 class UnaryOp: public Info {
 public:
@@ -47,7 +50,7 @@ public:
     } unary_type;
     const string get_op() {
         string op[] = { "!", "-", "+" };
-        return op[(int)unary_type];
+        return op[(int32_t)unary_type];
     }
     UnaryOp(Type type) : unary_type(type) { }
 };
@@ -58,7 +61,7 @@ class BinaryOP: public Info {
     } bin_op;
     const string get_op() {
         string op[] = { "+", "-", "*", "/", "%", "<", "<=", "==", "!=", "&&", "||", "<<", ">>" };
-        return op[(int)bin_op];
+        return op[(int32_t)bin_op];
     }
     BinaryOP(Type op) : bin_op(op) { }
 };
@@ -71,23 +74,23 @@ public:
 class UnaryOpInst: public Inst {
 public:
     UnaryOp op;
-    Reg dst, src;
+    VirtReg dst, src;
 public:
-    UnaryOpInst(UnaryOp _op, Reg _dst, Reg _src) : op(_op), dst(_dst), src(_src) { }
+    UnaryOpInst(UnaryOp _op, VirtReg _dst, VirtReg _src) : op(_op), dst(_dst), src(_src) { }
 };
 
 class BinaryOpInst: public Inst {
 public:
     BinaryOP op;
-    Reg dst, src1, src2;
+    VirtReg dst, src1, src2;
 public:
-    BinaryOpInst(BinaryOP _op, Reg _dst, Reg _src1, Reg _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    BinaryOpInst(BinaryOP _op, VirtReg _dst, VirtReg _src1, VirtReg _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
 };
 
 class ReturnInst: public Inst {
 public:
     bool has_retvalue;
-    Reg dst;
+    VirtReg dst;
 public:
     ReturnInst(bool _ret_v = false) : has_retvalue(_ret_v) { }
     void printRetInst();
