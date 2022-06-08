@@ -5,6 +5,8 @@
 #include <string>
 
 #include "../common.hh"
+#include "SymTable.hh"
+#include "ir.hh"
 
 using std::cout;
 using std::endl;
@@ -20,6 +22,16 @@ public:
 public:
     CTValue(): type(TypeVoid), int_value(0), float_value(0) { }
     CTValue(DeclType t = TypeVoid, int32_t iv = 0, float fv = 0);
+};
+
+class IRValue {
+public:
+    VarType type;
+    VirtReg reg;
+    bool is_left_value;
+public:
+    IRValue(VarType t, VirtReg vg, bool ass = false) : type(t), reg(vg), is_left_value(ass) { }
+    bool can_assign();
 };
 
 CTValue operator + (CTValue lhs, CTValue rhs);
