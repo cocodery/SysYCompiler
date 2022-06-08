@@ -147,20 +147,20 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     if (const_var.is_array == false) {
         auto node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(init_node);
         if (type == TypeInt) {
-            const_var.int_scalar = node->constExp()->accept(this);
-            dbg(const_var.int_scalar);
+            const_variable->int_scalar = node->constExp()->accept(this);
+            dbg(const_variable->int_scalar);
         } else if (type == TypeFloat) {
-            const_var.float_scalar = node->constExp()->accept(this);
-            dbg(const_var.float_scalar);
+            const_variable->float_scalar = node->constExp()->accept(this);
+            dbg(const_variable->float_scalar);
         }
     } else {
         auto node = dynamic_cast<SysYParser::ListConstInitValContext *>(init_node);
         if (type == TypeInt) {
-            parse_const_init(node, const_var.array_dims, const_var.int_list);
-            dbg(const_var.int_list);
+            parse_const_init(node, const_var.array_dims, const_variable->int_list);
+            dbg(const_variable->int_list);
         } else if (type == TypeFloat) {
-            parse_const_init(node, const_var.array_dims, const_var.float_list);
-            dbg(const_var.float_list);
+            parse_const_init(node, const_var.array_dims, const_variable->float_list);
+            dbg(const_variable->float_list);
         }
     }
     const_variable->type = const_var;
@@ -423,29 +423,29 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
         if (type == TypeInt){
             if (variable->type.decl_type == TypeInt) {
                 if (arr_idx.size() == 0) {
-                    ret.int_value = variable->type.int_scalar;
+                    ret.int_value = variable->int_scalar;
                 } else {
-                    ret.int_value = variable->type.int_list[idx];
+                    ret.int_value = variable->int_list[idx];
                 }
             } else {
                 if (arr_idx.size() == 0) {
-                    ret.int_value = variable->type.float_scalar;
+                    ret.int_value = variable->float_scalar;
                 } else {
-                    ret.int_value = variable->type.float_list[idx];
+                    ret.int_value = variable->float_list[idx];
                 }
             }
         } else if (type == TypeFloat){
             if (variable->type.decl_type == TypeInt) {
                 if (arr_idx.size() == 0) {
-                    ret.float_value = variable->type.int_scalar;
+                    ret.float_value = variable->int_scalar;
                 } else {
-                    ret.float_value = variable->type.int_list[idx];
+                    ret.float_value = variable->int_list[idx];
                 }
             } else {
                 if (arr_idx.size() == 0) {
-                    ret.float_value = variable->type.float_scalar;
+                    ret.float_value = variable->float_scalar;
                 } else {
-                    ret.float_value = variable->type.float_list[idx];
+                    ret.float_value = variable->float_list[idx];
                 }
             }
         }
