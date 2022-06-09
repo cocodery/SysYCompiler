@@ -6,6 +6,9 @@ void BasicBlock::printBlock() {
         Case(ReturnInst, ret_inst, inst) {
             ret_inst->printRetInst();
         }
+        Case(LoadNumber, ldc_inst, inst) {
+            ldc_inst->printLdcInst();
+        }
     }
 }
 

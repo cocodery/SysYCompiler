@@ -3,7 +3,7 @@
 void ReturnInst::printRetInst() {
     cout << "\t" << "return ";
     if (has_retvalue) {
-        cout << dst.reg_id;
+        cout << "reg" << dst.reg_id;
     }
     cout << ";\n";
 }

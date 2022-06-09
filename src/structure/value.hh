@@ -26,7 +26,7 @@ public:
     bool is_left_value;
 public:
     IRValue() { }
-    IRValue(VarType t, VirtReg vg, bool ass = false) : type(t), reg(vg), is_left_value(ass) { }
+    IRValue(VarType t, VirtReg vg, bool ass = false);
     bool can_assign();
 };
 
