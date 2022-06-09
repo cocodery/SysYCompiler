@@ -1,18 +1,13 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
-#include <string>
 
 #include "../common.hh"
 #include "symtable.hh"
-#include "ir.hh"
+#include "baseclass.hh"
 
 using std::cout;
 using std::endl;
-using std::vector;
-using std::string;
-using std::pair;
 
 class CTValue {
 public:
@@ -30,6 +25,7 @@ public:
     VirtReg reg;
     bool is_left_value;
 public:
+    IRValue() { }
     IRValue(VarType t, VirtReg vg, bool ass = false) : type(t), reg(vg), is_left_value(ass) { }
     bool can_assign();
 };
