@@ -1,15 +1,7 @@
 #include "ir.hh"
 
-void ReturnInst::printRetInst() {
-    cout << "\t" << "return ";
-    if (has_retvalue) {
-        // TODO:
-    }
-    cout << ";\n";
-}
-
 void BasicBlock::printBlock() {
-    cout << "\t// `BasicBlock` of current `Scope" << endl;
+    cout << "\t// `BasicBlock` of current Scope" << endl;
     for (auto inst: basic_block) {
         Case(ReturnInst, ret_inst, inst) {
             ret_inst->printRetInst();
@@ -44,7 +36,7 @@ void Scope::printElements() {
 
 void Scope::printScope() {
     cout << "\t{" << endl;
-    cout << "\t// `VariableTable` of current `Scope" << endl;
+    cout << "\t// `VariableTable` of current Scope" << endl;
     local_table->printVaribaleTable();
     printElements();
     cout << "\t}" << endl;
@@ -60,7 +52,7 @@ void LibFunction::printFunction() {
 }
 
 CompUnit::CompUnit() {
-// Global  SymTable Init Part
+// Global  symtable Init Part
     global_scope = new Scope;
     global_scope->local_table = new VariableTable;
     global_scope->elements = new vector<Info *>;
