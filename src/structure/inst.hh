@@ -9,16 +9,7 @@
 #include "../common.hh"
 #include "symtable.hh"
 #include "baseclass.hh"
-
-static int32_t reg_idx = 0;
-
-class VirtReg: public Info {
-public:
-    int32_t reg_id;
-public:
-    VirtReg() : reg_id(reg_id = reg_idx++) { }
-    bool operator == (const VirtReg &r) { return reg_id == r.reg_id; }
-};
+#include "value.hh"
 
 class UnaryOp {
 public:
@@ -66,4 +57,13 @@ public:
 public:
     ReturnInst(bool _ret_v = false) : has_retvalue(_ret_v) { }
     void printRetInst();
+};
+
+class LoadNumber: public Inst {
+public:
+    CTValue src;
+    VirtReg dst;
+public:
+    LoadNumber(CTValue _src, VirtReg _dst) : src(_src), dst(_dst) { }
+    void printLdcInst();
 };
