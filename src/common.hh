@@ -21,7 +21,4 @@ DeclType getDeclType(string type_str);
 
 string DeclTypeToStr(DeclType type);
 
-enum Operator {
-    Add, Sub, Mul, Div, Mod,
-    Lt, Le, Ge, Gt, Eq, Ne, And, Orr,
-};
+#define Case(Type, dst, src) if (auto dst = dynamic_cast<Type *>(src))
