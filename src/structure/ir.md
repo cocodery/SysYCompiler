@@ -1,24 +1,5 @@
 ## IR
 
-#### CTValue
-```cpp
-class CTValue {
-public:
-    DeclType type;
-    int32_t int_value;
-    float float_value;
-};
-
-CTValue operator + (CTValue lhs, CTValue rhs);
-CTValue operator - (CTValue lhs, CTValue rhs);
-CTValue operator * (CTValue lhs, CTValue rhs);
-CTValue operator / (CTValue lhs, CTValue rhs);
-CTValue operator % (CTValue lhs, CTValue rhs);
-CTValue operator - (CTValue rhs);
-```
-编译期可以计算出来的值, 例如数字 / 用常量声明的常量等
-并对运算符进行重载, 可以自动进行类型转换
-
 #### BasicBlock
 ```cpp
 class BasicBlock: public Info {

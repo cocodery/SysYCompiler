@@ -1,5 +1,7 @@
 #pragma once
 
+// 基类
+
 class Info {
 public:
     virtual ~Info() { }

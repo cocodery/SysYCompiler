@@ -1,4 +1,4 @@
-## symtable
+## Symtable
 
 #### VarType
 ```cpp
@@ -7,22 +7,14 @@ public:
     bool is_const;
     bool is_array;
     bool is_args;
-    bool is_init;
     vector<int32_t> array_dims;
     DeclType decl_type;
-    int32_t int_scalar;
-    float float_scalar;
-    vector<int32_t> int_list;
-    vector<float> float_list;
 };
 ```
 很明显的可以看出, `VarType`是用于记录某个变量在声明时的相关信息
-is const ? is array ? is argument ? is init ?
-and also its decl type
+is const ? is array ? is argument ?
 if it is array tpye, `array_dims` will record related infomation
-and if it is inited, the init value is store in `int_scalar` or `float_scalar` or `int_list` or `float_list`
-in fact it is a bad design because it waste a lot of space
-but it is easy to use and understand, so we will not optimize this
+and also its decl type
 
 #### Variable
 ```cpp
@@ -30,11 +22,16 @@ class Variable {
 public:
     int var_idx;
     VarType type;
+    int32_t int_scalar;
+    float float_scalar;
+    vector<int32_t> int_list;
+    vector<float> float_list;
 };
 ```
 `Variable`记录了某个声明的变量的类型和编号
-这个编号可能有用可能没用
-后期的相关优化有可能会使用
+if it is array tpye, `array_dims` will record related infomation
+if the variable is inited, the init value is store in `int_scalar` or `float_scalar` or `int_list` or `float_list`
+这个编号可能有用可能没用, 后期的相关优化有可能会使用
 
 #### VariableTable
 ```cpp
