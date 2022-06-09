@@ -5,7 +5,7 @@
 #include <string>
 
 #include "../common.hh"
-#include "SymTable.hh"
+#include "symtable.hh"
 #include "ir.hh"
 
 using std::cout;
