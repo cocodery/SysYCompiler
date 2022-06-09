@@ -4,8 +4,9 @@
 #include <iostream>
 #include <vector>
 #include "../common.hh"
-#include "../structure/SymTable.hh"
+#include "../structure/symtable.hh"
 #include "../structure/ir.hh"
+#include "../structure/inst.hh"
 #include "../structure/value.hh"
 #include "SysYBaseVisitor.h"
 

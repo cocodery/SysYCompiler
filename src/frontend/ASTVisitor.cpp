@@ -377,10 +377,11 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
     // if ctx->exp() == nullptr, means it's a function without return value
     ReturnInst *ret_inst = new ReturnInst(ctx->exp() != nullptr);
     if (ret_inst->has_retvalue == true) {
-        
+        IRValue dst = ctx->exp()->accept(this);
+        ret_inst->dst = dst.reg;
     }
-    cur_basicblock->basic_block.push_back(ret_inst);
-    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock->basic_block.push_back(ret_inst); // 将指令加入基本块
+    cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
     return nullptr;
 }
 
@@ -405,7 +406,7 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     if (mode == compile_time) { // 编译期可计算的值
         Variable *variable = cur_scope->resolve(ctx->Identifier()->getText());
         if (variable == nullptr) {
-            cout << "Not find in SymTable" << endl;
+            cout << "Not find in symtable" << endl;
             exit(EXIT_FAILURE);
         }
         dbg(variable);
@@ -468,10 +469,17 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
 
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
     // TODO:
+    CTValue src = ctx->number()->accept(this);
     if (mode == compile_time) {
-        return ctx->number()->accept(this);
+        return src;
+    } else {
+        VirtReg dst = VirtReg();
+        LoadNumber *ldc_inst = new LoadNumber(src, dst);
+        cur_basicblock->basic_block.push_back(ldc_inst);
+        VarType type = VarType(true, false, false, src.type);
+        IRValue ret = IRValue(type, dst, false);
+        return ret;
     }
-    return nullptr;
 }
 
 // finished
