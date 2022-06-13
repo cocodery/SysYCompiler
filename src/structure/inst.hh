@@ -35,7 +35,8 @@ public:
     UnaryOp(string op) : unary_op(get_op(op)) { }
 };
 
-class BinaryOP {
+class BinaryOp {
+public:
     enum Type {
         ADD, SUB, MUL, DIV, MOD, LTH, LEQ, EQU, NEQ, AND, ORR, 
     } bin_op;
@@ -45,14 +46,14 @@ class BinaryOP {
     Type get_op(string op) {
         int idx = 0;
         for (; idx < 11; ++idx) {
-            if (op == uop[idx]) {
+            if (op == bop[idx]) {
                 break;
             }
         }
         return Type(idx);
     };
-    BinaryOP(Type op) : bin_op(op) { }
-    BinaryOP(string op): bin_op(get_op(op)) { }
+    BinaryOp(Type op) : bin_op(op) { }
+    BinaryOp(string op): bin_op(get_op(op)) { }
 };
 
 class UnaryOpInst: public Inst {
@@ -66,10 +67,11 @@ public:
 
 class BinaryOpInst: public Inst {
 public:
-    BinaryOP op;
+    BinaryOp op;
     VirtReg dst, src1, src2;
 public:
-    BinaryOpInst(BinaryOP _op, VirtReg _dst, VirtReg _src1, VirtReg _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    BinaryOpInst(BinaryOp _op, VirtReg _dst, VirtReg _src1, VirtReg _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    void printbOpInst();
 };
 
 class ReturnInst: public Inst {
@@ -83,9 +85,17 @@ public:
 
 class LoadNumber: public Inst {
 public:
-    CTValue src;
     VirtReg dst;
+    CTValue src;
 public:
-    LoadNumber(CTValue _src, VirtReg _dst) : src(_src), dst(_dst) { }
+    LoadNumber(VirtReg _dst, CTValue _src) : dst(_dst), src(_src) { }
     void printLdcInst();
+};
+
+class AssignInst: public Inst {
+public:
+    VirtReg dst, src;
+public:
+    AssignInst(VirtReg _dst, VirtReg _src): dst(_dst), src(_src) { }
+    void printAssInst() { };
 };

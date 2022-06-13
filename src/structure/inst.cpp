@@ -5,6 +5,11 @@ void UnaryOpInst::printuOpInst() {
     cout << "reg" << dst.reg_id << ", reg" << src.reg_id << ";\n";
 }
 
+void BinaryOpInst::printbOpInst() {
+    cout << "\t" << "bop" << op.get_op() << " ";
+    cout << "reg" << dst.reg_id << ", reg" << src1.reg_id << ", reg" << src2.reg_id << ";\n";
+}
+
 void ReturnInst::printRetInst() {
     cout << "\t" << "return ";
     if (has_retvalue) {
