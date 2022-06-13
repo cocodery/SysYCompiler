@@ -332,6 +332,8 @@ antlrcpp::Any ASTVisitor::visitBlockItem(SysYParser::BlockItemContext *ctx) {
 
 antlrcpp::Any ASTVisitor::visitAssignment(SysYParser::AssignmentContext *ctx) {
     // TODO:
+    IRValue lhs;
+    IRValue rhs = ctx->exp()->accept(this);
     return nullptr;
 }
 
@@ -457,7 +459,10 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
             }
         }
         ret.type = type;
+        cout << "exit LVal" << endl;
         return ret;
+    } else {
+
     }
     cout << "exit LVal" << endl;
     return CTValue(TypeInt);
@@ -473,14 +478,14 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
     return ctx->lVal()->accept(this);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
-    // TODO:
     CTValue src = ctx->number()->accept(this);
     if (mode == compile_time) {
         return src;
     } else {
         VirtReg dst = VirtReg();
-        LoadNumber *ldc_inst = new LoadNumber(src, dst);
+        LoadNumber *ldc_inst = new LoadNumber(dst, src);
         cur_basicblock->basic_block.push_back(ldc_inst);
         VarType type = VarType(true, false, false, src.type);
         IRValue ret = IRValue(type, dst, false);
@@ -571,19 +576,29 @@ antlrcpp::Any ASTVisitor::visitMul1(SysYParser::Mul1Context *ctx) {
     return ctx->unaryExp()->accept(this);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
-    // TODO:
-    char op = ctx->children[1]->getText()[0];
+    string op = ctx->children[1]->getText();
     if (mode == compile_time) {
         cout << "enter mul2" << endl;
         CTValue lhs = ctx->mulExp()->accept(this);
         CTValue rhs = ctx->unaryExp()->accept(this);
         cout << "exit mul2" << endl;
-        if (op == '*') return lhs * rhs;
-        else if (op == '/') return lhs / rhs;
-        else if (op == '%') return lhs % rhs;
+        if (op == "*") return lhs * rhs;
+        else if (op == "/") return lhs / rhs;
+        else if (op == "%") return lhs % rhs;
+    } else {
+        mode = normal;
+        CompileMode last_mode = mode;
+        IRValue src1 = ctx->mulExp()->accept(this);
+        IRValue src2 = ctx->unaryExp()->accept(this);
+        mode = last_mode;
+        VirtReg dst = VirtReg();
+        BinaryOpInst *bin_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
+        cur_basicblock->basic_block.push_back(bin_inst);
+        IRValue ret = IRValue(VarType(false, false, false, TypeInt), dst, false);
+        return ret;
     }
-    return nullptr;
 }
 
 // finished
@@ -591,18 +606,28 @@ antlrcpp::Any ASTVisitor::visitAdd1(SysYParser::Add1Context *ctx) {
     return ctx->mulExp()->accept(this);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
-    // TODO:
-    char op = ctx->children[1]->getText()[0];
+    string op = ctx->children[1]->getText();
     if (mode == compile_time) {
         cout << "enter add2" << endl;
         CTValue lhs = ctx->addExp()->accept(this);
         CTValue rhs = ctx->mulExp()->accept(this);
         cout << "exit add2" << endl;
-        if (op == '+')  return lhs + rhs;
-        else if (op == '-')  return lhs - rhs;
+        if (op == "+")  return lhs + rhs;
+        else if (op == "-")  return lhs - rhs;
+    } else {
+        mode = normal;
+        CompileMode last_mode = mode;
+        IRValue src1 = ctx->addExp()->accept(this);
+        IRValue src2 = ctx->mulExp()->accept(this);
+        mode = last_mode;
+        VirtReg dst = VirtReg();
+        BinaryOpInst *bin_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
+        cur_basicblock->basic_block.push_back(bin_inst);
+        IRValue ret = IRValue(VarType(false, false, false, TypeInt), dst, false);
+        return ret;
     }
-    return nullptr;
 }
 
 // finished
