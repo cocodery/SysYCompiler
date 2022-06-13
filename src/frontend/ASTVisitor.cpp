@@ -1,5 +1,7 @@
 #include "ASTVisitor.hh"
 
+extern const VirtReg NoRetReg;
+
 ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
     type = TypeVoid;
@@ -375,10 +377,14 @@ antlrcpp::Any ASTVisitor::visitContinueStmt(SysYParser::ContinueStmtContext *ctx
 antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
     // TODO:
     // if ctx->exp() == nullptr, means it's a function without return value
-    ReturnInst *ret_inst = new ReturnInst(ctx->exp() != nullptr);
-    if (ret_inst->has_retvalue == true) {
-        IRValue dst = ctx->exp()->accept(this);
-        ret_inst->dst = dst.reg;
+    bool has_retvalue = ctx->exp() != nullptr;
+    ReturnInst *ret_inst = nullptr;
+    if (has_retvalue) {
+        VirtReg dst = ctx->exp()->accept(this).as<IRValue>().reg;
+        ret_inst = new ReturnInst(has_retvalue, dst);
+    } else {
+        VirtReg dst = NoRetReg;
+        ret_inst = new ReturnInst(has_retvalue, dst);
     }
     cur_basicblock->basic_block.push_back(ret_inst); // 将指令加入基本块
     cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
@@ -522,12 +528,24 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
 antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
     // TODO:
     cout << "enter unary3" << endl;
-    char op = ctx->unaryOp()->getText()[0];
+    string op = ctx->unaryOp()->getText();
     if (mode == compile_time) {
         CTValue rhs = ctx->unaryExp()->accept(this);
-        if (op == '-') return -rhs;
-        else if (op == '!') return !rhs;
+        if (op == "-") return -rhs;
+        else if (op == "!") return !rhs;
         else return rhs;
+    } else if (mode == normal) {
+        IRValue src = ctx->unaryExp()->accept(this);
+        IRValue ret;
+        if (op != "+") {
+            VirtReg dst = VirtReg();
+            UnaryOpInst *uop_inst = new UnaryOpInst(UnaryOp(op), dst, src.reg);
+            cur_basicblock->basic_block.push_back(uop_inst);
+            ret = IRValue(src.type, dst, false);
+        } else {
+            ret = src;
+        }
+        return ret;
     }
     return nullptr;
 }
