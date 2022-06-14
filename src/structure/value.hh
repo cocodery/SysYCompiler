@@ -29,7 +29,7 @@ public:
 public:
     IRValue() : reg(NoRetReg){ }
     IRValue(VarType t, VirtReg vg, bool ass = false);
-    bool can_assign();
+    bool can_assign() { return !type.is_const && !type.is_array; };
 };
 
 CTValue operator + (CTValue lhs, CTValue rhs);
