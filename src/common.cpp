@@ -1,5 +1,13 @@
 #include "common.hh"
 
+string get_tabs() {
+    string ret;
+    for (int i = 0; i <= tab_num; ++i) {
+        ret += "\t";
+    }
+    return ret;
+}
+
 int parseNum(const char *number_str) {
     int32_t ret = 0;
     if (number_str[0] == '0' ) {

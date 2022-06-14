@@ -100,7 +100,7 @@ Variable *VariableTable::getInCurTable(string name) {
 void VariableTable::printVaribaleTable() {
     int size = var_table.size();
     for (int i = 0; i < size; ++i) {
-        cout << '\t';
+        cout << get_tabs();
         var_table[i].second->printVariable(var_table[i].first);
     }
 }
