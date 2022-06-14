@@ -12,8 +12,8 @@ void BasicBlock::printBlock() {
         Case (UnaryOpInst, uop_inst, inst) {
             uop_inst->printuOpInst();
         }
-        Case (BinaryOpInst, uop_inst, inst) {
-            uop_inst->printbOpInst();
+        Case (BinaryOpInst, bop_inst, inst) {
+            bop_inst->printbOpInst();
         }
         Case (AssignInst, ass_inst, inst) {
             ass_inst->printAssInst();
