@@ -17,11 +17,14 @@ void BasicBlock::printBlock() {
         Case (BinaryOpInst, bop_inst, inst) {
             bop_inst->printbOpInst();
         }
-        Case (AssignInst, ass_inst, inst) {
-            ass_inst->printAssInst();
+        Case (StoreMem, stm_inst, inst) {
+            stm_inst->printStmInst();
         }
         Case (LoadAddress, lad_inst, inst) {
-            lad_inst->printLadInst();
+            lad_inst->printLdaInst();
+        }
+        Case (LoadValue, ldv_inst, inst) {
+            ldv_inst->printLdvInst();
         }
     }
 }
