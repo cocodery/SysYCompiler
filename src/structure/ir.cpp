@@ -3,11 +3,17 @@
 void BasicBlock::printBlock() {
     cout << "\t// `BasicBlock` of current Scope" << endl;
     for (auto inst: basic_block) {
-        Case(ReturnInst, ret_inst, inst) {
+        Case (ReturnInst, ret_inst, inst) {
             ret_inst->printRetInst();
         }
-        Case(LoadNumber, ldc_inst, inst) {
+        Case (LoadNumber, ldc_inst, inst) {
             ldc_inst->printLdcInst();
+        }
+        Case (UnaryOpInst, uop_inst, inst) {
+            uop_inst->printuOpInst();
+        }
+        Case (BinaryOpInst, uop_inst, inst) {
+            uop_inst->printbOpInst();
         }
     }
 }

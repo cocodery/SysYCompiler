@@ -13,7 +13,7 @@ public:
 
 #### BinaryOp
 ```cpp
-class BinaryOP {
+class BinaryOp {
     enum Type {
         ADD, SUB, MUL, DIV, MOD, LTH, LEQ, EQU, NEQ, AND, ORR, LSH, RSH, 
     } bin_op;
