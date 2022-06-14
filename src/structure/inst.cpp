@@ -30,7 +30,7 @@ void LoadNumber::printLdcInst() {
 
 void AssignInst::printAssInst() {
     cout << "\t" << "ld.r reg" << dst.reg_id << ", ";
-    cout << src.reg_id;
+    cout << "reg" << src.reg_id;
     cout << ";\n";
 }
 

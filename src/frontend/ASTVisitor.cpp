@@ -336,8 +336,16 @@ antlrcpp::Any ASTVisitor::visitBlockItem(SysYParser::BlockItemContext *ctx) {
 
 antlrcpp::Any ASTVisitor::visitAssignment(SysYParser::AssignmentContext *ctx) {
     // TODO:
-    IRValue lhs;
+    IRValue lhs = ctx->lVal()->accept(this);
     IRValue rhs = ctx->exp()->accept(this);
+    if (!lhs.can_assign()) {
+        cout << "reg" << lhs.reg.reg_id << " can't be assigned" << endl;
+        exit(EXIT_FAILURE);
+    }
+    VirtReg dst = lhs.reg;
+    VirtReg src = rhs.reg;
+    AssignInst *ass_inst = new AssignInst(dst, src);
+    cur_basicblock->basic_block.push_back(ass_inst);
     return nullptr;
 }
 
@@ -415,8 +423,8 @@ antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     // TODO:
     cout << "enter LVal" << endl;
+    Variable *variable = cur_scope->resolve(ctx->Identifier()->getText());
     if (mode == compile_time) { // 编译期可计算的值
-        Variable *variable = cur_scope->resolve(ctx->Identifier()->getText());
         if (variable == nullptr) {
             cout << "Not find in symtable" << endl;
             exit(EXIT_FAILURE);
@@ -466,10 +474,19 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
         cout << "exit LVal" << endl;
         return ret;
     } else {
-
+        VarType type = variable->type;        
+        VirtReg dst = VirtReg();
+        LoadAddress *lad_inst = new LoadAddress(dst, variable);
+        cur_basicblock->basic_block.push_back(lad_inst);
+        IRValue ret;
+        if (!type.is_array) { // 如果不是数组, `ret`类型与`variable`一致
+            ret = IRValue(type, dst, true);
+        } else { // 如果是数组, 则需进一步分析
+            
+        }
+        cout << "exit LVal" << endl;
+        return ret;
     }
-    cout << "exit LVal" << endl;
-    return CTValue(TypeInt);
 }
 
 // finished
@@ -547,6 +564,25 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
             ret = src;
         }
         return ret;
+    } else {
+        if (op == "!") {
+
+        } else {
+            CompileMode last_mode = mode;
+            mode = normal;
+            IRValue src = ctx->unaryExp()->accept(this);
+            IRValue ret;
+            if (op != "+") {
+                VirtReg dst = VirtReg();
+                UnaryOpInst *uop_inst = new UnaryOpInst(UnaryOp(op), dst, src.reg);
+                cur_basicblock->basic_block.push_back(uop_inst);
+                ret = IRValue(src.type, dst, false);
+            } else {
+                ret = src;
+            }
+            mode = last_mode;
+            return ret;
+        }
     }
     return nullptr;
 }
