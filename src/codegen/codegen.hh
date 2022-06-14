@@ -213,11 +213,12 @@ public:
             {
                 insts.push_back(Instruction(
                     "MOV", {
-                        "ES:[" + std::to_string(lad_inst->dst.reg_id << 1) + "]",
-                        "WORD PTR " + std::to_string(lad_inst->variable->var_idx << 1)},
+                        "AX",
+                        "DS:[" + std::to_string(lad_inst->variable->var_idx << 1) + "]"},
                     "",
                     false,
                     "ld.v reg" + std::to_string(lad_inst->dst.reg_id) + ", *" + std::to_string(lad_inst->variable->var_idx)));
+                insts.push_back(Instruction("MOV", {"ES:[" + std::to_string(lad_inst->dst.reg_id << 1) + "]", "AX"}));
             }
             for (auto&& toInsert : insts)
             {
