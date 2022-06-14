@@ -503,11 +503,7 @@ antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
     int int_literal = parseNum(ctx->IntLiteral()->getText().c_str());
     dbg(int_literal);
     cout << "exit int number" << endl;
-    if (type == TypeInt) {
-        return CTValue(type, int_literal, 0);
-    } else if (type == TypeFloat) {
-        return CTValue(TypeFloat, 0, float(int_literal));
-    }
+    return CTValue(type, int_literal, 0);
 }
 
 // finished
@@ -517,11 +513,7 @@ antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
     sscanf(ctx->FloatLiteral()->getText().c_str(), "%f", &float_literal);
     dbg(float_literal);
     cout << "exit float number" << endl;
-    if (type == TypeFloat) { 
-        return CTValue(type, 0, float_literal);
-    } else if (type == TypeInt) {
-        return CTValue(TypeInt, int(float_literal), 0);
-    }
+    return CTValue(type, 0, float_literal);
 }
 
 // finished
