@@ -42,3 +42,31 @@ public:
 ```
 load常量中间表示
 加载的常量, 目的虚拟寄存器
+
+#### StoreMem
+```cpp
+class StoreMem: public Inst {
+public:
+    VirtReg dst, src;
+};
+```
+将右值寄存器中的值加载到左值寄存器对应的地址
+
+#### LoadAddress
+```cpp
+class LoadAddress: public Inst {
+public:
+    VirtReg dst;
+    Variable *variable;
+};
+```
+将变量地址装入寄存器
+
+#### LoadValue
+```cpp
+class LoadValue: public Inst {
+public:
+    VirtReg dst, src;
+};
+```
+将右值寄存器中的地址对应的值加载到左值寄存器
