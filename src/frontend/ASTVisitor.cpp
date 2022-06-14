@@ -305,6 +305,7 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
 // 将该作用域下的符号表，指令保存
 antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cout << "enter Block" << endl;
+    // 将上个作用域的基本块push进来
     cur_scope_elements->push_back(cur_basicblock);
     // save `cur_scope` `cur_vartable` `cur_elements`
     Scope          *last_scope = cur_scope;
@@ -315,17 +316,20 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     block_scope->local_table = new VariableTable;
     block_scope->elements = new vector<Info *>;
     block_scope->parent = last_scope;
-    BasicBlock *scope_block = new BasicBlock;
     // cur_* point to current *
     cur_scope = block_scope;
     cur_vartable = block_scope->local_table;
     cur_scope_elements = block_scope->elements;
-    cur_basicblock = scope_block;
+    cur_basicblock = new BasicBlock;
     visitChildren(ctx);
+    // 新的基本块到右括号就结束了, push
+    cur_scope_elements->push_back(cur_basicblock);
     // restore `cur_scope` `cur_vartable` `cur_elements`
     cur_scope = last_scope;
     cur_vartable = last_vartable;
     cur_scope_elements = last_scope_elements;
+    // 新的基本块
+    cur_basicblock = new BasicBlock;
     cout << "exit Block" << endl;
     return block_scope;
 }
@@ -403,6 +407,7 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
     }
     cur_basicblock->basic_block.push_back(ret_inst); // 将指令加入基本块
     cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
+    cur_basicblock = new BasicBlock;
     return nullptr;
 }
 

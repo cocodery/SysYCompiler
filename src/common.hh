@@ -11,6 +11,9 @@
 using std::string;
 using std::vector;
 
+extern int32_t tab_num;
+string get_tabs();
+
 int parseNum(const char *number_str);
 
 enum DeclType {
