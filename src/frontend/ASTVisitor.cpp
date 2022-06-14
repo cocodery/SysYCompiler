@@ -137,6 +137,10 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     cout << "enter ConstDef" << endl;
     string var_name = ctx->Identifier()->getText();
+    if (cur_vartable->findInCurTable(var_name)) {
+        dbg(var_name + " is in cur_vartable");
+        exit(EXIT_FAILURE);
+    }
     Variable *const_variable = new Variable;
     VarType const_var(true, !(ctx->constExp().size() == 0), false, type);
     dbg(DeclTypeToStr(const_var.decl_type), const_var.is_array);
@@ -204,6 +208,10 @@ antlrcpp::Any ASTVisitor::visitVarDecl(SysYParser::VarDeclContext *ctx) {
 antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx) {
     cout << "enter UninitVarDef" << endl;
     string var_name = ctx->Identifier()->getText();
+    if (cur_vartable->findInCurTable(var_name)) {
+        dbg(var_name + " is in cur_vartable");
+        exit(EXIT_FAILURE);
+    }
     Variable *variable = new Variable;
     VarType var(false, !(ctx->constExp().size() == 0), false, type);
     dbg(DeclTypeToStr(var.decl_type), var.is_array);
@@ -212,10 +220,6 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
         dbg(var.array_dims);
     }
     variable->type = var;
-    if (cur_vartable->findInCurTable(var_name)) {
-        dbg(var_name + " is in cur_vartable");
-        exit(EXIT_FAILURE);
-    }
     cur_vartable->var_table.push_back(std::make_pair(var_name, variable));
     cout << "exit UninitVarDef" << endl;
     return nullptr;
@@ -376,8 +380,8 @@ antlrcpp::Any ASTVisitor::visitContinueStmt(SysYParser::ContinueStmtContext *ctx
     return nullptr;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
-    // TODO:
     // if ctx->exp() == nullptr, means it's a function without return value
     bool has_retvalue = ctx->exp() != nullptr;
     ReturnInst *ret_inst = nullptr;
@@ -596,7 +600,15 @@ antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
         VirtReg dst = VirtReg();
         BinaryOpInst *bin_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
         cur_basicblock->basic_block.push_back(bin_inst);
-        IRValue ret = IRValue(VarType(false, false, false, TypeInt), dst, false);
+        VarType ret_type = VarType(false, false, false, TypeVoid);
+        if (src1.type.decl_type == src2.type.decl_type) {
+            ret_type.decl_type = src1.type.decl_type;
+        } else {
+            ret_type.decl_type = TypeFloat;
+            bin_inst->need_cast = true;
+        }
+        ret_type.is_const = (src1.type.is_const && src2.type.is_const) ? true : false;
+        IRValue ret = IRValue(ret_type, dst, false);
         return ret;
     }
 }
@@ -625,7 +637,15 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
         VirtReg dst = VirtReg();
         BinaryOpInst *bin_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
         cur_basicblock->basic_block.push_back(bin_inst);
-        IRValue ret = IRValue(VarType(false, false, false, TypeInt), dst, false);
+        VarType ret_type = VarType(false, false, false, TypeVoid);
+        if (src1.type.decl_type == src2.type.decl_type) {
+            ret_type.decl_type = src1.type.decl_type;
+        } else {
+            ret_type.decl_type = TypeFloat;
+            bin_inst->need_cast = true;
+        }
+        ret_type.is_const = (src1.type.is_const && src2.type.is_const) ? true : false;
+        IRValue ret = IRValue(ret_type, dst, false);
         return ret;
     }
 }

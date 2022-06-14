@@ -69,8 +69,9 @@ class BinaryOpInst: public Inst {
 public:
     BinaryOp op;
     VirtReg dst, src1, src2;
+    bool need_cast;
 public:
-    BinaryOpInst(BinaryOp _op, VirtReg _dst, VirtReg _src1, VirtReg _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    BinaryOpInst(BinaryOp _op, VirtReg _dst, VirtReg _src1, VirtReg _src2, bool _nc = false) : op(_op), dst(_dst), src1(_src1), src2(_src2), need_cast(_nc) { }
     void printbOpInst();
 };
 

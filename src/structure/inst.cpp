@@ -8,6 +8,7 @@ void UnaryOpInst::printuOpInst() {
 void BinaryOpInst::printbOpInst() {
     cout << "\t" << "bop" << op.get_op() << " ";
     cout << "reg" << dst.reg_id << ", reg" << src1.reg_id << ", reg" << src2.reg_id << ";\n";
+    dbg(need_cast);
 }
 
 void ReturnInst::printRetInst() {
