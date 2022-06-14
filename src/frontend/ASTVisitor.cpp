@@ -349,7 +349,7 @@ antlrcpp::Any ASTVisitor::visitAssignment(SysYParser::AssignmentContext *ctx) {
     }
     VirtReg dst = lhs.reg;
     VirtReg src = rhs.reg;
-    AssignInst *ass_inst = new AssignInst(dst, src);
+    StoreMem *ass_inst = new StoreMem(dst, src);
     cur_basicblock->basic_block.push_back(ass_inst);
     return nullptr;
 }
@@ -482,8 +482,8 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     } else {
         VarType type = variable->type;        
         VirtReg dst = VirtReg();
-        LoadAddress *lad_inst = new LoadAddress(dst, variable);
-        cur_basicblock->basic_block.push_back(lad_inst);
+        LoadAddress *lda_inst = new LoadAddress(dst, variable);
+        cur_basicblock->basic_block.push_back(lda_inst);
         IRValue ret;
         if (!type.is_array) { // 如果不是数组, `ret`类型与`variable`一致
             ret = IRValue(type, dst, true);
@@ -502,7 +502,10 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp1(SysYParser::PrimaryExp1Context *ctx) 
 
 // finished
 antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) {
-    return ctx->lVal()->accept(this);
+    IRValue src = ctx->lVal()->accept(this);
+    LoadValue *ldv_inst = new LoadValue(src.reg, src.reg);
+    cur_basicblock->basic_block.push_back(ldv_inst);
+    return src;
 }
 
 // finished
