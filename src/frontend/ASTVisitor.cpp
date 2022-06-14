@@ -305,6 +305,7 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
 // 将该作用域下的符号表，指令保存
 antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cout << "enter Block" << endl;
+    cur_scope_elements->push_back(cur_basicblock);
     // save `cur_scope` `cur_vartable` `cur_elements`
     Scope          *last_scope = cur_scope;
     VariableTable  *last_vartable = cur_vartable;
