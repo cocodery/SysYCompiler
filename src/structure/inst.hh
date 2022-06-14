@@ -98,5 +98,14 @@ public:
     VirtReg dst, src;
 public:
     AssignInst(VirtReg _dst, VirtReg _src): dst(_dst), src(_src) { }
-    void printAssInst() { };
+    void printAssInst();
+};
+
+class LoadAddress: public Inst {
+public:
+    VirtReg dst;
+    Variable *variable;
+public:
+    LoadAddress(VirtReg _dst, Variable *v): dst(_dst), variable(v) { }
+    void printLadInst();
 };

@@ -15,6 +15,12 @@ void BasicBlock::printBlock() {
         Case (BinaryOpInst, uop_inst, inst) {
             uop_inst->printbOpInst();
         }
+        Case (AssignInst, ass_inst, inst) {
+            ass_inst->printAssInst();
+        }
+        Case (LoadAddress, lad_inst, inst) {
+            lad_inst->printLadInst();
+        }
     }
 }
 

@@ -8,7 +8,6 @@ void UnaryOpInst::printuOpInst() {
 void BinaryOpInst::printbOpInst() {
     cout << "\t" << "bop" << op.get_op() << " ";
     cout << "reg" << dst.reg_id << ", reg" << src1.reg_id << ", reg" << src2.reg_id << ";\n";
-    dbg(need_cast);
 }
 
 void ReturnInst::printRetInst() {
@@ -20,11 +19,23 @@ void ReturnInst::printRetInst() {
 }
 
 void LoadNumber::printLdcInst() {
-    cout << "\t" << "load reg" << dst.reg_id << ", ";
+    cout << "\t" << "ld.c reg" << dst.reg_id << ", ";
     if (src.type == TypeInt) {
         cout << src.int_value;
     } else {
         cout << src.float_value;
     }
+    cout << ";\n";
+}
+
+void AssignInst::printAssInst() {
+    cout << "\t" << "ld.r reg" << dst.reg_id << ", ";
+    cout << "reg" << src.reg_id;
+    cout << ";\n";
+}
+
+void LoadAddress::printLadInst() {
+    cout << "\t" << "ld.v reg" << dst.reg_id << ", ";
+    cout << "*" << variable->var_idx;
     cout << ";\n";
 }
