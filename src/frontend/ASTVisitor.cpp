@@ -480,15 +480,25 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
         cout << "exit LVal" << endl;
         return ret;
     } else {
-        VarType type = variable->type;        
-        VirtReg dst = VirtReg();
-        LoadAddress *lda_inst = new LoadAddress(dst, variable);
+        VarType type = variable->type;
+        VirtReg addr = VirtReg();
+        LoadAddress *lda_inst = new LoadAddress(addr, variable); // 首地址
         cur_basicblock->basic_block.push_back(lda_inst);
         IRValue ret;
         if (!type.is_array) { // 如果不是数组, `ret`类型与`variable`一致
-            ret = IRValue(type, dst, true);
+            ret = IRValue(type, addr, true);
         } else { // 如果是数组, 则需进一步分析
-            
+            int32_t size = ctx->exp().size();
+            vector<int32_t> dims = type.get_dims(); // 获得每一维的大小
+            for (int i = 0 ; i < size; ++i) {
+                VirtReg off = ctx->exp()[i]->accept(this).as<IRValue>().reg;
+                VirtReg dst = VirtReg();
+                LoadOffset *ldo_inst = new LoadOffset(dst, addr, off, dims[i]);
+                cur_basicblock->basic_block.push_back(ldo_inst);
+                addr = dst; 
+                type = type.move_down();
+            }
+            ret = IRValue(type, addr, true);
         }
         cout << "exit LVal" << endl;
         return ret;
