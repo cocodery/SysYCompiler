@@ -83,8 +83,8 @@ public:
     {
         // TODO
         file << dataSegment.ToString() << "\n";
-        file << codeSegment.ToString() << "\n";
         file << extraSegment.ToString() << "\n";
+        file << codeSegment.ToString() << "\n";
         file << "    END START\n";
     }
     void AddInfoFromScope(const Scope& scope, bool iterateElems = true)
