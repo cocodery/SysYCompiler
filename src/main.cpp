@@ -13,6 +13,8 @@
 #include "frontend/SysYParser.h"
 #include "frontend/ASTVisitor.hh"
 
+#include "codegen/codegen.hh"
+
 #include "common.hh"
 
 using namespace antlr4;
@@ -81,6 +83,17 @@ int main(int argc, char *argv[]) {
     ir.DebugUserFuncs();
 
     cout << "Compiler Complete" << endl;
+
+    cout << "\n--------Code Gen--------\n";
+
+    CodeGenerator cg;
+    cg.Generate(ir);
+    ofstream dest{"../main.asm"};
+    if (!dest.is_open()) {
+        cerr << "cannot open input file" << endl;
+        return EXIT_FAILURE;
+    }
+    cg.OutputToFile(dest);
 
     return 0;
 

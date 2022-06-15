@@ -9,3 +9,9 @@ build/
 
 # java
 src/frontend/.antlr/
+
+# macos
+*.DS_Store
+
+# codegen
+*.asm
