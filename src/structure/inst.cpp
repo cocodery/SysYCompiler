@@ -55,6 +55,14 @@ string LoadValue::ToString() {
     return ss.str();
 }
 
+string LoadOffset::ToString() {
+    std::stringstream ss;
+    ss << "ld.o reg" << dst.reg_id << ", ";
+    ss << "reg" << addr.reg_id << ", ";
+    ss << "reg" << off.reg_id << " * " << size;
+    return ss.str();
+}
+
 void UnaryOpInst::printuOpInst() {
     cout << get_tabs() << ToString() << ";\n";
 }
@@ -80,5 +88,9 @@ void LoadAddress::printLdaInst() {
 }
 
 void LoadValue::printLdvInst() {
+    cout << get_tabs() << ToString() << ";\n";
+}
+
+void LoadOffset::printLdoInst() {
     cout << get_tabs() << ToString() << ";\n";
 }

@@ -70,3 +70,13 @@ public:
 };
 ```
 将右值寄存器中的地址对应的值加载到左值寄存器
+
+#### LoadOffset
+```cpp
+class LoadOffset: public Inst {
+public:
+    VirtReg dst, addr, off;
+    int32_t size;
+};
+```
+读取数组的偏移地址

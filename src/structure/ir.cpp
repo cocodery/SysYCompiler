@@ -26,6 +26,9 @@ void BasicBlock::printBlock() {
         Case (LoadValue, ldv_inst, inst) {
             ldv_inst->printLdvInst();
         }
+        Case (LoadOffset, ldo_inst, inst) {
+            ldo_inst->printLdoInst();
+        }
     }
 }
 

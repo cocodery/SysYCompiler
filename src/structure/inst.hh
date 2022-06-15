@@ -132,3 +132,16 @@ public:
     string ToString();
     void printLdvInst();
 };
+
+// add array offset to addr
+// cur_dim_size is `size`, `off` is offset num
+// ld.o reg.X, reg.Y, reg.Z * size
+class LoadOffset: public Inst {
+public:
+    VirtReg dst, addr, off;
+    int32_t size;
+public:
+    LoadOffset(VirtReg _dst, VirtReg _addr, VirtReg _off, int32_t _size): dst(_dst), addr(_addr), off(_off), size(_size) { }
+    string ToString();
+    void printLdoInst();
+};
