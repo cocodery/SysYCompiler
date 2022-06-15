@@ -28,6 +28,25 @@ int32_t VarType::get_index(vector<int32_t>& arr_idx) {
     return ret;
 }
 
+vector<int32_t> VarType::get_dims() {
+    vector<int32_t> ret;
+    int32_t size = array_dims.size();
+    int32_t dim = 1;
+    for (int i = size - 1; i >= 0; --i) {
+        ret.push_back(dim);
+        dim *= array_dims[i];
+    }
+    std::sort(ret.rbegin(), ret.rend());
+    return ret;
+}
+
+VarType VarType::move_down() {
+    VarType ret = *this;
+    ret.array_dims.erase(ret.array_dims.begin());
+    ret.is_array = (ret.array_dims.size() == 0) ? false : true;
+    return ret;
+}
+
 void VarType::printVarTypeForArg() {
     string ret;
     if (is_args) {
