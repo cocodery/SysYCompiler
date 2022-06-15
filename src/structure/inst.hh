@@ -62,6 +62,7 @@ public:
     VirtReg dst, src;
 public:
     UnaryOpInst(UnaryOp _op, VirtReg _dst, VirtReg _src) : op(_op), dst(_dst), src(_src) { }
+    string ToString();
     void printuOpInst();
 };
 
@@ -72,6 +73,7 @@ public:
     bool need_cast;
 public:
     BinaryOpInst(BinaryOp _op, VirtReg _dst, VirtReg _src1, VirtReg _src2, bool _nc = false) : op(_op), dst(_dst), src1(_src1), src2(_src2), need_cast(_nc) { }
+    string ToString();
     void printbOpInst();
 };
 
@@ -81,6 +83,7 @@ public:
     VirtReg dst;
 public:
     ReturnInst(bool _ret_v, VirtReg vg) : dst(vg), has_retvalue(_ret_v) { }
+    string ToString();
     void printRetInst();
 };
 
@@ -92,6 +95,7 @@ public:
     CTValue src;
 public:
     LoadNumber(VirtReg _dst, CTValue _src) : dst(_dst), src(_src) { }
+    string ToString();
     void printLdcInst();
 };
 
@@ -102,6 +106,7 @@ public:
     VirtReg dst, src;
 public:
     StoreMem(VirtReg _dst, VirtReg _src): dst(_dst), src(_src) { }
+    string ToString();
     void printStmInst();
 };
 
@@ -113,6 +118,7 @@ public:
     Variable *variable;
 public:
     LoadAddress(VirtReg _dst, Variable *v): dst(_dst), variable(v) { }
+    string ToString();
     void printLdaInst();
 };
 
@@ -123,5 +129,6 @@ public:
     VirtReg dst, src;
 public:
     LoadValue(VirtReg _dst, VirtReg _src): dst(_dst), src(_src) { }
+    string ToString();
     void printLdvInst();
 };
