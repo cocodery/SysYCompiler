@@ -28,14 +28,20 @@ void LoadNumber::printLdcInst() {
     cout << ";\n";
 }
 
-void AssignInst::printAssInst() {
-    cout << get_tabs() << "ld.r reg" << dst.reg_id << ", ";
+void StoreMem::printStmInst() {
+    cout << get_tabs() << "st [reg" << dst.reg_id << "], ";
     cout << "reg" << src.reg_id;
     cout << ";\n";
 }
 
-void LoadAddress::printLadInst() {
-    cout << get_tabs() << "ld.v reg" << dst.reg_id << ", ";
+void LoadAddress::printLdaInst() {
+    cout << get_tabs() << "ld.a reg" << dst.reg_id << ", ";
     cout << "*" << variable->var_idx;
+    cout << ";\n";
+}
+
+void LoadValue::printLdvInst() {
+    cout << get_tabs() << "ld.v reg" << dst.reg_id << ", ";
+    cout << "[reg" << src.reg_id << "]";
     cout << ";\n";
 }

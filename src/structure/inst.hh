@@ -84,6 +84,8 @@ public:
     void printRetInst();
 };
 
+// load a constant to register
+// ld.c reg.X, Y
 class LoadNumber: public Inst {
 public:
     VirtReg dst;
@@ -93,19 +95,33 @@ public:
     void printLdcInst();
 };
 
-class AssignInst: public Inst {
+// load value in register to address in register
+// st [reg.X], reg.Y
+class StoreMem: public Inst {
 public:
     VirtReg dst, src;
 public:
-    AssignInst(VirtReg _dst, VirtReg _src): dst(_dst), src(_src) { }
-    void printAssInst();
+    StoreMem(VirtReg _dst, VirtReg _src): dst(_dst), src(_src) { }
+    void printStmInst();
 };
 
+// load an address of variable to register
+// ld.a reg.X, addr
 class LoadAddress: public Inst {
 public:
     VirtReg dst;
     Variable *variable;
 public:
     LoadAddress(VirtReg _dst, Variable *v): dst(_dst), variable(v) { }
-    void printLadInst();
+    void printLdaInst();
+};
+
+// load value in [reg.Y] to reg.X
+// ld.v reg.X, [reg.Y]
+class LoadValue: public Inst {
+public:
+    VirtReg dst, src;
+public:
+    LoadValue(VirtReg _dst, VirtReg _src): dst(_dst), src(_src) { }
+    void printLdvInst();
 };
