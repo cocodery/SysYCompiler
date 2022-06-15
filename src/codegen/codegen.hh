@@ -29,9 +29,12 @@ public:
         else
             toReturn += "    ";
         toReturn += name;
-        for (auto&& operand : operands)
-            toReturn += " " + operand + ",";
-        toReturn.pop_back();
+        if (!operands.empty())
+        {
+            for (auto&& operand : operands)
+                toReturn += " " + operand + ",";
+            toReturn.pop_back();
+        }
         if (!comment.empty())
             toReturn += " ; " + comment; 
         return toReturn;
@@ -76,9 +79,13 @@ public:
     Segment codeSegment;
 public:
     CodeGenerator() : dataSegment("DSEG"), extraSegment("ESEG"), codeSegment("CSEG") {}
-    void OutputToFile(string filePath)
+    void OutputToFile(std::ofstream& file)
     {
         // TODO
+        file << dataSegment.ToString() << "\n";
+        file << codeSegment.ToString() << "\n";
+        file << extraSegment.ToString() << "\n";
+        file << "    END START\n";
     }
     void AddInfoFromScope(const Scope& scope, bool iterateElems = true)
     {
@@ -94,7 +101,7 @@ public:
             {
                 Instruction toInsert("DW",
                                     {std::to_string(varContent.int_scalar % 65536)});
-                dataSegment.Insert(toInsert);
+                extraSegment.Insert(toInsert);
                 toInsert.PrintInstruction();
             }
         }
@@ -120,6 +127,7 @@ public:
         for (auto inst: basicBlock.basic_block)
         {
             vector<Instruction> insts;
+
             Case (ReturnInst, ret_inst, inst)
             {
                 ret_inst->printRetInst();
@@ -130,57 +138,68 @@ public:
                     continue;
                 insts.push_back(Instruction(
                     "MOV", {
-                        "ES:[" + std::to_string(ldc_inst->dst.reg_id << 1) + "]",
+                        "DS:[" + std::to_string(ldc_inst->dst.reg_id << 1) + "]",
                         "WORD PTR " + std::to_string(ldc_inst->src.int_value % 65536)},
                     "",
                     false,
-                    "ld.c reg" + std::to_string(ldc_inst->dst.reg_id) + ", " + std::to_string(ldc_inst->src.int_value % 65536)));
+                    ldc_inst->ToString()));
             }
             Case (UnaryOpInst, uop_inst, inst)
             {
                 insts.push_back(Instruction(
                     "MOV", {
                         "AX",
-                        "ES:[" + std::to_string(uop_inst->src.reg_id << 1) + "]"},
+                        "DS:[" + std::to_string(uop_inst->src.reg_id << 1) + "]"},
                     "",
                     false,
-                    "uop" + uop_inst->op.get_op() + " reg" + std::to_string(uop_inst->dst.reg_id) + ", reg" + std::to_string(uop_inst->src.reg_id)));
+                    uop_inst->ToString()));
                 switch(uop_inst->op.unary_op)
                 {
                 case UnaryOp::Type::NOT:
                     insts.push_back(Instruction("NOT", {"AX"}));
+                    insts.push_back(Instruction("AND", {"AX", "1"}));
                     break;
                 case UnaryOp::Type::NEG:
                     insts.push_back(Instruction("NEG", {"AX"}));
                     break;
                 case UnaryOp::Type::POS:
-                    insts.push_back(Instruction("POS", {"AX"}));
+                    //insts.push_back(Instruction("POS", {"AX"}));
                     break;
                 }
-                insts.push_back(Instruction("MOV", {"ES:[" + std::to_string(uop_inst->dst.reg_id << 1) + "]", "AX"}));
+                insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(uop_inst->dst.reg_id << 1) + "]", "AX"}));
             }
             Case (BinaryOpInst, bop_inst, inst)
             {
                 insts.push_back(Instruction(
                     "MOV", {
                         "AX",
-                        "ES:[" + std::to_string(bop_inst->src1.reg_id << 1) + "]"},
+                        "DS:[" + std::to_string(bop_inst->src1.reg_id << 1) + "]"},
                     "",
                     false,
-                    "bop" + bop_inst->op.get_op() + " reg" + std::to_string(bop_inst->dst.reg_id) + ", reg" + std::to_string(bop_inst->src1.reg_id) + ", reg" + std::to_string(bop_inst->src2.reg_id)));
+                    bop_inst->ToString()));
                 switch(bop_inst->op.bin_op)
                 {
                 case BinaryOp::Type::ADD:
-                    insts.push_back(Instruction("ADD", {"AX", "ES:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("ADD", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
                     break;
                 case BinaryOp::Type::SUB:
-                    insts.push_back(Instruction("SUB", {"AX", "ES:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("SUB", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
                     break;
                 case BinaryOp::Type::MUL:
+                    insts.push_back(Instruction("IMUL", {"WORD PTR DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
                     break;
                 case BinaryOp::Type::DIV:
+                    insts.push_back(Instruction("CWD"));
+                    insts.push_back(Instruction("IDIV", {"WORD PTR DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
                     break;
                 case BinaryOp::Type::MOD:
+                    insts.push_back(Instruction("CWD"));
+                    insts.push_back(Instruction("IDIV", {"WORD PTR DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "DX"}));
                     break;
                 case BinaryOp::Type::LTH:
                     break;
@@ -195,31 +214,42 @@ public:
                 case BinaryOp::Type::ORR:
                     break;
                 }
-                insts.push_back(Instruction("MOV", {"ES:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
             }
-            Case (AssignInst, ass_inst, inst)
+            Case (StoreMem, stm_inst, inst)
             {
                 insts.push_back(Instruction(
                     "MOV", {
                         "AX", 
-                        "ES:[" + std::to_string(ass_inst->src.reg_id << 1) + "]"},
+                        "DS:[" + std::to_string(stm_inst->src.reg_id << 1) + "]"},
                     "",
                     false,
-                    "ld.r reg" + std::to_string(ass_inst->dst.reg_id) + ", reg" + std::to_string(ass_inst->src.reg_id)));
-                insts.push_back(Instruction("MOV", {"BX", "ES:[" + std::to_string(ass_inst->dst.reg_id << 1) + "]"}));
-                insts.push_back(Instruction("MOV", {"DS:[BX]", "AX"}));
+                    stm_inst->ToString()));
+                insts.push_back(Instruction("MOV", {"BX", "DS:[" + std::to_string(stm_inst->dst.reg_id << 1) + "]"}));
+                insts.push_back(Instruction("MOV", {"ES:[BX]", "AX"}));
             }
             Case (LoadAddress, lad_inst, inst)
             {
                 insts.push_back(Instruction(
                     "MOV", {
-                        "AX",
-                        "DS:[" + std::to_string(lad_inst->variable->var_idx << 1) + "]"},
+                        "DS:[" + std::to_string(lad_inst->dst.reg_id << 1) + "]",
+                        "WORD PTR " + std::to_string(lad_inst->variable->var_idx << 1)},
                     "",
                     false,
-                    "ld.v reg" + std::to_string(lad_inst->dst.reg_id) + ", *" + std::to_string(lad_inst->variable->var_idx)));
-                insts.push_back(Instruction("MOV", {"ES:[" + std::to_string(lad_inst->dst.reg_id << 1) + "]", "AX"}));
+                    lad_inst->ToString()));
             }
+            Case (LoadValue, ldv_inst, inst)
+            {
+                insts.push_back(Instruction(
+                    "MOV", {
+                        "BX", 
+                        "DS:[" + std::to_string(ldv_inst->src.reg_id << 1) + "]"},
+                    "",
+                    false,
+                    ldv_inst->ToString()));
+                insts.push_back(Instruction("MOV", {"AX", "ES:[BX]"}));
+                insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(ldv_inst->dst.reg_id << 1) + "]", "AX"}));
+            }
+
             for (auto&& toInsert : insts)
             {
                 codeSegment.Insert(toInsert);
@@ -242,6 +272,7 @@ public:
             codeSegment.Insert(toInsert);
             toInsert.PrintInstruction();
         }
+        dataSegment.Insert(Instruction("DW", {"512 DUP(0FFFFH)"}));
 
 
         cout << " - Global Variable" << endl;

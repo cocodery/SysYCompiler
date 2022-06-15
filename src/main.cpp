@@ -88,6 +88,12 @@ int main(int argc, char *argv[]) {
 
     CodeGenerator cg;
     cg.Generate(ir);
+    ofstream dest{"../main.asm"};
+    if (!dest.is_open()) {
+        cerr << "cannot open input file" << endl;
+        return EXIT_FAILURE;
+    }
+    cg.OutputToFile(dest);
 
     return 0;
 
