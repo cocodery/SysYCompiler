@@ -30,6 +30,7 @@ public:
     DeclType decl_type;
 public:
     VarType();
+    VarType(DeclType _type);
     VarType(bool _const, bool _arr, bool _args, DeclType _type);
     int32_t elements_number();
     int32_t get_index(vector<int32_t>& arr_idx);

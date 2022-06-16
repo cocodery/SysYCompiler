@@ -339,6 +339,7 @@ antlrcpp::Any ASTVisitor::visitBlockItem(SysYParser::BlockItemContext *ctx) {
     return visitChildren(ctx);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitAssignment(SysYParser::AssignmentContext *ctx) {
     // TODO:
     IRValue lhs = ctx->lVal()->accept(this);
@@ -426,8 +427,8 @@ antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
     return nullptr;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
-    // TODO:
     cout << "enter LVal" << endl;
     Variable *variable = cur_scope->resolve(ctx->Identifier()->getText());
     if (mode == compile_time) { // 编译期可计算的值
@@ -583,7 +584,7 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
             ret = src;
         }
         return ret;
-    } else {
+    } else { // mode == condition
         if (op == "!") {
 
         } else {
@@ -702,10 +703,19 @@ antlrcpp::Any ASTVisitor::visitRel1(SysYParser::Rel1Context *ctx) {
     return ctx->addExp()->accept(this);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
-    // TODO:
     string op = ctx->children[1]->getText();
-    return nullptr;
+    CompileMode last_mode = mode;
+    mode = normal;
+    IRValue src1 = ctx->relExp()->accept(this);
+    IRValue src2 = ctx->addExp()->accept(this);
+    mode = last_mode;
+    VirtReg dst = VirtReg();
+    BinaryOp op = BinaryOp(op);
+    BinaryOpInst *rel_inst = new BinaryOpInst(op, dst, src1.reg, src2.reg);
+    IRValue ret = IRValue(VarType(TypeBool), dst, false);
+    return ret;
 }
 
 // finished
@@ -713,10 +723,19 @@ antlrcpp::Any ASTVisitor::visitEq1(SysYParser::Eq1Context *ctx) {
     return ctx->relExp()->accept(this);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
-    // TODO:
     string op = ctx->children[1]->getText();
-    return nullptr;
+    CompileMode last_mode = mode;
+    mode = normal;
+    IRValue src1 = ctx->eqExp()->accept(this);
+    IRValue src2 = ctx->relExp()->accept(this);
+    mode = last_mode;
+    VirtReg dst = VirtReg();
+    BinaryOp op = BinaryOp(op);
+    BinaryOpInst *rel_inst = new BinaryOpInst(op, dst, src1.reg, src2.reg);
+    IRValue ret = IRValue(VarType(TypeBool), dst, false);
+    return ret;
 }
 
 // finished
