@@ -16,21 +16,28 @@ using std::vector;
 using std::string;
 using std::map;
 
+static int32_t bb_index = 0;
+static int32_t sp_index = 0;
+
 class BasicBlock: public Info {
 public:
-    vector<Inst *> basic_block; 
+    int32_t bb_idx;
+    vector<Inst *> basic_block;
+    vector<BasicBlock *> parants;
+    vector<BasicBlock *> childrens; 
 public:
-    BasicBlock() { }
+    BasicBlock() : bb_idx(bb_index++) { }
     void printBlock();
 };
 
 class Scope: public Info {
 public:
+    int32_t sp_idx;
     VariableTable  *local_table;
     vector<Info *> *elements; // `Info` -> `Scope` or `BasicBlock`
     Scope* parent;
 public:
-    Scope() { local_table = nullptr; elements = nullptr; parent = nullptr; }
+    Scope() : sp_idx(sp_index++) { local_table = nullptr; elements = nullptr; parent = nullptr; }
     Variable *resolve(string var_name);
     void printElements();
     void printScope();

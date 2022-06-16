@@ -3,7 +3,7 @@
 int32_t tab_num = 0;
 
 void BasicBlock::printBlock() {
-    cout << get_tabs() << "// `BasicBlock` of current Scope" << endl;
+    cout << get_tabs() << "// `BasicBlock`" << bb_idx << endl;
     for (auto inst: basic_block) {
         Case (ReturnInst, ret_inst, inst) {
             ret_inst->printRetInst();
@@ -35,10 +35,10 @@ void BasicBlock::printBlock() {
 Variable *Scope::resolve(string var_name) {
     if (local_table != nullptr){
         if (local_table->findInCurTable(var_name)) {
-            cout << "find in cur scope's var_table" << endl;
+            cout << "find in `Scope`" << sp_idx << endl;
             return local_table->getInCurTable(var_name);
         } else {
-            cout << "not find in cur scope's var_table, goto parent table" << endl;
+            cout << "not find in `Scope`" << sp_idx << " var_table, goto parent table" << endl;
             return parent->resolve(var_name);
         }
     } else {
@@ -58,9 +58,9 @@ void Scope::printElements() {
 }
 
 void Scope::printScope() {
-    cout << get_tabs() << "{" << endl;
+    cout << get_tabs() << "{ // `Scope`" << sp_idx << endl;
     tab_num += 1;
-    cout << get_tabs() << "// `VariableTable` of current Scope" << endl;
+    cout << get_tabs() << "// `VariableTable` of `Scope`" << sp_idx << endl;
     local_table->printVaribaleTable();
     printElements();
     tab_num -= 1;

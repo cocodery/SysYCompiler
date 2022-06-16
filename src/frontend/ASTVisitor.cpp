@@ -712,8 +712,7 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
     IRValue src2 = ctx->addExp()->accept(this);
     mode = last_mode;
     VirtReg dst = VirtReg();
-    BinaryOp op = BinaryOp(op);
-    BinaryOpInst *rel_inst = new BinaryOpInst(op, dst, src1.reg, src2.reg);
+    BinaryOpInst *rel_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
     IRValue ret = IRValue(VarType(TypeBool), dst, false);
     return ret;
 }
@@ -732,8 +731,7 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
     IRValue src2 = ctx->relExp()->accept(this);
     mode = last_mode;
     VirtReg dst = VirtReg();
-    BinaryOp op = BinaryOp(op);
-    BinaryOpInst *rel_inst = new BinaryOpInst(op, dst, src1.reg, src2.reg);
+    BinaryOpInst *rel_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
     IRValue ret = IRValue(VarType(TypeBool), dst, false);
     return ret;
 }
