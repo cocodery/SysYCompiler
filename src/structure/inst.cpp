@@ -63,6 +63,12 @@ string LoadOffset::ToString() {
     return ss.str();
 }
 
+string JumpInst::ToString() {
+    std::stringstream ss;
+    ss << "jump bb" << bb_idx;
+    return ss.str();
+}
+
 void UnaryOpInst::printuOpInst() {
     cout << get_tabs() << ToString() << ";\n";
 }
@@ -92,5 +98,9 @@ void LoadValue::printLdvInst() {
 }
 
 void LoadOffset::printLdoInst() {
+    cout << get_tabs() << ToString() << ";\n";
+}
+
+void JumpInst::printJmpInst() {
     cout << get_tabs() << ToString() << ";\n";
 }

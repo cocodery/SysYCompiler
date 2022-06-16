@@ -3,7 +3,7 @@
 int32_t tab_num = 0;
 
 void BasicBlock::printBlock() {
-    cout << get_tabs() << "// `BasicBlock`" << bb_idx << endl;
+    cout << get_tabs() << "`Block`" << bb_idx << endl;
     for (auto inst: basic_block) {
         Case (ReturnInst, ret_inst, inst) {
             ret_inst->printRetInst();
@@ -62,6 +62,7 @@ void Scope::printScope() {
     tab_num += 1;
     cout << get_tabs() << "// `VariableTable` of `Scope`" << sp_idx << endl;
     local_table->printVaribaleTable();
+    cout << get_tabs() << "// `BasicBlocks` of `Scope`" << sp_idx << endl;
     printElements();
     tab_num -= 1;
     cout << get_tabs() << "}" << endl;

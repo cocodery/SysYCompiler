@@ -50,6 +50,7 @@ public:
                 break;
             }
         }
+        dbg(idx, bop[idx]);
         return Type(idx);
     };
     BinaryOp(Type op) : bin_op(op) { }
@@ -144,4 +145,13 @@ public:
     LoadOffset(VirtReg _dst, VirtReg _addr, VirtReg _off, int32_t _size): dst(_dst), addr(_addr), off(_off), size(_size) { }
     string ToString();
     void printLdoInst();
+};
+
+class JumpInst: public Inst {
+public:
+    int32_t bb_idx;
+public:
+    JumpInst(int32_t idx = -1) : bb_idx(idx) { }
+    string ToString();
+    void printJmpInst();
 };
