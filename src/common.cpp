@@ -18,7 +18,7 @@ int parseNum(const char *number_str) {
         }
     } else {
         sscanf(number_str, "%d", &ret);
-        }
+    }
     return ret;
 }
 

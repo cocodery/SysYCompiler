@@ -17,7 +17,7 @@ string get_tabs();
 int parseNum(const char *number_str);
 
 enum DeclType {
-    TypeVoid, TypeInt, TypeFloat,
+    TypeVoid, TypeInt, TypeFloat, TypeBool,
 };
 
 DeclType getDeclType(string type_str);
