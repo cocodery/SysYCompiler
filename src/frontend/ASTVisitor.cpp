@@ -321,6 +321,7 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cur_vartable = block_scope->local_table;
     cur_scope_elements = block_scope->elements;
     cur_basicblock = new BasicBlock;
+    dbg(cur_basicblock->bb_idx);
     visitChildren(ctx);
     // 新的基本块到右括号就结束了, push
     cur_scope_elements->push_back(cur_basicblock);
@@ -330,6 +331,7 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cur_scope_elements = last_scope_elements;
     // 新的基本块
     cur_basicblock = new BasicBlock;
+    dbg(cur_basicblock->bb_idx);
     cout << "exit Block" << endl;
     return block_scope;
 }
@@ -341,7 +343,6 @@ antlrcpp::Any ASTVisitor::visitBlockItem(SysYParser::BlockItemContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitAssignment(SysYParser::AssignmentContext *ctx) {
-    // TODO:
     IRValue lhs = ctx->lVal()->accept(this);
     IRValue rhs = ctx->exp()->accept(this);
     if (!lhs.can_assign()) {
@@ -370,7 +371,42 @@ antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitIfStmt1(SysYParser::IfStmt1Context *ctx) {
-    // TODO:
+    cout << "enter IfStmt1" << endl;
+    // if condition
+    ctx->cond()->accept(this);
+    // if stmt body
+    if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()); node != nullptr) {
+        dbg("Block Stmt Context");
+        node->accept(this);
+    } else {
+        dbg("Other Stmt Context");
+        cur_scope_elements->push_back(cur_basicblock);
+        Scope          *last_scope = cur_scope;
+        VariableTable  *last_vartable = cur_vartable;
+        vector<Info *> *last_scope_elements = cur_scope_elements;
+
+        Scope *block_scope = new Scope;
+        block_scope->local_table = new VariableTable;
+        block_scope->elements = new vector<Info *>;
+        block_scope->parent = last_scope;
+        cur_scope = block_scope;
+        cur_vartable = block_scope->local_table;
+        cur_scope_elements = block_scope->elements;
+        cur_basicblock = new BasicBlock;
+        dbg(cur_basicblock->bb_idx);
+
+        ctx->stmt()->accept(this);
+        cur_scope_elements->push_back(cur_basicblock);
+
+        last_scope->elements->push_back(cur_scope);
+        cur_scope = last_scope;
+        cur_vartable = last_vartable;
+        cur_scope_elements = last_scope_elements;
+        cur_basicblock = new BasicBlock;
+        dbg(cur_basicblock->bb_idx);
+
+    }
+    cout << "exit IfStmt1" << endl;
     return nullptr;
 }
 
@@ -407,8 +443,10 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
         ret_inst = new ReturnInst(has_retvalue, dst);
     }
     cur_basicblock->basic_block.push_back(ret_inst); // 将指令加入基本块
+    dbg(cur_basicblock->bb_idx);
     cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
     cur_basicblock = new BasicBlock;
+    dbg(cur_basicblock->bb_idx);
     return nullptr;
 }
 
@@ -563,8 +601,8 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
     return nullptr;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
-    // TODO:
     cout << "enter unary3" << endl;
     string op = ctx->unaryOp()->getText();
     if (mode == compile_time) {
@@ -585,13 +623,17 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
         }
         return ret;
     } else { // mode == condition
+        IRValue ret;
         if (op == "!") {
-
+            IRValue src = ctx->unaryExp()->accept(this);
+            VirtReg dst = VirtReg();
+            UnaryOpInst *uop_inst = new UnaryOpInst(UnaryOp(op), dst, src.reg);
+            cur_basicblock->basic_block.push_back(uop_inst);
+            ret = IRValue(VarType(TypeBool), dst, false);
         } else {
             CompileMode last_mode = mode;
             mode = normal;
             IRValue src = ctx->unaryExp()->accept(this);
-            IRValue ret;
             if (op != "+") {
                 VirtReg dst = VirtReg();
                 UnaryOpInst *uop_inst = new UnaryOpInst(UnaryOp(op), dst, src.reg);
@@ -601,10 +643,9 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
                 ret = src;
             }
             mode = last_mode;
-            return ret;
         }
+        return ret;
     }
-    return nullptr;
 }
 
 // finished
@@ -711,8 +752,16 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
     IRValue src1 = ctx->relExp()->accept(this);
     IRValue src2 = ctx->addExp()->accept(this);
     mode = last_mode;
+    if (op == ">") {
+        op = "<=";
+        std::swap(src1, src2);
+    } else if (op == ">=") {
+        op = "<";
+        std::swap(src1, src2);
+    }
     VirtReg dst = VirtReg();
     BinaryOpInst *rel_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
+    cur_basicblock->basic_block.push_back(rel_inst);
     IRValue ret = IRValue(VarType(TypeBool), dst, false);
     return ret;
 }
@@ -731,7 +780,8 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
     IRValue src2 = ctx->relExp()->accept(this);
     mode = last_mode;
     VirtReg dst = VirtReg();
-    BinaryOpInst *rel_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
+    BinaryOpInst *equ_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
+    cur_basicblock->basic_block.push_back(equ_inst);
     IRValue ret = IRValue(VarType(TypeBool), dst, false);
     return ret;
 }
