@@ -123,7 +123,7 @@ CompUnit::CompUnit() {
 void CompUnit::DebugLibFuncs() {
     cout << "Init Lib Functions" << endl;
     for (int i = 0; i < 10; ++i) {
-        cout << '\t';
+        cout << "    ";
         lib_functions[i].printFunction();
     }
 }
@@ -132,7 +132,7 @@ void CompUnit::DebugUserFuncs() {
     cout << "User Functions" << endl;
     int size = functions.size();
     for (int i = 0; i < size; ++i) {
-        cout << '\t';
+        cout << "    ";
         functions[i]->printFunction();
     }
 }

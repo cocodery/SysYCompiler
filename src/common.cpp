@@ -2,8 +2,16 @@
 
 string get_tabs() {
     string ret;
-    for (int i = 0; i <= tab_num; ++i) {
-        ret += "\t";
+    for (int i = 0; i < tab_num; ++i) {
+        ret += string(4, ' ');
+    }
+    return ret;
+}
+
+string get_tabs(int tabs) {
+    string ret;
+    for (int i = 0; i < tabs; ++i) {
+        ret += string(4, ' ');
     }
     return ret;
 }
