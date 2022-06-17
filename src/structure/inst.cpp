@@ -65,7 +65,8 @@ string LoadOffset::ToString() {
 
 string JumpInst::ToString() {
     std::stringstream ss;
-    ss << "jump bb" << bb_idx;
+    ss << "jz bb" << bb_idx << ", ";
+    ss << "reg" << cond.reg_id;
     return ss.str();
 }
 
