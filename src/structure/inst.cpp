@@ -63,10 +63,16 @@ string LoadOffset::ToString() {
     return ss.str();
 }
 
+string JzeroInst::ToString() {
+    std::stringstream ss;
+    ss << "jz reg" << cond.reg_id << ", ";
+    ss << "bb_" << bb_idx;
+    return ss.str();
+}
+
 string JumpInst::ToString() {
     std::stringstream ss;
-    ss << "jz bb" << bb_idx << ", ";
-    ss << "reg" << cond.reg_id;
+    ss << "jump bb_" << bb_idx;
     return ss.str();
 }
 
@@ -99,6 +105,10 @@ void LoadValue::printLdvInst() {
 }
 
 void LoadOffset::printLdoInst() {
+    cout << get_tabs() << ToString() << ";\n";
+}
+
+void JzeroInst::printJzoInst() {
     cout << get_tabs() << ToString() << ";\n";
 }
 

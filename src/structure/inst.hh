@@ -23,7 +23,7 @@ public:
         return uop[(int32_t)unary_op];
     }
     Type get_op(string op) {
-        int idx = 0;
+        int32_t idx = 0;
         for (; idx < 3; ++idx) {
             if (op == uop[idx]) {
                 break;
@@ -44,13 +44,12 @@ public:
         return bop[(int32_t)bin_op];
     }
     Type get_op(string op) {
-        int idx = 0;
+        int32_t idx = 0;
         for (; idx < 11; ++idx) {
             if (op == bop[idx]) {
                 break;
             }
         }
-        dbg(idx, bop[idx]);
         return Type(idx);
     };
     BinaryOp(Type op) : bin_op(op) { }
@@ -147,12 +146,21 @@ public:
     void printLdoInst();
 };
 
-class JumpInst: public Inst {
+class JzeroInst: public Inst {
 public:
     VirtReg cond;
     int32_t bb_idx;
 public:
-    JumpInst(VirtReg _cond, int32_t idx = -1) : cond(_cond), bb_idx(idx) { }
+    JzeroInst(VirtReg _cond, int32_t idx = -1) : cond(_cond), bb_idx(idx) { }
+    string ToString();
+    void printJzoInst();
+};
+
+class JumpInst: public Inst {
+public:
+    int32_t bb_idx;
+public:
+    JumpInst(int32_t idx = -1) : bb_idx(idx) { };
     string ToString();
     void printJmpInst();
 };
