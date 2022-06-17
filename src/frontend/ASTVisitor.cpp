@@ -321,7 +321,6 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cur_vartable = block_scope->local_table;
     cur_scope_elements = block_scope->elements;
     cur_basicblock = new BasicBlock;
-    dbg(cur_basicblock->bb_idx);
     visitChildren(ctx);
     // 新的基本块到右括号就结束了, push
     cur_scope_elements->push_back(cur_basicblock);
@@ -331,7 +330,6 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cur_scope_elements = last_scope_elements;
     // 新的基本块
     cur_basicblock = new BasicBlock;
-    dbg(cur_basicblock->bb_idx);
     cout << "exit Block" << endl;
     return block_scope;
 }
@@ -373,7 +371,9 @@ antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
 antlrcpp::Any ASTVisitor::visitIfStmt1(SysYParser::IfStmt1Context *ctx) {
     cout << "enter IfStmt1" << endl;
     // if condition
-    ctx->cond()->accept(this);
+    IRValue cond = ctx->cond()->accept(this);
+    JumpInst *jmp_inst = new JumpInst(cond.reg);
+    cur_basicblock->basic_block.push_back(jmp_inst);
     // if stmt body
     if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()); node != nullptr) {
         dbg("Block Stmt Context");
@@ -393,7 +393,6 @@ antlrcpp::Any ASTVisitor::visitIfStmt1(SysYParser::IfStmt1Context *ctx) {
         cur_vartable = block_scope->local_table;
         cur_scope_elements = block_scope->elements;
         cur_basicblock = new BasicBlock;
-        dbg(cur_basicblock->bb_idx);
 
         ctx->stmt()->accept(this);
         cur_scope_elements->push_back(cur_basicblock);
@@ -403,9 +402,8 @@ antlrcpp::Any ASTVisitor::visitIfStmt1(SysYParser::IfStmt1Context *ctx) {
         cur_vartable = last_vartable;
         cur_scope_elements = last_scope_elements;
         cur_basicblock = new BasicBlock;
-        dbg(cur_basicblock->bb_idx);
-
     }
+    jmp_inst->bb_idx = cur_basicblock->bb_idx;
     cout << "exit IfStmt1" << endl;
     return nullptr;
 }
@@ -443,10 +441,8 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
         ret_inst = new ReturnInst(has_retvalue, dst);
     }
     cur_basicblock->basic_block.push_back(ret_inst); // 将指令加入基本块
-    dbg(cur_basicblock->bb_idx);
     cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
     cur_basicblock = new BasicBlock;
-    dbg(cur_basicblock->bb_idx);
     return nullptr;
 }
 
@@ -460,9 +456,9 @@ antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
     mode = condition;
     // we will push instructions to block's elements
     // so we dont need do extra process
-    ctx->lOrExp()->accept(this);
+    IRValue ret = ctx->lOrExp()->accept(this);
     mode = normal;
-    return nullptr;
+    return ret;
 }
 
 // finished
@@ -792,8 +788,8 @@ antlrcpp::Any ASTVisitor::visitLAnd1(SysYParser::LAnd1Context *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
-    // TODO:
-    string op = ctx->children[1]->getText();
+    ctx->lAndExp()->accept(this);
+    ctx->eqExp()->accept(this);
     return nullptr;
 }
 
