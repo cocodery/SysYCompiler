@@ -39,6 +39,7 @@ public:
 public:
     Scope() : sp_idx(sp_index++) { local_table = nullptr; elements = nullptr; parent = nullptr; }
     Variable *resolve(string var_name);
+    BasicBlock *get_last_bb();
     void printElements();
     void printScope();
 };

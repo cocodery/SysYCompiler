@@ -29,6 +29,9 @@ void BasicBlock::printBlock() {
         Case (LoadOffset, ldo_inst, inst) {
             ldo_inst->printLdoInst();
         }
+        Case (JzeroInst, jzo_inst, inst) {
+            jzo_inst->printJzoInst();
+        }
         Case (JumpInst, jmp_inst, inst) {
             jmp_inst->printJmpInst();
         }
@@ -47,6 +50,15 @@ Variable *Scope::resolve(string var_name) {
     } else {
         return nullptr;
     }
+}
+
+BasicBlock *Scope::get_last_bb() {
+    int element_size = elements->size();
+    auto iter = elements->begin();
+    for (int i = 0; i < element_size - 1; ++i) {
+        ++iter;
+    }
+    return dynamic_cast<BasicBlock *>(*iter);
 }
 
 void Scope::printElements() {
@@ -94,7 +106,7 @@ CompUnit::CompUnit() {
     DeclType ret_type[11] = {  TypeInt, TypeInt, TypeFloat, TypeInt, 
                                TypeInt, TypeVoid, TypeVoid, TypeVoid,
                                TypeVoid, TypeVoid, TypeVoid };
-    for (int i = 0; i < 11; ++i) {
+    for (int32_t i = 0; i < 11; ++i) {
         lib_functions[i].is_used = false;
         lib_functions[i].libfunc_info.func_name = func_name[i];
         lib_functions[i].libfunc_info.return_type = ret_type[i];
@@ -125,7 +137,7 @@ CompUnit::CompUnit() {
 
 void CompUnit::DebugLibFuncs() {
     cout << "Init Lib Functions" << endl;
-    for (int i = 0; i < 10; ++i) {
+    for (int32_t i = 0; i < 10; ++i) {
         cout << '\t';
         lib_functions[i].printFunction();
     }
@@ -133,8 +145,8 @@ void CompUnit::DebugLibFuncs() {
 
 void CompUnit::DebugUserFuncs() {
     cout << "User Functions" << endl;
-    int size = functions.size();
-    for (int i = 0; i < size; ++i) {
+    int32_t size = functions.size();
+    for (int32_t i = 0; i < size; ++i) {
         cout << '\t';
         functions[i]->printFunction();
     }
