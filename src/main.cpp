@@ -15,6 +15,8 @@
 
 #include "codegen/codegen.hh"
 
+// #include "optimizer/dag.hh"
+
 #include "common.hh"
 
 using namespace antlr4;
@@ -83,6 +85,12 @@ int main(int argc, char *argv[]) {
     ir.DebugUserFuncs();
 
     cout << "Compiler Complete" << endl;
+
+    // cout << "\n--------DAG Gen---------\n";
+
+    // generateDAG(ir);
+
+    // cout << "\n--------DAG Gen Complete---------\n";
 
     cout << "\n--------Code Gen--------\n";
 
