@@ -149,9 +149,10 @@ public:
 
 class JumpInst: public Inst {
 public:
+    VirtReg cond;
     int32_t bb_idx;
 public:
-    JumpInst(int32_t idx = -1) : bb_idx(idx) { }
+    JumpInst(VirtReg _cond, int32_t idx = -1) : cond(_cond), bb_idx(idx) { }
     string ToString();
     void printJmpInst();
 };
