@@ -409,7 +409,80 @@ antlrcpp::Any ASTVisitor::visitIfStmt1(SysYParser::IfStmt1Context *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitIfStmt2(SysYParser::IfStmt2Context *ctx) {
-    // TODO:
+    cout << "enter IfStmt1" << endl;
+    int32_t else_begin_bb = 0;
+    int32_t else_end_bb = 0;
+    IRValue cond = ctx->cond()->accept(this);
+    // 条件为假跳转到`else`
+    JzeroInst *jmp_else_begin = new JzeroInst(cond.reg);
+    cur_basicblock->basic_block.push_back(jmp_else_begin);
+    // if-stmt body
+    // 完成后跳转到`else`的下一个基本块
+    JumpInst *jmp_else_end = new JumpInst();
+    if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[0]); node != nullptr) {
+        dbg("Block Stmt Context");
+        Scope *block_stmt = node->accept(this);
+        BasicBlock *last_bb_of_stmt = block_stmt->get_last_bb();
+        last_bb_of_stmt->basic_block.push_back(jmp_else_end); // 跳转到 else 的下一块
+    } else {
+        dbg("Other Stmt Context");
+        cur_scope_elements->push_back(cur_basicblock);
+        Scope          *last_scope = cur_scope;
+        VariableTable  *last_vartable = cur_vartable;
+        vector<Info *> *last_scope_elements = cur_scope_elements;
+
+        Scope *block_scope = new Scope;
+        block_scope->local_table = new VariableTable;
+        block_scope->elements = new vector<Info *>;
+        block_scope->parent = last_scope;
+        cur_scope = block_scope;
+        cur_vartable = block_scope->local_table;
+        cur_scope_elements = block_scope->elements;
+        cur_basicblock = new BasicBlock;
+
+        ctx->stmt()[0]->accept(this);
+        cur_basicblock->basic_block.push_back(jmp_else_end); // 跳转到 else 的下一块
+        cur_scope_elements->push_back(cur_basicblock);
+
+        last_scope->elements->push_back(cur_scope);
+        cur_scope = last_scope;
+        cur_vartable = last_vartable;
+        cur_scope_elements = last_scope_elements;
+        cur_basicblock = new BasicBlock;
+    }
+    // else-stmt body
+    if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[1]); node != nullptr) {
+        dbg("Block Stmt Context");
+        Scope *block_stmt = node->accept(this);
+        jmp_else_begin->bb_idx = dynamic_cast<BasicBlock *>(*block_stmt->elements->begin())->bb_idx;
+    } else {
+        dbg("Other Stmt Context");
+        cur_scope_elements->push_back(cur_basicblock);
+        Scope          *last_scope = cur_scope;
+        VariableTable  *last_vartable = cur_vartable;
+        vector<Info *> *last_scope_elements = cur_scope_elements;
+
+        Scope *block_scope = new Scope;
+        block_scope->local_table = new VariableTable;
+        block_scope->elements = new vector<Info *>;
+        block_scope->parent = last_scope;
+        cur_scope = block_scope;
+        cur_vartable = block_scope->local_table;
+        cur_scope_elements = block_scope->elements;
+        cur_basicblock = new BasicBlock;
+        jmp_else_begin->bb_idx = cur_basicblock->bb_idx;
+
+        ctx->stmt()[1]->accept(this);
+        cur_scope_elements->push_back(cur_basicblock);
+
+        last_scope->elements->push_back(cur_scope);
+        cur_scope = last_scope;
+        cur_vartable = last_vartable;
+        cur_scope_elements = last_scope_elements;
+        cur_basicblock = new BasicBlock;
+    }
+    jmp_else_end->bb_idx = cur_basicblock->bb_idx;
+    cout << "exit IfStmt1" << endl;
     return nullptr;
 }
 
@@ -433,9 +506,7 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
         dbg("Block Stmt Context");
         JumpInst *jmp_inst = new JumpInst(cond_sbb);
         Scope *block_stmt = node->accept(this);
-        dbg(block_stmt->sp_idx);
         BasicBlock *last_bb_of_stmt = block_stmt->get_last_bb();
-        dbg(last_bb_of_stmt->bb_idx);
         last_bb_of_stmt->basic_block.push_back(jmp_inst);
     } else {
         dbg("Other Stmt Context");
