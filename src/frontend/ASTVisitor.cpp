@@ -365,19 +365,19 @@ antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
     Scope *block_stmt = ctx->block()->accept(this);
     cur_scope->elements->push_back(block_stmt);
     cout << "exit BlockStmt" << endl;
-    return nullptr;
+    return block_stmt;
 }
 
 antlrcpp::Any ASTVisitor::visitIfStmt1(SysYParser::IfStmt1Context *ctx) {
     cout << "enter IfStmt1" << endl;
     // if condition
     IRValue cond = ctx->cond()->accept(this);
-    JumpInst *jmp_inst = new JumpInst(cond.reg);
+    JzeroInst *jmp_inst = new JzeroInst(cond.reg);
     cur_basicblock->basic_block.push_back(jmp_inst);
     // if stmt body
     if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()); node != nullptr) {
         dbg("Block Stmt Context");
-        node->accept(this);
+        Scope *block_stmt = node->accept(this);
     } else {
         dbg("Other Stmt Context");
         cur_scope_elements->push_back(cur_basicblock);
@@ -414,7 +414,58 @@ antlrcpp::Any ASTVisitor::visitIfStmt2(SysYParser::IfStmt2Context *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
-    // TODO:
+    cout << "enter While" << endl;
+    cur_scope_elements->push_back(cur_basicblock);
+    // 将while条件单独作为一个基本块
+    cur_basicblock = new BasicBlock;
+    int32_t cond_sbb = cur_basicblock->bb_idx;
+    dbg(cond_sbb);
+    // if condition
+    IRValue cond = ctx->cond()->accept(this);
+    JzeroInst *jzo_inst = new JzeroInst(cond.reg);
+    cur_basicblock->basic_block.push_back(jzo_inst);
+    // if stmt body
+    if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()); node != nullptr) {
+        // 在这里遇到了`Block`作为循环体的`While`
+        // 但是无法在生成`Block`的中途插入跳转语句
+        // 因此我们要进入`Block`中找到其最后一个`basic_block`
+        // 并插入`Jump_Inst`
+        dbg("Block Stmt Context");
+        JumpInst *jmp_inst = new JumpInst(cond_sbb);
+        Scope *block_stmt = node->accept(this);
+        dbg(block_stmt->sp_idx);
+        BasicBlock *last_bb_of_stmt = block_stmt->get_last_bb();
+        dbg(last_bb_of_stmt->bb_idx);
+        last_bb_of_stmt->basic_block.push_back(jmp_inst);
+    } else {
+        dbg("Other Stmt Context");
+        cur_scope_elements->push_back(cur_basicblock);
+        Scope          *last_scope = cur_scope;
+        VariableTable  *last_vartable = cur_vartable;
+        vector<Info *> *last_scope_elements = cur_scope_elements;
+
+        Scope *block_scope = new Scope;
+        block_scope->local_table = new VariableTable;
+        block_scope->elements = new vector<Info *>;
+        block_scope->parent = last_scope;
+        cur_scope = block_scope;
+        cur_vartable = block_scope->local_table;
+        cur_scope_elements = block_scope->elements;
+        cur_basicblock = new BasicBlock;
+
+        ctx->stmt()->accept(this);
+        JumpInst *jmp_inst = new JumpInst(cond_sbb);
+        cur_basicblock->basic_block.push_back(jmp_inst);
+        cur_scope_elements->push_back(cur_basicblock);
+
+        last_scope->elements->push_back(cur_scope);
+        cur_scope = last_scope;
+        cur_vartable = last_vartable;
+        cur_scope_elements = last_scope_elements;
+        cur_basicblock = new BasicBlock;
+    }
+    jzo_inst->bb_idx = cur_basicblock->bb_idx;
+    cout << "exit While" << endl;
     return nullptr;
 }
 
@@ -571,7 +622,7 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) 
 // finished
 antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
     cout << "enter int number" << endl;
-    int int_literal = parseNum(ctx->IntLiteral()->getText().c_str());
+    int32_t int_literal = parseNum(ctx->IntLiteral()->getText().c_str());
     dbg(int_literal);
     cout << "exit int number" << endl;
     return CTValue(TypeInt, int_literal, 0);
