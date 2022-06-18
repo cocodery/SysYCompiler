@@ -123,7 +123,7 @@ public:
                 }
                 else
                 {
-                    firstAddress.push_back(2);
+                    firstAddress.push_back(firstAddress.back() + 2);
                     toInsert = new Instruction("DW", {varType.is_const?std::to_string(varContent.int_scalar):"?"}, "", false, "", 1);
                 }
                 extraSegment.Insert(*toInsert);
@@ -400,9 +400,9 @@ public:
             AddInfoFromScope(mainScope);
         }
 
-        /*for (auto&& fAddr : firstAddress)
+        for (auto&& fAddr : firstAddress)
             cout << fAddr << " ";
-        cout << "\n";*/
+        cout << "\n";
         /*cout << " - Generated Code:\n";
         dataSegment.PrintSegment();
         extraSegment.PrintSegment();
