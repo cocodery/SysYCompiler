@@ -1,6 +1,8 @@
 #include "../common.hh"
 #include "../structure/ir.hh"
 
+vector<int> firstAddress{0};
+
 class Instruction
 {
 public:
@@ -9,12 +11,14 @@ public:
     string label;
     string comment;
     bool labelInSepLine;
+    int tabs;
 public:
     Instruction(const string& n, const vector<string>& oprnd = {},
                 const string& l = "",
                 bool _lisl = false,
-                const string& c = "") :
-        name(n), operands(oprnd), label(l), labelInSepLine(_lisl), comment(c)
+                const string& c = "",
+                int t = tab_num) :
+        name(n), operands(oprnd), label(l), labelInSepLine(_lisl), comment(c), tabs(t)
     {
 
     }
@@ -23,11 +27,11 @@ public:
         string toReturn;
         if (!label.empty())
             if (labelInSepLine)
-                toReturn += label + '\n' + "    ";
+                toReturn += label + '\n' + get_tabs(tabs);
             else
-                toReturn += "    " + label + " ";
+                toReturn += get_tabs(tabs) + label + " ";
         else
-            toReturn += "    ";
+            toReturn += get_tabs(tabs);
         toReturn += name;
         if (!operands.empty())
         {
@@ -79,7 +83,7 @@ public:
     Segment codeSegment;
 public:
     CodeGenerator() : dataSegment("DSEG"), extraSegment("ESEG"), codeSegment("CSEG") {}
-    void OutputToFile(std::ofstream& file)
+    void OutputToFile(std::ostream& file)
     {
         // TODO
         file << dataSegment.ToString() << "\n";
@@ -89,6 +93,8 @@ public:
     }
     void AddInfoFromScope(const Scope& scope, bool iterateElems = true)
     {
+        ++tab_num;
+
         auto&& varTable = scope.local_table->var_table;
         auto&& elementPtrs = *scope.elements;
 
@@ -97,12 +103,31 @@ public:
             auto&& varName = var.first;
             auto&& varContent = *var.second;
             auto&& varType = varContent.type;
-            if (!varType.is_array && varType.decl_type == TypeInt)
+            if (varType.decl_type == TypeInt)
             {
-                Instruction toInsert("DW",
-                                    {std::to_string(varContent.int_scalar % 65536)});
-                extraSegment.Insert(toInsert);
-                toInsert.PrintInstruction();
+                Instruction* toInsert;
+                if (varType.is_array)
+                {
+                    firstAddress.push_back(firstAddress.back() + (varType.elements_number() << 1));
+                    if (varType.is_const)
+                    {
+                        string arrStr;
+                        for (size_t i = 0, siz = varContent.int_list.size(); i < siz; ++i)
+                            arrStr += std::to_string(varContent.int_list[i]) + ", ";
+                        arrStr.pop_back();arrStr.pop_back();
+                        toInsert = new Instruction("DW", {arrStr}, "", false, "", 1);
+                    }
+                    else
+                        toInsert = new Instruction("DW", {std::to_string(varType.elements_number())+" DUP (?)"}, "", false, "", 1);
+                }
+                else
+                {
+                    firstAddress.push_back(2);
+                    toInsert = new Instruction("DW", {varType.is_const?std::to_string(varContent.int_scalar):"?"}, "", false, "", 1);
+                }
+                extraSegment.Insert(*toInsert);
+                //toInsert.PrintInstruction();
+                delete toInsert;
             }
         }
 
@@ -118,9 +143,12 @@ public:
             else
             {
                 BasicBlock *bb_node = dynamic_cast<BasicBlock *>(elementPtr);
+                codeSegment.instructions.push_back(Instruction("", {}, "BB_"+std::to_string(bb_node->bb_idx)+":"));
                 AddInfoFromBasicBlock(*bb_node);
             }
         }
+
+        --tab_num;
     }
     void AddInfoFromBasicBlock(const BasicBlock& basicBlock)
     {
@@ -130,7 +158,17 @@ public:
 
             Case (ReturnInst, ret_inst, inst)
             {
-                ret_inst->printRetInst();
+                insts.push_back(Instruction(
+                    "MOV", {
+                        "AH",
+                        "4CH"},
+                    "",
+                    false,
+                    ret_inst->ToString()));
+                insts.push_back(Instruction("MOV", {
+                    "AL",
+                    "DS:[" + std::to_string(ret_inst->dst.reg_id << 1) + "]"}));
+                insts.push_back(Instruction("INT", {"21H"}));
             }
             Case (LoadNumber, ldc_inst, inst)
             {
@@ -232,7 +270,7 @@ public:
                 insts.push_back(Instruction(
                     "MOV", {
                         "DS:[" + std::to_string(lad_inst->dst.reg_id << 1) + "]",
-                        "WORD PTR " + std::to_string(lad_inst->variable->var_idx << 1)},
+                        "WORD PTR " + std::to_string(firstAddress[lad_inst->variable->var_idx])},
                     "",
                     false,
                     lad_inst->ToString()));
@@ -249,6 +287,27 @@ public:
                 insts.push_back(Instruction("MOV", {"AX", "ES:[BX]"}));
                 insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(ldv_inst->dst.reg_id << 1) + "]", "AX"}));
             }
+            Case (LoadOffset, ldo_inst, inst)
+            {
+                insts.push_back(Instruction(
+                    "MOV", {
+                        "AX",
+                        std::to_string(ldo_inst->size << 1)},
+                    "",
+                    false,
+                    ldo_inst->ToString()));
+                insts.push_back(Instruction(
+                    "MUL", 
+                    {"WORD PTR DS:[" + std::to_string(ldo_inst->off.reg_id << 1) + "]"}));
+                insts.push_back(Instruction(
+                    "ADD", {
+                        "AX",
+                        "DS:[" + std::to_string(ldo_inst->addr.reg_id << 1) + "]"}));
+                insts.push_back(Instruction(
+                    "MOV", {
+                        "DS:[" + std::to_string(ldo_inst->dst.reg_id << 1) + "]",
+                        "AX"}));
+            }
 
             for (auto&& toInsert : insts)
             {
@@ -261,24 +320,25 @@ public:
     {
         cout << " - Boilerplate\n";
         vector<Instruction> boilerplate{
-            Instruction("ASSUME", {"CS:CSEG", "DS:DSEG", "ES:ESEG"}),
-            Instruction("MOV", {"AX", "DSEG"}, "START:", true),
-            Instruction("MOV", {"DS", "AX"}),
-            Instruction("MOV", {"AX", "ESEG"}),
-            Instruction("MOV", {"ES", "AX"})
+            Instruction("ASSUME", {"CS:CSEG", "DS:DSEG", "ES:ESEG"}, "", false, "", 1),
+            Instruction("MOV", {"AX", "DSEG"}, "START:", true, "", 1),
+            Instruction("MOV", {"DS", "AX"}, "", false, "", 1),
+            Instruction("MOV", {"AX", "ESEG"}, "", false, "", 1),
+            Instruction("MOV", {"ES", "AX"}, "", false, "", 1)
         };
         for (auto&& toInsert : boilerplate)
         {
             codeSegment.Insert(toInsert);
             toInsert.PrintInstruction();
         }
-        dataSegment.Insert(Instruction("DW", {"512 DUP(0FFFFH)"}));
-
+        dataSegment.Insert(Instruction("DW", {"512 DUP(0FFFFH)"}, "", false, "", 1));
 
         cout << " - Global Variable" << endl;
         auto&& globalScope = *ir.global_scope;
         AddInfoFromScope(globalScope, false);
 
+
+        tab_num = 0;
         cout << " - User Functions" << endl;
         for (int i = 0, size = ir.functions.size(); i < size; ++i)
         {
@@ -291,10 +351,10 @@ public:
             AddInfoFromScope(mainScope);
         }
 
-        cout << " - Generated Code:\n";
+        /*cout << " - Generated Code:\n";
         dataSegment.PrintSegment();
         extraSegment.PrintSegment();
         codeSegment.PrintSegment();
-        cout << "    END START\n";
+        cout << "    END START\n";*/
     }
 };

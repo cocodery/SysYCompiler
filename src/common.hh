@@ -13,6 +13,7 @@ using std::vector;
 
 extern int32_t tab_num;
 string get_tabs();
+string get_tabs(int);
 
 int parseNum(const char *number_str);
 
