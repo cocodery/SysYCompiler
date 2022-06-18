@@ -400,9 +400,9 @@ public:
             AddInfoFromScope(mainScope);
         }
 
-        for (auto&& fAddr : firstAddress)
+        /*for (auto&& fAddr : firstAddress)
             cout << fAddr << " ";
-        cout << "\n";
+        cout << "\n";*/
         /*cout << " - Generated Code:\n";
         dataSegment.PrintSegment();
         extraSegment.PrintSegment();
