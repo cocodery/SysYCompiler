@@ -2,6 +2,7 @@
 #include "../structure/ir.hh"
 
 vector<int> firstAddress{0};
+int label_cnt = 0;
 
 class Instruction
 {
@@ -194,8 +195,11 @@ public:
                 switch(uop_inst->op.unary_op)
                 {
                 case UnaryOp::Type::NOT:
-                    insts.push_back(Instruction("NOT", {"AX"}));
-                    insts.push_back(Instruction("AND", {"AX", "1"}));
+                    insts.push_back(Instruction("TEST", {"AX", "AX"}));
+                    insts.push_back(Instruction("JZ", {"L_"+std::to_string(label_cnt)}));
+                    insts.push_back(Instruction("XOR", {"AX", "AX"}));
+                    insts.push_back(Instruction("JMP", {"L_"+std::to_string(label_cnt + 1)}));
+                    insts.push_back(Instruction("MOV", {"AX", "1"}, "L_"+std::to_string(label_cnt++)+":"));
                     break;
                 case UnaryOp::Type::NEG:
                     insts.push_back(Instruction("NEG", {"AX"}));
@@ -208,99 +212,68 @@ public:
             }
             Case (BinaryOpInst, bop_inst, inst)
             {
+                insts.push_back(Instruction(
+                    "MOV", {
+                        "AX",
+                        "DS:[" + std::to_string(bop_inst->src1.reg_id << 1) + "]"},
+                    "",
+                    false,
+                    bop_inst->ToString()));
                 switch(bop_inst->op.bin_op)
                 {
                 case BinaryOp::Type::ADD:
-                    insts.push_back(Instruction(
-                        "MOV", {
-                            "AX",
-                            "DS:[" + std::to_string(bop_inst->src1.reg_id << 1) + "]"},
-                        "",
-                        false,
-                        bop_inst->ToString()));
                     insts.push_back(Instruction("ADD", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
                     insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
                     break;
                 case BinaryOp::Type::SUB:
-                    insts.push_back(Instruction(
-                        "MOV", {
-                            "AX",
-                            "DS:[" + std::to_string(bop_inst->src1.reg_id << 1) + "]"},
-                        "",
-                        false,
-                        bop_inst->ToString()));
                     insts.push_back(Instruction("SUB", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
                     insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
                     break;
                 case BinaryOp::Type::MUL:
-                    insts.push_back(Instruction(
-                        "MOV", {
-                            "AX",
-                            "DS:[" + std::to_string(bop_inst->src1.reg_id << 1) + "]"},
-                        "",
-                        false,
-                        bop_inst->ToString()));
                     insts.push_back(Instruction("IMUL", {"WORD PTR DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
                     insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
                     break;
                 case BinaryOp::Type::DIV:
-                    insts.push_back(Instruction(
-                        "MOV", {
-                            "AX",
-                            "DS:[" + std::to_string(bop_inst->src1.reg_id << 1) + "]"},
-                        "",
-                        false,
-                        bop_inst->ToString()));
                     insts.push_back(Instruction("CWD"));
                     insts.push_back(Instruction("IDIV", {"WORD PTR DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
                     insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
                     break;
                 case BinaryOp::Type::MOD:
-                    insts.push_back(Instruction(
-                        "MOV", {
-                            "AX",
-                            "DS:[" + std::to_string(bop_inst->src1.reg_id << 1) + "]"},
-                        "",
-                        false,
-                        bop_inst->ToString()));
                     insts.push_back(Instruction("CWD"));
                     insts.push_back(Instruction("IDIV", {"WORD PTR DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
                     insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "DX"}));
                     break;
                 case BinaryOp::Type::LTH:
-                    insts.push_back(Instruction(
-                        "MOV", {
-                            "AX",
-                            "DS:[" + std::to_string(bop_inst->src1.reg_id << 1) + "]"},
-                        "",
-                        false,
-                        bop_inst->ToString()));
-                    insts.push_back(Instruction("SUB", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
-                    insts.push_back(Instruction("MOV", {"AL", "AH"}));
-                    insts.push_back(Instruction("XOR", {"AH", "AH"}));
-                    insts.push_back(Instruction("MOV", {"CL", "7"}));
-                    insts.push_back(Instruction("SHR", {"AL", "CL"}));
-                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
+                    insts.push_back(Instruction("CMP", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("JL", {"L_"+std::to_string(label_cnt)}));
+                    insts.push_back(Instruction("XOR", {"AX", "AX"}));
+                    insts.push_back(Instruction("JMP", {"L_"+std::to_string(label_cnt + 1)}));
+                    insts.push_back(Instruction("MOV", {"AX", "1"}, "L_"+std::to_string(label_cnt++)+":"));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}, "L_"+std::to_string(label_cnt++)+":"));
                     break;
                 case BinaryOp::Type::LEQ:
-                    insts.push_back(Instruction(
-                        "MOV", {
-                            "AX",
-                            "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"},
-                        "",
-                        false,
-                        bop_inst->ToString()));
-                    insts.push_back(Instruction("SUB", {"AX", "DS:[" + std::to_string(bop_inst->src1.reg_id << 1) + "]"}));
-                    insts.push_back(Instruction("MOV", {"AL", "AH"}));
-                    insts.push_back(Instruction("XOR", {"AH", "AH"}));
-                    insts.push_back(Instruction("MOV", {"CL", "7"}));
-                    insts.push_back(Instruction("SHR", {"AL", "CL"}));
-                    insts.push_back(Instruction("XOR", {"AL", "1"}));
-                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}));
+                    insts.push_back(Instruction("CMP", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("JNG", {"L_"+std::to_string(label_cnt)}));
+                    insts.push_back(Instruction("XOR", {"AX", "AX"}));
+                    insts.push_back(Instruction("JMP", {"L_"+std::to_string(label_cnt + 1)}));
+                    insts.push_back(Instruction("MOV", {"AX", "1"}, "L_"+std::to_string(label_cnt++)+":"));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}, "L_"+std::to_string(label_cnt++)+":"));
                     break;
                 case BinaryOp::Type::EQU:
+                    insts.push_back(Instruction("CMP", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("JE", {"L_"+std::to_string(label_cnt)}));
+                    insts.push_back(Instruction("XOR", {"AX", "AX"}));
+                    insts.push_back(Instruction("JMP", {"L_"+std::to_string(label_cnt + 1)}));
+                    insts.push_back(Instruction("MOV", {"AX", "1"}, "L_"+std::to_string(label_cnt++)+":"));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}, "L_"+std::to_string(label_cnt++)+":"));
                     break;
                 case BinaryOp::Type::NEQ:
+                    insts.push_back(Instruction("CMP", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("JNE", {"L_"+std::to_string(label_cnt)}));
+                    insts.push_back(Instruction("XOR", {"AX", "AX"}));
+                    insts.push_back(Instruction("JMP", {"L_"+std::to_string(label_cnt + 1)}));
+                    insts.push_back(Instruction("MOV", {"AX", "1"}, "L_"+std::to_string(label_cnt++)+":"));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}, "L_"+std::to_string(label_cnt++)+":"));
                     break;
                 case BinaryOp::Type::AND:
                     break;
