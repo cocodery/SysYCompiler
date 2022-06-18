@@ -137,17 +137,17 @@ CompUnit::CompUnit() {
 
 void CompUnit::DebugLibFuncs() {
     cout << "Init Lib Functions" << endl;
-    for (int32_t i = 0; i < 10; ++i) {
-        cout << '\t';
+    for (int i = 0; i < 10; ++i) {
+        cout << "    ";
         lib_functions[i].printFunction();
     }
 }
 
 void CompUnit::DebugUserFuncs() {
     cout << "User Functions" << endl;
-    int32_t size = functions.size();
-    for (int32_t i = 0; i < size; ++i) {
-        cout << '\t';
+    int size = functions.size();
+    for (int i = 0; i < size; ++i) {
+        cout << "    ";
         functions[i]->printFunction();
     }
 }
