@@ -2,6 +2,7 @@
 #include "../structure/ir.hh"
 
 vector<int> firstAddress{0};
+int label_cnt = 0;
 
 class Instruction
 {
@@ -122,7 +123,7 @@ public:
                 }
                 else
                 {
-                    firstAddress.push_back(2);
+                    firstAddress.push_back(firstAddress.back() + 2);
                     toInsert = new Instruction("DW", {varType.is_const?std::to_string(varContent.int_scalar):"?"}, "", false, "", 1);
                 }
                 extraSegment.Insert(*toInsert);
@@ -194,8 +195,11 @@ public:
                 switch(uop_inst->op.unary_op)
                 {
                 case UnaryOp::Type::NOT:
-                    insts.push_back(Instruction("NOT", {"AX"}));
-                    insts.push_back(Instruction("AND", {"AX", "1"}));
+                    insts.push_back(Instruction("TEST", {"AX", "AX"}));
+                    insts.push_back(Instruction("JZ", {"L_"+std::to_string(label_cnt)}));
+                    insts.push_back(Instruction("XOR", {"AX", "AX"}));
+                    insts.push_back(Instruction("JMP", {"L_"+std::to_string(label_cnt + 1)}));
+                    insts.push_back(Instruction("MOV", {"AX", "1"}, "L_"+std::to_string(label_cnt++)+":"));
                     break;
                 case UnaryOp::Type::NEG:
                     insts.push_back(Instruction("NEG", {"AX"}));
@@ -240,12 +244,36 @@ public:
                     insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "DX"}));
                     break;
                 case BinaryOp::Type::LTH:
+                    insts.push_back(Instruction("CMP", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("JL", {"L_"+std::to_string(label_cnt)}));
+                    insts.push_back(Instruction("XOR", {"AX", "AX"}));
+                    insts.push_back(Instruction("JMP", {"L_"+std::to_string(label_cnt + 1)}));
+                    insts.push_back(Instruction("MOV", {"AX", "1"}, "L_"+std::to_string(label_cnt++)+":"));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}, "L_"+std::to_string(label_cnt++)+":"));
                     break;
                 case BinaryOp::Type::LEQ:
+                    insts.push_back(Instruction("CMP", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("JNG", {"L_"+std::to_string(label_cnt)}));
+                    insts.push_back(Instruction("XOR", {"AX", "AX"}));
+                    insts.push_back(Instruction("JMP", {"L_"+std::to_string(label_cnt + 1)}));
+                    insts.push_back(Instruction("MOV", {"AX", "1"}, "L_"+std::to_string(label_cnt++)+":"));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}, "L_"+std::to_string(label_cnt++)+":"));
                     break;
                 case BinaryOp::Type::EQU:
+                    insts.push_back(Instruction("CMP", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("JE", {"L_"+std::to_string(label_cnt)}));
+                    insts.push_back(Instruction("XOR", {"AX", "AX"}));
+                    insts.push_back(Instruction("JMP", {"L_"+std::to_string(label_cnt + 1)}));
+                    insts.push_back(Instruction("MOV", {"AX", "1"}, "L_"+std::to_string(label_cnt++)+":"));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}, "L_"+std::to_string(label_cnt++)+":"));
                     break;
                 case BinaryOp::Type::NEQ:
+                    insts.push_back(Instruction("CMP", {"AX", "DS:[" + std::to_string(bop_inst->src2.reg_id << 1) + "]"}));
+                    insts.push_back(Instruction("JNE", {"L_"+std::to_string(label_cnt)}));
+                    insts.push_back(Instruction("XOR", {"AX", "AX"}));
+                    insts.push_back(Instruction("JMP", {"L_"+std::to_string(label_cnt + 1)}));
+                    insts.push_back(Instruction("MOV", {"AX", "1"}, "L_"+std::to_string(label_cnt++)+":"));
+                    insts.push_back(Instruction("MOV", {"DS:[" + std::to_string(bop_inst->dst.reg_id << 1) + "]", "AX"}, "L_"+std::to_string(label_cnt++)+":"));
                     break;
                 case BinaryOp::Type::AND:
                     break;
@@ -308,6 +336,27 @@ public:
                         "DS:[" + std::to_string(ldo_inst->dst.reg_id << 1) + "]",
                         "AX"}));
             }
+            Case (JzeroInst, jzo_inst, inst)
+            {
+                insts.push_back(Instruction(
+                    "MOV", {
+                        "AX", 
+                        "DS:[" + std::to_string(jzo_inst->cond.reg_id << 1) + "]"},
+                    "",
+                    false,
+                    jzo_inst->ToString()));
+                insts.push_back(Instruction("TEST", {"AL", "AL"}));
+                insts.push_back(Instruction("JZ", {"BB_"+std::to_string(jzo_inst->bb_idx)}));
+                jzo_inst->printJzoInst();
+            }
+            Case (JumpInst, jmp_inst, inst)
+            {
+                insts.push_back(Instruction(
+                    "JMP", {"BB_"+std::to_string(jmp_inst->bb_idx)},
+                    "",
+                    false,
+                    jmp_inst->ToString()));
+            }
 
             for (auto&& toInsert : insts)
             {
@@ -331,7 +380,7 @@ public:
             codeSegment.Insert(toInsert);
             toInsert.PrintInstruction();
         }
-        dataSegment.Insert(Instruction("DW", {"512 DUP(0FFFFH)"}, "", false, "", 1));
+        dataSegment.Insert(Instruction("DW", {"1024 DUP(0FFFFH)"}, "", false, "", 1));
 
         cout << " - Global Variable" << endl;
         auto&& globalScope = *ir.global_scope;
@@ -351,6 +400,9 @@ public:
             AddInfoFromScope(mainScope);
         }
 
+        /*for (auto&& fAddr : firstAddress)
+            cout << fAddr << " ";
+        cout << "\n";*/
         /*cout << " - Generated Code:\n";
         dataSegment.PrintSegment();
         extraSegment.PrintSegment();
