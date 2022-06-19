@@ -13,7 +13,7 @@
 #include "frontend/SysYParser.h"
 #include "frontend/ASTVisitor.hh"
 
-#include "codegen/codegen.hh"
+#include "codegen/8086/codegen.hh"
 
 // #include "optimizer/dag.hh"
 
