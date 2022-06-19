@@ -368,6 +368,7 @@ antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
     return block_stmt;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitIfStmt1(SysYParser::IfStmt1Context *ctx) {
     cout << "enter IfStmt1" << endl;
     // if condition
@@ -408,6 +409,7 @@ antlrcpp::Any ASTVisitor::visitIfStmt1(SysYParser::IfStmt1Context *ctx) {
     return nullptr;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitIfStmt2(SysYParser::IfStmt2Context *ctx) {
     cout << "enter IfStmt1" << endl;
     int32_t else_begin_bb = 0;
@@ -486,13 +488,19 @@ antlrcpp::Any ASTVisitor::visitIfStmt2(SysYParser::IfStmt2Context *ctx) {
     return nullptr;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
     cout << "enter While" << endl;
     cur_scope_elements->push_back(cur_basicblock);
     // 将while条件单独作为一个基本块
     cur_basicblock = new BasicBlock;
-    int32_t cond_sbb = cur_basicblock->bb_idx;
-    dbg(cond_sbb);
+    // save continue_target
+    int32_t last_continue_target = continue_target;
+    continue_target = cur_basicblock->bb_idx;
+    dbg(continue_target);
+    // save break_inst
+    vector<JumpInst *> last_break_insts = break_insts;
+    break_insts = vector<JumpInst *>();
     // if condition
     IRValue cond = ctx->cond()->accept(this);
     JzeroInst *jzo_inst = new JzeroInst(cond.reg);
@@ -504,7 +512,7 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
         // 因此我们要进入`Block`中找到其最后一个`basic_block`
         // 并插入`Jump_Inst`
         dbg("Block Stmt Context");
-        JumpInst *jmp_inst = new JumpInst(cond_sbb);
+        JumpInst *jmp_inst = new JumpInst(continue_target);
         Scope *block_stmt = node->accept(this);
         BasicBlock *last_bb_of_stmt = block_stmt->get_last_bb();
         last_bb_of_stmt->basic_block.push_back(jmp_inst);
@@ -525,7 +533,7 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
         cur_basicblock = new BasicBlock;
 
         ctx->stmt()->accept(this);
-        JumpInst *jmp_inst = new JumpInst(cond_sbb);
+        JumpInst *jmp_inst = new JumpInst(continue_target);
         cur_basicblock->basic_block.push_back(jmp_inst);
         cur_scope_elements->push_back(cur_basicblock);
 
@@ -535,18 +543,36 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
         cur_scope_elements = last_scope_elements;
         cur_basicblock = new BasicBlock;
     }
+    // modify break target
+    for (int i = 0; i < break_insts.size(); ++i) {
+        break_insts[i]->bb_idx = cur_basicblock->bb_idx;
+    }
+    // restore continue and break
+    continue_target = last_continue_target;
+    break_insts = last_break_insts;
     jzo_inst->bb_idx = cur_basicblock->bb_idx;
     cout << "exit While" << endl;
     return nullptr;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitBreakStmt(SysYParser::BreakStmtContext *ctx) {
-    // TODO:
+    JumpInst *jmp_inst = new JumpInst();
+    cur_basicblock->basic_block.push_back(jmp_inst);
+    break_insts.push_back(jmp_inst);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock;
     return nullptr;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitContinueStmt(SysYParser::ContinueStmtContext *ctx) {
-    // TODO:
+    cout << "enter ContinueStmt" << endl;
+    JumpInst *jmp_inst = new JumpInst(continue_target);
+    cur_basicblock->basic_block.push_back(jmp_inst);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock;
+    cout << "exit ContinueStmt" << endl;
     return nullptr;
 }
 
@@ -871,10 +897,10 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
     IRValue src2 = ctx->addExp()->accept(this);
     mode = last_mode;
     if (op == ">") {
-        op = "<=";
+        op = "<";
         std::swap(src1, src2);
     } else if (op == ">=") {
-        op = "<";
+        op = "<=";
         std::swap(src1, src2);
     }
     VirtReg dst = VirtReg();

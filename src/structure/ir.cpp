@@ -1,6 +1,6 @@
 #include "ir.hh"
 
-int32_t tab_num = 0;
+int32_t tab_num = 1;
 
 void BasicBlock::printBlock() {
     cout << get_tabs() << "`Block`" << bb_idx << endl;
