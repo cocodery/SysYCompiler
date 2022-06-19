@@ -897,10 +897,10 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
     IRValue src2 = ctx->addExp()->accept(this);
     mode = last_mode;
     if (op == ">") {
-        op = "<=";
+        op = "<";
         std::swap(src1, src2);
     } else if (op == ">=") {
-        op = "<";
+        op = "<=";
         std::swap(src1, src2);
     }
     VirtReg dst = VirtReg();
