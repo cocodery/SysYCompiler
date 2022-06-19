@@ -494,9 +494,13 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
     cur_scope_elements->push_back(cur_basicblock);
     // 将while条件单独作为一个基本块
     cur_basicblock = new BasicBlock;
+    // save continue_target
     int32_t last_continue_target = continue_target;
     continue_target = cur_basicblock->bb_idx;
     dbg(continue_target);
+    // save break_inst
+    vector<JumpInst *> last_break_insts = break_insts;
+    break_insts = vector<JumpInst *>();
     // if condition
     IRValue cond = ctx->cond()->accept(this);
     JzeroInst *jzo_inst = new JzeroInst(cond.reg);
@@ -539,25 +543,36 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
         cur_scope_elements = last_scope_elements;
         cur_basicblock = new BasicBlock;
     }
+    // modify break target
+    for (int i = 0; i < break_insts.size(); ++i) {
+        break_insts[i]->bb_idx = cur_basicblock->bb_idx;
+    }
+    // restore continue and break
     continue_target = last_continue_target;
+    break_insts = last_break_insts;
     jzo_inst->bb_idx = cur_basicblock->bb_idx;
     cout << "exit While" << endl;
     return nullptr;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitBreakStmt(SysYParser::BreakStmtContext *ctx) {
-    // TODO:
+    JumpInst *jmp_inst = new JumpInst();
+    cur_basicblock->basic_block.push_back(jmp_inst);
+    break_insts.push_back(jmp_inst);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock;
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitContinueStmt(SysYParser::ContinueStmtContext *ctx) {
-    cout << "enter BreakStmt" << endl;
+    cout << "enter ContinueStmt" << endl;
     JumpInst *jmp_inst = new JumpInst(continue_target);
     cur_basicblock->basic_block.push_back(jmp_inst);
     cur_scope_elements->push_back(cur_basicblock);
     cur_basicblock = new BasicBlock;
-    cout << "exit BreakStmt" << endl;
+    cout << "exit ContinueStmt" << endl;
     return nullptr;
 }
 

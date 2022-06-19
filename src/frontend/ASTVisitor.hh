@@ -27,6 +27,7 @@ private:
     VariableTable  *cur_vartable;
     BasicBlock     *cur_basicblock;
     int32_t continue_target;
+    vector<JumpInst *> break_insts;
 // Funtion for helping Build IR and Symbol Table
 public:
     bool have_main_func;
