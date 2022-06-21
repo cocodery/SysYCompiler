@@ -158,4 +158,6 @@ void CompUnit::DebugUserFuncs() {
 void CompUnit::DebugGlobalTable() {
     cout << "Global Variable" << endl;
     global_scope->local_table->printVaribaleTable();
+    global_scope->elements->resize(1);
+    global_scope->printElements();
 }

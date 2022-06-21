@@ -26,6 +26,7 @@ private:
     Scope          *cur_scope;
     VariableTable  *cur_vartable;
     BasicBlock     *cur_basicblock;
+    BasicBlock     *glbvar_init_bb;
     int32_t continue_target;
     vector<JumpInst *> break_insts;
 // Funtion for helping Build IR and Symbol Table

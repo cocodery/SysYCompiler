@@ -9,6 +9,9 @@ ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     cur_scope = ir.global_scope;
     cur_scope_elements = ir.global_scope->elements;
     cur_vartable = ir.global_scope->local_table;
+    glbvar_init_bb = new BasicBlock;
+    cur_basicblock = glbvar_init_bb;
+    // ir.global_scope->elements->push_back(glbvar_init_bb);
 }
 
 // finished
@@ -226,14 +229,44 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
 }
 
 antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
-    // TODO:
+    cout << "enter InitVarDef" << endl;
+    // push to variable table, similar with `UninitVarDef`
+    string var_name = ctx->Identifier()->getText();
+    if (cur_vartable->findInCurTable(var_name)) {
+        dbg(var_name + " is in cur_vartable");
+        exit(EXIT_FAILURE);
+    }
+    Variable *variable = new Variable;
+    VarType var(false, !(ctx->constExp().size() == 0), false, type);
+    dbg(DeclTypeToStr(var.decl_type), var.is_array);
+    if (var.is_array) {
+        var.array_dims = get_array_dims(ctx->constExp());
+        dbg(var.array_dims);
+    }
+    variable->type = var;
+    cur_vartable->var_table.push_back(std::make_pair(var_name, variable));
+    // parse `InitVarDef`
+    // init global variable before excuting main function
+    // init local variable we it first exsit
+    // we make sure that all variable don't init at Variable->init_value, but get value via access memory
+    if (var.is_array == false) {
+        VirtReg addr = VirtReg();
+        LoadAddress *ldv_inst = new LoadAddress(addr, variable);
+        cur_basicblock->basic_block.push_back(ldv_inst);
+        IRValue src = ctx->initVal()->accept(this);
+        StoreMem* stm_inst = new StoreMem(addr, src.reg);
+        cur_basicblock->basic_block.push_back(stm_inst);
+    } else {
+
+    }
+    cout << "exit InitVarDef" << endl;
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitScalarInitVal(SysYParser::ScalarInitValContext *ctx) {
-    dbg("Program should never reach Function visitScalarInitVal");
-    exit(EXIT_FAILURE);
+    IRValue ret = ctx->exp()->accept(this);
+    return ret;
 }
 
 // finished
@@ -246,6 +279,7 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
 // 函数声明分析，获取函数声明，返回类型，参数表
 // 因为不存在函数内声明函数的情况，因此直接将函数定义插入函数表
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
+    cout << "enter FuncDef" << endl;
     Function *func = new Function;
     string func_name = ctx->Identifier()->getText();
     dbg(func_name);
@@ -265,6 +299,8 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     func->main_scope = ctx->block()->accept(this);
     // push to function table
     ir.functions.push_back(func);
+    cur_basicblock = glbvar_init_bb;
+    cout << "exit FuncDef" << endl;
     return nullptr;
 }
 
@@ -703,8 +739,10 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
 
 // finished
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
+    cout << "enter PrimaryExp3" << endl;
     CTValue src = ctx->number()->accept(this);
     if (mode == compile_time) {
+        cout << "exit PrimaryExp3 in compile time" << endl;
         return src;
     } else {
         VirtReg dst = VirtReg();
@@ -712,6 +750,7 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) 
         cur_basicblock->basic_block.push_back(ldc_inst);
         VarType type = VarType(true, false, false, src.type);
         IRValue ret = IRValue(type, dst, false);
+        cout << "exit PrimaryExp3 not in compile time" << endl;
         return ret;
     }
 }
