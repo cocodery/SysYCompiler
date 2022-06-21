@@ -70,6 +70,13 @@ string JzeroInst::ToString() {
     return ss.str();
 }
 
+string JnzroInst::ToString() {
+    std::stringstream ss;
+    ss << "jnz reg" << cond.reg_id << ", ";
+    ss << "bb_" << bb_idx;
+    return ss.str();
+}
+
 string JumpInst::ToString() {
     std::stringstream ss;
     ss << "jump bb_" << bb_idx;
@@ -109,6 +116,10 @@ void LoadOffset::printLdoInst() {
 }
 
 void JzeroInst::printJzoInst() {
+    cout << get_tabs() << ToString() << ";\n";
+}
+
+void JnzroInst::printJnzInst() {
     cout << get_tabs() << ToString() << ";\n";
 }
 

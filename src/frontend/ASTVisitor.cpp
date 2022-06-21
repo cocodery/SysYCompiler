@@ -501,7 +501,7 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
     // save break_inst
     vector<JumpInst *> last_break_insts = break_insts;
     break_insts = vector<JumpInst *>();
-    // if condition
+    // while condition
     IRValue cond = ctx->cond()->accept(this);
     JzeroInst *jzo_inst = new JzeroInst(cond.reg);
     cur_basicblock->basic_block.push_back(jzo_inst);
@@ -935,10 +935,20 @@ antlrcpp::Any ASTVisitor::visitLAnd1(SysYParser::LAnd1Context *ctx) {
     return ctx->eqExp()->accept(this);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
-    ctx->lAndExp()->accept(this);
-    ctx->eqExp()->accept(this);
-    return nullptr;
+    IRValue dst;
+    dst =  ctx->lAndExp()->accept(this);
+    JzeroInst *jzo_inst = new JzeroInst(dst.reg);
+    cur_basicblock->basic_block.push_back(jzo_inst);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock;
+    dst =  ctx->eqExp()->accept(this);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock;
+    int32_t false_target = cur_basicblock->bb_idx;
+    jzo_inst->bb_idx = false_target;
+    return dst;
 }
 
 // finished
@@ -947,9 +957,18 @@ antlrcpp::Any ASTVisitor::visitLOr1(SysYParser::LOr1Context *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
-    // TODO:
-    string op = ctx->children[1]->getText();
-    return nullptr;
+    IRValue dst;
+    dst = ctx->lOrExp()->accept(this);
+    JnzroInst *jnz_inst = new JnzroInst(dst.reg);
+    cur_basicblock->basic_block.push_back(jnz_inst);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock;
+    dst = ctx->lAndExp()->accept(this);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock;
+    int32_t true_target = cur_basicblock->bb_idx;
+    jnz_inst->bb_idx = true_target;
+    return dst;
 }
 
 // finished

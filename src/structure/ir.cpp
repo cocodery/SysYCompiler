@@ -32,6 +32,9 @@ void BasicBlock::printBlock() {
         Case (JzeroInst, jzo_inst, inst) {
             jzo_inst->printJzoInst();
         }
+        Case (JnzroInst, jnz_inst, inst) {
+            jnz_inst->printJnzInst();
+        }
         Case (JumpInst, jmp_inst, inst) {
             jmp_inst->printJmpInst();
         }

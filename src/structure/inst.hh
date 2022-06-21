@@ -156,6 +156,16 @@ public:
     void printJzoInst();
 };
 
+class JnzroInst: public Inst {
+public:
+    VirtReg cond;
+    int32_t bb_idx;
+public:
+    JnzroInst(VirtReg _cond, int32_t idx = -1): cond(_cond), bb_idx(idx) { }
+    string ToString();
+    void printJnzInst();
+};
+
 class JumpInst: public Inst {
 public:
     int32_t bb_idx;
