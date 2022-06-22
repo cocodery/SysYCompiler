@@ -7,7 +7,7 @@ public:
     virtual ~Info() { }
 };
 ```
-基类
+`Info`基类, 主要用于派生`BasicBlock`和`Scope`
 
 #### Inst
 ```cpp
@@ -16,7 +16,7 @@ public:
     virtual ~Inst() { }
 };
 ```
-基类
+`Inst`基类, 主要用于派生各种指令类
 
 #### VirtReg
 ```cpp
