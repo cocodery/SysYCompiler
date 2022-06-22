@@ -39,6 +39,8 @@ public:
     void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& list);
 
     void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<float>& list);
+
+    void parse_variable_init(SysYParser::ListInitvalContext *node, const vector<int32_t> &array_dims, VirtReg addr, int32_t off);
 // Function for Abstract Syntax Tree
 public:
     virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *ctx) override;
