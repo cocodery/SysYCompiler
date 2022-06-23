@@ -146,7 +146,6 @@ CompUnit::CompUnit() {
 
 void CompUnit::moveGlobalInitToMain() {
     auto glb_init_bb = dynamic_cast<BasicBlock *>(*global_scope->elements->begin());
-    glb_init_bb->printBlock();
     Function *main_function = nullptr;
     for (auto function: functions) {
         if (function->func_info.func_name == "main") {

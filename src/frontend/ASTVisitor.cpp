@@ -839,6 +839,41 @@ antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
 
 antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
     // TODO:
+    cout << "enter Unary2" << endl;
+    string func_name = ctx->Identifier()->getText();
+    FunctionInfo *func_info = ir.getFunctionInfo(func_name);
+    if (func_info == nullptr) {
+        dbg("Call Undeclared Function");
+        exit(EXIT_FAILURE);
+    }
+    vector<VirtReg> args;
+    if (ctx->funcRParams()) {
+        args = ctx->funcRParams()->accept(this).as<vector<VirtReg>>();
+    }
+    if (func_name == "starttime" || func_name == "stoptime") {
+        int32_t line_number = ctx->start->getLine();
+        VirtReg line_reg = VirtReg();
+        CTValue line_ct = CTValue(TypeInt, line_number, 0);
+        LoadNumber *ldc_inst = new LoadNumber(line_reg, line_ct);
+        cur_basicblock->basic_block.push_back(ldc_inst);
+        args.push_back(line_reg);
+    }
+    for (auto arg: args) {
+        VirtReg dst = VirtReg();
+        LoadParam *ldp_inst = new LoadParam(dst, arg);
+        cur_basicblock->basic_block.push_back(ldp_inst);
+    }
+    VirtReg func_dst = VirtReg(-1);
+    bool has_ret = true;
+    if (func_info->return_type == TypeVoid) {
+        func_dst = NoRetReg;
+        has_ret = false;
+    } else {
+        func_dst = VirtReg();
+    }
+    CallFuntion *call_inst = new CallFuntion(func_name, func_dst, has_ret);
+    cur_basicblock->basic_block.push_back(call_inst);
+    cout << "exit Unary2" << endl;
     return nullptr;
 }
 
@@ -895,14 +930,22 @@ antlrcpp::Any ASTVisitor::visitUnaryOp(SysYParser::UnaryOpContext *ctx) {
     exit(EXIT_FAILURE);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitFuncRParams(SysYParser::FuncRParamsContext *ctx) {
-    // TODO:
-    return nullptr;
+    // 获得参数所在的寄存器
+    vector<VirtReg> args;
+    for (auto node: ctx->funcRParam()) {
+        args.push_back(node->accept(this));
+    }
+    return args;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitFuncRParam(SysYParser::FuncRParamContext *ctx) {
-    // TODO:
-    return nullptr;
+    assert(mode != compile_time);
+    IRValue arg = ctx->exp()->accept(this);
+    VirtReg arg_reg = arg.reg;
+    return arg_reg;
 }
 
 // finished
