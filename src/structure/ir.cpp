@@ -138,6 +138,21 @@ CompUnit::CompUnit() {
     lib_functions[9].libfunc_info.func_args.push_back(VarType(false, true,  true, TypeFloat));
 }
 
+void CompUnit::moveGlobalInitToMain() {
+    auto glb_init_bb = dynamic_cast<BasicBlock *>(*global_scope->elements->begin());
+    glb_init_bb->printBlock();
+    Function *main_function = nullptr;
+    for (auto function: functions) {
+        if (function->func_info.func_name == "main") {
+            main_function = function;
+        }
+    }
+    if (main_function != nullptr) {
+        auto element = main_function->main_scope->elements;
+        element->insert( element->begin(), glb_init_bb);
+    }
+}
+
 void CompUnit::DebugLibFuncs() {
     cout << "Init Lib Functions" << endl;
     for (int i = 0; i < 10; ++i) {
@@ -158,6 +173,7 @@ void CompUnit::DebugUserFuncs() {
 void CompUnit::DebugGlobalTable() {
     cout << "Global Variable" << endl;
     global_scope->local_table->printVaribaleTable();
+    cout << "Global Init Block" << endl;
     global_scope->elements->resize(1);
     global_scope->printElements();
 }

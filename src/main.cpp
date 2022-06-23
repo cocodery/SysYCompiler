@@ -82,6 +82,8 @@ int main(int argc, char *argv[]) {
 
     ir.DebugGlobalTable();
 
+    ir.moveGlobalInitToMain();
+
     ir.DebugUserFuncs();
 
     cout << "Compiler Complete" << endl;

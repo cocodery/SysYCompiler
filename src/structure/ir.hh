@@ -67,6 +67,7 @@ public:
     LibFunction lib_functions[11];
 public:
     CompUnit();
+    void moveGlobalInitToMain();
     void DebugLibFuncs();
     void DebugUserFuncs();
     void DebugGlobalTable();
