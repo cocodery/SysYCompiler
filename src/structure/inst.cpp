@@ -83,6 +83,23 @@ string JumpInst::ToString() {
     return ss.str();
 }
 
+string LoadParam::ToString() {
+    std::stringstream ss;
+    ss << "ld.p reg" << dst.reg_id << ", ";
+    ss << "reg" << src.reg_id;
+    return ss.str();
+}
+
+string CallFuntion::ToString() {
+    std::stringstream ss;
+    ss << "call ";
+    if (has_ret) {
+        ss << "reg" << ret_dst.reg_id << ", ";
+    }
+    ss << func_name;
+    return ss.str();
+}
+
 void UnaryOpInst::printuOpInst() {
     cout << get_tabs() << ToString() << ";\n";
 }
@@ -124,5 +141,13 @@ void JnzroInst::printJnzInst() {
 }
 
 void JumpInst::printJmpInst() {
+    cout << get_tabs() << ToString() << ";\n";
+}
+
+void LoadParam::printLdpInst() {
+    cout << get_tabs() << ToString() << ";\n";
+}
+
+void CallFuntion::printCalInst() {
     cout << get_tabs() << ToString() << ";\n";
 }

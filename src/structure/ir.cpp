@@ -38,6 +38,12 @@ void BasicBlock::printBlock() {
         Case (JumpInst, jmp_inst, inst) {
             jmp_inst->printJmpInst();
         }
+        Case (LoadParam, ldp_inst, inst) {
+            ldp_inst->printLdpInst();
+        }
+        Case (CallFuntion, cal_inst, inst) {
+            cal_inst->printCalInst();
+        }
     }
 }
 
@@ -151,6 +157,29 @@ void CompUnit::moveGlobalInitToMain() {
         auto element = main_function->main_scope->elements;
         element->insert( element->begin(), glb_init_bb);
     }
+}
+
+bool CompUnit::inLibFunctions(string func_name) {
+    for (auto lib_function: lib_functions) {
+        if (func_name == lib_function.libfunc_info.func_name) {
+            return true;
+        }
+    }
+    return false;
+}
+
+FunctionInfo *CompUnit::getFunctionInfo(string func_name) {
+    for (auto function: functions) {
+        if (func_name == function->func_info.func_name) {
+            return &function->func_info;
+        }
+    }
+    for (auto lib_function: lib_functions) {
+        if (func_name == lib_function.libfunc_info.func_name) {
+            return &lib_function.libfunc_info;
+        }
+    }
+    return nullptr;
 }
 
 void CompUnit::DebugLibFuncs() {

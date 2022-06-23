@@ -174,3 +174,23 @@ public:
     string ToString();
     void printJmpInst();
 };
+
+class LoadParam: public Inst {
+public:
+    VirtReg dst, src;
+public:
+    LoadParam(VirtReg _dst, VirtReg _src): dst(_dst), src(_src) { }
+    string ToString();
+    void printLdpInst();
+};
+
+class CallFuntion: public Inst {
+public: 
+    string func_name;
+    VirtReg ret_dst;
+    bool has_ret;
+public:
+    CallFuntion(string _fn, VirtReg _rd, bool _hr): func_name(_fn), ret_dst(_rd), has_ret(_hr) { }
+    string ToString();
+    void printCalInst();
+};

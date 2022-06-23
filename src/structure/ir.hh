@@ -68,6 +68,8 @@ public:
 public:
     CompUnit();
     void moveGlobalInitToMain();
+    bool inLibFunctions(string func_name);
+    FunctionInfo *getFunctionInfo(string func_name);
     void DebugLibFuncs();
     void DebugUserFuncs();
     void DebugGlobalTable();
