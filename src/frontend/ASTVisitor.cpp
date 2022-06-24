@@ -282,6 +282,7 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
     return nullptr;
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     cout << "enter InitVarDef" << endl;
     // push to variable table, similar with `UninitVarDef`
@@ -837,8 +838,8 @@ antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
     return ctx->primaryExp()->accept(this);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
-    // TODO:
     cout << "enter Unary2" << endl;
     string func_name = ctx->Identifier()->getText();
     FunctionInfo *func_info = ir.getFunctionInfo(func_name);
@@ -1096,6 +1097,7 @@ antlrcpp::Any ASTVisitor::visitLOr1(SysYParser::LOr1Context *ctx) {
     return ctx->lAndExp()->accept(this);
 }
 
+// finished
 antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
     IRValue dst;
     dst = ctx->lOrExp()->accept(this);
