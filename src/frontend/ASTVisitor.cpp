@@ -37,8 +37,6 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
         total_size *= i;
     }
     if (total_size == 0) return; // 如果`size`为 0 则不需要初始化
-    vector<int32_t> child_array_dims = array_dims; // 子结点的维度
-    child_array_dims.erase(child_array_dims.begin());
     int32_t cnt = 0;
     for (auto child: node->constInitVal()) { // 对子结点进行初始化
         // 如果是标量, 计算`constExp`初值, 填入初始化列表
@@ -47,6 +45,8 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
             list.push_back(scalar_value);
             ++cnt;
         } else { // 如果是向量, 递归的初始化
+            vector<int32_t> child_array_dims = array_dims; // 子结点的维度
+            child_array_dims.erase(child_array_dims.begin());
             auto list_node = dynamic_cast<SysYParser::ListConstInitValContext *>(child);
             parse_const_init(list_node, child_array_dims, list);
             cnt += total_size / array_dims[0];
@@ -1114,12 +1114,14 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
 }
 
 // finished
+// 返回表达式的类型由type限定, 存在隐患
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
     cout << "enter constexp" << endl;
+    CompileMode last_mode = mode;
     mode = compile_time;
     CTValue result = ctx->addExp()->accept(this);
     result.type = type;
-    mode = normal;
+    mode = last_mode;
     cout << "exit constexp" << endl;
     if (result.type == TypeInt) {
         return result.int_value;
