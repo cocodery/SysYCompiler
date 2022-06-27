@@ -81,3 +81,27 @@ constExp : addExp ;
     - 切换`mode = compile_time`
     - 分析子节点得到表达式的值
     - 恢复`mode`, 根据`type`返回得到的值
+
+```antlr
+funcDef : funcType Identifier '(' (funcFParams)? ')' block;
+```
+* antlrcpp::Any visitFuncDef(SysYParser::FuncDefContext *ctx);
+    - 对函数声明和定义进行分析, 并将函数填入函数表
+    - 首先对函数声明进行分析, 调用`ctx->funcFParams()->accept(this)`分析参数
+    - 接着调用`ctx->block()->accept(this)`对函数体进行分析
+    - 将函数填入函数表, 当前基本块交还`glbvar_init_bb`
+
+```antlr
+funcFParams : funcFParam (',' funcFParam)*;
+```
+* antlrcpp::Any visitFuncFParams(SysYParser::FuncFParamsContext *ctx);
+    - 对函数参数进行分析
+    - 调用`arg->accept(this)`将参数组装到列表
+    - 返回参数列表
+
+```antlr
+funcFParam : bType Identifier ('[' ']' ('[' constExp ']')* )?;
+```
+* antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx);
+    - 对单个参数进行分析, 只保存参数类型
+    - 如果是数组类型, 第一维度置为`-1`
