@@ -105,3 +105,15 @@ funcFParam : bType Identifier ('[' ']' ('[' constExp ']')* )?;
 * antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx);
     - 对单个参数进行分析, 只保存参数类型
     - 如果是数组类型, 第一维度置为`-1`
+
+
+```antlr
+number
+    : IntLiteral #number1
+    | FloatLiteral #number2
+    ; 
+```
+* antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx);
+* antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx);
+    - 分析数字常量的使用, 将其放入`CTValue`中
+    - 类型设定为其定义的类型, 两个初值均使用定义的初值, 会隐式转换
