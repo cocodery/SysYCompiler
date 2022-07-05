@@ -675,13 +675,13 @@ antlrcpp::Any ASTVisitor::visitContinueStmt(SysYParser::ContinueStmtContext *ctx
 antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
     // if ctx->exp() == nullptr, means it's a function without return value
     bool has_retvalue = ctx->exp() != nullptr;
-    ReturnInst *ret_inst = nullptr;
+    LLIR_RET *ret_inst = nullptr;
     if (has_retvalue) {
         VirtReg dst = ctx->exp()->accept(this).as<IRValue>().reg;
-        ret_inst = new ReturnInst(has_retvalue, dst);
+        ret_inst = new LLIR_RET(has_retvalue, &dst);
     } else {
         VirtReg dst = NoRetReg;
-        ret_inst = new ReturnInst(has_retvalue, dst);
+        ret_inst = new LLIR_RET(has_retvalue, &dst);
     }
     cur_basicblock->basic_block.push_back(ret_inst); // 将指令加入基本块
     cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
@@ -820,7 +820,7 @@ antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
     int32_t int_literal = parseNum(ctx->IntLiteral()->getText().c_str());
     dbg(int_literal);
     cout << "exit int number" << endl;
-    return CTValue(TypeInt, int_literal, 0);
+    return CTValue(TypeInt, int_literal, int_literal);
 }
 
 // finished
@@ -830,7 +830,7 @@ antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
     sscanf(ctx->FloatLiteral()->getText().c_str(), "%f", &float_literal);
     dbg(float_literal);
     cout << "exit float number" << endl;
-    return CTValue(TypeFloat, 0, float_literal);
+    return CTValue(TypeFloat, float_literal, float_literal);
 }
 
 // finished

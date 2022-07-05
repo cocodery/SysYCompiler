@@ -20,3 +20,5 @@
 * `call`
 * `zext .. to`
 * `fpext .. to`
+* `sitofp .. to`
+* `fptosi .. to`

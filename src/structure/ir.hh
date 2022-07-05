@@ -9,6 +9,7 @@
 #include "../common.hh"
 #include "symtable.hh"
 #include "inst.hh"
+#include "llir.hh"
 #include "baseclass.hh"
 
 using std::ostream;

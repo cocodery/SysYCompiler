@@ -1,5 +1,6 @@
 #include "llir.hh"
 
+// LLVM-IR RET
 string LLIR_RET::ToString() {
     std::stringstream ss;
     ss << "ret ";
@@ -26,3 +27,6 @@ void LLIR_RET::printRetInst() {
     cout << get_tabs() << ToString() << "\n";
 }
 
+// LLVM-IR BinaryOpInst
+
+// LLVM-IR FBinaryOpInst

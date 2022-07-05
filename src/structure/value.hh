@@ -11,7 +11,7 @@ using std::endl;
 
 extern const VirtReg NoRetReg;
 
-class CTValue {
+class CTValue: public Info {
 public:
     DeclType type;
     int32_t int_value;

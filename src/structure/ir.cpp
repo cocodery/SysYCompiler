@@ -44,6 +44,10 @@ void BasicBlock::printBlock() {
         Case (CallFuntion, cal_inst, inst) {
             cal_inst->printCalInst();
         }
+        // LLVM IR
+        Case (LLIR_RET, ret_inst, inst) {
+            ret_inst->printRetInst();
+        }
     }
 }
 
