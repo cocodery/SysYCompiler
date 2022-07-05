@@ -40,7 +40,7 @@ DeclType getDeclType(string type_str) {
 
 string DeclTypeToStr(DeclType type) {
     switch (type) {
-        case TypeInt: return "int";
+        case TypeInt: return "i32";
         case TypeFloat: return "float";
         case TypeVoid: return "void";
         default: break;
