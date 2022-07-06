@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <variant>
 #include "../common.hh"
 #include "../structure/symtable.hh"
 #include "../structure/ir.hh"
