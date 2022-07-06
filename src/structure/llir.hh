@@ -6,16 +6,34 @@
 #include <map>
 
 #include "../common.hh"
+#include "ir.hh"
 #include "symtable.hh"
 #include "baseclass.hh"
 #include "value.hh"
 
+class SRC {
+public:
+    CTValue *ctv;
+    VirtReg *reg;
+public:
+    SRC(): ctv(nullptr), reg(nullptr) { }
+    SRC(CTValue *_ctv): ctv(_ctv), reg(nullptr) { }
+    SRC(VirtReg *_reg): ctv(nullptr), reg(_reg) { }
+    string ToString();
+    CTValue *ToCTValue() {
+        return (ctv == nullptr )? nullptr : ctv;
+    };
+    VirtReg *ToVirtReg() {
+        return (reg == nullptr) ? nullptr : reg;
+    }
+};
+
 class LLIR_RET: public Inst {
 public:
     bool has_retvalue;
-    Info *ret_value;
+    SRC ret_value;
 public:
-    LLIR_RET(bool _hrv, Info *_vr): has_retvalue(_hrv), ret_value(_vr) { }
+    LLIR_RET(bool _hrv, SRC _vr): has_retvalue(_hrv), ret_value(_vr) { }
     string ToString();
     void printRetInst();
 };
@@ -27,10 +45,10 @@ public:
 class LLIR_BIN: public Inst {
 public:
     BinOp op;
-    VirtReg *dst;
-    Info *src1, *src2;
+    SRC dst;
+    SRC src1, src2;
 public:
-    LLIR_BIN(BinOp _op, VirtReg *_dst, Info *_src1, Info *_src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    LLIR_BIN(BinOp _op, VirtReg *_dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
     void printBinInst();
 };
@@ -38,10 +56,10 @@ public:
 class LLIR_FBIN: public Inst {
 public:
     BinOp op;
-    VirtReg *dst;
-    Info *src1, *src2;
+    SRC dst;
+    SRC src1, src2;
 public:
-    LLIR_FBIN(BinOp _op, VirtReg* _dst, Info *_src1, Info *_src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    LLIR_FBIN(BinOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
     void printFBinInst();
 };
@@ -64,6 +82,13 @@ public:
 
 class LLIR_ICMP: public Inst {
 public:
+    RelOp op;
+    SRC dst;
+    SRC src1, src2;
+public:
+    LLIR_ICMP(RelOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    string ToString();
+    void printIcmpInst();
 };
 
 class LLIR_FCMP: public Inst {
@@ -88,6 +113,11 @@ public:
 
 class LLIR_SITOFP: public Inst {
 public:
+    SRC dst, src;
+public:
+    LLIR_SITOFP(SRC _dst, SRC _src): dst(_dst), src(_src) { }
+    string ToString();
+    void printItofInst();
 };
 
 class LLIR_FPTOSI: public Inst {

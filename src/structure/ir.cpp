@@ -2,16 +2,6 @@
 
 int32_t tab_num = 1;
 
-string SRC::ToString() {
-    if (ctv != nullptr) {
-        dbg(ctv->ToString());
-    } else if (reg != nullptr) {
-        dbg(reg->ToString());
-    } else {
-        dbg("Nothing in `SRC`");
-    }
-}
-
 void BasicBlock::printBlock() {
     cout << get_tabs() << "`Block`" << bb_idx << endl;
     for (auto inst: basic_block) {

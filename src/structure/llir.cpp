@@ -1,16 +1,21 @@
 #include "llir.hh"
 
+string SRC::ToString() {
+    if (ctv != nullptr) {
+        return ctv->ToString();
+    } else if (reg != nullptr) {
+        return reg->ToString();
+    } else {
+        dbg("Nothing in `SRC`");
+    }
+}
+
 // LLVM-IR RET
 string LLIR_RET::ToString() {
     std::stringstream ss;
     ss << "ret ";
     if (has_retvalue) {
-        if (CTValue *ctv = dynamic_cast<CTValue *>(ret_value); ctv != nullptr) {
-            ss << ctv->ToString();
-        } else {
-            VirtReg *reg = dynamic_cast<VirtReg *>(ret_value);
-            ss << reg->ToString();
-        }
+        ss << ret_value.ToString();
     } else {
         ss << "void";
     }
@@ -24,19 +29,12 @@ void LLIR_RET::printRetInst() {
 // LLVM-IR BinaryOpInst
 string LLIR_BIN::ToString() {
     std::stringstream ss;
-    ss << "%" << dst->reg_id << " = " << BinOpToStr(op) << " ";
-    if (CTValue *ctv1 = dynamic_cast<CTValue *>(src1); ctv1 != nullptr) {
-        ss << ctv1->ToString();
-    } else {
-        VirtReg *reg1 = dynamic_cast<VirtReg *>(src1);
-        ss << reg1->ToString();
-    }
-    if (CTValue *ctv2 = dynamic_cast<CTValue *>(src2); ctv2 != nullptr) {
-        ss << ctv2->ToString();
-    } else {
-        VirtReg *reg2 = dynamic_cast<VirtReg *>(src2);
-        ss << reg2->ToString();
-    }
+    VirtReg *dst_reg = dst.ToVirtReg();
+    assert(dst_reg != nullptr); 
+    ss << "%" << dst_reg->reg_id << " = " << BinOpToStr(op) << " ";
+    ss << src1.ToString();
+    ss << ", ";
+    ss << src2.ToString();
     return ss.str();
 }
 
@@ -47,22 +45,45 @@ void LLIR_BIN::printBinInst() {
 // LLVM-IR FBinaryOpInst
 string LLIR_FBIN::ToString() {
     std::stringstream ss;
-    ss << "%" << dst->reg_id << " = f" << BinOpToStr(op) << " ";
-    if (CTValue *ctv1 = dynamic_cast<CTValue *>(src1); ctv1 != nullptr) {
-        ss << ctv1->ToString();
-    } else {
-        VirtReg *reg1 = dynamic_cast<VirtReg *>(src1);
-        ss << reg1->ToString();
-    }
-    if (CTValue *ctv2 = dynamic_cast<CTValue *>(src2); ctv2 != nullptr) {
-        ss << ctv2->ToString();
-    } else {
-        VirtReg *reg2 = dynamic_cast<VirtReg *>(src2);
-        ss << reg2->ToString();
-    }
+    VirtReg *dst_reg = dst.ToVirtReg();
+    assert(dst_reg != nullptr); 
+    ss << "%" << dst_reg->reg_id << " = f" << BinOpToStr(op) << " ";
+    ss << src1.ToString();
+    ss << ", ";
+    ss << src2.ToString();
     return ss.str();
 }
 
 void LLIR_FBIN::printFBinInst() {
+    cout << get_tabs() << ToString() << "\n";
+}
+
+// LLVM-IR Int-Compare
+string LLIR_ICMP::ToString() {
+    std::stringstream ss;
+    VirtReg *dst_reg = dst.ToVirtReg();
+    assert(dst_reg != nullptr); 
+    ss << "%" << dst_reg->reg_id << " = icmp " << RelOpToStr(op) << " ";
+    ss << src1.ToString();
+    ss << ", ";
+    ss << src2.ToString();
+    return ss.str();
+}
+
+void LLIR_ICMP::printIcmpInst() {
+    cout << get_tabs() << ToString() << "\n";
+}
+
+// LLVM-IR Signed-Int-TO-Float-Point
+string LLIR_SITOFP::ToString() {
+    std::stringstream ss;
+    VirtReg *dst_reg = dst.ToVirtReg(), *src_reg = src.ToVirtReg();
+    assert(dst_reg != nullptr && src_reg != nullptr);
+    ss << "%" << dst_reg->reg_id << " = sitofp i32 ";
+    ss << "%" << src_reg->reg_id << " to float";
+    return ss.str();
+}
+
+void LLIR_SITOFP::printItofInst() {
     cout << get_tabs() << ToString() << "\n";
 }
