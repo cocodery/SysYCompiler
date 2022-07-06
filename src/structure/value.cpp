@@ -9,8 +9,10 @@ string CTValue::ToString() {
     ss << DeclTypeToStr(type) << " ";
     if (type == TypeInt) {
         ss << int_value;
-    } else {
+    } else if (type == TypeFloat) {
         ss << float_value;
+    } else {
+        dbg("UnExpected DeclType");
     }
     return ss.str();
 }
@@ -91,16 +93,16 @@ CTValue operator % (CTValue lhs, CTValue rhs) {
 
 CTValue operator - (CTValue rhs) {
     if (rhs.type == TypeInt) {
-        return CTValue(TypeInt, -rhs.int_value, 0);
+        return CTValue(TypeInt, -rhs.int_value, -rhs.float_value);
     } else {
-        return CTValue(TypeFloat, 0, -rhs.float_value);
+        return CTValue(TypeFloat, -rhs.int_value, -rhs.float_value);
     }
 }
 
 CTValue operator ! (CTValue rhs) {
     if (rhs.type == TypeInt) {
-        return CTValue(TypeInt, !rhs.int_value, 0);
+        return CTValue(TypeInt, !rhs.int_value, !rhs.float_value);
     } else {
-        return CTValue(TypeFloat, 0, !rhs.float_value);
+        return CTValue(TypeFloat, !rhs.int_value, !rhs.float_value);
     }
 }
