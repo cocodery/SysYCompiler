@@ -30,6 +30,25 @@ int parseNum(const char *number_str) {
     return ret;
 }
 
+string BinOpToStr(BinOp op) {
+    if (op == ADD) return "add";
+    else if (op == SUB) return "sub";
+    else if (op == MUL) return "mul";
+    else if (op == DIV) return "div";
+    else if (op == REM) return "rem";
+    dbg("Unknown BinOp");
+    exit(EXIT_FAILURE);
+}
+
+string RelOpToStr(RelOp op) {
+    if (op == LTH) return "slt";
+    else if (op == LEQ) return "sle";
+    else if (op == EQU) return "eq";
+    else if (op == NEQ) return "uq";
+    dbg("Unknown RelOp");
+    exit(EXIT_FAILURE);
+}
+
 DeclType getDeclType(string type_str) {
     if (type_str == "int") return TypeInt;
     else if (type_str == "float") return TypeFloat;

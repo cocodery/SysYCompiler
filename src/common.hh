@@ -21,6 +21,18 @@ enum DeclType {
     TypeVoid, TypeInt, TypeFloat, TypeBool,
 };
 
+enum BinOp {
+    ADD, SUB, MUL, DIV, REM,
+};
+
+enum RelOp {
+    LTH, LEQ, EQU, NEQ,
+};
+
+string BinOpToStr(BinOp op);
+
+string RelOpToStr(RelOp op);
+
 DeclType getDeclType(string type_str);
 
 string DeclTypeToStr(DeclType type);
