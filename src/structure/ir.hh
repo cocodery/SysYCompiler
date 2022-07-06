@@ -20,6 +20,23 @@ using std::map;
 static int32_t bb_index = 0;
 static int32_t sp_index = 0;
 
+class SRC {
+public:
+    CTValue *ctv;
+    VirtReg *reg;
+public:
+    SRC(): ctv(nullptr), reg(nullptr) { }
+    SRC(CTValue *_ctv): ctv(_ctv), reg(nullptr) { }
+    SRC(VirtReg *_reg): ctv(nullptr), reg(_reg) { }
+    string ToString();
+    CTValue *ToCTValue() {
+        return (ctv == nullptr )? nullptr : ctv;
+    };
+    VirtReg *ToVirtReg() {
+        return (reg == nullptr) ? nullptr : reg;
+    }
+};
+
 class BasicBlock: public Info {
 public:
     int32_t bb_idx;

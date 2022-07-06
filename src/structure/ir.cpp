@@ -2,6 +2,16 @@
 
 int32_t tab_num = 1;
 
+string SRC::ToString() {
+    if (ctv != nullptr) {
+        dbg(ctv->ToString());
+    } else if (reg != nullptr) {
+        dbg(reg->ToString());
+    } else {
+        dbg("Nothing in `SRC`");
+    }
+}
+
 void BasicBlock::printBlock() {
     cout << get_tabs() << "`Block`" << bb_idx << endl;
     for (auto inst: basic_block) {
@@ -47,6 +57,12 @@ void BasicBlock::printBlock() {
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {
             ret_inst->printRetInst();
+        }
+        Case (LLIR_BIN, bin_inst, inst) {
+            bin_inst->printBinInst();
+        }
+        Case (LLIR_ICMP, icmp_inst, inst) {
+            icmp_inst->printIcmpInst();
         }
     }
 }
