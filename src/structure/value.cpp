@@ -4,6 +4,17 @@ IRValue::IRValue(VarType t, VirtReg vg, bool ass) : type(t), reg(vg), is_left_va
 
 CTValue::CTValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), float_value(fv) { }
 
+string CTValue::ToString() {
+    std::stringstream ss;
+    ss << DeclTypeToStr(type) << " ";
+    if (type == TypeInt) {
+        ss << int_value;
+    } else {
+        ss << float_value;
+    }
+    return ss.str();
+}
+
 // override operators for `CTValue`
 CTValue operator + (CTValue lhs, CTValue rhs) {
     if (lhs.type == rhs.type) {

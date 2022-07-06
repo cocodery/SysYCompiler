@@ -18,6 +18,7 @@ public:
     float float_value;
 public:
     CTValue(DeclType t = TypeVoid, int32_t iv = 0, float fv = 0);
+    string ToString();
 };
 
 class IRValue {
