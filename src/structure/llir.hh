@@ -10,30 +10,6 @@
 #include "baseclass.hh"
 #include "value.hh"
 
-static string bop[] = { "+", "-", "*", "/", "%", "<", "<=", "==", "!=" };
-static string bops[] = { ""};
-
-class BinaryOp {
-public:
-    enum Type {
-        ADD, SUB, MUL, DIV, MOD, LTH, LEQ, EQU, NEQ, 
-    } bin_op;
-    const string get_op() {
-        return bop[(int32_t)bin_op];
-    }
-    Type get_op(string op) {
-        int32_t idx = 0;
-        for (; idx < 11; ++idx) {
-            if (op == bop[idx]) {
-                break;
-            }
-        }
-        return Type(idx);
-    };
-    BinaryOp(Type op) : bin_op(op) { }
-    BinaryOp(string op): bin_op(get_op(op)) { }
-};
-
 class LLIR_RET: public Inst {
 public:
     bool has_retvalue;
@@ -50,22 +26,22 @@ public:
 
 class LLIR_BIN: public Inst {
 public:
-    BinaryOp op;
+    BinOp op;
     VirtReg *dst;
     Info *src1, *src2;
 public:
-    LLIR_BIN(BinaryOp _op, VirtReg *_dst, Info *_src1, Info *_src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    LLIR_BIN(BinOp _op, VirtReg *_dst, Info *_src1, Info *_src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
     void printBinInst();
 };
 
 class LLIR_FBIN: public Inst {
 public:
-    BinaryOp op;
+    BinOp op;
     VirtReg *dst;
     Info *src1, *src2;
 public:
-    LLIR_FBIN(BinaryOp _op, VirtReg* _dst, Info *_src1, Info *_src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    LLIR_FBIN(BinOp _op, VirtReg* _dst, Info *_src1, Info *_src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
     void printFBinInst();
 };
