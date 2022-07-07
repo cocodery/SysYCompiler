@@ -678,16 +678,19 @@ antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
 // finished
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     cout << "enter LVal" << endl;
+    SRC ret;
     Variable *variable = cur_scope->resolve(ctx->Identifier()->getText());
     assert(variable != nullptr);
     if (variable->type.is_const) {
-        vector<SRC> arr_idx;
-        for (auto i: ctx->exp()) {
-            arr_idx.push_back(i->accept(this));
+        if (variable->type.is_array == false) {
+            CTValue *ctv = new CTValue(variable->type.decl_type, variable->int_scalar, variable->float_scalar);
+            ret = SRC(ctv);
         }
     } else {
 
     }
+    cout << "exit visitLVal" << endl;
+    return ret;
 }
 
 // finished
@@ -697,7 +700,7 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp1(SysYParser::PrimaryExp1Context *ctx) 
 
 // finished
 antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) {
-    return nullptr;
+    return ctx->lVal()->accept(this);
 }
 
 // finished

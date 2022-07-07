@@ -16,10 +16,10 @@ string LLIR_RET::ToString() {
     ss << "ret ";
     if (has_retvalue) {
         if (CTValue *ctv = ret_value.ToCTValue(); ctv != nullptr) {
-            ss << DeclTypeToStr(ctv->type) << " ";
+            ss << DeclTypeToStr(ctv->type);
         } else {
             VirtReg *reg = ret_value.ToVirtReg();
-            ss << DeclTypeToStr(reg->type) << " ";
+            ss << DeclTypeToStr(reg->type);
         }
         ss << ret_value.ToString();
     } else {
