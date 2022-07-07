@@ -28,10 +28,6 @@ string LLIR_RET::ToString() {
     return ss.str();
 }
 
-void LLIR_RET::printRetInst() {
-    cout << get_tabs() << ToString() << "\n";
-}
-
 // LLVM-IR BinaryOpInst
 string LLIR_BIN::ToString() {
     std::stringstream ss;
@@ -43,10 +39,6 @@ string LLIR_BIN::ToString() {
     ss << ", ";
     ss << src2.ToString();
     return ss.str();
-}
-
-void LLIR_BIN::printBinInst() {
-    cout << get_tabs() << ToString() << "\n";
 }
 
 // LLVM-IR FBinaryOpInst
@@ -62,10 +54,6 @@ string LLIR_FBIN::ToString() {
     return ss.str();
 }
 
-void LLIR_FBIN::printFBinInst() {
-    cout << get_tabs() << ToString() << "\n";
-}
-
 // LLVM-IR Int-Compare
 string LLIR_ICMP::ToString() {
     std::stringstream ss;
@@ -78,10 +66,6 @@ string LLIR_ICMP::ToString() {
     return ss.str();
 }
 
-void LLIR_ICMP::printIcmpInst() {
-    cout << get_tabs() << ToString() << "\n";
-}
-
 // LLVM-IR Signed-Int-TO-Float-Point
 string LLIR_SITOFP::ToString() {
     std::stringstream ss;
@@ -92,6 +76,12 @@ string LLIR_SITOFP::ToString() {
     return ss.str();
 }
 
-void LLIR_SITOFP::printItofInst() {
-    cout << get_tabs() << ToString() << "\n";
+// LLVM-IR Float-Point-TO-Signed-Int
+string LLIR_FPTOSI::ToString() {
+    std::stringstream ss;
+    VirtReg *dst_reg = dst.ToVirtReg(), *src_reg = src.ToVirtReg();
+    assert(dst_reg != nullptr && src_reg != nullptr);
+    ss << "%" << dst_reg->reg_id << " = fptosi float ";
+    ss << "%" << src_reg->reg_id << " to i32";
+    return ss.str();
 }

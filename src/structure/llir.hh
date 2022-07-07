@@ -35,7 +35,6 @@ public:
 public:
     LLIR_RET(bool _hrv, SRC _vr): has_retvalue(_hrv), ret_value(_vr) { }
     string ToString();
-    void printRetInst();
 };
 
 class LLIR_BR: public Inst {
@@ -50,7 +49,6 @@ public:
 public:
     LLIR_BIN(BinOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
-    void printBinInst();
 };
 
 class LLIR_FBIN: public Inst {
@@ -61,7 +59,6 @@ public:
 public:
     LLIR_FBIN(BinOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
-    void printFBinInst();
 };
 
 class LLIR_ALLOCA: public Inst {
@@ -88,7 +85,6 @@ public:
 public:
     LLIR_ICMP(RelOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
-    void printIcmpInst();
 };
 
 class LLIR_FCMP: public Inst {
@@ -117,9 +113,12 @@ public:
 public:
     LLIR_SITOFP(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
-    void printItofInst();
 };
 
 class LLIR_FPTOSI: public Inst {
 public:
+    SRC dst, src;
+public:
+    LLIR_FPTOSI(SRC _dst, SRC _src): dst(_dst), src(_src) { }
+    string ToString();
 };
