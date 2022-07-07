@@ -15,7 +15,12 @@ string LLIR_RET::ToString() {
     std::stringstream ss;
     ss << "ret ";
     if (has_retvalue) {
-        ss << DeclTypeToStr(ret_value.reg->type) << " ";
+        if (CTValue *ctv = ret_value.ToCTValue(); ctv != nullptr) {
+            ss << DeclTypeToStr(ctv->type) << " ";
+        } else {
+            VirtReg *reg = ret_value.ToVirtReg();
+            ss << DeclTypeToStr(reg->type) << " ";
+        }
         ss << ret_value.ToString();
     } else {
         ss << "void";
