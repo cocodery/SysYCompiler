@@ -38,9 +38,7 @@ public:
     
     vector<int32_t> get_array_dims(vector<SysYParser::ConstExpContext *>);
     
-    void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& list);
-
-    void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<float>& list);
+    void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<float>& flist);
 
     void parse_variable_init(SysYParser::ListInitvalContext *node, const vector<int32_t> &array_dims, VirtReg addr, int32_t off);
 // Function for Abstract Syntax Tree

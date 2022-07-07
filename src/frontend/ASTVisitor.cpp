@@ -18,20 +18,20 @@ ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
 // 假定所有的数组的维度的定义都是`ConstExp`
 vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *> dims) {
     DeclType last_type = type;
-    type = TypeInt;
     vector<int32_t> array_dims;
     for (auto i : dims) {
-        int32_t cur_dim = i->accept(this);
-        array_dims.push_back(cur_dim);
+        SRC cur_dim = i->accept(this);
+        CTValue *ctv = cur_dim.ToCTValue();
+        assert(ctv != nullptr);
+        array_dims.push_back(ctv->int_value);
     }
-    type = last_type;
     return array_dims;
 }
 
 // finished
 // 递归的对数组初始化进行分析
 // int type
-void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& list) {
+void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<float>& flist) {
     int32_t total_size = 1; // 当前初始化维度的`size`
     for (auto i: array_dims) {
         total_size *= i;
@@ -41,53 +41,26 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
     for (auto child: node->constInitVal()) { // 对子结点进行初始化
         // 如果是标量, 计算`constExp`初值, 填入初始化列表
         if (auto scalar_node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(child); scalar_node != nullptr) {
-            int32_t scalar_value = scalar_node->constExp()->accept(this);
-            list.push_back(scalar_value);
+            SRC scalar_value = scalar_node->constExp()->accept(this);
+            CTValue *ctv = scalar_value.ToCTValue();
+            assert(ctv != nullptr);
+            ilist.push_back(ctv->int_value);
+            flist.push_back(ctv->float_value);
             ++cnt;
         } else { // 如果是向量, 递归的初始化
             vector<int32_t> child_array_dims = array_dims; // 子结点的维度
             child_array_dims.erase(child_array_dims.begin());
             auto list_node = dynamic_cast<SysYParser::ListConstInitValContext *>(child);
-            parse_const_init(list_node, child_array_dims, list);
+            parse_const_init(list_node, child_array_dims, ilist, flist);
             cnt += total_size / array_dims[0];
         }
     }
     // 如果初始化的个数少于当前维度, 则填充 0
     while (cnt < total_size) {
-        list.push_back(0);
+        ilist.push_back(0);
+        flist.push_back(0);
         ++cnt;
     }
-    return;
-}
-
-// finished
-// float type
-// similar steps with parse_const_init with `int`
-void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<float>& list) {
-    int32_t total_size = 1;
-    for (auto i: array_dims) {
-        total_size *= i;
-    }
-    if (total_size == 0) return;
-    vector<int32_t> child_array_dims = array_dims;
-    child_array_dims.erase(child_array_dims.begin());
-    int32_t cnt = 0;
-    for (auto child: node->constInitVal()) {
-        if (auto scalar_node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(child); scalar_node != nullptr) {
-            float scalar_value = scalar_node->constExp()->accept(this);
-            list.push_back(scalar_value);
-            ++cnt;
-        } else {
-            auto list_node = dynamic_cast<SysYParser::ListConstInitValContext *>(child);
-            parse_const_init(list_node, child_array_dims, list);
-            cnt += total_size / array_dims[0];
-        }
-    }
-    while (cnt < total_size) {
-        list.push_back(0);
-        ++cnt;
-    }
-    dbg(list);
     return;
 }
 
@@ -194,6 +167,7 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     cout << "enter ConstDef" << endl;
     string var_name = ctx->Identifier()->getText();
+    dbg(var_name);
     if (cur_vartable->findInCurTable(var_name)) {
         dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
@@ -209,22 +183,16 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     auto init_node = ctx->constInitVal();
     if (const_var.is_array == false) {
         auto node = dynamic_cast<SysYParser::ScalarConstInitValContext *>(init_node);
-        if (type == TypeInt) {
-            const_variable->int_scalar = node->constExp()->accept(this);
-            dbg(const_variable->int_scalar);
-        } else if (type == TypeFloat) {
-            const_variable->float_scalar = node->constExp()->accept(this);
-            dbg(const_variable->float_scalar);
-        }
+        SRC scalar = node->constExp()->accept(this);
+        CTValue *ctv = scalar.ToCTValue();
+        assert(ctv != nullptr);
+        const_variable->int_scalar = ctv->int_value;
+        const_variable->float_scalar = ctv->float_value;
+        dbg(const_variable->int_scalar, const_variable->float_scalar);
     } else {
         auto node = dynamic_cast<SysYParser::ListConstInitValContext *>(init_node);
-        if (type == TypeInt) {
-            parse_const_init(node, const_var.array_dims, const_variable->int_list);
-            dbg(const_variable->int_list);
-        } else if (type == TypeFloat) {
-            parse_const_init(node, const_var.array_dims, const_variable->float_list);
-            dbg(const_variable->float_list);
-        }
+        parse_const_init(node, const_var.array_dims, const_variable->int_list, const_variable->float_list);
+        dbg(const_variable->int_list, const_variable->float_list);
     }
     const_variable->type = const_var;
     // 写入当前作用域的符号表
@@ -711,78 +679,14 @@ antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     cout << "enter LVal" << endl;
     Variable *variable = cur_scope->resolve(ctx->Identifier()->getText());
-    if (mode == compile_time) { // 编译期可计算的值
-        if (variable == nullptr) {
-            cout << "Not find in symtable" << endl;
-            exit(EXIT_FAILURE);
-        }
-        dbg(variable);
-        // 分析要读取的数组的下标数组
-        vector<int32_t> arr_idx;
-        DeclType last_type = type;
-        type = TypeInt;
+    assert(variable != nullptr);
+    if (variable->type.is_const) {
+        vector<SRC> arr_idx;
         for (auto i: ctx->exp()) {
-            CTValue idx = i->accept(this);
-            arr_idx.push_back(idx.int_value);
+            arr_idx.push_back(i->accept(this));
         }
-        type = last_type;
-        int32_t idx = variable->type.get_index(arr_idx); // 获取下标
-        CTValue ret(TypeVoid);
-        if (type == TypeInt){
-            if (variable->type.decl_type == TypeInt) {
-                if (arr_idx.size() == 0) {
-                    ret.int_value = variable->int_scalar;
-                } else {
-                    ret.int_value = variable->int_list[idx];
-                }
-            } else {
-                if (arr_idx.size() == 0) {
-                    ret.int_value = variable->float_scalar;
-                } else {
-                    ret.int_value = variable->float_list[idx];
-                }
-            }
-        } else if (type == TypeFloat){
-            if (variable->type.decl_type == TypeInt) {
-                if (arr_idx.size() == 0) {
-                    ret.float_value = variable->int_scalar;
-                } else {
-                    ret.float_value = variable->int_list[idx];
-                }
-            } else {
-                if (arr_idx.size() == 0) {
-                    ret.float_value = variable->float_scalar;
-                } else {
-                    ret.float_value = variable->float_list[idx];
-                }
-            }
-        }
-        ret.type = type;
-        cout << "exit LVal" << endl;
-        return ret;
     } else {
-        VarType type = variable->type;
-        VirtReg addr = VirtReg();
-        LoadAddress *lda_inst = new LoadAddress(addr, variable); // 首地址
-        cur_basicblock->basic_block.push_back(lda_inst);
-        IRValue ret;
-        if (!type.is_array) { // 如果不是数组, `ret`类型与`variable`一致
-            ret = IRValue(type, addr, true);
-        } else { // 如果是数组, 则需进一步分析
-            int32_t size = ctx->exp().size();
-            vector<int32_t> dims = type.get_dims(); // 获得每一维的大小
-            for (int i = 0 ; i < size; ++i) {
-                VirtReg off = ctx->exp()[i]->accept(this).as<IRValue>().reg;
-                VirtReg dst = VirtReg();
-                LoadOffset *ldo_inst = new LoadOffset(dst, addr, off, dims[i]);
-                cur_basicblock->basic_block.push_back(ldo_inst);
-                addr = dst; 
-                type = type.move_down();
-            }
-            ret = IRValue(type, addr, true);
-        }
-        cout << "exit LVal" << endl;
-        return ret;
+
     }
 }
 
@@ -1114,13 +1018,8 @@ antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
     cout << "enter constexp" << endl;
     CompileMode last_mode = mode;
     mode = compile_time;
-    CTValue result = ctx->addExp()->accept(this);
-    result.type = type;
+    SRC result = ctx->addExp()->accept(this);
     mode = last_mode;
     cout << "exit constexp" << endl;
-    if (result.type == TypeInt) {
-        return result.int_value;
-    } else if (result.type == TypeFloat) {
-        return result.float_value;
-    }
+    return result;
 }
