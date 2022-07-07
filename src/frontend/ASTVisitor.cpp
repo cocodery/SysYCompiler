@@ -30,7 +30,6 @@ vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *>
 
 // finished
 // 递归的对数组初始化进行分析
-// int type
 void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<float>& flist) {
     int32_t total_size = 1; // 当前初始化维度的`size`
     for (auto i: array_dims) {
@@ -314,7 +313,8 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     // get function name
     func_info.func_name = func_name; 
     // get function ret_type
-    func_info.return_type = getDeclType(ctx->funcType()->getText());
+    ret_type = getDeclType(ctx->funcType()->getText());
+    func_info.return_type = ret_type;
     // parse function arguments
     if (ctx->funcFParams() != nullptr) {
         func_info.func_args = ctx->funcFParams()->accept(this).as<vector<VarType>>();
@@ -647,6 +647,27 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
     LLIR_RET *ret_inst = nullptr;
     if (has_retvalue) {
         SRC dst = ctx->exp()->accept(this);
+        if (CTValue *ctv = dst.ToCTValue(); ctv != nullptr) {
+            ctv->type = ret_type;
+            dst = SRC(ctv);
+        } else {
+            VirtReg *reg = dst.ToVirtReg();
+            if (reg->type != ret_type) {
+                VirtReg *dst_reg = new VirtReg(ret_type);
+                if (reg->type == TypeInt) {
+                    LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(dst_reg), SRC(dst));
+                    cur_basicblock->basic_block.push_back(itf_inst);
+                } else if (reg->type == TypeFloat) {
+                    LLIR_FPTOSI *fti_inst = new LLIR_FPTOSI(SRC(dst_reg), SRC(dst));
+                    cur_basicblock->basic_block.push_back(fti_inst);
+                    dst = SRC(dst_reg);
+                } else {
+                    dbg("UnExpected Function Return Type");
+                    exit(EXIT_FAILURE);
+                }
+                dst = SRC(dst_reg);
+            }
+        }
         ret_inst = new LLIR_RET(has_retvalue, dst);
     } else {
         VirtReg *NRR = new VirtReg(-1);
@@ -681,13 +702,24 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     SRC ret;
     Variable *variable = cur_scope->resolve(ctx->Identifier()->getText());
     assert(variable != nullptr);
+    vector<SRC> arr_dims;
+    for (auto dim: ctx->exp()) {
+        arr_dims.push_back(dim->accept(this));
+    }
+
     if (variable->type.is_const) {
         if (variable->type.is_array == false) {
             CTValue *ctv = new CTValue(variable->type.decl_type, variable->int_scalar, variable->float_scalar);
             ret = SRC(ctv);
+        } else {
+
         }
     } else {
+        if (variable->type.is_array == false) {
 
+        } else {
+
+        }
     }
     cout << "exit visitLVal" << endl;
     return ret;
@@ -857,6 +889,9 @@ antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
         if (op == "*") {
             imul = ctv1->int_value * ctv2->int_value;
             fmul = ctv1->float_value * ctv2->float_value;
+            if (ctv1->type == TypeFloat || ctv2->type == TypeFloat) {
+                imul = fmul;
+            }
         } else if (op == "/") {
             imul = ctv1->int_value / ctv2->int_value;
             fmul = ctv1->float_value / ctv2->float_value;

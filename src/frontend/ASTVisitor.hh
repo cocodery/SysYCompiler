@@ -22,6 +22,7 @@ class ASTVisitor : public SysYBaseVisitor {
 private:
     enum CompileMode { normal , compile_time, condition  } mode;
     DeclType type;
+    DeclType ret_type;
     int32_t whole_var_idx;
     CompUnit &ir;
     vector<Info *> *cur_scope_elements;

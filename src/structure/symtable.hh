@@ -73,5 +73,5 @@ public:
     FunctionInfo();
     FunctionInfo(string _name, DeclType _type, vector<VarType> _args);
     bool has_args();
-    void printFunctionInfo();
+    string printFunctionInfo();
 };

@@ -131,16 +131,12 @@ bool FunctionInfo::has_args() {
     return (func_args.size() != 0);
 }
 
-void FunctionInfo::printFunctionInfo() {
-    cout << DeclTypeToStr(return_type) << ' ' << func_name << " (";
+string FunctionInfo::printFunctionInfo() {
+    std::stringstream ss;
+    ss << "define " << DeclTypeToStr(return_type) << " @" << func_name << "(";
     if (has_args()) {
-        int size = func_args.size();
-        func_args[0].printVarTypeForArg();
-        for (int i = 1; i < size; ++i) {
-            cout << ", ";
-            func_args[i].printVarTypeForArg();
-        }
+
     }
-    cout << ')' << endl;
-    return;
+    ss << ")";
+    return ss.str();
 }

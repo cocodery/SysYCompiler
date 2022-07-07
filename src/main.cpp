@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
     SysYParser::CompUnitContext *root = parser.compUnit();
 
-    CompUnit ir;
+    CompUnit ir("../main.ll");
     
     ASTVisitor visitor(ir);
 
