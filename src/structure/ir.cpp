@@ -102,11 +102,6 @@ void Scope::printScope() {
     llir << get_tabs() << "}" << endl;
 }
 
-void Function::printFunction() {
-    // llir << func_info.printFunctionInfo() << endl;
-    // main_scope->printScope();
-}
-
 void LibFunction::printFunction() {
     libfunc_info.printFunctionInfo();
 }

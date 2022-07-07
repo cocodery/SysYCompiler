@@ -53,8 +53,6 @@ class Function {
 public:
     FunctionInfo func_info;
     Scope *main_scope;
-public:
-    void printFunction();
 };
 
 class LibFunction {
