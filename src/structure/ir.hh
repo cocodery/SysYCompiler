@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <variant>
 #include <string>
@@ -16,9 +17,12 @@ using std::ostream;
 using std::vector;
 using std::string;
 using std::map;
+using std::ofstream;
 
 static int32_t bb_index = 0;
 static int32_t sp_index = 0;
+
+static ofstream llir;
 
 class BasicBlock: public Info {
 public:
@@ -67,7 +71,7 @@ public:
     vector<Function *> functions;
     LibFunction lib_functions[11];
 public:
-    CompUnit();
+    CompUnit(string _llir);
     void moveGlobalInitToMain();
     bool inLibFunctions(string func_name);
     FunctionInfo *getFunctionInfo(string func_name);

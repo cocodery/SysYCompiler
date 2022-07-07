@@ -3,7 +3,7 @@
 int32_t tab_num = 1;
 
 void BasicBlock::printBlock() {
-    cout << get_tabs() << "`Block`" << bb_idx << endl;
+    llir << get_tabs() << "; `Block`" << bb_idx << endl;
     for (auto inst: basic_block) {
         Case (ReturnInst, ret_inst, inst) {
             ret_inst->printRetInst();
@@ -46,13 +46,13 @@ void BasicBlock::printBlock() {
         }
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {
-            ret_inst->printRetInst();
+            llir << get_tabs() << ret_inst->ToString() << endl;
         }
         Case (LLIR_BIN, bin_inst, inst) {
-            bin_inst->printBinInst();
+            llir << get_tabs() << bin_inst->ToString() << endl;
         }
         Case (LLIR_ICMP, icmp_inst, inst) {
-            icmp_inst->printIcmpInst();
+            llir << get_tabs() << icmp_inst->ToString() << endl;
         }
     }
 }
@@ -92,26 +92,28 @@ void Scope::printElements() {
 }
 
 void Scope::printScope() {
-    cout << get_tabs() << "{ // `Scope`" << sp_idx << endl;
+    llir << get_tabs() << "{ ; `Scope`" << sp_idx << endl;
     tab_num += 1;
-    cout << get_tabs() << "// `VariableTable` of `Scope`" << sp_idx << endl;
+    llir << get_tabs() << "; `VariableTable` of `Scope`" << sp_idx << endl;
     local_table->printVaribaleTable();
-    cout << get_tabs() << "// `BasicBlocks` of `Scope`" << sp_idx << endl;
+    llir << get_tabs() << "; `BasicBlocks` of `Scope`" << sp_idx << endl;
     printElements();
     tab_num -= 1;
-    cout << get_tabs() << "}" << endl;
+    llir << get_tabs() << "}" << endl;
 }
 
 void Function::printFunction() {
-    func_info.printFunctionInfo();
-    main_scope->printScope();
+    // llir << func_info.printFunctionInfo() << endl;
+    // main_scope->printScope();
 }
 
 void LibFunction::printFunction() {
     libfunc_info.printFunctionInfo();
 }
 
-CompUnit::CompUnit() {
+CompUnit::CompUnit(string _llir) {
+// open llvm ir file
+    llir.open(_llir);
 // Global  symtable Init Part
     global_scope = new Scope;
     global_scope->local_table = new VariableTable;
@@ -200,11 +202,12 @@ void CompUnit::DebugLibFuncs() {
 }
 
 void CompUnit::DebugUserFuncs() {
-    cout << "User Functions" << endl;
+    llir << "; User Functions" << endl;
     int size = functions.size();
     for (int i = 0; i < size; ++i) {
-        cout << "    ";
-        functions[i]->printFunction();
+        llir << "    ";
+        llir << functions[i]->func_info.printFunctionInfo() << endl;
+        functions[i]->main_scope->printScope();
     }
 }
 
