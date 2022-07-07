@@ -673,6 +673,7 @@ antlrcpp::Any ASTVisitor::visitContinueStmt(SysYParser::ContinueStmtContext *ctx
 
 // finished
 antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
+    cout << "enter visitReturnStmt" << endl;
     // if ctx->exp() == nullptr, means it's a function without return value
     bool has_retvalue = (ctx->exp() != nullptr);
     LLIR_RET *ret_inst = nullptr;
@@ -687,6 +688,7 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
     cur_basicblock->basic_block.push_back(ret_inst); // 将指令加入基本块
     cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
     cur_basicblock = new BasicBlock;
+    cout << "exit visitReturnStmt" << endl;
     return nullptr;
 }
 
@@ -892,9 +894,9 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
     } else {
         VirtReg *reg = src.ToVirtReg();
         if (op == "-" || op == "!") {
-            DeclType type = reg->type;
-            CTValue *zero = new CTValue(type, 0, 0);
-            VirtReg *dst = new VirtReg(type);
+            DeclType _type = reg->type;
+            CTValue *zero = new CTValue(_type, 0, 0);
+            VirtReg *dst = new VirtReg(_type);
             LLIR_BIN *bin_inst = new LLIR_BIN(SUB, dst, SRC(zero), SRC(reg));
             cout << bin_inst->ToString();
             cur_basicblock->basic_block.push_back(bin_inst);
@@ -936,32 +938,51 @@ antlrcpp::Any ASTVisitor::visitMul1(SysYParser::Mul1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
+    cout << "enter visitMul2" << endl;
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->mulExp()->accept(this);
     SRC rhs = ctx->unaryExp()->accept(this);
     // 当两个操作数都是`CTValue`
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
-        // 暂不处理类型不匹配情况
-        if (ctv1->type == ctv2->type) {
-            DeclType type = ctv1->type;
-            int imul = 0;
-            float fmul = 0;
-            if (op == "*") {
-                imul = ctv1->int_value * ctv2->int_value;
-                fmul = ctv1->float_value * ctv2->float_value;
-            } else if (op == "/") {
-                imul = ctv1->int_value / ctv2->int_value;
-                fmul = ctv1->float_value / ctv2->float_value;
-            } else {
-                imul = ctv1->int_value % ctv2->int_value;
-                fmul = imul;
-            }
-            CTValue *mul = new CTValue(type, imul, fmul);
-            dbg(mul->ToString());
-            return SRC(mul);
+        DeclType _type = ctv1->type;
+        int imul = 0;
+        float fmul = 0;
+        if (op == "*") {
+            imul = ctv1->int_value * ctv2->int_value;
+            fmul = ctv1->float_value * ctv2->float_value;
+        } else if (op == "/") {
+            imul = ctv1->int_value / ctv2->int_value;
+            fmul = ctv1->float_value / ctv2->float_value;
+        } else {
+            imul = ctv1->int_value % ctv2->int_value;
+            fmul = imul;
         }
+        if (ctv1->type != ctv2->type) {
+            _type = TypeFloat;
+        }
+        CTValue *mul = new CTValue(_type, imul, fmul);
+        dbg(mul->ToString());
+        cout << "exit visitMul2 with 2 CTValue" << endl;
+        return SRC(mul);
     } else { // 当其中至少有一个是`VirtReg`
-
+        // 暂不处理类型不匹配情况
+        SRC dst = SRC(new VirtReg());
+        VirtReg *reg1 = lhs.ToVirtReg();
+        VirtReg *reg2 = rhs.ToVirtReg();
+        LLIR_BIN *bop_inst = nullptr;
+        LLIR_FBIN *fbop_inst = nullptr;
+        if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
+        
+        } else if (ctv1 && !ctv2 && !reg1 && reg2) { // lhs -> CTValue, rhs -> VirtReg
+        
+        } else if (!ctv1 && !ctv2 && reg1 && reg2) { // lhs -> VirtReg, rhs -> VirtReg
+            
+        }
+        if (bop_inst != nullptr) {
+            cur_basicblock->basic_block.push_back(bop_inst);
+        } else {
+            cur_basicblock->basic_block.push_back(fbop_inst);
+        }
     }
 }
 
@@ -977,22 +998,22 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
     SRC rhs = ctx->mulExp()->accept(this);
     // 当两个操作数都是`CTValue`
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
-        // 暂不处理类型不匹配情况
-        if (ctv1->type == ctv2->type) {
-            DeclType type = ctv1->type;
-            int iadd = 0;
-            float fadd = 0;
-            if (op == "+") {
-                iadd = ctv1->int_value + ctv2->int_value;
-                fadd = ctv1->float_value + ctv2->float_value;
-            } else if (op == "-") {
-                iadd = ctv1->int_value - ctv2->int_value;
-                fadd = ctv1->float_value - ctv2->float_value;
-            }
-            CTValue *add = new CTValue(type, iadd, fadd);
-            dbg(add->ToString());
-            return SRC(add);
+        DeclType _type = ctv1->type;
+        int iadd = 0;
+        float fadd = 0;
+        if (op == "+") {
+            iadd = ctv1->int_value + ctv2->int_value;
+            fadd = ctv1->float_value + ctv2->float_value;
+        } else if (op == "-") {
+            iadd = ctv1->int_value - ctv2->int_value;
+            fadd = ctv1->float_value - ctv2->float_value;
         }
+        if (ctv1->type != ctv2->type) {
+            _type = TypeFloat;
+        }
+        CTValue *add = new CTValue(_type, iadd, fadd);
+        dbg(add->ToString());
+        return SRC(add);
     } else { // 当其中至少有一个是`VirtReg`
 
     }
