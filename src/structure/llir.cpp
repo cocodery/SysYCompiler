@@ -15,6 +15,7 @@ string LLIR_RET::ToString() {
     std::stringstream ss;
     ss << "ret ";
     if (has_retvalue) {
+        ss << DeclTypeToStr(ret_value.reg->type) << " ";
         ss << ret_value.ToString();
     } else {
         ss << "void";
@@ -31,7 +32,8 @@ string LLIR_BIN::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
     assert(dst_reg != nullptr); 
-    ss << "%" << dst_reg->reg_id << " = " << BinOpToStr(op) << " ";
+    ss << "%" << dst_reg->reg_id << " = ";
+    ss << BinOpToStr(op) << " i32 ";
     ss << src1.ToString();
     ss << ", ";
     ss << src2.ToString();
@@ -47,7 +49,8 @@ string LLIR_FBIN::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
     assert(dst_reg != nullptr); 
-    ss << "%" << dst_reg->reg_id << " = f" << BinOpToStr(op) << " ";
+    ss << "%" << dst_reg->reg_id << " = f";
+    ss << BinOpToStr(op) << " float ";
     ss << src1.ToString();
     ss << ", ";
     ss << src2.ToString();

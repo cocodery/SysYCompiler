@@ -48,7 +48,7 @@ public:
     SRC dst;
     SRC src1, src2;
 public:
-    LLIR_BIN(BinOp _op, VirtReg *_dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    LLIR_BIN(BinOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
     void printBinInst();
 };
