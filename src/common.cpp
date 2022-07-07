@@ -40,11 +40,30 @@ string BinOpToStr(BinOp op) {
     exit(EXIT_FAILURE);
 }
 
+BinOp StrToBinOp(string op) {
+    if (op == "+") return ADD;
+    else if (op == "-") return SUB;
+    else if (op == "*") return MUL;
+    else if (op == "/") return DIV;
+    else if (op == "%") return REM;
+    dbg("Unknown BinOp");
+    exit(EXIT_FAILURE);
+}
+
 string RelOpToStr(RelOp op) {
     if (op == LTH) return "slt";
     else if (op == LEQ) return "sle";
     else if (op == EQU) return "eq";
     else if (op == NEQ) return "uq";
+    dbg("Unknown RelOp");
+    exit(EXIT_FAILURE);
+}
+
+RelOp StrToRelOp(string op) {
+    if (op == "<") return LTH;
+    else if (op == "<=") return LEQ;
+    else if (op == "==") return EQU;
+    else if (op == "!=") return NEQ;
     dbg("Unknown RelOp");
     exit(EXIT_FAILURE);
 }

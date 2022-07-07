@@ -31,7 +31,11 @@ enum RelOp {
 
 string BinOpToStr(BinOp op);
 
+BinOp StrToBinOp(string op);
+
 string RelOpToStr(RelOp op);
+
+RelOp StrToRelOp(string op);
 
 DeclType getDeclType(string type_str);
 
