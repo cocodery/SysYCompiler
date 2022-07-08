@@ -20,7 +20,6 @@ using std::endl;
 class ASTVisitor : public SysYBaseVisitor {
 // Some Useful Defination
 private:
-    enum CompileMode { normal , compile_time, condition  } mode;
     DeclType type;
     DeclType ret_type;
     int32_t whole_var_idx;

@@ -5,7 +5,6 @@ extern const VirtReg NoRetReg;
 ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
     type = TypeVoid;
-    mode = normal;
     cur_scope = ir.global_scope;
     cur_scope_elements = ir.global_scope->elements;
     cur_vartable = ir.global_scope->local_table;
@@ -779,14 +778,8 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
         } else if (op == "+") {
             return SRC(ctv);
         } else {
-            // 对`!`需额外处理
-            if (mode == compile_time) {
-                dbg("UnExpected Single Op in `compile time`");
-                exit(EXIT_FAILURE);
-            } else {
-                CTValue *uop_ctv = new CTValue(TypeInt, !ctv->int_value, !ctv->float_value);
-                return SRC(uop_ctv);
-            }
+            CTValue *uop_ctv = new CTValue(TypeInt, !ctv->int_value, !ctv->float_value);
+            return SRC(uop_ctv);
         }
     } else {
         VirtReg *reg = src.ToVirtReg();
@@ -963,10 +956,7 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
 // 返回表达式的类型由type限定, 存在隐患
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
     cout << "enter constexp" << endl;
-    CompileMode last_mode = mode;
-    mode = compile_time;
     SRC result = ctx->addExp()->accept(this);
-    mode = last_mode;
     cout << "exit constexp" << endl;
     return result;
 }
