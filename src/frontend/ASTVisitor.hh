@@ -14,6 +14,8 @@
 
 using std::vector;
 using std::string;
+using std::pair;
+using std::make_pair;
 using std::cout;
 using std::endl;
 
@@ -22,7 +24,7 @@ class ASTVisitor : public SysYBaseVisitor {
 private:
     DeclType type;
     DeclType ret_type;
-    int32_t whole_var_idx;
+    int32_t var_idx;
     CompUnit &ir;
     vector<Info *> *cur_scope_elements;
     Scope          *cur_scope;

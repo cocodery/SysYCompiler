@@ -1,10 +1,9 @@
 #include "ASTVisitor.hh"
 
-extern const VirtReg NoRetReg;
-
 ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
     type = TypeVoid;
+    var_idx = 1;
     cur_scope = ir.global_scope;
     cur_scope_elements = ir.global_scope->elements;
     cur_vartable = ir.global_scope->local_table;
@@ -63,6 +62,7 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
 }
 
 void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, const vector<int32_t> &array_dims, VirtReg addr, int32_t off) {
+    /*
     int32_t total_size = 1; // 当前维度需要初始化元素的个数
     for (auto i: array_dims) {
         total_size *= i;
@@ -74,10 +74,10 @@ void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, const
     for (auto child: node->initVal()) {
         if (auto scalar_node = dynamic_cast<SysYParser::ScalarInitValContext *>(child); scalar_node != nullptr) {
             CTValue off_v = CTValue(TypeInt, off, 0);
-            VirtReg off_r = VirtReg();
+            VirtReg off_r = VirtReg(var_idx++);
             LoadNumber *ldc_off_inst = new LoadNumber(off_r, off_v);
             cur_basicblock->basic_block.push_back(ldc_off_inst);
-            VirtReg addr_off = VirtReg();
+            VirtReg addr_off = VirtReg(var_idx++);
             LoadOffset *ldo_inst = new LoadOffset(addr_off, addr, off_r, 1);
             cur_basicblock->basic_block.push_back(ldo_inst);
             IRValue value_v = scalar_node->exp()->accept(this);
@@ -95,18 +95,18 @@ void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, const
     }
     // 加载 0 到寄存器, 防止每次初始化需要读取
     CTValue zero_v = CTValue(type, 0, 0);
-    VirtReg zero_r = VirtReg(); // 存储 0
+    VirtReg zero_r = VirtReg(var_idx++); // 存储 0
     LoadNumber *ldc_inst = new LoadNumber(zero_r, zero_v);
     cur_basicblock->basic_block.push_back(ldc_inst);
     // 将剩余未初始化的赋值为 0
     while (cnt < total_size) {
         // 存储偏移量
-        VirtReg off_r = VirtReg(); 
+        VirtReg off_r = VirtReg(var_idx++); 
         CTValue off_v = CTValue(TypeInt, off, 0);
         LoadNumber *ldc_off_inst = new LoadNumber(off_r, off_v);
         cur_basicblock->basic_block.push_back(ldc_off_inst);
         // 存储加上偏移量后的地址
-        VirtReg addr_off = VirtReg(); 
+        VirtReg addr_off = VirtReg(var_idx++); 
         LoadOffset *ldo_inst = new LoadOffset(addr_off, addr, off_r, 1);
         cur_basicblock->basic_block.push_back(ldo_inst);
         // 存储值到地址
@@ -115,6 +115,7 @@ void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, const
         off += 1;
         cnt += 1;
     }
+    */
 }
 
 // finished
@@ -170,7 +171,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
-    Variable *const_variable = new Variable;
+    Variable *const_variable = new Variable(var_idx++);
     VarType const_var(true, !(ctx->constExp().size() == 0), false, type);
     dbg(DeclTypeToStr(const_var.decl_type), const_var.is_array);
     if (const_var.is_array == true) {
@@ -199,6 +200,10 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         exit(EXIT_FAILURE);
     }
     cur_vartable->var_table.push_back(std::make_pair(var_name, const_variable));
+    // 生成 LLIR
+    VirtReg *reg = new VirtReg(const_variable->var_idx);
+    LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), const_variable);
+    cur_basicblock->basic_block.push_back(alloc_inst);
     cout << "exit ConstDef" << endl;
     return nullptr;
 }
@@ -235,7 +240,7 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
         dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
-    Variable *variable = new Variable;
+    Variable *variable = new Variable(var_idx++);
     VarType var(false, !(ctx->constExp().size() == 0), false, type);
     dbg(DeclTypeToStr(var.decl_type), var.is_array);
     if (var.is_array) {
@@ -244,6 +249,9 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
     }
     variable->type = var;
     cur_vartable->var_table.push_back(std::make_pair(var_name, variable));
+    VirtReg *reg = new VirtReg(variable->var_idx);
+    LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
+    cur_basicblock->basic_block.push_back(alloc_inst);
     cout << "exit UninitVarDef" << endl;
     return nullptr;
 }
@@ -257,7 +265,7 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
         dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
-    Variable *variable = new Variable;
+    Variable *variable = new Variable(var_idx);
     VarType var(false, !(ctx->constExp().size() == 0), false, type);
     dbg(DeclTypeToStr(var.decl_type), var.is_array);
     if (var.is_array) {
@@ -271,7 +279,8 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     // init local variable we it first exsit
     // we make sure that all variable don't init at Variable->init_value, but get value via access memory
     // 不管是标量还是向量, 初始化时都会用到首地址
-    VirtReg addr = VirtReg();
+    /*
+    VirtReg addr = VirtReg(var_idx++);
     LoadAddress *ldv_inst = new LoadAddress(addr, variable);
     cur_basicblock->basic_block.push_back(ldv_inst);
     auto init_node = ctx->initVal();
@@ -284,6 +293,10 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
         auto node = dynamic_cast<SysYParser::ListInitvalContext *>(init_node);
         parse_variable_init(node, var.array_dims, addr, 0);
     }
+    */
+    VirtReg *reg = new VirtReg(variable->var_idx);
+    LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
+    cur_basicblock->basic_block.push_back(alloc_inst);
     cout << "exit InitVarDef" << endl;
     return nullptr;
 }
@@ -316,11 +329,14 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     func_info.return_type = ret_type;
     // parse function arguments
     if (ctx->funcFParams() != nullptr) {
-        func_info.func_args = ctx->funcFParams()->accept(this).as<vector<VarType>>();
+        func_info.func_args = ctx->funcFParams()->accept(this).as<vector<pair<string, VarType>>>();
     }
     // tag we have `main function`
     if (func_name == "main") have_main_func = true;
     func->func_info = func_info;
+    // reset variable idx in function
+    var_idx = func_info.func_args.size() == 0 ? 1 : func_info.func_args.size();
+    dbg(var_idx);
     // parse function body
     func->main_scope = ctx->block()->accept(this);
     // push to function table
@@ -339,7 +355,8 @@ antlrcpp::Any ASTVisitor::visitFuncType(SysYParser::FuncTypeContext *ctx) {
 // finished
 // 遍历函数参数，将其类型记录并保存进数组
 antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) {
-    vector<VarType> func_args;
+    vector<pair<string, VarType>> func_args;
+    int32_t idx = 0;
     for (auto arg: ctx->funcFParam()) {
         func_args.push_back(arg->accept(this));
     }
@@ -359,7 +376,7 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
         type = last_type;
     }
     // dbg(func_arg.array_dims);
-    return func_arg;
+    return make_pair(ctx->Identifier()->getText(), func_arg);
 }
 
 // finished
@@ -403,16 +420,6 @@ antlrcpp::Any ASTVisitor::visitBlockItem(SysYParser::BlockItemContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitAssignment(SysYParser::AssignmentContext *ctx) {
-    IRValue lhs = ctx->lVal()->accept(this);
-    IRValue rhs = ctx->exp()->accept(this);
-    if (!lhs.can_assign()) {
-        cout << "reg" << lhs.reg.reg_id << " can't be assigned" << endl;
-        exit(EXIT_FAILURE);
-    }
-    VirtReg dst = lhs.reg;
-    VirtReg src = rhs.reg;
-    StoreMem *ass_inst = new StoreMem(dst, src);
-    cur_basicblock->basic_block.push_back(ass_inst);
     return nullptr;
 }
 
@@ -853,7 +860,7 @@ antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
         return SRC(mul);
     } else { // 当其中至少有一个是`VirtReg`
         // 暂不处理类型不匹配情况
-        SRC dst = SRC(new VirtReg());
+        SRC dst = SRC(new VirtReg(var_idx++));
         VirtReg *reg1 = lhs.ToVirtReg();
         VirtReg *reg2 = rhs.ToVirtReg();
         LLIR_BIN *bop_inst = nullptr;
