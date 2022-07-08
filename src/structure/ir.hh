@@ -67,7 +67,7 @@ class CompUnit: public Info {
 public:
     Scope *global_scope;
     vector<Function *> functions;
-    LibFunction lib_functions[11];
+    LibFunction lib_functions[12];
 public:
     CompUnit(string _llir);
     void moveGlobalInitToMain();

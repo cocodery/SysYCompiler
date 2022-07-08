@@ -50,24 +50,33 @@ VarType VarType::move_down() {
     return ret;
 }
 
-void VarType::printVarTypeForArg() {
-    string ret;
-    if (is_args) {
-        ret += DeclTypeToStr(decl_type);
-        if (is_array) {
-            int size = array_dims.size();
-            ret += "[]";
-            for(int i = 1; i < size; ++i) {
-                ret += '[' + std::to_string(array_dims[i]) + ']';
+string VarType::printVarTypeForArg() {
+    std::stringstream ss;
+    if (is_array) {
+        int32_t size = array_dims.size();
+        if (size == 1) {
+            ss << DeclTypeToStr(decl_type) << "*";
+        } else {
+            for (int i = 1; i < size; ++i) {
+                ss << "[" << array_dims[i] << " x ";
+                if (i == size - 1) {
+                    ss << DeclTypeToStr(decl_type);
+                }
             }
+            for (int i = 1; i < size; ++i) {
+                ss << "]";
+            }
+            ss << "*";
         }
+    } else {
+        ss << DeclTypeToStr(decl_type);
     }
-    cout << ret;
+    return ss.str();
 }
 
 FunctionInfo::FunctionInfo() : return_type(TypeVoid) { }
 
-FunctionInfo::FunctionInfo(string _name, DeclType _type, vector<VarType> _args)
+FunctionInfo::FunctionInfo(string _name, DeclType _type, vector<pair<string, VarType>> _args)
     : func_name(_name), return_type(_type), func_args(_args) { }
 
 void Variable::printVariable(string var_name) {
@@ -131,11 +140,19 @@ bool FunctionInfo::has_args() {
     return (func_args.size() != 0);
 }
 
-string FunctionInfo::printFunctionInfo() {
+string FunctionInfo::printFunctionInfo(bool islib) {
     std::stringstream ss;
-    ss << "define " << DeclTypeToStr(return_type) << " @" << func_name << "(";
+    if (islib) {
+        ss << "declare "; 
+    } else {
+        ss << "define ";
+    }
+    ss << DeclTypeToStr(return_type) << " @" << func_name << "(";
     if (has_args()) {
-
+        ss << func_args[0].second.printVarTypeForArg() << " %0";
+        for (int i = 1; i < func_args.size(); ++i) {
+            ss << ", " << func_args[i].second.printVarTypeForArg() << " %" << i;
+        }
     }
     ss << ")";
     return ss.str();

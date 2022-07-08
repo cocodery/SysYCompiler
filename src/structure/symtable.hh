@@ -36,7 +36,7 @@ public:
     int32_t get_index(vector<int32_t>& arr_idx);
     vector<int32_t> get_dims();
     VarType move_down();
-    void printVarTypeForArg();
+    string printVarTypeForArg();
 };
 
 class Variable {
@@ -68,10 +68,10 @@ class FunctionInfo {
 public:
     string func_name;
     DeclType return_type;
-    vector<VarType> func_args;
+    vector<pair<string, VarType>> func_args;
 public:
     FunctionInfo();
-    FunctionInfo(string _name, DeclType _type, vector<VarType> _args);
+    FunctionInfo(string _name, DeclType _type, vector<pair<string, VarType>> _args);
     bool has_args();
-    string printFunctionInfo();
+    string printFunctionInfo(bool islib = false);
 };
