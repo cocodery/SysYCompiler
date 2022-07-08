@@ -19,8 +19,6 @@ class FunctionInfo;
 
 using VarPair = pair<string, Variable *>;
 
-static int32_t var_index = 0;
-
 class VarType {
 public:
     bool is_const;
@@ -36,6 +34,7 @@ public:
     int32_t get_index(vector<int32_t>& arr_idx);
     vector<int32_t> get_dims();
     VarType move_down();
+    string printVarTypeForAlc();
     string printVarTypeForArg();
 };
 
@@ -49,9 +48,7 @@ public:
     vector<float> float_list;
 public:
     void printVariable(string var_name);
-    Variable() : var_idx(var_index++) { };
-    Variable(VarType vt) : var_idx(var_index++), type(vt) { }
-    Variable(int vi, VarType vt) : var_idx(var_index++), type(vt) { }
+    Variable(int vi) : var_idx(vi) { }
 };
 
 class VariableTable {
