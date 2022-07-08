@@ -60,7 +60,7 @@ string VarType::printVarTypeForAlc() {
                 ss << DeclTypeToStr(decl_type);
             }
         }
-        for (int i = 1; i < size; ++i) {
+        for (int i = 0; i < size; ++i) {
             ss << "]";
         }
     } else {
