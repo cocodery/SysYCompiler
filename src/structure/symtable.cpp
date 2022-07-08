@@ -53,16 +53,7 @@ VarType VarType::move_down() {
 string VarType::printVarTypeForAlc() {
     std::stringstream ss;
     if (is_array) {
-        int32_t size = array_dims.size();
-        for (int i = 0; i < size; ++i) {
-            ss << "[" << array_dims[i] << " x ";
-            if (i == size - 1) {
-                ss << DeclTypeToStr(decl_type);
-            }
-        }
-        for (int i = 0; i < size; ++i) {
-            ss << "]";
-        }
+        ss << "[" << elements_number() << " x " << DeclTypeToStr(decl_type) << "]";
     } else {
         ss << DeclTypeToStr(decl_type);
     }
@@ -72,21 +63,7 @@ string VarType::printVarTypeForAlc() {
 string VarType::printVarTypeForArg() {
     std::stringstream ss;
     if (is_array) {
-        int32_t size = array_dims.size();
-        if (size == 1) {
-            ss << DeclTypeToStr(decl_type) << "*";
-        } else {
-            for (int i = 1; i < size; ++i) {
-                ss << "[" << array_dims[i] << " x ";
-                if (i == size - 1) {
-                    ss << DeclTypeToStr(decl_type);
-                }
-            }
-            for (int i = 1; i < size; ++i) {
-                ss << "]";
-            }
-            ss << "*";
-        }
+        ss << DeclTypeToStr(decl_type) << "*";
     } else {
         ss << DeclTypeToStr(decl_type);
     }
