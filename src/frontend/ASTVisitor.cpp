@@ -670,9 +670,7 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
         }
         ret_inst = new LLIR_RET(has_retvalue, dst);
     } else {
-        VirtReg *NRR = new VirtReg(-1);
-        SRC dst = SRC(NRR);
-        ret_inst = new LLIR_RET(has_retvalue, dst);
+        ret_inst = new LLIR_RET(has_retvalue, SRC());
     }
     cur_basicblock->basic_block.push_back(ret_inst); // 将指令加入基本块
     cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
@@ -688,12 +686,7 @@ antlrcpp::Any ASTVisitor::visitExp(SysYParser::ExpContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
-    mode = condition;
-    // we will push instructions to block's elements
-    // so we dont need do extra process
-    IRValue ret = ctx->lOrExp()->accept(this);
-    mode = normal;
-    return ret;
+    return nullptr;
 }
 
 // finished
@@ -769,41 +762,6 @@ antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
-    cout << "enter Unary2" << endl;
-    string func_name = ctx->Identifier()->getText();
-    FunctionInfo *func_info = ir.getFunctionInfo(func_name);
-    if (func_info == nullptr) {
-        dbg("Call Undeclared Function");
-        exit(EXIT_FAILURE);
-    }
-    vector<VirtReg> args;
-    if (ctx->funcRParams()) {
-        args = ctx->funcRParams()->accept(this).as<vector<VirtReg>>();
-    }
-    if (func_name == "starttime" || func_name == "stoptime") {
-        int32_t line_number = ctx->start->getLine();
-        VirtReg line_reg = VirtReg();
-        CTValue line_ct = CTValue(TypeInt, line_number, 0);
-        LoadNumber *ldc_inst = new LoadNumber(line_reg, line_ct);
-        cur_basicblock->basic_block.push_back(ldc_inst);
-        args.push_back(line_reg);
-    }
-    for (auto arg: args) {
-        VirtReg dst = VirtReg();
-        LoadParam *ldp_inst = new LoadParam(dst, arg);
-        cur_basicblock->basic_block.push_back(ldp_inst);
-    }
-    VirtReg func_dst = VirtReg(-1);
-    bool has_ret = true;
-    if (func_info->return_type == TypeVoid) {
-        func_dst = NoRetReg;
-        has_ret = false;
-    } else {
-        func_dst = VirtReg();
-    }
-    CallFuntion *call_inst = new CallFuntion(func_name, func_dst, has_ret);
-    cur_basicblock->basic_block.push_back(call_inst);
-    cout << "exit Unary2" << endl;
     return nullptr;
 }
 
@@ -837,7 +795,6 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
             CTValue *zero = new CTValue(_type, 0, 0);
             VirtReg *dst = new VirtReg(_type);
             LLIR_BIN *bin_inst = new LLIR_BIN(SUB, dst, SRC(zero), SRC(reg));
-            cout << bin_inst->ToString();
             cur_basicblock->basic_block.push_back(bin_inst);
             return SRC(dst);
         } else {
@@ -854,20 +811,12 @@ antlrcpp::Any ASTVisitor::visitUnaryOp(SysYParser::UnaryOpContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitFuncRParams(SysYParser::FuncRParamsContext *ctx) {
-    // 获得参数所在的寄存器
-    vector<VirtReg> args;
-    for (auto node: ctx->funcRParam()) {
-        args.push_back(node->accept(this));
-    }
-    return args;
+    return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitFuncRParam(SysYParser::FuncRParamContext *ctx) {
-    assert(mode != compile_time);
-    IRValue arg = ctx->exp()->accept(this);
-    VirtReg arg_reg = arg.reg;
-    return arg_reg;
+    return nullptr;
 }
 
 // finished
@@ -895,6 +844,9 @@ antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
         } else if (op == "/") {
             imul = ctv1->int_value / ctv2->int_value;
             fmul = ctv1->float_value / ctv2->float_value;
+            if (ctv1->type == TypeFloat || ctv2->type == TypeFloat) {
+                imul = fmul;
+            }
         } else {
             imul = ctv1->int_value % ctv2->int_value;
             fmul = imul;
@@ -946,9 +898,15 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
         if (op == "+") {
             iadd = ctv1->int_value + ctv2->int_value;
             fadd = ctv1->float_value + ctv2->float_value;
+            if (ctv1->type == TypeFloat || ctv2->type == TypeFloat) {
+                iadd = fadd;
+            }
         } else if (op == "-") {
             iadd = ctv1->int_value - ctv2->int_value;
             fadd = ctv1->float_value - ctv2->float_value;
+            if (ctv1->type == TypeFloat || ctv2->type == TypeFloat) {
+                iadd = fadd;
+            }
         }
         if (ctv1->type != ctv2->type) {
             _type = TypeFloat;
@@ -968,24 +926,7 @@ antlrcpp::Any ASTVisitor::visitRel1(SysYParser::Rel1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
-    string op = ctx->children[1]->getText();
-    CompileMode last_mode = mode;
-    mode = normal;
-    IRValue src1 = ctx->relExp()->accept(this);
-    IRValue src2 = ctx->addExp()->accept(this);
-    mode = last_mode;
-    if (op == ">") {
-        op = "<";
-        std::swap(src1, src2);
-    } else if (op == ">=") {
-        op = "<=";
-        std::swap(src1, src2);
-    }
-    VirtReg dst = VirtReg();
-    BinaryOpInst *rel_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
-    cur_basicblock->basic_block.push_back(rel_inst);
-    IRValue ret = IRValue(VarType(TypeBool), dst, false);
-    return ret;
+    return nullptr;
 }
 
 // finished
@@ -995,17 +936,7 @@ antlrcpp::Any ASTVisitor::visitEq1(SysYParser::Eq1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
-    string op = ctx->children[1]->getText();
-    CompileMode last_mode = mode;
-    mode = normal;
-    IRValue src1 = ctx->eqExp()->accept(this);
-    IRValue src2 = ctx->relExp()->accept(this);
-    mode = last_mode;
-    VirtReg dst = VirtReg();
-    BinaryOpInst *equ_inst = new BinaryOpInst(BinaryOp(op), dst, src1.reg, src2.reg);
-    cur_basicblock->basic_block.push_back(equ_inst);
-    IRValue ret = IRValue(VarType(TypeBool), dst, false);
-    return ret;
+    return nullptr;
 }
 
 // finished
@@ -1015,18 +946,7 @@ antlrcpp::Any ASTVisitor::visitLAnd1(SysYParser::LAnd1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
-    IRValue dst;
-    dst =  ctx->lAndExp()->accept(this);
-    JzeroInst *jzo_inst = new JzeroInst(dst.reg);
-    cur_basicblock->basic_block.push_back(jzo_inst);
-    cur_scope_elements->push_back(cur_basicblock);
-    cur_basicblock = new BasicBlock;
-    dst =  ctx->eqExp()->accept(this);
-    cur_scope_elements->push_back(cur_basicblock);
-    cur_basicblock = new BasicBlock;
-    int32_t false_target = cur_basicblock->bb_idx;
-    jzo_inst->bb_idx = false_target;
-    return dst;
+    return nullptr;
 }
 
 // finished
@@ -1036,18 +956,7 @@ antlrcpp::Any ASTVisitor::visitLOr1(SysYParser::LOr1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
-    IRValue dst;
-    dst = ctx->lOrExp()->accept(this);
-    JnzroInst *jnz_inst = new JnzroInst(dst.reg);
-    cur_basicblock->basic_block.push_back(jnz_inst);
-    cur_scope_elements->push_back(cur_basicblock);
-    cur_basicblock = new BasicBlock;
-    dst = ctx->lAndExp()->accept(this);
-    cur_scope_elements->push_back(cur_basicblock);
-    cur_basicblock = new BasicBlock;
-    int32_t true_target = cur_basicblock->bb_idx;
-    jnz_inst->bb_idx = true_target;
-    return dst;
+    return nullptr;
 }
 
 // finished
