@@ -54,6 +54,17 @@ string LLIR_FBIN::ToString() {
     return ss.str();
 }
 
+// LLVM-IR Alloc Address
+string LLIR_ALLOCA::ToString() {
+    std::stringstream ss;
+    VirtReg *var_reg = reg.ToVirtReg();
+    assert(var_reg != nullptr); 
+    ss << "%" << var_reg->reg_id << " = alloca ";
+    ss << var->type.printVarTypeForAlc();
+    ss << ", align 4";
+    return ss.str();
+}
+
 // LLVM-IR Int-Compare
 string LLIR_ICMP::ToString() {
     std::stringstream ss;

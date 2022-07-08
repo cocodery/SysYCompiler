@@ -63,6 +63,11 @@ public:
 
 class LLIR_ALLOCA: public Inst {
 public:
+    SRC reg;
+    Variable *var;
+public:
+    LLIR_ALLOCA(SRC _reg, Variable *_var) : reg(_reg), var(_var) { }
+    string ToString();
 };
 
 class LLIR_LOAD: public Inst {
