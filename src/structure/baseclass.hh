@@ -19,8 +19,7 @@ public:
     int32_t reg_id;
     DeclType type;
 public:
-    VirtReg(DeclType _type = TypeVoid) : reg_id(reg_id = reg_idx++), type(_type) { }
-    VirtReg(int32_t tar_idx) : reg_id(tar_idx), type(TypeVoid) { }
+    VirtReg(int32_t _idx, DeclType _type = TypeVoid) : reg_id(_idx), type(_type) { }
     string ToString() {
         std::stringstream ss;
         ss << " %" << reg_id;
