@@ -222,9 +222,50 @@ void CompUnit::DebugUserFuncs() {
 }
 
 void CompUnit::DebugGlobalTable() {
-    cout << "Global Variable" << endl;
-    global_scope->local_table->printVaribaleTable();
+    llir << "; Global Variable" << endl;
+    VariableTable *global_table = global_scope->local_table;
+    for (auto pair: global_table->var_table) {
+        llir << "    " << "@" << pair.first << " = ";
+        Variable *var = pair.second;
+        if (var->type.is_const) { 
+            llir << "constant " << var->type.printVarTypeForAlc() << " ";
+            if (var->type.is_array) {
+                llir << "[";
+                if (var->type.decl_type == TypeInt) {
+                    llir << "i32 " << var->int_list[0];
+                    for (int i = 1; i < var->int_list.size(); ++i) {
+                        llir << ", i32 " << var->int_list[i];
+                    }
+                } else {
+                    llir << "float " << var->int_list[0];
+                    for (int i = 1; i < var->int_list.size(); ++i) {
+                        llir << ", float " << var->int_list[i];
+                    }
+                }
+                llir << "]";
+            } else {
+                if (var->type.decl_type == TypeInt) {
+                    llir << var->int_scalar;
+                } else {
+                    llir << var->float_scalar;
+                }
+            }
+        }
+        else { 
+            llir << "global " << var->type.printVarTypeForAlc() << " ";
+            if (var->type.is_array) {
+                llir << "zeroinitializer";
+            } else {
+                if (var->type.decl_type == TypeInt) {
+                    llir << "0";
+                } else {
+                    llir << "0.000000e+00";
+                }
+            }
+        }
+        llir << ", align 4" << endl;
+    }
     cout << "Global Init Block" << endl;
     global_scope->elements->resize(1);
-    global_scope->printElements();
+    // global_scope->printElements();
 }
