@@ -23,7 +23,7 @@ using namespace antlr4;
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    /*int opt = 0;
+    int opt = 0;
     bool print_usage = false;
     string input, output, irfile;
 
@@ -50,9 +50,8 @@ int main(int argc, char *argv[]) {
         input = argv[optind];
     }
     
-    dbg(input, output, irfile, opt, print_usage);*/
-
-    ifstream src{"../main.sy"};
+    dbg(input, output, irfile, opt, print_usage);
+    ifstream src{"../compiler2022/公开样例与运行时库/functional/" + input};
     if (!src.is_open()) {
         cerr << "cannot open input file" << endl;
         return EXIT_FAILURE;
