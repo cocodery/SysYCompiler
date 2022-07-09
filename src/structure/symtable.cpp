@@ -63,7 +63,11 @@ string VarType::printVarTypeForAlc() {
 string VarType::printVarTypeForArg() {
     std::stringstream ss;
     if (is_array) {
-        ss << DeclTypeToStr(decl_type) << "*";
+        if (decl_type == TypeIntArr || decl_type == TypeFloatArr) {
+            ss << DeclTypeToStr(DeclType(decl_type - 3)) << "*";
+        } else {
+            ss << DeclTypeToStr(decl_type) << "*";
+        }
     } else {
         ss << DeclTypeToStr(decl_type);
     }

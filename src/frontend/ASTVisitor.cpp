@@ -281,7 +281,7 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     // init global variable before excuting main function
     // init local variable we it first exsit
     // we make sure that all variable don't init at Variable->init_value, but get value via access memory
-    // 不管是标量还是向量, 初始化时都会用到首地址
+    // 不管是标量还是向量, 初始化时都会用到首地址 SRC(reg)
     auto init_node = ctx->initVal();
     if (var.is_array == false) {
         auto scalar_init = dynamic_cast<SysYParser::ScalarInitValContext *>(init_node);
@@ -364,7 +364,8 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
     VarType func_arg(false, ctx->getText().find("[") != string::npos, true, getDeclType(ctx->children[0]->getText()));
     if (func_arg.is_array) {
         DeclType last_type = type;
-        type = func_arg.decl_type;
+        func_arg.decl_type = ((func_arg.decl_type == TypeInt) ? TypeIntArr : TypeFloatArr);
+        type = TypeInt;
         func_arg.is_array = true;
         func_arg.array_dims = get_array_dims(ctx->constExp());
         func_arg.array_dims.insert(func_arg.array_dims.begin(), -1);
@@ -707,7 +708,7 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     /* // 暂不处理数组的情况
     vector<SRC> arr_dims;
     for (auto dim: ctx->exp()) {
-        arr_dims.push_back(dim->accept(this));
+        arr_dims.push_back(dim->accept(this));  
     }
 
     if (variable->type.is_const) {
