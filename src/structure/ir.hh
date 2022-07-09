@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <variant>
 #include <string>
@@ -9,15 +10,19 @@
 #include "../common.hh"
 #include "symtable.hh"
 #include "inst.hh"
+#include "llir.hh"
 #include "baseclass.hh"
 
 using std::ostream;
 using std::vector;
 using std::string;
 using std::map;
+using std::ofstream;
 
 static int32_t bb_index = 0;
 static int32_t sp_index = 0;
+
+static ofstream llir;
 
 class BasicBlock: public Info {
 public:
@@ -38,7 +43,7 @@ public:
     Scope* parent;
 public:
     Scope() : sp_idx(sp_index++) { local_table = nullptr; elements = nullptr; parent = nullptr; }
-    Variable *resolve(string var_name);
+    VirtReg *resolve(string var_name, FunctionInfo *cur_func_info);
     BasicBlock *get_last_bb();
     void printElements();
     void printScope();
@@ -48,8 +53,6 @@ class Function {
 public:
     FunctionInfo func_info;
     Scope *main_scope;
-public:
-    void printFunction();
 };
 
 class LibFunction {
@@ -64,9 +67,9 @@ class CompUnit: public Info {
 public:
     Scope *global_scope;
     vector<Function *> functions;
-    LibFunction lib_functions[11];
+    LibFunction lib_functions[12];
 public:
-    CompUnit();
+    CompUnit(string _llir);
     void moveGlobalInitToMain();
     bool inLibFunctions(string func_name);
     FunctionInfo *getFunctionInfo(string func_name);

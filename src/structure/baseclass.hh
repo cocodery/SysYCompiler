@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../common.hh"
+
 static int32_t reg_idx = 0;
 
 class Info {
@@ -15,10 +17,19 @@ public:
 class VirtReg: public Info {
 public:
     int32_t reg_id;
+    DeclType type;
+    bool global;
+    bool assign;
 public:
-    VirtReg() : reg_id(reg_id = reg_idx++) { }
-    VirtReg(int32_t tar_idx) : reg_id(tar_idx) { }
-    bool operator == (const VirtReg &r) { return reg_id == r.reg_id; }
+    VirtReg(int32_t _idx, DeclType _type = TypeVoid, bool _glb = false, bool _assign = true) 
+        : reg_id(_idx), type(_type), global(_glb), assign(_assign) { }
+    string ToString() {
+        std::stringstream ss;
+        if (global) ss << "@_" << reg_id;
+        else ss << "%" << reg_id;
+        return ss.str();
+    }
+    bool operator == (const VirtReg &r) { return reg_id == r.reg_id && type == r.type; }
 };
 
 const VirtReg NoRetReg = VirtReg(-1);

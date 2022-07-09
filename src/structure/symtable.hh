@@ -12,14 +12,13 @@ using std::endl;
 using std::vector;
 using std::string;
 using std::pair;
+using std::make_pair;
 
 class VarType;
 class Variable;
 class FunctionInfo;
 
 using VarPair = pair<string, Variable *>;
-
-static int32_t var_index = 0;
 
 class VarType {
 public:
@@ -36,7 +35,8 @@ public:
     int32_t get_index(vector<int32_t>& arr_idx);
     vector<int32_t> get_dims();
     VarType move_down();
-    void printVarTypeForArg();
+    string printVarTypeForAlc();
+    string printVarTypeForArg();
 };
 
 class Variable {
@@ -49,9 +49,7 @@ public:
     vector<float> float_list;
 public:
     void printVariable(string var_name);
-    Variable() : var_idx(var_index++) { };
-    Variable(VarType vt) : var_idx(var_index++), type(vt) { }
-    Variable(int vi, VarType vt) : var_idx(var_index++), type(vt) { }
+    Variable(int vi) : var_idx(vi) { }
 };
 
 class VariableTable {
@@ -68,10 +66,11 @@ class FunctionInfo {
 public:
     string func_name;
     DeclType return_type;
-    vector<VarType> func_args;
+    vector<pair<string, VarType>> func_args;
 public:
     FunctionInfo();
-    FunctionInfo(string _name, DeclType _type, vector<VarType> _args);
+    FunctionInfo(string _name, DeclType _type, vector<pair<string, VarType>> _args);
     bool has_args();
-    void printFunctionInfo();
+    pair<int32_t, DeclType> findInFuncArgs(string var_name);
+    string printFunctionInfo(bool islib = false);
 };

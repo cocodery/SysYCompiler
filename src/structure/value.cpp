@@ -4,6 +4,19 @@ IRValue::IRValue(VarType t, VirtReg vg, bool ass) : type(t), reg(vg), is_left_va
 
 CTValue::CTValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), float_value(fv) { }
 
+string CTValue::ToString() {
+    std::stringstream ss;
+    ss << "";
+    if (type == TypeInt) {
+        ss << int_value;
+    } else if (type == TypeFloat) {
+        ss << float_value;
+    } else {
+        dbg("UnExpected DeclType");
+    }
+    return ss.str();
+}
+
 // override operators for `CTValue`
 CTValue operator + (CTValue lhs, CTValue rhs) {
     if (lhs.type == rhs.type) {
@@ -80,16 +93,16 @@ CTValue operator % (CTValue lhs, CTValue rhs) {
 
 CTValue operator - (CTValue rhs) {
     if (rhs.type == TypeInt) {
-        return CTValue(TypeInt, -rhs.int_value, 0);
+        return CTValue(TypeInt, -rhs.int_value, -rhs.float_value);
     } else {
-        return CTValue(TypeFloat, 0, -rhs.float_value);
+        return CTValue(TypeFloat, -rhs.int_value, -rhs.float_value);
     }
 }
 
 CTValue operator ! (CTValue rhs) {
     if (rhs.type == TypeInt) {
-        return CTValue(TypeInt, !rhs.int_value, 0);
+        return CTValue(TypeInt, !rhs.int_value, !rhs.float_value);
     } else {
-        return CTValue(TypeFloat, 0, !rhs.float_value);
+        return CTValue(TypeFloat, !rhs.int_value, !rhs.float_value);
     }
 }

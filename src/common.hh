@@ -19,7 +19,24 @@ int parseNum(const char *number_str);
 
 enum DeclType {
     TypeVoid, TypeInt, TypeFloat, TypeBool,
+    TypeIntArr, TypeFloatArr,
 };
+
+enum BinOp {
+    ADD, SUB, MUL, DIV, REM,
+};
+
+enum RelOp {
+    LTH, LEQ, EQU, NEQ,
+};
+
+string BinOpToStr(BinOp op);
+
+BinOp StrToBinOp(string op);
+
+string RelOpToStr(RelOp op);
+
+RelOp StrToRelOp(string op);
 
 DeclType getDeclType(string type_str);
 

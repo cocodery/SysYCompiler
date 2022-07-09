@@ -30,6 +30,44 @@ int parseNum(const char *number_str) {
     return ret;
 }
 
+string BinOpToStr(BinOp op) {
+    if (op == ADD) return "add";
+    else if (op == SUB) return "sub";
+    else if (op == MUL) return "mul";
+    else if (op == DIV) return "div";
+    else if (op == REM) return "rem";
+    dbg("Unknown BinOp");
+    exit(EXIT_FAILURE);
+}
+
+BinOp StrToBinOp(string op) {
+    if (op == "+") return ADD;
+    else if (op == "-") return SUB;
+    else if (op == "*") return MUL;
+    else if (op == "/") return DIV;
+    else if (op == "%") return REM;
+    dbg("Unknown BinOp");
+    exit(EXIT_FAILURE);
+}
+
+string RelOpToStr(RelOp op) {
+    if (op == LTH) return "slt";
+    else if (op == LEQ) return "sle";
+    else if (op == EQU) return "eq";
+    else if (op == NEQ) return "uq";
+    dbg("Unknown RelOp");
+    exit(EXIT_FAILURE);
+}
+
+RelOp StrToRelOp(string op) {
+    if (op == "<") return LTH;
+    else if (op == "<=") return LEQ;
+    else if (op == "==") return EQU;
+    else if (op == "!=") return NEQ;
+    dbg("Unknown RelOp");
+    exit(EXIT_FAILURE);
+}
+
 DeclType getDeclType(string type_str) {
     if (type_str == "int") return TypeInt;
     else if (type_str == "float") return TypeFloat;
@@ -40,9 +78,11 @@ DeclType getDeclType(string type_str) {
 
 string DeclTypeToStr(DeclType type) {
     switch (type) {
-        case TypeInt: return "int";
+        case TypeInt: return "i32";
         case TypeFloat: return "float";
         case TypeVoid: return "void";
+        case TypeIntArr: return "i32*";
+        case TypeFloatArr: return "float*";
         default: break;
     }
     dbg("Unknown Declare Type");

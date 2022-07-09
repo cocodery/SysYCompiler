@@ -50,24 +50,33 @@ VarType VarType::move_down() {
     return ret;
 }
 
-void VarType::printVarTypeForArg() {
-    string ret;
-    if (is_args) {
-        ret += DeclTypeToStr(decl_type);
-        if (is_array) {
-            int size = array_dims.size();
-            ret += "[]";
-            for(int i = 1; i < size; ++i) {
-                ret += '[' + std::to_string(array_dims[i]) + ']';
-            }
-        }
+string VarType::printVarTypeForAlc() {
+    std::stringstream ss;
+    if (is_array) {
+        ss << "[" << elements_number() << " x " << DeclTypeToStr(decl_type) << "]";
+    } else {
+        ss << DeclTypeToStr(decl_type);
     }
-    cout << ret;
+    return ss.str();
+}
+
+string VarType::printVarTypeForArg() {
+    std::stringstream ss;
+    if (is_array) {
+        if (decl_type == TypeIntArr || decl_type == TypeFloatArr) {
+            ss << DeclTypeToStr(DeclType(decl_type - 3)) << "*";
+        } else {
+            ss << DeclTypeToStr(decl_type) << "*";
+        }
+    } else {
+        ss << DeclTypeToStr(decl_type);
+    }
+    return ss.str();
 }
 
 FunctionInfo::FunctionInfo() : return_type(TypeVoid) { }
 
-FunctionInfo::FunctionInfo(string _name, DeclType _type, vector<VarType> _args)
+FunctionInfo::FunctionInfo(string _name, DeclType _type, vector<pair<string, VarType>> _args)
     : func_name(_name), return_type(_type), func_args(_args) { }
 
 void Variable::printVariable(string var_name) {
@@ -131,16 +140,32 @@ bool FunctionInfo::has_args() {
     return (func_args.size() != 0);
 }
 
-void FunctionInfo::printFunctionInfo() {
-    cout << DeclTypeToStr(return_type) << ' ' << func_name << " (";
+pair<int32_t, DeclType> FunctionInfo::findInFuncArgs(string var_name) {
+    int32_t idx = 0;
+    DeclType type = TypeVoid;
+    for (auto pair: func_args) {
+        if (var_name == pair.first) {
+            type = pair.second.decl_type;
+        }
+        ++idx;
+    }
+    return make_pair(idx, type);
+}
+
+string FunctionInfo::printFunctionInfo(bool islib) {
+    std::stringstream ss;
+    if (islib) {
+        ss << "declare "; 
+    } else {
+        ss << "define ";
+    }
+    ss << DeclTypeToStr(return_type) << " @" << func_name << "(";
     if (has_args()) {
-        int size = func_args.size();
-        func_args[0].printVarTypeForArg();
-        for (int i = 1; i < size; ++i) {
-            cout << ", ";
-            func_args[i].printVarTypeForArg();
+        ss << func_args[0].second.printVarTypeForArg() << " %0";
+        for (int i = 1; i < func_args.size(); ++i) {
+            ss << ", " << func_args[i].second.printVarTypeForArg() << " %" << i;
         }
     }
-    cout << ')' << endl;
-    return;
+    ss << ")";
+    return ss.str();
 }

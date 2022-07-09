@@ -9,15 +9,14 @@
 using std::cout;
 using std::endl;
 
-extern const VirtReg NoRetReg;
-
-class CTValue {
+class CTValue: public Info {
 public:
     DeclType type;
     int32_t int_value;
     float float_value;
 public:
     CTValue(DeclType t = TypeVoid, int32_t iv = 0, float fv = 0);
+    string ToString();
 };
 
 class IRValue {
@@ -26,7 +25,7 @@ public:
     VirtReg reg;
     bool is_left_value;
 public:
-    IRValue() : reg(NoRetReg){ }
+    IRValue() : reg(VirtReg(-1)){ }
     IRValue(VarType t, VirtReg vg, bool ass = false);
     bool can_assign() { return !type.is_const && !type.is_array; };
 };

@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
     SysYParser::CompUnitContext *root = parser.compUnit();
 
-    CompUnit ir;
+    CompUnit ir("../main.ll");
     
     ASTVisitor visitor(ir);
 
@@ -82,29 +82,9 @@ int main(int argc, char *argv[]) {
 
     ir.DebugGlobalTable();
 
-    ir.moveGlobalInitToMain();
-
     ir.DebugUserFuncs();
 
     cout << "Compiler Complete" << endl;
 
-    // cout << "\n--------DAG Gen---------\n";
-
-    // generateDAG(ir);
-
-    // cout << "\n--------DAG Gen Complete---------\n";
-
-    cout << "\n--------Code Gen--------\n";
-
-    CodeGenerator cg;
-    cg.Generate(ir);
-    ofstream dest{"../main.asm"};
-    if (!dest.is_open()) {
-        cerr << "cannot open input file" << endl;
-        return EXIT_FAILURE;
-    }
-    cg.OutputToFile(dest);
-
     return 0;
-
 }
