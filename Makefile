@@ -16,12 +16,14 @@ build:
 	$(MAKE) -C $(BUILD_DIR) --file=Makefile -j2 -s
 
 .PHONY: run
-main:
+run:
 	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm main.sy ; cd ..
+	@llvm-link sylib.ll main.ll -S -o run.ll
 
 .PHONY: test
 test:
-	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm compiler2022/公开样例与运行时库/functional/$(TEST) ; cd ..
+	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm compiler2022/公开样例与运行时库/functional/$(TEST); cd ..
+	@llvm-link sylib.ll main.ll -S -o run.ll
 
 .PHONY: gdb
 gdb:
