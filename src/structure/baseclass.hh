@@ -22,7 +22,7 @@ public:
     VirtReg(int32_t _idx, DeclType _type = TypeVoid) : reg_id(_idx), type(_type) { }
     string ToString() {
         std::stringstream ss;
-        ss << " %" << reg_id;
+        ss << "%" << reg_id;
         return ss.str();
     }
     bool operator == (const VirtReg &r) { return reg_id == r.reg_id && type == r.type; }

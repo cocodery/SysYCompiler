@@ -6,7 +6,7 @@ CTValue::CTValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), floa
 
 string CTValue::ToString() {
     std::stringstream ss;
-    ss << " ";
+    ss << "";
     if (type == TypeInt) {
         ss << int_value;
     } else if (type == TypeFloat) {
