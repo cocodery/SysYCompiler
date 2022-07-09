@@ -91,10 +91,10 @@ class LLIR_GEP: public Inst {
 public:
     SRC dst;
     SRC src;
-    int32_t off;
+    SRC off;
     VarType type;
 public:
-    LLIR_GEP(SRC _dst, SRC _src, int32_t _off, VarType _type) : dst(_dst), src(_src), off(_off), type(_type) { }
+    LLIR_GEP(SRC _dst, SRC _src, SRC _off, VarType _type) : dst(_dst), src(_src), off(_off), type(_type) { }
     string ToString();
 };
 

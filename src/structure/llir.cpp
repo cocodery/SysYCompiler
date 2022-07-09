@@ -95,7 +95,8 @@ string LLIR_GEP::ToString() {
     VirtReg *dst_reg = dst.ToVirtReg();
     ss << "%" << dst_reg->reg_id << " = getelementptr inbounds ";
     ss << type.printVarTypeForAlc() << ", " << type.printVarTypeForAlc() << "* ";
-    ss << src.ToString() << ", i32 0" << ", i32 " << off;
+    ss << src.ToString() << ", i32 " << off.ToString();
+    if (dst_reg->type.is_array) ss << ", i32 0";
     return ss.str();
 }
 
