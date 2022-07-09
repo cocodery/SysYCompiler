@@ -16,8 +16,12 @@ build:
 	$(MAKE) -C $(BUILD_DIR) --file=Makefile -j2 -s
 
 .PHONY: run
-run:
-	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm $(TEST) ; cd ..
+main:
+	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm main.sy ; cd ..
+
+.PHONY: test
+test:
+	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm compiler2022/公开样例与运行时库/functional/$(TEST) ; cd ..
 
 .PHONY: gdb
 gdb:

@@ -184,7 +184,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     }
     cur_vartable->var_table.push_back(std::make_pair(var_name, const_variable));
     // 生成 LLIR
-    if (cur_func_info != nullptr) {
+    if (cur_func_info != nullptr && const_var.is_array == false && const_var.is_const) {
         VirtReg *reg = new VirtReg(const_variable->var_idx, const_variable->type.decl_type);
         LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), const_variable);
         cur_basicblock->basic_block.push_back(alloc_inst);
@@ -522,8 +522,8 @@ antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
 // 所以在这里我们仅返回存储使用的变量的地址
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     cout << "enter LVal" << endl;
-    VirtReg *variable = cur_scope->resolve(ctx->Identifier()->getText(), cur_func_info);
-    assert(variable != nullptr);
+    SRC variable = cur_scope->resolve(ctx->Identifier()->getText(), cur_func_info);
+    assert(variable.ToCTValue() != nullptr || variable.ToVirtReg() != nullptr);
     /* // 暂不处理数组的情况
     vector<SRC> arr_dims;
     for (auto dim: ctx->exp()) {
@@ -546,7 +546,7 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     }
     */
     cout << "exit visitLVal" << endl;
-    return SRC(variable);
+    return variable;
 }
 
 // finished
@@ -558,11 +558,16 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp1(SysYParser::PrimaryExp1Context *ctx) 
 antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) {
     cout << "enter visitPrimaryExp2" << endl;
     SRC src = ctx->lVal()->accept(this);
-    VirtReg *src_reg = src.ToVirtReg();
-    VirtReg *dst_reg = new VirtReg(var_idx++, src_reg->type);
-    SRC dst = SRC(dst_reg);
-    LLIR_LOAD *load_inst = new LLIR_LOAD(dst, src);
-    cur_basicblock->basic_block.push_back(load_inst);
+    SRC dst;
+    if (CTValue *ctv = src.ToCTValue(); ctv != nullptr) {
+        dst = SRC(ctv);
+    } else {
+        VirtReg *src_reg = src.ToVirtReg();
+        VirtReg *dst_reg = new VirtReg(var_idx++, src_reg->type);
+        dst = SRC(dst_reg);
+        LLIR_LOAD *load_inst = new LLIR_LOAD(dst, src);
+        cur_basicblock->basic_block.push_back(load_inst);
+    }
     cout << "exit visitPrimaryExp2" << endl;
     return dst;
 }
