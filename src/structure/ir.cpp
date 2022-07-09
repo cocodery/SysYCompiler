@@ -251,5 +251,4 @@ void CompUnit::DebugGlobalTable() {
     }
     cout << "Global Init Block" << endl;
     global_scope->elements->resize(1);
-    // global_scope->printElements();
 }

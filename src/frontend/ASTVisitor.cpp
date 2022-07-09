@@ -7,9 +7,7 @@ ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     cur_scope = ir.global_scope;
     cur_scope_elements = ir.global_scope->elements;
     cur_vartable = ir.global_scope->local_table;
-    glbvar_init_bb = new BasicBlock;
     cur_func_info = nullptr;
-    cur_basicblock = glbvar_init_bb;
     // ir.global_scope->elements->push_back(glbvar_init_bb);
 }
 
@@ -62,61 +60,45 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
     return;
 }
 
-void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, const vector<int32_t> &array_dims, VirtReg addr, int32_t off) {
-    /*
-    int32_t total_size = 1; // 当前维度需要初始化元素的个数
-    for (auto i: array_dims) {
+void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarType type, vector<int32_t> arr_dim, SRC addr, int32_t off) {
+    int32_t total_size = 0;
+    for (auto i: arr_dim) {
         total_size *= i;
     }
-    if (total_size == 0) return;
-    vector<int32_t> child_array_dims = array_dims; // 子结点的维度
+    vector<int32_t> child_array_dims = arr_dim; // 子结点的维度
     child_array_dims.erase(child_array_dims.begin());
-    int32_t cnt = 0;
-    for (auto child: node->initVal()) {
+    for (auto child : node->initVal()) {
         if (auto scalar_node = dynamic_cast<SysYParser::ScalarInitValContext *>(child); scalar_node != nullptr) {
-            CTValue off_v = CTValue(TypeInt, off, 0);
-            VirtReg off_r = VirtReg(var_idx++);
-            LoadNumber *ldc_off_inst = new LoadNumber(off_r, off_v);
-            cur_basicblock->basic_block.push_back(ldc_off_inst);
-            VirtReg addr_off = VirtReg(var_idx++);
-            LoadOffset *ldo_inst = new LoadOffset(addr_off, addr, off_r, 1);
-            cur_basicblock->basic_block.push_back(ldo_inst);
-            IRValue value_v = scalar_node->exp()->accept(this);
-            VirtReg value_r = value_v.reg;
-            StoreMem *stm_inst = new StoreMem(addr_off, value_r);
-            cur_basicblock->basic_block.push_back(stm_inst);
-            off += 1;
-            cnt += 1;
+            VirtReg *tar_addr = new VirtReg(var_idx++, type.decl_type);
+            LLIR_GEP *gep_inst = new LLIR_GEP(tar_addr, addr, off++, type);
+            cur_basicblock->basic_block.push_back(gep_inst);
+            SRC value = scalar_node->exp()->accept(this);
+            LLIR_STORE *store_inst = new LLIR_STORE(tar_addr, value);
+            cur_basicblock->basic_block.push_back(store_inst);
         } else {
             auto list_node = dynamic_cast<SysYParser::ListInitvalContext *>(child);
-            parse_variable_init(list_node, child_array_dims, addr, off);
-            cnt += total_size / array_dims[0];
-            off += total_size / array_dims[0];
+            parse_variable_init(list_node, type, arr_dim, addr, off);
+            off += total_size / arr_dim[0];
         }
     }
-    // 加载 0 到寄存器, 防止每次初始化需要读取
-    CTValue zero_v = CTValue(type, 0, 0);
-    VirtReg zero_r = VirtReg(var_idx++); // 存储 0
-    LoadNumber *ldc_inst = new LoadNumber(zero_r, zero_v);
-    cur_basicblock->basic_block.push_back(ldc_inst);
-    // 将剩余未初始化的赋值为 0
-    while (cnt < total_size) {
-        // 存储偏移量
-        VirtReg off_r = VirtReg(var_idx++); 
-        CTValue off_v = CTValue(TypeInt, off, 0);
-        LoadNumber *ldc_off_inst = new LoadNumber(off_r, off_v);
-        cur_basicblock->basic_block.push_back(ldc_off_inst);
-        // 存储加上偏移量后的地址
-        VirtReg addr_off = VirtReg(var_idx++); 
-        LoadOffset *ldo_inst = new LoadOffset(addr_off, addr, off_r, 1);
-        cur_basicblock->basic_block.push_back(ldo_inst);
-        // 存储值到地址
-        StoreMem *stm_inst = new StoreMem(addr_off, zero_r);
-        cur_basicblock->basic_block.push_back(stm_inst);
-        off += 1;
-        cnt += 1;
+    return;
+}
+
+void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair var_pair) {
+    auto init_node = ctx->initVal();
+    string var_name = var_pair.first;
+    VarType var = var_pair.second->type;
+    if (var.is_array == false) {
+        auto scalar_init = dynamic_cast<SysYParser::ScalarInitValContext *>(init_node);
+        auto reg = cur_scope->resolve(var_name, cur_func_info);
+        SRC src = scalar_init->exp()->accept(this);
+        LLIR_STORE* store_inst = new LLIR_STORE(SRC(reg), src);
+        cur_basicblock->basic_block.push_back(store_inst);
+    } else {
+        auto node = dynamic_cast<SysYParser::ListInitvalContext *>(init_node);
+        auto reg = cur_scope->resolve(var_name, cur_func_info);
+        parse_variable_init(node, var, var.array_dims, SRC(reg), 0);
     }
-    */
 }
 
 // finished
@@ -278,7 +260,8 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
         dbg(var.array_dims);
     }
     variable->type = var;
-    cur_vartable->var_table.push_back(std::make_pair(var_name, variable));
+    VarPair var_pair = std::make_pair(var_name, variable);
+    cur_vartable->var_table.push_back(var_pair);
     if (cur_func_info != nullptr) {
         VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
         LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
@@ -289,16 +272,10 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     // init local variable we it first exsit
     // we make sure that all variable don't init at Variable->init_value, but get value via access memory
     // 不管是标量还是向量, 初始化时都会用到首地址 SRC(reg)
-    auto init_node = ctx->initVal();
-    if (var.is_array == false) {
-        auto scalar_init = dynamic_cast<SysYParser::ScalarInitValContext *>(init_node);
-        auto reg = cur_scope->resolve(var_name, cur_func_info);
-        SRC src = scalar_init->exp()->accept(this);
-        LLIR_STORE* store_inst = new LLIR_STORE(SRC(reg), src);
-        cur_basicblock->basic_block.push_back(store_inst);
+    if (cur_func_info != nullptr) {
+        generate_varinit_ir(ctx, var_pair);
     } else {
-        auto node = dynamic_cast<SysYParser::ListInitvalContext *>(init_node);
-        // parse_variable_init(node, var.array_dims, addr, 0);
+        glb_var_init.push_back(make_pair(ctx, var_pair));
     }
     cout << "exit InitVarDef" << endl;
     return nullptr;
@@ -344,7 +321,6 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     func->main_scope = ctx->block()->accept(this);
     // push to function table
     ir.functions.push_back(func);
-    cur_basicblock = glbvar_init_bb;
     cur_func_info = nullptr;
     cout << "exit FuncDef" << endl;
     return nullptr;
@@ -405,6 +381,12 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cur_vartable = block_scope->local_table;
     cur_scope_elements = block_scope->elements;
     cur_basicblock = new BasicBlock;
+    if (cur_func_info->func_name == "main" && glb_var_init.size() != 0) {
+        for (auto elm : glb_var_init) {
+            generate_varinit_ir(elm.first, elm.second);
+        }
+        glb_var_init.clear();
+    }
     visitChildren(ctx);
     // 新的基本块到右括号就结束了, push
     cur_scope_elements->push_back(cur_basicblock);

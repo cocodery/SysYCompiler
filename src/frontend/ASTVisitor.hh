@@ -26,11 +26,11 @@ private:
     DeclType ret_type;
     int32_t var_idx;
     CompUnit &ir;
+    vector<pair<SysYParser::InitVarDefContext *, VarPair>> glb_var_init;
     vector<Info *> *cur_scope_elements;
     Scope          *cur_scope;
     VariableTable  *cur_vartable;
     BasicBlock     *cur_basicblock;
-    BasicBlock     *glbvar_init_bb;
     FunctionInfo   *cur_func_info;
     int32_t continue_target;
     vector<JumpInst *> break_insts;
@@ -43,7 +43,9 @@ public:
     
     void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<float>& flist);
 
-    void parse_variable_init(SysYParser::ListInitvalContext *node, const vector<int32_t> &array_dims, VirtReg addr, int32_t off);
+    void parse_variable_init(SysYParser::ListInitvalContext *node, VarType type, vector<int32_t> arr_dim, SRC addr, int32_t off);
+
+    void generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair var_pair);
 // Function for Abstract Syntax Tree
 public:
     virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *ctx) override;
