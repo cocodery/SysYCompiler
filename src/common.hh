@@ -19,6 +19,7 @@ int parseNum(const char *number_str);
 
 enum DeclType {
     TypeVoid, TypeInt, TypeFloat, TypeBool,
+    TypeIntArr, TypeFloatArr,
 };
 
 enum BinOp {
