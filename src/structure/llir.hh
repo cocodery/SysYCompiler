@@ -6,7 +6,6 @@
 #include <map>
 
 #include "../common.hh"
-#include "ir.hh"
 #include "symtable.hh"
 #include "baseclass.hh"
 #include "value.hh"
