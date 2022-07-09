@@ -420,6 +420,13 @@ antlrcpp::Any ASTVisitor::visitBlockItem(SysYParser::BlockItemContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitAssignment(SysYParser::AssignmentContext *ctx) {
+    SRC lhs = ctx->lVal()->accept(this);
+    SRC rhs = ctx->exp()->accept(this);
+    VirtReg *lhs_reg = lhs.ToVirtReg();
+    VirtReg *rhs_reg = rhs.ToVirtReg();
+    assert(lhs_reg->assign == true);
+    LLIR_STORE *store_inst = new LLIR_STORE(lhs, rhs);
+    cur_basicblock->basic_block.push_back(store_inst);
     return nullptr;
 }
 
@@ -697,7 +704,7 @@ antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
 
 // finished
 // 进入这个产生式并不知道他将作为左值还是右值
-// 所以在这里我们仅返回存储使用的变量的地址 in `IRValue`
+// 所以在这里我们仅返回存储使用的变量的地址
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     cout << "enter LVal" << endl;
     Variable *variable = cur_scope->resolve(ctx->Identifier()->getText());

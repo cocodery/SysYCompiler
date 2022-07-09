@@ -65,6 +65,7 @@ string LLIR_ALLOCA::ToString() {
     return ss.str();
 }
 
+// LLVM-IR Load
 string LLIR_LOAD::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
@@ -73,6 +74,16 @@ string LLIR_LOAD::ToString() {
     ss << DeclTypeToStr(dst_reg->type) << ", ";
     ss << DeclTypeToStr(dst_reg->type) << "* %" << src_reg->reg_id;
     ss << ", align 4";
+    return ss.str();
+}
+
+// LLVM-IR Store
+string LLIR_STORE::ToString() {
+    std::stringstream ss;
+    VirtReg *dst_reg = dst.ToVirtReg();
+    ss << "store " << DeclTypeToStr(dst_reg->type);
+    ss << " " << src.ToString() << ", ";
+    ss << DeclTypeToStr(dst_reg->type) << "* " << dst_reg->ToString();
     return ss.str();
 }
 

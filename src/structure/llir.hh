@@ -81,6 +81,11 @@ public:
 
 class LLIR_STORE: public Inst {
 public:
+    SRC dst;
+    SRC src;
+public:
+    LLIR_STORE(SRC _dst, SRC _src) : dst(_dst), src(_src) { }
+    string ToString();
 };
 
 class LLIR_GEP: public Inst {

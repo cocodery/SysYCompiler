@@ -18,8 +18,10 @@ class VirtReg: public Info {
 public:
     int32_t reg_id;
     DeclType type;
+    bool assign;
 public:
-    VirtReg(int32_t _idx, DeclType _type = TypeVoid) : reg_id(_idx), type(_type) { }
+    VirtReg(int32_t _idx, DeclType _type = TypeVoid, bool _assign = true) 
+        : reg_id(_idx), type(_type), assign(_assign) { }
     string ToString() {
         std::stringstream ss;
         ss << "%" << reg_id;

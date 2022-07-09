@@ -57,6 +57,9 @@ void BasicBlock::printBlock() {
         Case (LLIR_LOAD, load_inst, inst) {
             llir << get_tabs() << load_inst->ToString() << endl;
         }
+        Case (LLIR_STORE, store_inst, inst) {
+            llir << get_tabs() << store_inst->ToString() << endl;
+        }
         Case (LLIR_ICMP, icmp_inst, inst) {
             llir << get_tabs() << icmp_inst->ToString() << endl;
         }
