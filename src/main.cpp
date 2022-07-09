@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 
     ir.DebugGlobalTable();
 
-    // ir.moveGlobalInitToMain();
+    ir.moveGlobalInitToMain();
 
     ir.DebugUserFuncs();
 

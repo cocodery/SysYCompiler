@@ -202,9 +202,11 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     }
     cur_vartable->var_table.push_back(std::make_pair(var_name, const_variable));
     // 生成 LLIR
-    VirtReg *reg = new VirtReg(const_variable->var_idx, const_variable->type.decl_type);
-    LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), const_variable);
-    cur_basicblock->basic_block.push_back(alloc_inst);
+    if (cur_func_info != nullptr) {
+        VirtReg *reg = new VirtReg(const_variable->var_idx, const_variable->type.decl_type);
+        LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), const_variable);
+        cur_basicblock->basic_block.push_back(alloc_inst);
+    }
     cout << "exit ConstDef" << endl;
     return nullptr;
 }
@@ -250,9 +252,11 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
     }
     variable->type = var;
     cur_vartable->var_table.push_back(std::make_pair(var_name, variable));
-    VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
-    LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
-    cur_basicblock->basic_block.push_back(alloc_inst);
+    if (cur_func_info != nullptr) {
+        VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
+        LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
+        cur_basicblock->basic_block.push_back(alloc_inst);
+    }
     cout << "exit UninitVarDef" << endl;
     return nullptr;
 }
@@ -275,9 +279,11 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     }
     variable->type = var;
     cur_vartable->var_table.push_back(std::make_pair(var_name, variable));
-    VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
-    LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
-    cur_basicblock->basic_block.push_back(alloc_inst);
+    if (cur_func_info != nullptr) {
+        VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
+        LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
+        cur_basicblock->basic_block.push_back(alloc_inst);
+    }
     // parse `InitVarDef`
     // init global variable before excuting main function
     // init local variable we it first exsit
@@ -286,6 +292,7 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     auto init_node = ctx->initVal();
     if (var.is_array == false) {
         auto scalar_init = dynamic_cast<SysYParser::ScalarInitValContext *>(init_node);
+        auto reg = cur_scope->resolve(var_name, cur_func_info);
         SRC src = scalar_init->exp()->accept(this);
         LLIR_STORE* store_inst = new LLIR_STORE(SRC(reg), src);
         cur_basicblock->basic_block.push_back(store_inst);

@@ -81,7 +81,7 @@ VirtReg *Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
             type = var->type.decl_type;
             break;
         }
-        if (cur_scope->parent->parent == nullptr) { // if not in table, search in function args
+        if (cur_func_args != nullptr && cur_scope->parent->parent == nullptr) { // if not in table, search in function args
             cout << "not find in `Scope`" << cur_scope->sp_idx << " var_table, goto function arguments" << endl;
             auto pair = cur_func_args->findInFuncArgs(var_name);
             idx = pair.first;
