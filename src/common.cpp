@@ -34,8 +34,8 @@ string BinOpToStr(BinOp op) {
     if (op == ADD) return "add";
     else if (op == SUB) return "sub";
     else if (op == MUL) return "mul";
-    else if (op == DIV) return "div";
-    else if (op == REM) return "rem";
+    else if (op == DIV) return "sdiv";
+    else if (op == REM) return "srem";
     dbg("Unknown BinOp");
     exit(EXIT_FAILURE);
 }

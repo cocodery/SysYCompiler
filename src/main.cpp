@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     }
     
     dbg(input, output, irfile, opt, print_usage);
-    ifstream src{"../compiler2022/公开样例与运行时库/functional/" + input};
+    ifstream src{"../" + input};
     if (!src.is_open()) {
         cerr << "cannot open input file" << endl;
         return EXIT_FAILURE;
