@@ -19,7 +19,7 @@ string LLIR_RET::ToString() {
             ss << DeclTypeToStr(ctv->type);
         } else {
             VirtReg *reg = ret_value.ToVirtReg();
-            ss << DeclTypeToStr(reg->type);
+            ss << reg->type.printVarTypeForAlc();
         }
         ss << " " << ret_value.ToString();
     } else {
@@ -71,8 +71,8 @@ string LLIR_LOAD::ToString() {
     VirtReg *dst_reg = dst.ToVirtReg();
     VirtReg *src_reg = src.ToVirtReg();
     ss << "%" << dst_reg->reg_id << " = load ";
-    ss << DeclTypeToStr(dst_reg->type) << ", ";
-    ss << DeclTypeToStr(dst_reg->type) << "* ";
+    ss << dst_reg->type.printVarTypeForAlc() << ", ";
+    ss << dst_reg->type.printVarTypeForAlc() << "* ";
     if (src_reg->global) ss << "@_" << src_reg->reg_id;
     else  ss << "%" << src_reg->reg_id;
     ss << ", align 4";
@@ -83,9 +83,9 @@ string LLIR_LOAD::ToString() {
 string LLIR_STORE::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
-    ss << "store " << DeclTypeToStr(dst_reg->type);
+    ss << "store " << dst_reg->type.printVarTypeForAlc();
     ss << " " << src.ToString() << ", ";
-    ss << DeclTypeToStr(dst_reg->type) << "* " << dst_reg->ToString();
+    ss << dst_reg->type.printVarTypeForAlc() << "* " << dst_reg->ToString();
     return ss.str();
 }
 

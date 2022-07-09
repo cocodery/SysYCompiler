@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common.hh"
+#include "symtable.hh"
 
 static int32_t reg_idx = 0;
 
@@ -17,11 +18,11 @@ public:
 class VirtReg: public Info {
 public:
     int32_t reg_id;
-    DeclType type;
+    VarType type;
     bool global;
     bool assign;
 public:
-    VirtReg(int32_t _idx, DeclType _type = TypeVoid, bool _glb = false, bool _assign = true) 
+    VirtReg(int32_t _idx, VarType _type = TypeVoid, bool _glb = false, bool _assign = true) 
         : reg_id(_idx), type(_type), global(_glb), assign(_assign) { }
     string ToString() {
         std::stringstream ss;
@@ -29,7 +30,4 @@ public:
         else ss << "%" << reg_id;
         return ss.str();
     }
-    bool operator == (const VirtReg &r) { return reg_id == r.reg_id && type == r.type; }
 };
-
-const VirtReg NoRetReg = VirtReg(-1);
