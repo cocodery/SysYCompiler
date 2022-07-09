@@ -66,9 +66,33 @@ void BasicBlock::printBlock() {
     }
 }
 
-Variable *Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
-    auto cur_vartable = local_table;
-    
+VirtReg *Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
+    auto cur_scope = this;
+    VariableTable *cur_table = nullptr;
+    int32_t idx = 0;
+    DeclType type = TypeVoid;
+    while (cur_scope != nullptr) {
+        cur_table = cur_scope->local_table;
+        // search cur scope's variable table first
+        if (cur_table->findInCurTable(var_name)) {
+            cout << "find in `Scope`" << cur_scope->sp_idx << endl;
+            auto var = cur_table->getInCurTable(var_name);
+            idx = var->var_idx;
+            type = var->type.decl_type;
+            break;
+        }
+        if (cur_scope->parent->parent == nullptr) { // if not in table, search in function args
+            cout << "not find in `Scope`" << cur_scope->sp_idx << " var_table, goto function arguments" << endl;
+            auto pair = cur_func_args->findInFuncArgs(var_name);
+            idx = pair.first;
+            type = pair.second;
+            if (type != TypeVoid) break;
+        }
+        cout << "not find in `Scope`" << cur_scope->sp_idx << " var_table, goto parent table" << endl;
+        cur_scope = cur_scope->parent;
+    }
+    assert(cur_table != nullptr);
+    return new VirtReg(idx, type, (cur_scope->parent == nullptr));
 }
 
 BasicBlock *Scope::get_last_bb() {
@@ -124,12 +148,10 @@ CompUnit::CompUnit(string _llir) {
                                TypeInt, TypeVoid, TypeVoid, TypeVoid,
                                TypeVoid, TypeVoid,
                                TypeVoid, TypeVoid };
-    dbg("OK");
     for (int32_t i = 0; i < 12; ++i) {
         lib_functions[i].is_used = false;
         lib_functions[i].libfunc_info.func_name = func_name[i];
         lib_functions[i].libfunc_info.return_type = ret_type[i];
-        dbg(i);
     }
     // getint
     lib_functions[0].libfunc_info.func_args.resize(0);

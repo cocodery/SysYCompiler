@@ -72,7 +72,9 @@ string LLIR_LOAD::ToString() {
     VirtReg *src_reg = src.ToVirtReg();
     ss << "%" << dst_reg->reg_id << " = load ";
     ss << DeclTypeToStr(dst_reg->type) << ", ";
-    ss << DeclTypeToStr(dst_reg->type) << "* %" << src_reg->reg_id;
+    ss << DeclTypeToStr(dst_reg->type) << "* ";
+    if (src_reg->global) ss << "@_" << src_reg->reg_id;
+    else  ss << "%" << src_reg->reg_id;
     ss << ", align 4";
     return ss.str();
 }

@@ -501,7 +501,7 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
                     cur_basicblock->basic_block.push_back(fti_inst);
                     dst = SRC(dst_reg);
                 } else {
-                    dbg("UnExpected Function Return Type");
+                    dbg(DeclTypeToStr(reg->type) + ", UnExpected Function Return Type");
                     exit(EXIT_FAILURE);
                 }
                 dst = SRC(dst_reg);
@@ -533,7 +533,7 @@ antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
 // 所以在这里我们仅返回存储使用的变量的地址
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     cout << "enter LVal" << endl;
-    Variable *variable = cur_scope->resolve(ctx->Identifier()->getText(), cur_func_info);
+    VirtReg *variable = cur_scope->resolve(ctx->Identifier()->getText(), cur_func_info);
     assert(variable != nullptr);
     /* // 暂不处理数组的情况
     vector<SRC> arr_dims;
@@ -557,10 +557,7 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     }
     */
     cout << "exit visitLVal" << endl;
-    if (variable->type.is_array == false) {
-        VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
-        return SRC(reg);
-    }
+    return SRC(variable);
 }
 
 // finished
@@ -570,12 +567,14 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp1(SysYParser::PrimaryExp1Context *ctx) 
 
 // finished
 antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) {
+    cout << "enter visitPrimaryExp2" << endl;
     SRC src = ctx->lVal()->accept(this);
     VirtReg *src_reg = src.ToVirtReg();
     VirtReg *dst_reg = new VirtReg(var_idx++, src_reg->type);
     SRC dst = SRC(dst_reg);
     LLIR_LOAD *load_inst = new LLIR_LOAD(dst, src);
     cur_basicblock->basic_block.push_back(load_inst);
+    cout << "exit visitPrimaryExp2" << endl;
     return dst;
 }
 
