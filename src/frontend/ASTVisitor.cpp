@@ -274,29 +274,24 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     }
     variable->type = var;
     cur_vartable->var_table.push_back(std::make_pair(var_name, variable));
+    VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
+    LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
+    cur_basicblock->basic_block.push_back(alloc_inst);
     // parse `InitVarDef`
     // init global variable before excuting main function
     // init local variable we it first exsit
     // we make sure that all variable don't init at Variable->init_value, but get value via access memory
     // 不管是标量还是向量, 初始化时都会用到首地址
-    /*
-    VirtReg addr = VirtReg(var_idx++);
-    LoadAddress *ldv_inst = new LoadAddress(addr, variable);
-    cur_basicblock->basic_block.push_back(ldv_inst);
     auto init_node = ctx->initVal();
     if (var.is_array == false) {
         auto scalar_init = dynamic_cast<SysYParser::ScalarInitValContext *>(init_node);
-        IRValue src = scalar_init->exp()->accept(this);
-        StoreMem* stm_inst = new StoreMem(addr, src.reg);
-        cur_basicblock->basic_block.push_back(stm_inst);
+        SRC src = scalar_init->exp()->accept(this);
+        LLIR_STORE* store_inst = new LLIR_STORE(SRC(reg), src);
+        cur_basicblock->basic_block.push_back(store_inst);
     } else {
         auto node = dynamic_cast<SysYParser::ListInitvalContext *>(init_node);
-        parse_variable_init(node, var.array_dims, addr, 0);
+        // parse_variable_init(node, var.array_dims, addr, 0);
     }
-    */
-    VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
-    LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
-    cur_basicblock->basic_block.push_back(alloc_inst);
     cout << "exit InitVarDef" << endl;
     return nullptr;
 }
