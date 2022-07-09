@@ -66,18 +66,9 @@ void BasicBlock::printBlock() {
     }
 }
 
-Variable *Scope::resolve(string var_name) {
-    if (local_table != nullptr){
-        if (local_table->findInCurTable(var_name)) {
-            cout << "find in `Scope`" << sp_idx << endl;
-            return local_table->getInCurTable(var_name);
-        } else {
-            cout << "not find in `Scope`" << sp_idx << " var_table, goto parent table" << endl;
-            return parent->resolve(var_name);
-        }
-    } else {
-        return nullptr;
-    }
+Variable *Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
+    auto cur_vartable = local_table;
+    
 }
 
 BasicBlock *Scope::get_last_bb() {
@@ -230,8 +221,9 @@ void CompUnit::DebugUserFuncs() {
 void CompUnit::DebugGlobalTable() {
     llir << "; Global Variable" << endl;
     VariableTable *global_table = global_scope->local_table;
+    int32_t glb_var_idx = 1;
     for (auto pair: global_table->var_table) {
-        llir << "    " << "@" << pair.first << " = ";
+        llir << "    " << "@_" << glb_var_idx++ << " = ";
         Variable *var = pair.second;
         if (var->type.is_const) { 
             llir << "constant " << var->type.printVarTypeForAlc() << " ";
