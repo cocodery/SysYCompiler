@@ -5,45 +5,6 @@ int32_t tab_num = 1;
 void BasicBlock::printBlock() {
     llir << get_tabs() << "; `Block`" << bb_idx << endl;
     for (auto inst: basic_block) {
-        Case (ReturnInst, ret_inst, inst) {
-            ret_inst->printRetInst();
-        }
-        Case (LoadNumber, ldc_inst, inst) {
-            ldc_inst->printLdcInst();
-        }
-        Case (UnaryOpInst, uop_inst, inst) {
-            uop_inst->printuOpInst();
-        }
-        Case (BinaryOpInst, bop_inst, inst) {
-            bop_inst->printbOpInst();
-        }
-        Case (StoreMem, stm_inst, inst) {
-            stm_inst->printStmInst();
-        }
-        Case (LoadAddress, lad_inst, inst) {
-            lad_inst->printLdaInst();
-        }
-        Case (LoadValue, ldv_inst, inst) {
-            ldv_inst->printLdvInst();
-        }
-        Case (LoadOffset, ldo_inst, inst) {
-            ldo_inst->printLdoInst();
-        }
-        Case (JzeroInst, jzo_inst, inst) {
-            jzo_inst->printJzoInst();
-        }
-        Case (JnzroInst, jnz_inst, inst) {
-            jnz_inst->printJnzInst();
-        }
-        Case (JumpInst, jmp_inst, inst) {
-            jmp_inst->printJmpInst();
-        }
-        Case (LoadParam, ldp_inst, inst) {
-            ldp_inst->printLdpInst();
-        }
-        Case (CallFuntion, cal_inst, inst) {
-            cal_inst->printCalInst();
-        }
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {
             llir << get_tabs() << ret_inst->ToString() << endl;
@@ -62,6 +23,9 @@ void BasicBlock::printBlock() {
         }
         Case (LLIR_ICMP, icmp_inst, inst) {
             llir << get_tabs() << icmp_inst->ToString() << endl;
+        }
+        Case (LLIR_GEP, gep_inst, inst) {
+            llir << get_tabs() << gep_inst->ToString() << endl;
         }
     }
 }

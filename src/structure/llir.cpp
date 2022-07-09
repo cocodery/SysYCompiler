@@ -89,6 +89,16 @@ string LLIR_STORE::ToString() {
     return ss.str();
 }
 
+// LLVM-IR Get-Element-Pointer
+string LLIR_GEP::ToString() {
+    std::stringstream ss;
+    VirtReg *dst_reg = dst.ToVirtReg();
+    ss << "%" << dst_reg->reg_id << " = getelementptr inbounds ";
+    ss << type.printVarTypeForAlc() << ", " << type.printVarTypeForAlc() << "* ";
+    ss << src.ToString() << ", i32 0" << ", i32 " << off;
+    return ss.str();
+}
+
 // LLVM-IR Int-Compare
 string LLIR_ICMP::ToString() {
     std::stringstream ss;
