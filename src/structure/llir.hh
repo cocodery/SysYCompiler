@@ -72,6 +72,11 @@ public:
 
 class LLIR_LOAD: public Inst {
 public:
+    SRC dst;
+    SRC src;
+public:
+    LLIR_LOAD(SRC _dst, SRC _src) : dst(_dst), src(_src) { }
+    string ToString();
 };
 
 class LLIR_STORE: public Inst {

@@ -21,7 +21,7 @@ string LLIR_RET::ToString() {
             VirtReg *reg = ret_value.ToVirtReg();
             ss << DeclTypeToStr(reg->type);
         }
-        ss << ret_value.ToString();
+        ss << " " << ret_value.ToString();
     } else {
         ss << "void";
     }
@@ -61,6 +61,17 @@ string LLIR_ALLOCA::ToString() {
     assert(var_reg != nullptr); 
     ss << "%" << var_reg->reg_id << " = alloca ";
     ss << var->type.printVarTypeForAlc();
+    ss << ", align 4";
+    return ss.str();
+}
+
+string LLIR_LOAD::ToString() {
+    std::stringstream ss;
+    VirtReg *dst_reg = dst.ToVirtReg();
+    VirtReg *src_reg = src.ToVirtReg();
+    ss << "%" << dst_reg->reg_id << " = load ";
+    ss << DeclTypeToStr(dst_reg->type) << ", ";
+    ss << DeclTypeToStr(dst_reg->type) << "* %" << src_reg->reg_id;
     ss << ", align 4";
     return ss.str();
 }
