@@ -13,8 +13,6 @@
 #include "frontend/SysYParser.h"
 #include "frontend/ASTVisitor.hh"
 
-#include "codegen/8086/codegen.hh"
-
 // #include "optimizer/dag.hh"
 
 #include "common.hh"
