@@ -24,6 +24,9 @@ void BasicBlock::printBlock() {
         Case (LLIR_ICMP, icmp_inst, inst) {
             llir << get_tabs() << icmp_inst->ToString() << endl;
         }
+        Case (LLIR_CALL, call_inst, inst) {
+            llir << get_tabs() << call_inst->ToString() << endl;
+        }
         Case (LLIR_GEP, gep_inst, inst) {
             llir << get_tabs() << gep_inst->ToString() << endl;
         }

@@ -112,6 +112,31 @@ string LLIR_ICMP::ToString() {
     return ss.str();
 }
 
+string LLIR_CALL::ToString() {
+    std::stringstream ss;
+    DeclType ret_type = func_info->return_type;
+    if (ret_type != TypeVoid) {
+        VirtReg *dst_reg = dst.ToVirtReg();
+        assert(dst_reg != nullptr); 
+        ss << "%" << dst_reg->reg_id << " = ";
+    }
+    ss << "call " << DeclTypeToStr(func_info->return_type) << " ";
+    ss << "@" << func_info->func_name << "(";
+    int size = args.size();
+    for (int i = 0; i < size; ++i) {
+        if (i != 0) ss << ", ";
+        if (CTValue *ctv = args[i].ToCTValue(); ctv != nullptr) {
+            ss << DeclTypeToStr(ctv->type);
+        } else {
+            VirtReg *reg = args[i].ToVirtReg();
+            ss << reg->type.printVarTypeForAlc();
+        }
+        ss << " " << args[i].ToString();
+    }
+    ss << ")";
+    return ss.str();
+}
+
 // LLVM-IR Signed-Int-TO-Float-Point
 string LLIR_SITOFP::ToString() {
     std::stringstream ss;
