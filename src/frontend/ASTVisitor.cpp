@@ -156,7 +156,6 @@ void ASTVisitor::local_const_list_init(VarPair var_pair) {
         LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
         cur_basicblock->basic_block.push_back(store_inst);
     }
-    cur_basicblock->basic_block.push_back(gep_inst1);
 }
 
 // finished
