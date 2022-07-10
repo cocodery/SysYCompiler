@@ -44,6 +44,8 @@ public:
     void parse_variable_init(SysYParser::ListInitvalContext *node, VarType type, vector<int32_t> arr_dim, SRC addr, int32_t off);
 
     void generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair var_pair);
+
+    void local_const_list_init(VarPair var_pair);
 // Function for Abstract Syntax Tree
 public:
     virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *ctx) override;

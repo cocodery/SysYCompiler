@@ -60,49 +60,103 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
     return;
 }
 
-void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarType type, vector<int32_t> arr_dim, SRC addr, int32_t off) {
-    int32_t total_size = 0;
-    for (auto i: arr_dim) {
-        total_size *= i;
+void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarType _type, vector<int32_t> arr_dim, SRC addr, int32_t off) {
+    int32_t total_size = 1;
+    for (int i = 0; i < arr_dim.size(); ++i) {
+        total_size = total_size * arr_dim[i];
     }
     vector<int32_t> child_array_dims = arr_dim; // 子结点的维度
     child_array_dims.erase(child_array_dims.begin());
+    int32_t cnt = 0;
+    VirtReg *ptr1 = new VirtReg(var_idx++, _type);
+    LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, addr, SRC(new CTValue(TypeInt, 0, 0)), _type);
+    dbg(gep_inst1->ToString());
+    cur_basicblock->basic_block.push_back(gep_inst1);
     for (auto child : node->initVal()) {
         if (auto scalar_node = dynamic_cast<SysYParser::ScalarInitValContext *>(child); scalar_node != nullptr) {
-            VirtReg *ptr1 = new VirtReg(var_idx++, type);
-            LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, addr, SRC(new CTValue(TypeInt, off, off)), type);
-            cur_basicblock->basic_block.push_back(gep_inst1);
-            VirtReg *ptr2 = new VirtReg(var_idx++, type.move_down());
-            LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, 0, 0)), type.move_down());
+            VirtReg *ptr2 = new VirtReg(var_idx++, VarType(ptr1->type.decl_type));
+            LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
+            dbg(gep_inst2->ToString());
             cur_basicblock->basic_block.push_back(gep_inst2);
             SRC value = scalar_node->exp()->accept(this);
             LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
             cur_basicblock->basic_block.push_back(store_inst);
             ++off;
+            ++cnt;
         } else {
             auto list_node = dynamic_cast<SysYParser::ListInitvalContext *>(child);
-            parse_variable_init(list_node, type, arr_dim, addr, off);
+            parse_variable_init(list_node, _type, child_array_dims, addr, off);
             off += total_size / arr_dim[0];
+            cnt += total_size / arr_dim[0];
         }
+    }
+    while (cnt < total_size) {
+        VirtReg *ptr2 = new VirtReg(var_idx++, VarType(ptr1->type.decl_type));
+        LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, 0, 0)), VarType(ptr1->type.decl_type));
+        dbg(gep_inst2->ToString());
+        cur_basicblock->basic_block.push_back(gep_inst2);
+        SRC value = SRC(new CTValue(_type.decl_type, 0, 0));
+        LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
+        cur_basicblock->basic_block.push_back(store_inst);
+        ++off;
+        ++cnt;
     }
     return;
 }
 
 void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair var_pair) {
-    auto init_node = ctx->initVal();
     string var_name = var_pair.first;
     VarType var = var_pair.second->type;
+    if (ctx == nullptr) { // for uninit var def
+        auto reg = cur_scope->resolve(var_name, cur_func_info);
+        VirtReg *ptr1 = new VirtReg(var_idx++, var);
+        LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, reg, SRC(new CTValue(TypeInt, 0, 0)), var);
+        cur_basicblock->basic_block.push_back(gep_inst1);
+        dbg(gep_inst1->ToString());
+        for (int idx = 0; idx <var.elements_number(); ++idx) {
+            VirtReg *ptr2 = new VirtReg(var_idx++, VarType(ptr1->type.decl_type));
+            LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, 0, 0)), VarType(ptr1->type.decl_type));
+            dbg(gep_inst2->ToString());
+            cur_basicblock->basic_block.push_back(gep_inst2);
+            SRC value = SRC(new CTValue(var.decl_type, 0, 0));
+            LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
+            cur_basicblock->basic_block.push_back(store_inst);
+        }
+        return;
+    }
+    auto init_node = ctx->initVal();
     if (var.is_array == false) {
         auto scalar_init = dynamic_cast<SysYParser::ScalarInitValContext *>(init_node);
-        auto reg = cur_scope->resolve(var_name, cur_func_info);
+        SRC reg = cur_scope->resolve(var_name, cur_func_info);
         SRC src = scalar_init->exp()->accept(this);
-        LLIR_STORE* store_inst = new LLIR_STORE(SRC(reg), src);
+        LLIR_STORE* store_inst = new LLIR_STORE(reg, src);
         cur_basicblock->basic_block.push_back(store_inst);
     } else {
         auto node = dynamic_cast<SysYParser::ListInitvalContext *>(init_node);
         auto reg = cur_scope->resolve(var_name, cur_func_info);
-        parse_variable_init(node, var, var.array_dims, SRC(reg), 0);
+        parse_variable_init(node, var, var.array_dims, reg, 0);
     }
+}
+
+void ASTVisitor::local_const_list_init(VarPair var_pair) {
+    string var_name = var_pair.first;
+    VarType var = var_pair.second->type;
+    SRC reg = cur_scope->resolve(var_name, cur_func_info);
+    VirtReg *ptr1 = new VirtReg(var_idx++, var);
+    LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, reg, SRC(new CTValue(TypeInt, 0, 0)), var);
+    cur_basicblock->basic_block.push_back(gep_inst1);
+    dbg(gep_inst1->ToString());
+    int32_t idx = 0;
+    for (idx = 0; idx < var_pair.second->int_list.size(); ++idx) {
+        VirtReg *ptr2 = new VirtReg(var_idx++, VarType(ptr1->type.decl_type));
+        LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, idx, idx)), VarType(ptr1->type.decl_type));
+        dbg(gep_inst2->ToString());
+        cur_basicblock->basic_block.push_back(gep_inst2);
+        SRC value = SRC(new CTValue(var.decl_type, var_pair.second->int_list[idx], var_pair.second->float_list[idx]));
+        LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
+        cur_basicblock->basic_block.push_back(store_inst);
+    }
+    cur_basicblock->basic_block.push_back(gep_inst1);
 }
 
 // finished
@@ -134,7 +188,6 @@ antlrcpp::Any ASTVisitor::visitConstDecl(SysYParser::ConstDeclContext *ctx) {
     cout << "enter ConstDecl" << endl;
     DeclType last_type = type;
     type = getDeclType(ctx->children[1]->getText());
-    cout << "Current Type is " << DeclTypeToStr(type) << endl;
     visitChildren(ctx);
     type = last_type;
     cout << "exit ConstDecl" << endl;
@@ -158,13 +211,15 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
-    Variable *const_variable = new Variable(var_idx++);
     VarType const_var(true, !(ctx->constExp().size() == 0), false, type);
     dbg(DeclTypeToStr(const_var.decl_type), const_var.is_array);
     if (const_var.is_array == true) {
         const_var.array_dims = get_array_dims(ctx->constExp());
         dbg(const_var.array_dims);
     }
+    Variable *const_variable = nullptr;
+    if (const_var.is_array) const_variable = new Variable(var_idx++);
+    else const_variable = new Variable(-1);
     // 分析`const`变量的初值
     auto init_node = ctx->constInitVal();
     if (const_var.is_array == false) {
@@ -186,12 +241,14 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
-    cur_vartable->var_table.push_back(std::make_pair(var_name, const_variable));
+    auto pair = make_pair(var_name, const_variable);
+    cur_vartable->var_table.push_back(pair);
     // 生成 LLIR
-    if (cur_func_info != nullptr && const_var.is_array == false && const_var.is_const) {
-        VirtReg *reg = new VirtReg(const_variable->var_idx, const_variable->type.decl_type);
+    if (cur_func_info != nullptr && const_var.is_array == true) {
+        VirtReg *reg = new VirtReg(const_variable->var_idx, const_variable->type);
         LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), const_variable);
         cur_basicblock->basic_block.push_back(alloc_inst);
+        local_const_list_init(pair);
     }
     cout << "exit ConstDef" << endl;
     return nullptr;
@@ -231,17 +288,24 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
     }
     Variable *variable = new Variable(var_idx++);
     VarType var(false, !(ctx->constExp().size() == 0), false, type);
-    dbg(DeclTypeToStr(var.decl_type), var.is_array);
+    dbg(var_name, DeclTypeToStr(var.decl_type), var.is_array);
     if (var.is_array) {
         var.array_dims = get_array_dims(ctx->constExp());
         dbg(var.array_dims);
     }
     variable->type = var;
-    cur_vartable->var_table.push_back(std::make_pair(var_name, variable));
+    VarPair var_pair = make_pair(var_name, variable);
+    cur_vartable->var_table.push_back(var_pair);
     if (cur_func_info != nullptr) {
-        VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
+        VirtReg *reg = new VirtReg(variable->var_idx, variable->type);
         LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
         cur_basicblock->basic_block.push_back(alloc_inst);
+    }
+    if (cur_func_info != nullptr) {
+        dbg("un init var def call generate_varinit_ir");
+        generate_varinit_ir(nullptr, var_pair);
+    } else {
+        glb_var_init.push_back(make_pair(nullptr, var_pair));
     }
     cout << "exit UninitVarDef" << endl;
     return nullptr;
@@ -258,16 +322,16 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     }
     Variable *variable = new Variable(var_idx++);
     VarType var(false, !(ctx->constExp().size() == 0), false, type);
-    dbg(DeclTypeToStr(var.decl_type), var.is_array);
+    dbg(var_name, DeclTypeToStr(var.decl_type), var.is_array);
     if (var.is_array) {
         var.array_dims = get_array_dims(ctx->constExp());
         dbg(var.array_dims);
     }
     variable->type = var;
-    VarPair var_pair = std::make_pair(var_name, variable);
+    VarPair var_pair = make_pair(var_name, variable);
     cur_vartable->var_table.push_back(var_pair);
     if (cur_func_info != nullptr) {
-        VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
+        VirtReg *reg = new VirtReg(variable->var_idx, variable->type);
         LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
         cur_basicblock->basic_block.push_back(alloc_inst);
     }
@@ -546,8 +610,9 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     VirtReg *ptr1 = new VirtReg(var_idx++, reg->type);
     LLIR_GEP *gep_inst1 = new LLIR_GEP(SRC(ptr1), variable, SRC(new CTValue(TypeInt, 0, 0)), reg->type);
     cur_basicblock->basic_block.push_back(gep_inst1);
-    VirtReg *ptr2 = new VirtReg(var_idx++, reg->type.move_down());
-    LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, offset, VarType(reg->type.move_down()));
+    VirtReg *ptr2 = new VirtReg(var_idx++, VarType(reg->type.decl_type));
+    LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, offset, VarType(reg->type.decl_type));
+    dbg(gep_inst1->ToString(), gep_inst2->ToString());
     cur_basicblock->basic_block.push_back(gep_inst2);
     dbg(reg->ToString());
     cout << "exit visitLVal with a variable or array" << endl;
@@ -604,7 +669,6 @@ antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
 antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
     cout << "enter visitUnary1" << endl;
     SRC ret = ctx->primaryExp()->accept(this);
-    dbg(ret.ToString());
     cout << "exit visitUnary1" << endl;
     return ret;
 }
@@ -634,8 +698,8 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
     } else {
         VirtReg *reg = src.ToVirtReg();
         if (op == "-" || op == "!") {
-            DeclType _type = reg->type.decl_type;
-            CTValue *zero = new CTValue(_type, 0, 0);
+            VarType _type = reg->type;
+            CTValue *zero = new CTValue(_type.decl_type, 0, 0);
             VirtReg *dst = new VirtReg(var_idx++, _type);
             LLIR_BIN *bin_inst = new LLIR_BIN(SUB, dst, SRC(zero), SRC(reg));
             cur_basicblock->basic_block.push_back(bin_inst);

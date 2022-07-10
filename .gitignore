@@ -3,6 +3,9 @@ cmake-*/
 build/
 *.sy
 
+# log file
+*.log
+
 # IDE
 .idea/
 .vscode/

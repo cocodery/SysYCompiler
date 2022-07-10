@@ -22,7 +22,7 @@ public:
     bool global;
     bool assign;
 public:
-    VirtReg(int32_t _idx, VarType _type = TypeVoid, bool _glb = false, bool _assign = true) 
+    VirtReg(int32_t _idx, VarType _type = VarType(TypeVoid), bool _glb = false, bool _assign = true) 
         : reg_id(_idx), type(_type), global(_glb), assign(_assign) { }
     string ToString() {
         std::stringstream ss;
