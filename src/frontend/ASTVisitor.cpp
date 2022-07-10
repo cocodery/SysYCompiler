@@ -385,10 +385,13 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     // reset variable idx in function
     var_idx = func_info.func_args.size() == 0 ? 1 : func_info.func_args.size();
     cur_func_info = &func_info;
+    // when get `FunctionInfo`
+    // we can push `func` to function table
+    // for `recursion`
+    ir.functions.push_back(func);
     // parse function body
     func->main_scope = ctx->block()->accept(this);
     // push to function table
-    ir.functions.push_back(func);
     cur_func_info = nullptr;
     cout << "exit FuncDef" << endl;
     return nullptr;
@@ -674,7 +677,17 @@ antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
-    return nullptr;
+    string func_name = ctx->Identifier()->getText();
+    FunctionInfo *func_info = ir.getFunctionInfo(func_name);
+    assert(func_info != nullptr);
+    vector<SRC> args;
+    SRC dst;
+    if (func_info->return_type != TypeVoid) {
+        dst = SRC(new VirtReg(var_idx++, VarType(func_info->return_type)));
+    }
+    LLIR_CALL *call_inst = new LLIR_CALL(dst, args, func_info);
+    cur_basicblock->basic_block.push_back(call_inst);
+    return dst;
 }
 
 // finished
