@@ -8,7 +8,6 @@
 #include "../structure/symtable.hh"
 #include "../structure/ir.hh"
 #include "../structure/llir.hh"
-#include "../structure/inst.hh"
 #include "../structure/value.hh"
 #include "SysYBaseVisitor.h"
 
@@ -33,7 +32,6 @@ private:
     BasicBlock     *cur_basicblock;
     FunctionInfo   *cur_func_info;
     int32_t continue_target;
-    vector<JumpInst *> break_insts;
 // Funtion for helping Build IR and Symbol Table
 public:
     bool have_main_func;
@@ -46,6 +44,8 @@ public:
     void parse_variable_init(SysYParser::ListInitvalContext *node, VarType type, vector<int32_t> arr_dim, SRC addr, int32_t off);
 
     void generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair var_pair);
+
+    void local_const_list_init(VarPair var_pair);
 // Function for Abstract Syntax Tree
 public:
     virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *ctx) override;

@@ -26,8 +26,3 @@ public:
 };
 ```
 虚拟寄存器, 目前用于记录寄存器号
-
-```cpp
-const VirtReg NoRetReg = VirtReg(-1);
-```
-无效寄存器, 防止声明寄存器导致构造函数使寄存器号索引不连续

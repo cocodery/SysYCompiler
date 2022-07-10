@@ -140,12 +140,12 @@ bool FunctionInfo::has_args() {
     return (func_args.size() != 0);
 }
 
-pair<int32_t, DeclType> FunctionInfo::findInFuncArgs(string var_name) {
+pair<int32_t, VarType> FunctionInfo::findInFuncArgs(string var_name) {
     int32_t idx = 0;
-    DeclType type = TypeVoid;
+    VarType type = VarType(TypeVoid);
     for (auto pair: func_args) {
         if (var_name == pair.first) {
-            type = pair.second.decl_type;
+            type = pair.second;
         }
         ++idx;
     }

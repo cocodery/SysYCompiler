@@ -5,31 +5,33 @@
     > Windows
 
 * **2. Packages needed**
-    > build-essential
-    > git
-    > cmake
-    > antlr
+    > build-essential / git / cmake
+    > make / antlr / clang / llvm /
     > ..
 
 * **3. Test Platform**
     > Raspberrypi
 
-    > Qemu
+    > LLVM-Interpreter
 
-* **4. Qemu Config**
-    > * sudo apt install autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev gawk bison flex texinfo gperf libtool patchutils bc  zlib1g-dev libexpat-dev pkg-config  libglib2.0-dev libpixman-1-dev tmux python3 python3-pip
-    > * sudo apt install gcc-arm-linux-gnueabi
-    > * wget https://download.qemu.org/qemu-5.0.0.tar.xz
-    > * tar xvJf qemu-5.0.0.tar.xz
-    > * cd qemu-5.0.0
+* **4. Test via LLVM-Interpreter**
+    > We can see that `run` and `test` commands are all use llvm-link. 
+    > And we can see no `sylib.ll` here. 
+    > we need to compile `sylib.c` in `compiler2022/公开样例与运行时库/` and move to root directory
 
 ### Usages
 * Make Commands
-    > cd SysYCompiler
-
     > make build
+        - compile this project
     
-    > make run
+    > make run 
+        - run main.sy in root directory
+
+    > make test TEST=%test-case-name%
+        - run test-case in compiler2022/公开样例与运行时库/functional
+
+    > make gdb / make lldb
+        - use gdb or lldb to debug
 
 ### Commit Message Rules
 
@@ -74,3 +76,7 @@
 > **~ 2022.4.28**: add functions to parse local `ConstDef`
 
 > **~ 2022.4.30**: add functions to parse `ReturnStmt` 
+
+> **~2022.6.17**: basicly finish all hand-made ir
+
+> **~2022.7.10**: rebuild and use llvm-ir, support basic type, no control flow
