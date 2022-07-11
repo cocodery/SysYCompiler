@@ -166,6 +166,9 @@ string FunctionInfo::printFunctionInfo(bool islib) {
             ss << ", " << func_args[i].second.printVarTypeForArg() << " %" << i;
         }
     }
-    ss << ")";
+    ss << ") ";
+    if (!islib) {
+        ss << "{";
+    }
     return ss.str();
 }

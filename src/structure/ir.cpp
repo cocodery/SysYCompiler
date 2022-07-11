@@ -3,7 +3,9 @@
 int32_t tab_num = 1;
 
 void BasicBlock::printBlock() {
-    llir << get_tabs() << "; `Block`" << bb_idx << endl;
+    if (basic_block.size()) {
+        llir << get_tabs(tab_num-1) << "Block" << bb_idx << ":" << endl;
+    }
     for (auto inst: basic_block) {
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {
@@ -82,14 +84,11 @@ void Scope::printElements() {
 }
 
 void Scope::printScope() {
-    llir << get_tabs() << "{ ; `Scope`" << sp_idx << endl;
+    llir << get_tabs() << "; `Scope`" << sp_idx << endl;
     tab_num += 1;
-    llir << get_tabs() << "; `VariableTable` of `Scope`" << sp_idx << endl;
-    local_table->printVaribaleTable();
     llir << get_tabs() << "; `BasicBlocks` of `Scope`" << sp_idx << endl;
     printElements();
     tab_num -= 1;
-    llir << get_tabs() << "}" << endl;
 }
 
 void LibFunction::printFunction() {
@@ -100,7 +99,7 @@ CompUnit::CompUnit(string _llir) {
 // open llvm ir file
     llir.open(_llir);
 // Global  symtable Init Part
-    global_scope = new Scope;
+    global_scope = new Scope(0);
     global_scope->local_table = new VariableTable;
     global_scope->elements = new vector<Info *>;
 // Global  Function Init Part
@@ -203,6 +202,7 @@ void CompUnit::DebugUserFuncs() {
         llir << "    ";
         llir << functions[i]->func_info.printFunctionInfo() << endl;
         functions[i]->main_scope->printScope();
+        llir << get_tabs() << "}" << endl;
     }
 }
 

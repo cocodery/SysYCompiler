@@ -33,7 +33,7 @@ string LLIR_BIN::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
     assert(dst_reg != nullptr); 
-    ss << "%" << dst_reg->reg_id << " = ";
+    ss << dst_reg->ToString() << " = ";
     ss << BinOpToStr(op) << " i32 ";
     ss << src1.ToString();
     ss << ", ";
@@ -46,7 +46,7 @@ string LLIR_FBIN::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
     assert(dst_reg != nullptr); 
-    ss << "%" << dst_reg->reg_id << " = f";
+    ss << dst_reg->ToString() << " = f";
     ss << BinOpToStr(op) << " float ";
     ss << src1.ToString();
     ss << ", ";
@@ -59,7 +59,7 @@ string LLIR_ALLOCA::ToString() {
     std::stringstream ss;
     VirtReg *var_reg = reg.ToVirtReg();
     assert(var_reg != nullptr); 
-    ss << "%" << var_reg->reg_id << " = alloca ";
+    ss << var_reg->ToString() << " = alloca ";
     ss << var->type.printVarTypeForAlc();
     ss << ", align 4";
     return ss.str();
@@ -70,11 +70,10 @@ string LLIR_LOAD::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
     VirtReg *src_reg = src.ToVirtReg();
-    ss << "%" << dst_reg->reg_id << " = load ";
+    ss << dst_reg->ToString() << " = load ";
     ss << dst_reg->type.printVarTypeForAlc() << ", ";
     ss << dst_reg->type.printVarTypeForAlc() << "* ";
-    if (src_reg->global) ss << "@_" << src_reg->reg_id;
-    else  ss << "%" << src_reg->reg_id;
+    ss << src_reg->ToString();
     ss << ", align 4";
     return ss.str();
 }
@@ -93,7 +92,7 @@ string LLIR_STORE::ToString() {
 string LLIR_GEP::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
-    ss << "%" << dst_reg->reg_id << " = getelementptr inbounds ";
+    ss << dst_reg->ToString() << " = getelementptr inbounds ";
     ss << type.printVarTypeForAlc() << ", " << type.printVarTypeForAlc() << "* ";
     ss << src.ToString() << ", i32 " << off.ToString();
     if (dst_reg->type.is_array) ss << ", i32 0";
@@ -105,7 +104,7 @@ string LLIR_ICMP::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
     assert(dst_reg != nullptr); 
-    ss << "%" << dst_reg->reg_id << " = icmp " << RelOpToStr(op) << " ";
+    ss << dst_reg->ToString() << " = icmp " << RelOpToStr(op) << " ";
     ss << src1.ToString();
     ss << ", ";
     ss << src2.ToString();
@@ -118,7 +117,7 @@ string LLIR_CALL::ToString() {
     if (ret_type != TypeVoid) {
         VirtReg *dst_reg = dst.ToVirtReg();
         assert(dst_reg != nullptr); 
-        ss << "%" << dst_reg->reg_id << " = ";
+        ss << dst_reg->ToString() << " = ";
     }
     ss << "call " << DeclTypeToStr(func_info->return_type) << " ";
     ss << "@" << func_info->func_name << "(";
@@ -142,8 +141,8 @@ string LLIR_SITOFP::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg(), *src_reg = src.ToVirtReg();
     assert(dst_reg != nullptr && src_reg != nullptr);
-    ss << "%" << dst_reg->reg_id << " = sitofp i32 ";
-    ss << "%" << src_reg->reg_id << " to float";
+    ss << dst_reg->ToString() << " = sitofp i32 ";
+    ss << src_reg->ToString() << " to float";
     return ss.str();
 }
 
@@ -152,7 +151,7 @@ string LLIR_FPTOSI::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg(), *src_reg = src.ToVirtReg();
     assert(dst_reg != nullptr && src_reg != nullptr);
-    ss << "%" << dst_reg->reg_id << " = fptosi float ";
-    ss << "%" << src_reg->reg_id << " to i32";
+    ss << dst_reg->ToString() << " = fptosi float ";
+    ss << src_reg->ToString() << " to i32";
     return ss.str();
 }

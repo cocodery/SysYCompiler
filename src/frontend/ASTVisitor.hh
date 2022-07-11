@@ -24,6 +24,8 @@ private:
     DeclType type;
     DeclType ret_type;
     int32_t var_idx;
+    int32_t bb_idx;
+    int32_t sp_idx;
     CompUnit &ir;
     vector<pair<SysYParser::InitVarDefContext *, VarPair>> glb_var_init;
     vector<Info *> *cur_scope_elements;

@@ -4,6 +4,8 @@ ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
     type = TypeVoid;
     var_idx = 1;
+    bb_idx = 1;
+    sp_idx = 1;
     cur_scope = ir.global_scope;
     cur_scope_elements = ir.global_scope->elements;
     cur_vartable = ir.global_scope->local_table;
@@ -384,6 +386,8 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     func->func_info = func_info;
     // reset variable idx in function
     var_idx = func_info.func_args.size() == 0 ? 1 : func_info.func_args.size();
+    sp_idx = 1;
+    bb_idx = 1;
     cur_func_info = &func_info;
     // when get `FunctionInfo`
     // we can push `func` to function table
@@ -443,7 +447,7 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     VariableTable  *last_vartable = cur_vartable;
     vector<Info *> *last_scope_elements = cur_scope_elements;
     // process `Block` part
-    Scope *block_scope = new Scope;
+    Scope *block_scope = new Scope(sp_idx++);
     block_scope->local_table = new VariableTable;
     block_scope->elements = new vector<Info *>;
     block_scope->parent = last_scope;
@@ -451,7 +455,8 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cur_scope = block_scope;
     cur_vartable = block_scope->local_table;
     cur_scope_elements = block_scope->elements;
-    cur_basicblock = new BasicBlock;
+    cur_basicblock = new BasicBlock(bb_idx++);
+    // 初始化全局变量
     if (cur_func_info->func_name == "main" && glb_var_init.size() != 0) {
         for (auto elm : glb_var_init) {
             generate_varinit_ir(elm.first, elm.second);
@@ -466,7 +471,7 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cur_vartable = last_vartable;
     cur_scope_elements = last_scope_elements;
     // 新的基本块
-    cur_basicblock = new BasicBlock;
+    cur_basicblock = new BasicBlock(bb_idx++);
     cout << "exit Block" << endl;
     return block_scope;
 }
@@ -562,7 +567,7 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
     }
     cur_basicblock->basic_block.push_back(ret_inst); // 将指令加入基本块
     cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
-    cur_basicblock = new BasicBlock;
+    cur_basicblock = new BasicBlock(bb_idx++);
     cout << "exit visitReturnStmt" << endl;
     return nullptr;
 }
@@ -635,6 +640,10 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
         dst = SRC(ctv);
     } else {
         VirtReg *src_reg = src.ToVirtReg();
+        VarType src_type = src_reg->type;
+        if (src_type.is_array) {
+
+        }
         VirtReg *dst_reg = new VirtReg(var_idx++, src_reg->type);
         dst = SRC(dst_reg);
         LLIR_LOAD *load_inst = new LLIR_LOAD(dst, src);
@@ -680,7 +689,7 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
     string func_name = ctx->Identifier()->getText();
     FunctionInfo *func_info = ir.getFunctionInfo(func_name);
     assert(func_info != nullptr);
-    vector<SRC> args;
+    vector<SRC> args = ctx->funcRParams()->accept(this);
     SRC dst;
     if (func_info->return_type != TypeVoid) {
         dst = SRC(new VirtReg(var_idx++, VarType(func_info->return_type)));
@@ -730,12 +739,17 @@ antlrcpp::Any ASTVisitor::visitUnaryOp(SysYParser::UnaryOpContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitFuncRParams(SysYParser::FuncRParamsContext *ctx) {
-    return nullptr;
+    vector<SRC> args;
+    for (auto param : ctx->funcRParam()) {
+        SRC param_src = param->accept(this);
+        args.push_back(param_src);
+    }
+    return args;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitFuncRParam(SysYParser::FuncRParamContext *ctx) {
-    return nullptr;
+    return ctx->exp()->accept(this);
 }
 
 // finished
