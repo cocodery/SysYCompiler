@@ -114,63 +114,41 @@ CompUnit::CompUnit(string _llir) {
                                TypeVoid, TypeVoid,
                                TypeVoid, TypeVoid };
     for (int32_t i = 0; i < 12; ++i) {
-        lib_functions[i].is_used = false;
-        lib_functions[i].libfunc_info.func_name = func_name[i];
-        lib_functions[i].libfunc_info.return_type = ret_type[i];
+        lib_functions[i] = new LibFunction;
+        lib_functions[i]->is_used = false;
+        lib_functions[i]->libfunc_info.func_name = func_name[i];
+        lib_functions[i]->libfunc_info.return_type = ret_type[i];
     }
     // getint
-    lib_functions[0].libfunc_info.func_args.resize(0);
+    lib_functions[0]->libfunc_info.func_args.resize(0);
     // getch
-    lib_functions[1].libfunc_info.func_args.resize(0);
+    lib_functions[1]->libfunc_info.func_args.resize(0);
     // getfloat
-    lib_functions[2].libfunc_info.func_args.resize(0);
+    lib_functions[2]->libfunc_info.func_args.resize(0);
     // getarray
-    lib_functions[3].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, true,  true, TypeInt)));
-    lib_functions[3].libfunc_info.func_args[0].second.array_dims.push_back(-1);
+    lib_functions[3]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true,  true, TypeInt)));
+    lib_functions[3]->libfunc_info.func_args[0].second.array_dims.push_back(-1);
     // getfarray
-    lib_functions[4].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, true,  true, TypeFloat)));
-    lib_functions[4].libfunc_info.func_args[0].second.array_dims.push_back(-1);
+    lib_functions[4]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true,  true, TypeFloat)));
+    lib_functions[4]->libfunc_info.func_args[0].second.array_dims.push_back(-1);
     // putint
-    lib_functions[5].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, false, true, TypeInt)));
+    lib_functions[5]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
     // putch
-    lib_functions[6].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, false, true, TypeInt)));
+    lib_functions[6]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
     // putfloat
-    lib_functions[7].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, false, true, TypeFloat)));
+    lib_functions[7]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeFloat)));
     // putarray
-    lib_functions[8].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, false, true, TypeInt)));
-    lib_functions[8].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, true,  true, TypeInt)));
-    lib_functions[8].libfunc_info.func_args[1].second.array_dims.push_back(-1);
+    lib_functions[8]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
+    lib_functions[8]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true,  true, TypeInt)));
+    lib_functions[8]->libfunc_info.func_args[1].second.array_dims.push_back(-1);
     // putfarray
-    lib_functions[9].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, false, true, TypeInt)));
-    lib_functions[9].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, true,  true, TypeFloat)));
-    lib_functions[9].libfunc_info.func_args[1].second.array_dims.push_back(-1);
+    lib_functions[9]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
+    lib_functions[9]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true,  true, TypeFloat)));
+    lib_functions[9]->libfunc_info.func_args[1].second.array_dims.push_back(-1);
     // _sysy_starttime
-    lib_functions[10].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, false, true, TypeInt)));
+    lib_functions[10]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
     // sysy_stoptime
-    lib_functions[11].libfunc_info.func_args.push_back(std::make_pair("", VarType(false, false, true, TypeInt)));
-}
-
-void CompUnit::moveGlobalInitToMain() {
-    auto glb_init_bb = dynamic_cast<BasicBlock *>(*global_scope->elements->begin());
-    Function *main_function = nullptr;
-    for (auto function: functions) {
-        if (function->func_info.func_name == "main") {
-            main_function = function;
-        }
-    }
-    if (main_function != nullptr) {
-        auto element = main_function->main_scope->elements;
-        element->insert( element->begin(), glb_init_bb);
-    }
-}
-
-bool CompUnit::inLibFunctions(string func_name) {
-    for (auto lib_function: lib_functions) {
-        if (func_name == lib_function.libfunc_info.func_name) {
-            return true;
-        }
-    }
-    return false;
+    lib_functions[11]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
 }
 
 FunctionInfo *CompUnit::getFunctionInfo(string func_name) {
@@ -180,8 +158,8 @@ FunctionInfo *CompUnit::getFunctionInfo(string func_name) {
         }
     }
     for (auto lib_function: lib_functions) {
-        if (func_name == lib_function.libfunc_info.func_name) {
-            return &lib_function.libfunc_info;
+        if (func_name == lib_function->libfunc_info.func_name) {
+            return &lib_function->libfunc_info;
         }
     }
     return nullptr;
@@ -191,7 +169,7 @@ void CompUnit::DebugLibFuncs() {
     llir << "; Init Lib Functions" << endl;
     for (int i = 0; i < 12; ++i) {
         llir << "    ";
-        lib_functions[i].printFunction();
+        lib_functions[i]->printFunction();
     }
 }
 

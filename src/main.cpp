@@ -67,8 +67,6 @@ int main(int argc, char *argv[]) {
     
     ASTVisitor visitor(ir);
 
-    // ir.DebugLibFuncs();
-
     cout << "Start Compiler" << endl;
 
     visitor.visitCompUnit(root);
@@ -80,6 +78,8 @@ int main(int argc, char *argv[]) {
     ir.DebugGlobalTable();
 
     ir.DebugUserFuncs();
+
+    ir.DebugLibFuncs();
 
     cout << "Compiler Complete" << endl;
 

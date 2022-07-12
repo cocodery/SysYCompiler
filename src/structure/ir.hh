@@ -17,6 +17,7 @@ using std::vector;
 using std::string;
 using std::map;
 using std::ofstream;
+using std::make_pair;
 
 static ofstream llir;
 
@@ -63,11 +64,9 @@ class CompUnit: public Info {
 public:
     Scope *global_scope;
     vector<Function *> functions;
-    LibFunction lib_functions[12];
+    LibFunction *lib_functions[12];
 public:
     CompUnit(string _llir);
-    void moveGlobalInitToMain();
-    bool inLibFunctions(string func_name);
     FunctionInfo *getFunctionInfo(string func_name);
     void DebugLibFuncs();
     void DebugUserFuncs();

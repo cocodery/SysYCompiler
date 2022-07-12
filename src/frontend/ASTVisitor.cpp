@@ -687,9 +687,17 @@ antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
 // finished
 antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
     string func_name = ctx->Identifier()->getText();
+    vector<SRC> args;
+    if (func_name == "starttime") {
+        func_name = "_sysy_starttime";
+        args.push_back(SRC(new CTValue(TypeInt, ctx->start->getLine(), 0)));
+    } else if (func_name == "stoptime") {
+        func_name = "_sysy_stoptime";
+        args.push_back(SRC(new CTValue(TypeInt, ctx->start->getLine(), 0)));
+    } else if (ctx->funcRParams()) {
+        args = ctx->funcRParams()->accept(this).as<vector<SRC>>();
+    }
     FunctionInfo *func_info = ir.getFunctionInfo(func_name);
-    assert(func_info != nullptr);
-    vector<SRC> args = ctx->funcRParams()->accept(this);
     SRC dst;
     if (func_info->return_type != TypeVoid) {
         dst = SRC(new VirtReg(var_idx++, VarType(func_info->return_type)));
