@@ -141,9 +141,7 @@ stmt
 
     virtual antlrcpp::Any visitBlockStmt(SysYParser::BlockStmtContext *ctx) override;
 
-    virtual antlrcpp::Any visitIfStmt1(SysYParser::IfStmt1Context *ctx) override;
-
-    virtual antlrcpp::Any visitIfStmt2(SysYParser::IfStmt2Context *ctx) override;
+    virtual antlrcpp::Any visitIfStmt(SysYParser::IfStmtContext *ctx) override;
 
     virtual antlrcpp::Any visitWhileStmt(SysYParser::WhileStmtContext *ctx) override;
 

@@ -380,8 +380,8 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitScalarInitVal(SysYParser::ScalarInitValContext *ctx) {
-    IRValue ret = ctx->exp()->accept(this);
-    return ret;
+    dbg("Program should never reach Function visitScalarInitVal");
+    exit(EXIT_FAILURE);
 }
 
 // finished
@@ -538,12 +538,72 @@ antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
 }
 
 // finished
-antlrcpp::Any ASTVisitor::visitIfStmt1(SysYParser::IfStmt1Context *ctx) {
-    return nullptr;
-}
+antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
+    cout << "enter visitIfStmt" << endl;
+    SRC cond = ctx->cond()->accept(this);
+    // if stmt body
+    dbg("Enter If-body");
+    if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[0]); node != nullptr) {
+        dbg("Block If-Stmt Context");
+        Scope *block_stmt = node->accept(this);
+    } else {
+        dbg("Other If-Stmt Context");
+        cur_scope_elements->push_back(cur_basicblock);
+        Scope          *last_scope = cur_scope;
+        VariableTable  *last_vartable = cur_vartable;
+        vector<Info *> *last_scope_elements = cur_scope_elements;
 
-// finished
-antlrcpp::Any ASTVisitor::visitIfStmt2(SysYParser::IfStmt2Context *ctx) {
+        Scope *block_scope = new Scope(sp_idx++);
+        block_scope->local_table = new VariableTable;
+        block_scope->elements = new vector<Info *>;
+        block_scope->parent = last_scope;
+        cur_scope = block_scope;
+        cur_vartable = block_scope->local_table;
+        cur_scope_elements = block_scope->elements;
+        cur_basicblock = new BasicBlock(bb_idx++);
+
+        ctx->stmt()[0]->accept(this);
+        cur_scope_elements->push_back(cur_basicblock);
+
+        last_scope->elements->push_back(cur_scope);
+        cur_scope = last_scope;
+        cur_vartable = last_vartable;
+        cur_scope_elements = last_scope_elements;
+        cur_basicblock = new BasicBlock(bb_idx++);
+    }
+    // else stmt body
+    if (ctx->stmt().size() > 1) {
+        dbg("Enter Else-body");
+        if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[1]); node != nullptr) {
+            dbg("Block Else-Stmt Context");
+            Scope *block_stmt = node->accept(this);
+        } else {
+            dbg("Other Else-Stmt Context");
+            cur_scope_elements->push_back(cur_basicblock);
+            Scope          *last_scope = cur_scope;
+            VariableTable  *last_vartable = cur_vartable;
+            vector<Info *> *last_scope_elements = cur_scope_elements;
+
+            Scope *block_scope = new Scope(sp_idx++);
+            block_scope->local_table = new VariableTable;
+            block_scope->elements = new vector<Info *>;
+            block_scope->parent = last_scope;
+            cur_scope = block_scope;
+            cur_vartable = block_scope->local_table;
+            cur_scope_elements = block_scope->elements;
+            cur_basicblock = new BasicBlock(bb_idx++);
+
+            ctx->stmt()[1]->accept(this);
+            cur_scope_elements->push_back(cur_basicblock);
+
+            last_scope->elements->push_back(cur_scope);
+            cur_scope = last_scope;
+            cur_vartable = last_vartable;
+            cur_scope_elements = last_scope_elements;
+            cur_basicblock = new BasicBlock(bb_idx++);
+        }
+    }
+    cout << "exit visitIfStmt" << endl;
     return nullptr;
 }
 
@@ -960,7 +1020,76 @@ antlrcpp::Any ASTVisitor::visitRel1(SysYParser::Rel1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
-    return nullptr;
+    string op = ctx->children[1]->getText();
+    SRC lhs = ctx->relExp()->accept(this);
+    SRC rhs = ctx->addExp()->accept(this);
+    if (op == ">") {
+        op = "<";
+        std::swap(lhs, rhs);
+    } else if (op == ">=") {
+        op = "<=";
+        std::swap(lhs, rhs);
+    }
+    // 当两个操作数都是`CTValue`
+    if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
+        DeclType _type = ctv1->type;
+        int irel = 0;
+        float frel = 0;
+        if (op == "<") {
+            irel = ctv1->int_value < ctv2->int_value;
+            frel = ctv1->float_value < ctv2->float_value;
+        } else if (op == "<=") {
+            irel = ctv1->int_value <= ctv2->int_value;
+            frel = ctv1->float_value <= ctv2->float_value;
+        }
+        if (ctv1->type != ctv2->type) {
+            _type = TypeFloat;
+        }
+        CTValue *rel = new CTValue(_type, irel, frel);
+        dbg(rel->ToString());
+        return SRC(rel);
+    } else { // 当其中至少有一个是`VirtReg`
+        // 暂不处理类型不匹配情况
+        VirtReg *reg1 = lhs.ToVirtReg();
+        VirtReg *reg2 = rhs.ToVirtReg();
+        SRC dst = SRC(new VirtReg(var_idx++, reg1->type));
+        LLIR_ICMP *icmp_inst = nullptr;
+        LLIR_FCMP *fcmp_inst = nullptr;
+        if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
+            if (reg1->type.decl_type != ctv2->type) {
+
+            }
+            if (reg1->type.decl_type == TypeInt) {
+                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(reg1), SRC(ctv2));
+            } else {
+
+            }
+        } else if (ctv1 && !ctv2 && !reg1 && reg2) { // lhs -> CTValue, rhs -> VirtReg
+            if (ctv1->type != reg2->type.decl_type) {
+
+            }
+            if (reg1->type.decl_type == TypeInt) {
+                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(ctv1), SRC(reg2));
+            } else {
+                
+            }
+        } else if (!ctv1 && !ctv2 && reg1 && reg2) { // lhs -> VirtReg, rhs -> VirtReg
+            if (reg1->type.decl_type != reg2->type.decl_type) {
+
+            }
+            if (reg1->type.decl_type == TypeInt) {
+                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(reg1), SRC(reg2));
+            } else {
+                
+            }
+        }
+        if (icmp_inst != nullptr) {
+            cur_basicblock->basic_block.push_back(icmp_inst);
+        } else {
+            cur_basicblock->basic_block.push_back(fcmp_inst);
+        }
+        return dst;
+    }
 }
 
 // finished
@@ -970,7 +1099,69 @@ antlrcpp::Any ASTVisitor::visitEq1(SysYParser::Eq1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
-    return nullptr;
+    string op = ctx->children[1]->getText();
+    SRC lhs = ctx->eqExp()->accept(this);
+    SRC rhs = ctx->relExp()->accept(this);
+    // 当两个操作数都是`CTValue`
+    if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
+        DeclType _type = ctv1->type;
+        int irel = 0;
+        float frel = 0;
+        if (op == "==") {
+            irel = ctv1->int_value < ctv2->int_value;
+            frel = ctv1->float_value < ctv2->float_value;
+        } else if (op == "!=") {
+            irel = ctv1->int_value <= ctv2->int_value;
+            frel = ctv1->float_value <= ctv2->float_value;
+        }
+        if (ctv1->type != ctv2->type) {
+            _type = TypeFloat;
+        }
+        CTValue *eq = new CTValue(_type, irel, frel);
+        dbg(eq->ToString());
+        return SRC(eq);
+    } else { // 当其中至少有一个是`VirtReg`
+        // 暂不处理类型不匹配情况
+        VirtReg *reg1 = lhs.ToVirtReg();
+        VirtReg *reg2 = rhs.ToVirtReg();
+        SRC dst = SRC(new VirtReg(var_idx++, reg1->type));
+        LLIR_ICMP *icmp_inst = nullptr;
+        LLIR_FCMP *fcmp_inst = nullptr;
+        if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
+            if (reg1->type.decl_type != ctv2->type) {
+
+            }
+            if (reg1->type.decl_type == TypeInt) {
+                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(reg1), SRC(ctv2));
+            } else {
+
+            }
+        } else if (ctv1 && !ctv2 && !reg1 && reg2) { // lhs -> CTValue, rhs -> VirtReg
+            if (ctv1->type != reg2->type.decl_type) {
+
+            }
+            if (reg1->type.decl_type == TypeInt) {
+                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(ctv1), SRC(reg2));
+            } else {
+                
+            }
+        } else if (!ctv1 && !ctv2 && reg1 && reg2) { // lhs -> VirtReg, rhs -> VirtReg
+            if (reg1->type.decl_type != reg2->type.decl_type) {
+
+            }
+            if (reg1->type.decl_type == TypeInt) {
+                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(reg1), SRC(reg2));
+            } else {
+                
+            }
+        }
+        if (icmp_inst != nullptr) {
+            cur_basicblock->basic_block.push_back(icmp_inst);
+        } else {
+            cur_basicblock->basic_block.push_back(fcmp_inst);
+        }
+        return dst;
+    }
 }
 
 // finished
