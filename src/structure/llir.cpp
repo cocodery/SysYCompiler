@@ -119,7 +119,7 @@ string LLIR_ICMP::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
     assert(dst_reg != nullptr); 
-    ss << dst_reg->ToString() << " = icmp " << RelOpToStr(op) << " ";
+    ss << dst_reg->ToString() << " = icmp " << RelOpToStr(op) << " i32 ";
     ss << src1.ToString();
     ss << ", ";
     ss << src2.ToString();

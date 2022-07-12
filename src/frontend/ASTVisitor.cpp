@@ -541,6 +541,9 @@ antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
 antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     cout << "enter visitIfStmt" << endl;
     SRC cond = ctx->cond()->accept(this);
+    LLIR_BR *br_inst = new LLIR_BR(true, cond, bb_idx + 1, 0);
+    cur_basicblock->basic_block.push_back(br_inst);
+    bool has_else = (ctx->stmt().size() > 1);
     // if stmt body
     dbg("Enter If-body");
     if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[0]); node != nullptr) {
@@ -572,7 +575,7 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
         cur_basicblock = new BasicBlock(bb_idx++);
     }
     // else stmt body
-    if (ctx->stmt().size() > 1) {
+    if (has_else) {
         dbg("Enter Else-body");
         if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[1]); node != nullptr) {
             dbg("Block Else-Stmt Context");
@@ -602,6 +605,8 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
             cur_scope_elements = last_scope_elements;
             cur_basicblock = new BasicBlock(bb_idx++);
         }
+    } else {
+        br_inst->tar_false = bb_idx - 1;
     }
     cout << "exit visitIfStmt" << endl;
     return nullptr;
@@ -669,7 +674,7 @@ antlrcpp::Any ASTVisitor::visitExp(SysYParser::ExpContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
-    return nullptr;
+    return ctx->lOrExp()->accept(this);
 }
 
 // finished
