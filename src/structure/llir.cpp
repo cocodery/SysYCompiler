@@ -28,6 +28,20 @@ string LLIR_RET::ToString() {
     return ss.str();
 }
 
+// LLVM_IR Branch
+string LLIR_BR::ToString() {
+    std::stringstream ss;
+    ss << "br ";
+    if (has_cond) {
+        ss << "i1 " << cond.ToString() << ", ";
+        ss << "label %Block" << tar_true << ", ";
+        ss << "label %Block" << tar_false;
+    } else {
+        ss << "lable %Block" << tar_true;
+    }
+    return ss.str();
+}
+
 // LLVM-IR BinaryOpInst
 string LLIR_BIN::ToString() {
     std::stringstream ss;

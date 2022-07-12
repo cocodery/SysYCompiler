@@ -11,6 +11,9 @@ void BasicBlock::printBlock() {
         Case (LLIR_RET, ret_inst, inst) {
             llir << get_tabs() << ret_inst->ToString() << endl;
         }
+        Case (LLIR_BR, br_inst, inst) {
+            llir <<get_tabs() << br_inst->ToString() << endl;
+        }
         Case (LLIR_BIN, bin_inst, inst) {
             llir << get_tabs() << bin_inst->ToString() << endl;
         }
