@@ -21,7 +21,7 @@ using std::endl;
 class ASTVisitor : public SysYBaseVisitor {
 // Some Useful Defination
 private:
-    DeclType type;
+    DeclType cur_type;
     DeclType ret_type;
     int32_t var_idx;
     int32_t bb_idx;

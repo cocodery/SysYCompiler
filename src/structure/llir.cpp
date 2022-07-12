@@ -95,7 +95,7 @@ string LLIR_GEP::ToString() {
     ss << dst_reg->ToString() << " = getelementptr inbounds ";
     ss << type.printVarTypeForAlc() << ", " << type.printVarTypeForAlc() << "* ";
     ss << src.ToString() << ", i32 " << off.ToString();
-    if (dst_reg->type.is_array) ss << ", i32 0";
+    if (dst_reg->type.is_array && dst_reg->type.array_dims.size() > 0) ss << ", i32 0";
     return ss.str();
 }
 
@@ -129,6 +129,7 @@ string LLIR_CALL::ToString() {
         } else {
             VirtReg *reg = args[i].ToVirtReg();
             ss << reg->type.printVarTypeForAlc();
+            if (reg->type.is_array) ss << "*";
         }
         ss << " " << args[i].ToString();
     }

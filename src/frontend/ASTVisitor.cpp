@@ -2,7 +2,7 @@
 
 ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
-    type = TypeVoid;
+    cur_type = TypeVoid;
     var_idx = 1;
     bb_idx = 1;
     sp_idx = 1;
@@ -16,7 +16,6 @@ ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
 // finished
 // 假定所有的数组的维度的定义都是`ConstExp`
 vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *> dims) {
-    DeclType last_type = type;
     vector<int32_t> array_dims;
     for (auto i : dims) {
         SRC cur_dim = i->accept(this);
@@ -116,11 +115,12 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
             VirtReg *ptr1 = new VirtReg(var_idx++, var);
             LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, value, SRC(new CTValue(TypeInt, 0, 0)), var);
             cur_basicblock->basic_block.push_back(gep_inst1);
+            DeclType type = var.decl_type;
             for (int idx = 0; idx <var.elements_number(); ++idx) {
-                VirtReg *ptr2 = new VirtReg(var_idx++, VarType(ptr1->type.decl_type));
-                LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, idx, idx)), VarType(ptr1->type.decl_type));
+                VirtReg *ptr2 = new VirtReg(var_idx++, VarType(type));
+                LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, idx, idx)), VarType(type));
                 cur_basicblock->basic_block.push_back(gep_inst2);
-                SRC value = SRC(new CTValue(var.decl_type, 0, 0));
+                SRC value = SRC(new CTValue(type, 0, 0));
                 LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
                 cur_basicblock->basic_block.push_back(store_inst);
             }
@@ -186,10 +186,10 @@ antlrcpp::Any ASTVisitor::visitDecl(SysYParser::DeclContext *ctx) {
 // 设置全局变量`type`, 这个变量仅在变量声明时起作用，结束后恢复
 antlrcpp::Any ASTVisitor::visitConstDecl(SysYParser::ConstDeclContext *ctx) {
     cout << "enter ConstDecl" << endl;
-    DeclType last_type = type;
-    type = getDeclType(ctx->children[1]->getText());
+    DeclType last_type = cur_type;
+    cur_type = getDeclType(ctx->children[1]->getText());
     visitChildren(ctx);
-    type = last_type;
+    cur_type = last_type;
     cout << "exit ConstDecl" << endl;
     return nullptr;
 }
@@ -211,8 +211,10 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
-    VarType const_var(true, !(ctx->constExp().size() == 0), false, type);
-    dbg(DeclTypeToStr(const_var.decl_type), const_var.is_array);
+    bool is_array = !(ctx->constExp().size() == 0);
+    DeclType type = cur_type;
+    VarType const_var(true, is_array, false, type);
+    dbg(var_name, DeclTypeToStr(const_var.decl_type));
     if (const_var.is_array == true) {
         const_var.array_dims = get_array_dims(ctx->constExp());
         dbg(const_var.array_dims);
@@ -269,11 +271,10 @@ antlrcpp::Any ASTVisitor::visitListConstInitVal(SysYParser::ListConstInitValCont
 // finished
 antlrcpp::Any ASTVisitor::visitVarDecl(SysYParser::VarDeclContext *ctx) {
     cout << "enter VarDecl" << endl;
-    DeclType last_type = type;
-    type = getDeclType(ctx->children[0]->getText());
-    cout << "Current Type is " << DeclTypeToStr(type) << endl;
+    DeclType last_type = cur_type;
+    cur_type = getDeclType(ctx->children[0]->getText());
     visitChildren(ctx);
-    type = last_type;
+    cur_type = last_type;
     cout << "exit VarDecl" << endl;
     return nullptr;
 }
@@ -287,8 +288,10 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
         exit(EXIT_FAILURE);
     }
     Variable *variable = new Variable(var_idx++);
-    VarType var(false, !(ctx->constExp().size() == 0), false, type);
-    dbg(var_name, DeclTypeToStr(var.decl_type), var.is_array);
+    bool is_array = !(ctx->constExp().size() == 0);
+    DeclType type = cur_type;
+    VarType var(false, is_array, false, type);
+    dbg(var_name, DeclTypeToStr(var.decl_type));
     if (var.is_array) {
         var.array_dims = get_array_dims(ctx->constExp());
         dbg(var.array_dims);
@@ -323,8 +326,10 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
         exit(EXIT_FAILURE);
     }
     Variable *variable = new Variable(var_idx++);
-    VarType var(false, !(ctx->constExp().size() == 0), false, type);
-    dbg(var_name, DeclTypeToStr(var.decl_type), var.is_array);
+    bool is_array = !(ctx->constExp().size() == 0);
+    DeclType type = cur_type;
+    VarType var(false, is_array, false, type);
+    dbg(var_name, DeclTypeToStr(var.decl_type));
     if (var.is_array) {
         var.array_dims = get_array_dims(ctx->constExp());
         dbg(var.array_dims);
@@ -423,15 +428,12 @@ antlrcpp::Any ASTVisitor::visitFuncFParams(SysYParser::FuncFParamsContext *ctx) 
 antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
     VarType func_arg(false, ctx->getText().find("[") != string::npos, true, getDeclType(ctx->children[0]->getText()));
     if (func_arg.is_array) {
-        DeclType last_type = type;
-        func_arg.decl_type = ((func_arg.decl_type == TypeInt) ? TypeIntArr : TypeFloatArr);
-        type = TypeInt;
+        func_arg.decl_type = func_arg.decl_type;
         func_arg.is_array = true;
         func_arg.array_dims = get_array_dims(ctx->constExp());
         func_arg.array_dims.insert(func_arg.array_dims.begin(), -1);
-        type = last_type;
     }
-    // dbg(func_arg.array_dims);
+    dbg(func_arg.decl_type);
     return make_pair(ctx->Identifier()->getText(), func_arg);
 }
 
@@ -599,10 +601,11 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
             return SRC(reg);
         }
     }
-    VirtReg *var_reg = variable.ToVirtReg();
+    VirtReg *reg = variable.ToVirtReg();
     SRC offset = SRC(new CTValue(TypeInt, 0, 0));
-    vector<int32_t> arr_dim = var_reg->type.get_dims();
+    vector<int32_t> arr_dim = reg->type.get_dims();
     int32_t size = ctx->exp().size();
+    VarType type = reg->type;
     for (int32_t idx = 0; idx < size; ++idx) {
         SRC dim = ctx->exp()[idx]->accept(this);
         VirtReg *mul_off = new VirtReg(var_idx++, VarType(TypeInt));
@@ -612,14 +615,14 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
         LLIR_BIN *bin_inst2 = new LLIR_BIN(ADD, add_off, mul_off, offset);
         cur_basicblock->basic_block.push_back(bin_inst2);
         offset = SRC(add_off);
+        type = type.move_down();
     }
     // 获取元素首地址
-    VirtReg *reg = variable.ToVirtReg();
     VirtReg *ptr1 = new VirtReg(var_idx++, reg->type);
     LLIR_GEP *gep_inst1 = new LLIR_GEP(SRC(ptr1), variable, SRC(new CTValue(TypeInt, 0, 0)), reg->type);
     cur_basicblock->basic_block.push_back(gep_inst1);
-    VirtReg *ptr2 = new VirtReg(var_idx++, VarType(reg->type.decl_type));
-    LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, offset, VarType(reg->type.decl_type));
+    VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, type.is_array, false, reg->type.decl_type));
+    LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, offset, VarType(false, type.is_array, false, reg->type.decl_type));
     cur_basicblock->basic_block.push_back(gep_inst2);
     dbg(reg->ToString());
     cout << "exit visitLVal with a variable or array" << endl;
@@ -641,13 +644,14 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
     } else {
         VirtReg *src_reg = src.ToVirtReg();
         VarType src_type = src_reg->type;
-        if (src_type.is_array) {
-
+        if (src_type.is_array && src_reg->type.array_dims.size() == 0) {
+            dst = SRC(src_reg);
+        } else {
+            VirtReg *dst_reg = new VirtReg(var_idx++, src_reg->type);
+            dst = SRC(dst_reg);
+            LLIR_LOAD *load_inst = new LLIR_LOAD(dst, src);
+            cur_basicblock->basic_block.push_back(load_inst);
         }
-        VirtReg *dst_reg = new VirtReg(var_idx++, src_reg->type);
-        dst = SRC(dst_reg);
-        LLIR_LOAD *load_inst = new LLIR_LOAD(dst, src);
-        cur_basicblock->basic_block.push_back(load_inst);
     }
     cout << "exit visitPrimaryExp2" << endl;
     return dst;
