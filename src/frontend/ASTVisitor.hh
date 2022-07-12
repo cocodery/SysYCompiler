@@ -26,6 +26,7 @@ private:
     int32_t var_idx;
     int32_t bb_idx;
     int32_t sp_idx;
+    bool init_args;
     CompUnit &ir;
     vector<pair<SysYParser::InitVarDefContext *, VarPair>> glb_var_init;
     vector<Info *> *cur_scope_elements;
@@ -48,6 +49,8 @@ public:
     void generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair var_pair);
 
     void local_const_list_init(VarPair var_pair);
+
+    void init_func_args(FunctionInfo *func_info);
 // Function for Abstract Syntax Tree
 public:
     virtual antlrcpp::Any visitChildren(antlr4::tree::ParseTree *ctx) override;

@@ -95,7 +95,8 @@ string LLIR_GEP::ToString() {
     ss << dst_reg->ToString() << " = getelementptr inbounds ";
     ss << type.printVarTypeForAlc() << ", " << type.printVarTypeForAlc() << "* ";
     ss << src.ToString() << ", i32 " << off.ToString();
-    if (dst_reg->type.is_array && dst_reg->type.array_dims.size() > 0) ss << ", i32 0";
+    VarType var_type = dst_reg->type;
+    if (var_type.is_array && var_type.array_dims.size() > 0 && var_type.array_dims[0] != -1) ss << ", i32 0";
     return ss.str();
 }
 

@@ -6,6 +6,7 @@ ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     var_idx = 1;
     bb_idx = 1;
     sp_idx = 1;
+    init_args = false;
     cur_scope = ir.global_scope;
     cur_scope_elements = ir.global_scope->elements;
     cur_vartable = ir.global_scope->local_table;
@@ -156,6 +157,27 @@ void ASTVisitor::local_const_list_init(VarPair var_pair) {
         SRC value = SRC(new CTValue(var.decl_type, var_pair.second->int_list[idx], var_pair.second->float_list[idx]));
         LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
         cur_basicblock->basic_block.push_back(store_inst);
+    }
+}
+
+void ASTVisitor::init_func_args(FunctionInfo *func_info) {
+    int32_t arg_idx = 0;
+    for (auto pair : func_info->func_args) {
+        if (!pair.second.is_array) {
+            Variable *variable = new Variable(var_idx++);
+            variable->type = pair.second;
+            cur_vartable->var_table.push_back(make_pair(pair.first, variable));
+            VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
+            LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(reg, variable);
+            cur_basicblock->basic_block.push_back(alloc_inst);
+            LLIR_STORE *store_inst = new LLIR_STORE(reg, new VirtReg(arg_idx, func_info->func_args[arg_idx].second.decl_type));
+            cur_basicblock->basic_block.push_back(store_inst);
+        } else {
+            Variable *variable = new Variable(arg_idx);
+            variable->type = pair.second;
+            cur_vartable->var_table.push_back(make_pair(pair.first, variable));
+        }
+        ++arg_idx;
     }
 }
 
@@ -393,6 +415,7 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     var_idx = func_info.func_args.size() == 0 ? 1 : func_info.func_args.size();
     sp_idx = 1;
     bb_idx = 1;
+    init_args = true;
     cur_func_info = &func_info;
     // when get `FunctionInfo`
     // we can push `func` to function table
@@ -464,6 +487,11 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
             generate_varinit_ir(elm.first, elm.second);
         }
         glb_var_init.clear();
+    }
+    // 初始化函数参数
+    if (init_args) {
+        init_func_args(cur_func_info);
+        init_args = false;
     }
     visitChildren(ctx);
     // 新的基本块到右括号就结束了, push

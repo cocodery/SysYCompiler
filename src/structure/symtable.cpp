@@ -53,7 +53,7 @@ VarType VarType::move_down() {
 
 string VarType::printVarTypeForAlc() {
     std::stringstream ss;
-    if (is_array && array_dims.size() > 0) {
+    if (is_array && array_dims.size() > 0 && array_dims[0] != -1) {
         ss << "[" << elements_number() << " x " << DeclTypeToStr(decl_type) << "]";
     } else {
         ss << DeclTypeToStr(decl_type);
