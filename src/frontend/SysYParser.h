@@ -422,6 +422,20 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  IfStmtContext : public StmtContext {
+  public:
+    IfStmtContext(StmtContext *ctx);
+
+    antlr4::tree::TerminalNode *If();
+    antlr4::tree::TerminalNode *Lparen();
+    CondContext *cond();
+    antlr4::tree::TerminalNode *Rparen();
+    std::vector<StmtContext *> stmt();
+    StmtContext* stmt(size_t i);
+    antlr4::tree::TerminalNode *Else();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  BlockStmtContext : public StmtContext {
   public:
     BlockStmtContext(StmtContext *ctx);
@@ -453,18 +467,6 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  IfStmt1Context : public StmtContext {
-  public:
-    IfStmt1Context(StmtContext *ctx);
-
-    antlr4::tree::TerminalNode *If();
-    antlr4::tree::TerminalNode *Lparen();
-    CondContext *cond();
-    antlr4::tree::TerminalNode *Rparen();
-    StmtContext *stmt();
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
   class  BreakStmtContext : public StmtContext {
   public:
     BreakStmtContext(StmtContext *ctx);
@@ -480,20 +482,6 @@ public:
 
     antlr4::tree::TerminalNode *Semicolon();
     ExpContext *exp();
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  IfStmt2Context : public StmtContext {
-  public:
-    IfStmt2Context(StmtContext *ctx);
-
-    antlr4::tree::TerminalNode *If();
-    antlr4::tree::TerminalNode *Lparen();
-    CondContext *cond();
-    antlr4::tree::TerminalNode *Rparen();
-    std::vector<StmtContext *> stmt();
-    StmtContext* stmt(size_t i);
-    antlr4::tree::TerminalNode *Else();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 

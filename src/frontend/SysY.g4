@@ -45,8 +45,7 @@ stmt
     : lVal '=' exp ';' # assignment
     | (exp)? ';' # expStmt
     | block # blockStmt
-    | 'if' '(' cond ')' stmt # ifStmt1
-    | 'if' '(' cond ')' stmt 'else' stmt # ifStmt2
+    | 'if' '(' cond ')' stmt ('else' stmt)? # ifStmt
     | 'while' '(' cond ')' stmt # whileStmt
     | 'for' '(' (decl)? ';' (cond)? ';' ( exp(',' exp)* )? ')' stmt # forStmt
     | 'do' stmt 'while' '(' cond ')' # dowhileStmt
