@@ -118,6 +118,12 @@ public:
 
 class LLIR_CALL: public Inst {
 public:
+    SRC dst;
+    vector<SRC> args;
+    FunctionInfo *func_info;
+public:
+    LLIR_CALL(SRC _dst, vector<SRC> _args, FunctionInfo *_func_info) : dst(_dst), args(_args), func_info(_func_info) { }
+    string ToString();
 };
 
 class LLIR_ZEXT: public Inst {

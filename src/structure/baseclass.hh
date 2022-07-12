@@ -27,7 +27,7 @@ public:
     string ToString() {
         std::stringstream ss;
         if (global) ss << "@_" << reg_id;
-        else ss << "%" << reg_id;
+        else ss << "%r" << reg_id;
         return ss.str();
     }
 };

@@ -17,9 +17,7 @@ using std::vector;
 using std::string;
 using std::map;
 using std::ofstream;
-
-static int32_t bb_index = 0;
-static int32_t sp_index = 0;
+using std::make_pair;
 
 static ofstream llir;
 
@@ -30,7 +28,7 @@ public:
     vector<BasicBlock *> parants;
     vector<BasicBlock *> childrens; 
 public:
-    BasicBlock() : bb_idx(bb_index++) { }
+    BasicBlock(int32_t _idx) : bb_idx(_idx) { }
     void printBlock();
 };
 
@@ -41,7 +39,7 @@ public:
     vector<Info *> *elements; // `Info` -> `Scope` or `BasicBlock`
     Scope* parent;
 public:
-    Scope() : sp_idx(sp_index++) { local_table = nullptr; elements = nullptr; parent = nullptr; }
+    Scope(int32_t _idx) : sp_idx(_idx) { local_table = nullptr; elements = nullptr; parent = nullptr; }
     SRC resolve(string var_name, FunctionInfo *cur_func_info);
     BasicBlock *get_last_bb();
     void printElements();
@@ -66,11 +64,9 @@ class CompUnit: public Info {
 public:
     Scope *global_scope;
     vector<Function *> functions;
-    LibFunction lib_functions[12];
+    LibFunction *lib_functions[12];
 public:
     CompUnit(string _llir);
-    void moveGlobalInitToMain();
-    bool inLibFunctions(string func_name);
     FunctionInfo *getFunctionInfo(string func_name);
     void DebugLibFuncs();
     void DebugUserFuncs();
