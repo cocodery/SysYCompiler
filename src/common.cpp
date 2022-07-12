@@ -81,8 +81,6 @@ string DeclTypeToStr(DeclType type) {
         case TypeInt: return "i32";
         case TypeFloat: return "float";
         case TypeVoid: return "void";
-        case TypeIntArr: return "i32*";
-        case TypeFloatArr: return "float*";
         default: break;
     }
     dbg("Unknown Declare Type");

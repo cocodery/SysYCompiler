@@ -47,6 +47,7 @@ VarType VarType::move_down() {
     VarType ret = *this;
     ret.array_dims.erase(ret.array_dims.begin());
     ret.is_array = (ret.array_dims.size() == 0) ? false : true;
+    ret.decl_type = ret.is_array ? ret.decl_type : DeclType(ret.decl_type - 3);
     return ret;
 }
 
@@ -63,11 +64,7 @@ string VarType::printVarTypeForAlc() {
 string VarType::printVarTypeForArg() {
     std::stringstream ss;
     if (is_array) {
-        if (decl_type == TypeIntArr || decl_type == TypeFloatArr) {
-            ss << DeclTypeToStr(DeclType(decl_type - 3)) << "*";
-        } else {
-            ss << DeclTypeToStr(decl_type) << "*";
-        }
+        ss << DeclTypeToStr(decl_type) << "*";
     } else {
         ss << DeclTypeToStr(decl_type);
     }
@@ -161,9 +158,9 @@ string FunctionInfo::printFunctionInfo(bool islib) {
     }
     ss << DeclTypeToStr(return_type) << " @" << func_name << "(";
     if (has_args()) {
-        ss << func_args[0].second.printVarTypeForArg() << " %0";
+        ss << func_args[0].second.printVarTypeForArg() << " %r0";
         for (int i = 1; i < func_args.size(); ++i) {
-            ss << ", " << func_args[i].second.printVarTypeForArg() << " %" << i;
+            ss << ", " << func_args[i].second.printVarTypeForArg() << " %r" << i;
         }
     }
     ss << ") ";
