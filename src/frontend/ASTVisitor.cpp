@@ -541,19 +541,17 @@ antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
 antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     cout << "enter visitIfStmt" << endl;
     SRC cond = ctx->cond()->accept(this);
-    LLIR_BR *br_if_inst = new LLIR_BR(true, cond, bb_idx, 0);
-    LLIR_BR *br_else_inst = nullptr;
-    cur_basicblock->basic_block.push_back(br_if_inst);
     bool has_else = (ctx->stmt().size() > 1);
+    LLIR_BR *br_if_else = new LLIR_BR(true, cond, bb_idx ,0);
+    LLIR_BR *br_if2else_end = new LLIR_BR(false, SRC(), 0 , 0);
+    LLIR_BR *br_else2else_end = new LLIR_BR(false, SRC(), 0 , 0);
+    cur_basicblock->basic_block.push_back(br_if_else);
     // if stmt body
     dbg("Enter If-body");
     if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[0]); node != nullptr) {
         dbg("Block If-Stmt Context");
         Scope *block_stmt = node->accept(this);
-        if (has_else) {
-            br_else_inst = new LLIR_BR(false, SRC(), 0, 0);
-            block_stmt->get_last_bb()->basic_block.push_back(br_else_inst);
-        }
+        block_stmt->get_last_bb()->basic_block.push_back(br_if2else_end);
     } else {
         dbg("Other If-Stmt Context");
         cur_scope_elements->push_back(cur_basicblock);
@@ -571,10 +569,7 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
         cur_basicblock = new BasicBlock(bb_idx++);
 
         ctx->stmt()[0]->accept(this);
-        if (has_else) {
-            br_else_inst = new LLIR_BR(false, SRC(), 0, 0);
-            cur_basicblock->basic_block.push_back(br_else_inst);
-        }
+        cur_basicblock->basic_block.push_back(br_if2else_end);
         cur_scope_elements->push_back(cur_basicblock);
 
         last_scope->elements->push_back(cur_scope);
@@ -586,11 +581,11 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     // else stmt body
     if (has_else) {
         dbg("Enter Else-body");
-        br_if_inst->tar_false = bb_idx;
+        br_if_else->tar_false = cur_basicblock->bb_idx + 1;
         if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[1]); node != nullptr) {
             dbg("Block Else-Stmt Context");
             Scope *block_stmt = node->accept(this);
-            block_stmt->get_last_bb()->basic_block.push_back(br_else_inst);
+            block_stmt->get_last_bb()->basic_block.push_back(br_else2else_end);
         } else {
             dbg("Other Else-Stmt Context");
             cur_scope_elements->push_back(cur_basicblock);
@@ -608,7 +603,7 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
             cur_basicblock = new BasicBlock(bb_idx++);
 
             ctx->stmt()[1]->accept(this);
-            cur_basicblock->basic_block.push_back(br_else_inst);
+            cur_basicblock->basic_block.push_back(br_else2else_end);
             cur_scope_elements->push_back(cur_basicblock);
 
             last_scope->elements->push_back(cur_scope);
@@ -617,9 +612,35 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
             cur_scope_elements = last_scope_elements;
             cur_basicblock = new BasicBlock(bb_idx++);
         }
-        br_else_inst->tar_true = cur_basicblock->bb_idx;
+        br_if2else_end->tar_true = cur_basicblock->bb_idx;
+        br_else2else_end->tar_true = cur_basicblock->bb_idx;
     } else {
-        br_if_inst->tar_false = cur_basicblock->bb_idx;
+        dbg("Create a Empty Else-Stmt");
+        br_if_else->tar_false = cur_basicblock->bb_idx + 1;
+        cur_scope_elements->push_back(cur_basicblock);
+        Scope          *last_scope = cur_scope;
+        VariableTable  *last_vartable = cur_vartable;
+        vector<Info *> *last_scope_elements = cur_scope_elements;
+
+        Scope *block_scope = new Scope(sp_idx++);
+        block_scope->local_table = new VariableTable;
+        block_scope->elements = new vector<Info *>;
+        block_scope->parent = last_scope;
+        cur_scope = block_scope;
+        cur_vartable = block_scope->local_table;
+        cur_scope_elements = block_scope->elements;
+        cur_basicblock = new BasicBlock(bb_idx++);
+
+        cur_basicblock->basic_block.push_back(br_else2else_end);
+        cur_scope_elements->push_back(cur_basicblock);
+
+        last_scope->elements->push_back(cur_scope);
+        cur_scope = last_scope;
+        cur_vartable = last_vartable;
+        cur_scope_elements = last_scope_elements;
+        cur_basicblock = new BasicBlock(bb_idx++);
+        br_if2else_end->tar_true = cur_basicblock->bb_idx;
+        br_else2else_end->tar_true = cur_basicblock->bb_idx;
     }
     cout << "exit visitIfStmt" << endl;
     return nullptr;

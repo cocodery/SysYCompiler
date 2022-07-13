@@ -41,7 +41,6 @@ void BasicBlock::printBlock() {
 SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
     auto cur_scope = this;
     VariableTable *cur_table = nullptr;
-    int32_t idx = 0;
     while (cur_scope != nullptr) {
         cur_table = cur_scope->local_table;
         // search cur scope's variable table first
@@ -192,6 +191,7 @@ void CompUnit::DebugGlobalTable() {
     VariableTable *global_table = global_scope->local_table;
     int32_t glb_var_idx = 1;
     for (auto pair: global_table->var_table) {
+        if (pair.second->type.is_const && !pair.second->type.is_array) continue;
         llir << "    " << "@_" << glb_var_idx++ << " = ";
         Variable *var = pair.second;
         if (var->type.is_const) { 

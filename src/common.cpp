@@ -54,7 +54,7 @@ string RelOpToStr(RelOp op) {
     if (op == LTH) return "slt";
     else if (op == LEQ) return "sle";
     else if (op == EQU) return "eq";
-    else if (op == NEQ) return "uq";
+    else if (op == NEQ) return "ne";
     dbg("Unknown RelOp");
     exit(EXIT_FAILURE);
 }
