@@ -37,7 +37,7 @@ string LLIR_BR::ToString() {
         ss << "label %Block" << tar_true << ", ";
         ss << "label %Block" << tar_false;
     } else {
-        ss << "lable %Block" << tar_true;
+        ss << "label %Block" << tar_true;
     }
     return ss.str();
 }
