@@ -99,6 +99,7 @@ string LLIR_STORE::ToString() {
     ss << "store " << dst_reg->type.printVarTypeForAlc();
     ss << " " << src.ToString() << ", ";
     ss << dst_reg->type.printVarTypeForAlc() << "* " << dst_reg->ToString();
+    ss << ", align 4";
     return ss.str();
 }
 

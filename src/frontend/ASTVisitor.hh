@@ -35,6 +35,7 @@ private:
     BasicBlock     *cur_basicblock;
     FunctionInfo   *cur_func_info;
     int32_t continue_target;
+    vector<LLIR_BR *> break_insts;
 // Funtion for helping Build IR and Symbol Table
 public:
     bool have_main_func;

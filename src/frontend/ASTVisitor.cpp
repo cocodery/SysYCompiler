@@ -617,9 +617,9 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
             cur_scope_elements = last_scope_elements;
             cur_basicblock = new BasicBlock(bb_idx++);
         }
-        br_else_inst->tar_true = bb_idx - 1;
+        br_else_inst->tar_true = cur_basicblock->bb_idx;
     } else {
-        br_if_inst->tar_false = bb_idx - 1;
+        br_if_inst->tar_false = cur_basicblock->bb_idx;
     }
     cout << "exit visitIfStmt" << endl;
     return nullptr;
@@ -627,16 +627,85 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
+    cout << "enter visitWhileStmt" << endl;
+    LLIR_BR *br2while_cond = new LLIR_BR(false, SRC(), cur_basicblock->bb_idx + 1, 0);
+    cur_basicblock->basic_block.push_back(br2while_cond);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock(bb_idx++);
+    int32_t last_continue_target = continue_target;
+    continue_target = cur_basicblock->bb_idx;
+    vector<LLIR_BR *> last_break_insts = break_insts;
+    break_insts = vector<LLIR_BR *>();
+    // while condition
+    SRC cond = ctx->cond()->accept(this);
+    LLIR_BR *while_br_inst = new LLIR_BR(true, cond, bb_idx, 0);
+    cur_basicblock->basic_block.push_back(while_br_inst);
+    if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()); node != nullptr) {
+        // 在这里遇到了`Block`作为循环体的`While`
+        // 但是无法在生成`Block`的中途插入跳转语句
+        // 因此我们要进入`Block`中找到其最后一个`basic_block`
+        // 并插入`Jump_Inst`
+        dbg("Block Stmt Context");
+        Scope *block_stmt = node->accept(this);
+        LLIR_BR *br_while_start = new LLIR_BR(false, SRC(), continue_target, 0);
+        block_stmt->get_last_bb()->basic_block.push_back(br_while_start);
+    } else {
+        dbg("Other Stmt Context");
+        cur_scope_elements->push_back(cur_basicblock);
+        Scope          *last_scope = cur_scope;
+        VariableTable  *last_vartable = cur_vartable;
+        vector<Info *> *last_scope_elements = cur_scope_elements;
+
+        Scope *block_scope = new Scope(sp_idx++);
+        block_scope->local_table = new VariableTable;
+        block_scope->elements = new vector<Info *>;
+        block_scope->parent = last_scope;
+        cur_scope = block_scope;
+        cur_vartable = block_scope->local_table;
+        cur_scope_elements = block_scope->elements;
+        cur_basicblock = new BasicBlock(bb_idx++);
+
+        ctx->stmt()->accept(this);
+        LLIR_BR *br_while_start = new LLIR_BR(false, SRC(), continue_target, 0);
+        cur_basicblock->basic_block.push_back(br_while_start);
+        cur_scope_elements->push_back(cur_basicblock);
+
+        last_scope->elements->push_back(cur_scope);
+        cur_scope = last_scope;
+        cur_vartable = last_vartable;
+        cur_scope_elements = last_scope_elements;
+        cur_basicblock = new BasicBlock(bb_idx++);
+    }
+    for (int32_t idx = 0; idx < break_insts.size(); ++idx) {
+        break_insts[idx]->tar_true = cur_basicblock->bb_idx;
+    }
+    continue_target = last_continue_target;
+    break_insts = last_break_insts;
+    while_br_inst->tar_false = cur_basicblock->bb_idx;
+    cout << "exit visitWhileStmt" << endl;
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitBreakStmt(SysYParser::BreakStmtContext *ctx) {
+    cout << "enter visitBreakStmt" << endl;
+    LLIR_BR *jmp_inst = new LLIR_BR(false, SRC(), 0, 0);
+    cur_basicblock->basic_block.push_back(jmp_inst);
+    break_insts.push_back(jmp_inst);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock(bb_idx++);
+    cout << "exit visitBreakStmt" << endl;
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitContinueStmt(SysYParser::ContinueStmtContext *ctx) {
+    cout << "enter ContinueStmt" << endl;
+    LLIR_BR *jmp_inst = new LLIR_BR(false, SRC(), continue_target, 0);
+    cur_basicblock->basic_block.push_back(jmp_inst);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock(bb_idx++);
+    cout << "exit ContinueStmt" << endl;
     return nullptr;
 }
 
