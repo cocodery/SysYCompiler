@@ -1189,7 +1189,16 @@ antlrcpp::Any ASTVisitor::visitLAnd1(SysYParser::LAnd1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
-    return nullptr;
+    SRC dst;
+    dst = ctx->lAndExp()->accept(this);
+    LLIR_BR *br_inst1 = new LLIR_BR(true, dst, 0, 0);
+    cur_basicblock->basic_block.push_back(br_inst1);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock(bb_idx++);
+    br_inst1->tar_true = cur_basicblock->bb_idx;
+    dst = ctx->eqExp()->accept(this);
+    br_inst1->tar_false = cur_basicblock->bb_idx + 1;
+    return dst;
 }
 
 // finished
@@ -1199,7 +1208,16 @@ antlrcpp::Any ASTVisitor::visitLOr1(SysYParser::LOr1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
-    return nullptr;
+    SRC dst;
+    dst = ctx->lOrExp()->accept(this);
+    LLIR_BR *br_inst1 = new LLIR_BR(true, dst, 0, 0);
+    cur_basicblock->basic_block.push_back(br_inst1);
+    cur_scope_elements->push_back(cur_basicblock);
+    cur_basicblock = new BasicBlock(bb_idx++);
+    br_inst1->tar_false = cur_basicblock->bb_idx;
+    dst = ctx->lAndExp()->accept(this);
+    br_inst1->tar_true = cur_basicblock->bb_idx + 1;
+    return dst;
 }
 
 // finished
