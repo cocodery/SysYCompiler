@@ -61,9 +61,7 @@ public:
 
     virtual antlrcpp::Any visitBlockStmt(SysYParser::BlockStmtContext *context) = 0;
 
-    virtual antlrcpp::Any visitIfStmt1(SysYParser::IfStmt1Context *context) = 0;
-
-    virtual antlrcpp::Any visitIfStmt2(SysYParser::IfStmt2Context *context) = 0;
+    virtual antlrcpp::Any visitIfStmt(SysYParser::IfStmtContext *context) = 0;
 
     virtual antlrcpp::Any visitWhileStmt(SysYParser::WhileStmtContext *context) = 0;
 

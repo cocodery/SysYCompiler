@@ -28,6 +28,20 @@ string LLIR_RET::ToString() {
     return ss.str();
 }
 
+// LLVM_IR Branch
+string LLIR_BR::ToString() {
+    std::stringstream ss;
+    ss << "br ";
+    if (has_cond) {
+        ss << "i1 " << cond.ToString() << ", ";
+        ss << "label %Block" << tar_true << ", ";
+        ss << "label %Block" << tar_false;
+    } else {
+        ss << "label %Block" << tar_true;
+    }
+    return ss.str();
+}
+
 // LLVM-IR BinaryOpInst
 string LLIR_BIN::ToString() {
     std::stringstream ss;
@@ -85,6 +99,7 @@ string LLIR_STORE::ToString() {
     ss << "store " << dst_reg->type.printVarTypeForAlc();
     ss << " " << src.ToString() << ", ";
     ss << dst_reg->type.printVarTypeForAlc() << "* " << dst_reg->ToString();
+    ss << ", align 4";
     return ss.str();
 }
 
@@ -105,7 +120,7 @@ string LLIR_ICMP::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
     assert(dst_reg != nullptr); 
-    ss << dst_reg->ToString() << " = icmp " << RelOpToStr(op) << " ";
+    ss << dst_reg->ToString() << " = icmp " << RelOpToStr(op) << " i32 ";
     ss << src1.ToString();
     ss << ", ";
     ss << src2.ToString();

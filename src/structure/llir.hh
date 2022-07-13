@@ -38,6 +38,13 @@ public:
 
 class LLIR_BR: public Inst {
 public:
+    bool has_cond;
+    SRC cond;
+    int32_t tar_true;
+    int32_t tar_false;
+public:
+    LLIR_BR(bool _hs, SRC _cond,int32_t _t, int32_t _f) : has_cond(_hs), cond(_cond), tar_true(_t), tar_false(_f) { }
+    string ToString();
 };
 
 class LLIR_BIN: public Inst {

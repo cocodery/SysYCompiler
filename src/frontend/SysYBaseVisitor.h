@@ -99,11 +99,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitIfStmt1(SysYParser::IfStmt1Context *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitIfStmt2(SysYParser::IfStmt2Context *ctx) override {
+  virtual antlrcpp::Any visitIfStmt(SysYParser::IfStmtContext *ctx) override {
     return visitChildren(ctx);
   }
 
