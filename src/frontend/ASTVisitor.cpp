@@ -423,6 +423,15 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     ir.functions.push_back(func);
     // parse function body
     func->main_scope = ctx->block()->accept(this);
+    dbg(func->main_scope->get_last_bb()->bb_idx);
+    auto last_block = func->main_scope->get_last_bb();
+    int32_t lb_size = last_block->basic_block.size();
+    LLIR_RET *ret_inst = new LLIR_RET((ret_type != TypeVoid), SRC(new CTValue(ret_type, 0, 0)));
+    if (lb_size == 0) {
+        last_block->basic_block.push_back(ret_inst);
+    } else if (auto last_inst = dynamic_cast<LLIR_RET *>(last_block->basic_block[lb_size - 1]); last_inst == nullptr) {
+        last_block->basic_block.push_back(ret_inst);
+    }
     // push to function table
     cur_func_info = nullptr;
     cout << "exit FuncDef" << endl;
