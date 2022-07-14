@@ -540,12 +540,21 @@ antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
 // finished
 antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     cout << "enter visitIfStmt" << endl;
+    // store last condition
+    vector<LLIR_BR *> last_lor_insts  = lor_insts;
+    vector<LLIR_BR *> last_land_insts = land_insts;
+    lor_insts  = vector<LLIR_BR *>();
+    land_insts = vector<LLIR_BR *>();
     SRC cond = ctx->cond()->accept(this);
     bool has_else = (ctx->stmt().size() > 1);
     LLIR_BR *br_if_else = new LLIR_BR(true, cond, bb_idx ,0);
     LLIR_BR *br_if2else_end = new LLIR_BR(false, SRC(), 0 , 0);
     LLIR_BR *br_else2else_end = new LLIR_BR(false, SRC(), 0 , 0);
     cur_basicblock->basic_block.push_back(br_if_else);
+    // file in lor branch target
+    for (auto lor_inst : lor_insts) {
+        lor_inst->tar_true = bb_idx;
+    }
     // if stmt body
     dbg("Enter If-body");
     if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[0]); node != nullptr) {
@@ -582,6 +591,10 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     if (has_else) {
         dbg("Enter Else-body");
         br_if_else->tar_false = cur_basicblock->bb_idx + 1;
+        // file in lor branch target
+        for (auto land_inst : land_insts) {
+            land_inst->tar_false = bb_idx;
+        }
         if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[1]); node != nullptr) {
             dbg("Block Else-Stmt Context");
             Scope *block_stmt = node->accept(this);
@@ -617,6 +630,10 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     } else {
         dbg("Create a Empty Else-Stmt");
         br_if_else->tar_false = cur_basicblock->bb_idx + 1;
+        // file in lor branch target
+        for (auto land_inst : land_insts) {
+            land_inst->tar_false = bb_idx;
+        }
         cur_scope_elements->push_back(cur_basicblock);
         Scope          *last_scope = cur_scope;
         VariableTable  *last_vartable = cur_vartable;
@@ -642,14 +659,24 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
         br_if2else_end->tar_true = cur_basicblock->bb_idx;
         br_else2else_end->tar_true = cur_basicblock->bb_idx;
     }
+    lor_insts  = last_lor_insts;
+    land_insts = last_land_insts;
     cout << "exit visitIfStmt" << endl;
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
-    cout << "enter visitWhileStmt" << endl;
+    cout << "enter visitWhileStmt" << endl;// store last condition
+    vector<LLIR_BR *> last_lor_insts  = lor_insts;
+    vector<LLIR_BR *> last_land_insts = land_insts;
+    lor_insts  = vector<LLIR_BR *>();
+    land_insts = vector<LLIR_BR *>();
     LLIR_BR *br2while_cond = new LLIR_BR(false, SRC(), cur_basicblock->bb_idx + 1, 0);
+    // file in lor land branch target
+    for (auto lor_inst : lor_insts) {
+        lor_inst->tar_true = bb_idx;
+    }
     cur_basicblock->basic_block.push_back(br2while_cond);
     cur_scope_elements->push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
@@ -667,11 +694,19 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
         // 因此我们要进入`Block`中找到其最后一个`basic_block`
         // 并插入`Jump_Inst`
         dbg("Block Stmt Context");
+        // file in lor branch target
+        for (auto land_inst : land_insts) {
+            land_inst->tar_false = bb_idx;
+        }
         Scope *block_stmt = node->accept(this);
         LLIR_BR *br_while_start = new LLIR_BR(false, SRC(), continue_target, 0);
         block_stmt->get_last_bb()->basic_block.push_back(br_while_start);
     } else {
         dbg("Other Stmt Context");
+        // file in lor branch target
+        for (auto land_inst : land_insts) {
+            land_inst->tar_false = bb_idx;
+        }
         cur_scope_elements->push_back(cur_basicblock);
         Scope          *last_scope = cur_scope;
         VariableTable  *last_vartable = cur_vartable;
@@ -700,6 +735,8 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
     for (int32_t idx = 0; idx < break_insts.size(); ++idx) {
         break_insts[idx]->tar_true = cur_basicblock->bb_idx;
     }
+    lor_insts  = last_lor_insts;
+    land_insts = last_land_insts;
     continue_target = last_continue_target;
     break_insts = last_break_insts;
     while_br_inst->tar_false = cur_basicblock->bb_idx;
@@ -1281,13 +1318,13 @@ antlrcpp::Any ASTVisitor::visitLAnd1(SysYParser::LAnd1Context *ctx) {
 antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
     SRC dst;
     dst = ctx->lAndExp()->accept(this);
-    LLIR_BR *br_inst1 = new LLIR_BR(true, dst, 0, 0);
-    cur_basicblock->basic_block.push_back(br_inst1);
+    LLIR_BR *br_inst = new LLIR_BR(true, dst, 0, 0);
+    cur_basicblock->basic_block.push_back(br_inst);
     cur_scope_elements->push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
-    br_inst1->tar_true = cur_basicblock->bb_idx;
+    br_inst->tar_true = cur_basicblock->bb_idx;
     dst = ctx->eqExp()->accept(this);
-    br_inst1->tar_false = cur_basicblock->bb_idx + 1;
+    land_insts.push_back(br_inst);
     return dst;
 }
 
@@ -1298,15 +1335,22 @@ antlrcpp::Any ASTVisitor::visitLOr1(SysYParser::LOr1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
+    // store last condition
+    vector<LLIR_BR *> last_land_insts = land_insts;
+    land_insts = vector<LLIR_BR *>();
     SRC dst;
     dst = ctx->lOrExp()->accept(this);
-    LLIR_BR *br_inst1 = new LLIR_BR(true, dst, 0, 0);
-    cur_basicblock->basic_block.push_back(br_inst1);
+    for (auto land_inst : land_insts) {
+        land_inst->tar_false = bb_idx;
+    }
+    land_insts = last_land_insts;
+    LLIR_BR *br_inst = new LLIR_BR(true, dst, 0, 0);
+    cur_basicblock->basic_block.push_back(br_inst);
     cur_scope_elements->push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
-    br_inst1->tar_false = cur_basicblock->bb_idx;
+    br_inst->tar_false = cur_basicblock->bb_idx;
     dst = ctx->lAndExp()->accept(this);
-    br_inst1->tar_true = cur_basicblock->bb_idx + 1;
+    lor_insts.push_back(br_inst);
     return dst;
 }
 
