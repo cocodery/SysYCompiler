@@ -1225,7 +1225,7 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
         // 暂不处理类型不匹配情况
         VirtReg *reg1 = lhs.ToVirtReg();
         VirtReg *reg2 = rhs.ToVirtReg();
-        SRC dst = SRC(new VirtReg(var_idx++, reg1->type));
+        SRC dst = SRC(new VirtReg(var_idx++, TypeInt));
         LLIR_ICMP *icmp_inst = nullptr;
         LLIR_FCMP *fcmp_inst = nullptr;
         dbg("enter visitRel2 with at least a VirtReg");
