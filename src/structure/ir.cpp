@@ -3,9 +3,12 @@
 int32_t tab_num = 1;
 
 void BasicBlock::printBlock() {
+    // /*
     if (basic_block.size()) {
         llir << get_tabs(tab_num-1) << "Block" << bb_idx << ":" << endl;
     }
+    // */
+    // llir << get_tabs(tab_num-1) << "Block" << bb_idx << ":" << endl;
     for (auto inst: basic_block) {
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {

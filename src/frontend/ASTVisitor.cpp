@@ -511,7 +511,22 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitBlockItem(SysYParser::BlockItemContext *ctx) {
-    return visitChildren(ctx);
+    auto stmt_node = ctx->stmt();
+    if (auto stmt_node = ctx->stmt(); stmt_node != nullptr) {
+        if (auto blockstmt_node = dynamic_cast<SysYParser::BlockStmtContext *>(stmt_node); blockstmt_node != nullptr) {
+            LLIR_BR *br_inst1 = new LLIR_BR(false, SRC(), cur_basicblock->bb_idx + 1, 0);
+            cur_basicblock->basic_block.push_back(br_inst1);
+            Scope *block_stmt = stmt_node->accept(this);
+            BasicBlock *last_bb = block_stmt->get_last_bb();
+            LLIR_BR *br_inst2 = new LLIR_BR(false, SRC(), cur_basicblock->bb_idx, 0);
+            last_bb->basic_block.push_back(br_inst2);
+            return blockstmt_node;
+        } else {
+            return visitChildren(ctx);
+        }
+    } else {
+        return visitChildren(ctx);
+    }
 }
 
 // finished
