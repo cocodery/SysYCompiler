@@ -8,6 +8,8 @@ string CTValue::ToString() {
         ss << int_value;
     } else if (type == TypeFloat) {
         ss << float_value;
+    } else if (type == TypeBool) {
+        ss << int_value;
     } else {
         dbg("UnExpected DeclType");
     }

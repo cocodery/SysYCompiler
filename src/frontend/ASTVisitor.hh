@@ -24,9 +24,12 @@ private:
     DeclType cur_type;
     DeclType ret_type;
     int32_t var_idx;
+    int32_t glb_var_idx;
     int32_t bb_idx;
     int32_t sp_idx;
     bool init_args;
+    bool loop_mode;
+    vector<LLIR_ALLOCA *> alloca_insts;
     CompUnit &ir;
     vector<pair<SysYParser::InitVarDefContext *, VarPair>> glb_var_init;
     vector<Info *> *cur_scope_elements;
