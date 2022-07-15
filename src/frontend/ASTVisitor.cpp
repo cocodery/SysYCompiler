@@ -1280,9 +1280,25 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
         // 暂不处理类型不匹配情况
         VirtReg *reg1 = lhs.ToVirtReg();
         VirtReg *reg2 = rhs.ToVirtReg();
-        SRC dst = SRC(new VirtReg(var_idx++, TypeInt));
         LLIR_ICMP *icmp_inst = nullptr;
         LLIR_FCMP *fcmp_inst = nullptr;
+        if (reg1 != nullptr) {
+            if (reg1->type.decl_type == TypeBool) {
+                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
+                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg1));
+                cur_basicblock->basic_block.push_back(zext_inst);
+                reg1 = zext_reg;
+            }
+        }
+        if (reg2 != nullptr) {
+            if (reg2->type.decl_type == TypeBool) {
+                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
+                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg2));
+                cur_basicblock->basic_block.push_back(zext_inst);
+                reg2 = zext_reg;
+            }
+        }
+        SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
         dbg("enter visitRel2 with at least a VirtReg");
         if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
             if (reg1->type.decl_type != ctv2->type) {
@@ -1358,9 +1374,25 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
         // 暂不处理类型不匹配情况
         VirtReg *reg1 = lhs.ToVirtReg();
         VirtReg *reg2 = rhs.ToVirtReg();
-        SRC dst = SRC(new VirtReg(var_idx++, reg1->type));
         LLIR_ICMP *icmp_inst = nullptr;
         LLIR_FCMP *fcmp_inst = nullptr;
+        if (reg1 != nullptr) {
+            if (reg1->type.decl_type == TypeBool) {
+                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
+                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg1));
+                cur_basicblock->basic_block.push_back(zext_inst);
+                reg1 = zext_reg;
+            }
+        }
+        if (reg2 != nullptr) {
+            if (reg2->type.decl_type == TypeBool) {
+                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
+                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg2));
+                cur_basicblock->basic_block.push_back(zext_inst);
+                reg2 = zext_reg;
+            }
+        }
+        SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
         if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
             if (reg1->type.decl_type != ctv2->type) {
 
@@ -1374,7 +1406,7 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
             if (ctv1->type != reg2->type.decl_type) {
 
             }
-            if (reg1->type.decl_type == TypeInt) {
+            if (ctv1->type == TypeInt) {
                 icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(ctv1), SRC(reg2));
             } else {
                 
@@ -1408,6 +1440,17 @@ antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
     dbg("enter visitLAnd2");
     SRC dst;
     dst = ctx->lAndExp()->accept(this);
+    if (CTValue *ctv = dst.ToCTValue(); ctv != nullptr) {
+
+    } else {
+        VirtReg *reg = dst.ToVirtReg();
+        if (reg->type.decl_type != TypeBool) {
+            VirtReg *icmp_reg = new VirtReg(var_idx++, VarType(TypeBool));
+            LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_reg), dst, SRC(new CTValue(TypeInt, 0, 0)));
+            cur_basicblock->basic_block.push_back(icmp_inst);
+            dst = SRC(icmp_reg);
+        }
+    }
     LLIR_BR *br_inst = new LLIR_BR(true, dst, 0, 0);
     cur_basicblock->basic_block.push_back(br_inst);
     cur_scope_elements->push_back(cur_basicblock);
@@ -1436,6 +1479,17 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
         land_inst->tar_false = bb_idx;
     }
     land_insts = last_land_insts;
+    if (CTValue *ctv = dst.ToCTValue(); ctv != nullptr) {
+
+    } else {
+        VirtReg *reg = dst.ToVirtReg();
+        if (reg->type.decl_type != TypeBool) {
+            VirtReg *icmp_reg = new VirtReg(var_idx++, VarType(TypeBool));
+            LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_reg), dst, SRC(new CTValue(TypeInt, 0, 0)));
+            cur_basicblock->basic_block.push_back(icmp_inst);
+            dst = SRC(icmp_reg);
+        }
+    }
     LLIR_BR *br_inst = new LLIR_BR(true, dst, 0, 0);
     cur_basicblock->basic_block.push_back(br_inst);
     cur_scope_elements->push_back(cur_basicblock);
