@@ -156,3 +156,12 @@ public:
     LLIR_FPTOSI(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
 };
+
+class LLIR_XOR : public Inst {
+public:
+    SRC dst;
+    SRC src;
+public:
+    LLIR_XOR(SRC _dst, SRC _src): dst(_dst), src(_src) { }
+    string ToString();
+};

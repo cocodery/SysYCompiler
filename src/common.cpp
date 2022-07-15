@@ -80,6 +80,7 @@ string DeclTypeToStr(DeclType type) {
     switch (type) {
         case TypeInt: return "i32";
         case TypeFloat: return "float";
+        case TypeBool: return "i1";
         case TypeVoid: return "void";
         default: break;
     }
