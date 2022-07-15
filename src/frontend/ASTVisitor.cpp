@@ -8,6 +8,7 @@ ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     bb_idx = 1;
     sp_idx = 1;
     init_args = false;
+    loop_mode = false;
     cur_scope = ir.global_scope;
     cur_scope_elements = ir.global_scope->elements;
     cur_vartable = ir.global_scope->local_table;
@@ -271,7 +272,11 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     if (cur_func_info != nullptr && const_var.is_array == true) {
         VirtReg *reg = new VirtReg(const_variable->var_idx, const_variable->type);
         LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), const_variable);
-        cur_basicblock->basic_block.push_back(alloc_inst);
+        if (loop_mode == true) {
+            alloca_insts.push_back(alloc_inst);
+        } else {
+            cur_basicblock->basic_block.push_back(alloc_inst);
+        }
         local_const_list_init(pair);
     }
     dbg("exit ConstDef");
@@ -323,7 +328,11 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
     if (cur_func_info != nullptr) {
         VirtReg *reg = new VirtReg(variable->var_idx, variable->type);
         LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
-        cur_basicblock->basic_block.push_back(alloc_inst);
+        if (loop_mode == true) {
+            alloca_insts.push_back(alloc_inst);
+        } else {
+            cur_basicblock->basic_block.push_back(alloc_inst);
+        }
     }
     if (cur_func_info != nullptr) {
         dbg("un init var def call generate_varinit_ir");
@@ -362,7 +371,11 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     if (cur_func_info != nullptr) {
         VirtReg *reg = new VirtReg(variable->var_idx, variable->type);
         LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
-        cur_basicblock->basic_block.push_back(alloc_inst);
+        if (loop_mode == true) {
+            alloca_insts.push_back(alloc_inst);
+        } else {
+            cur_basicblock->basic_block.push_back(alloc_inst);
+        }
     }
     // parse `InitVarDef`
     // init global variable before excuting main function
@@ -571,15 +584,15 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     lor_insts  = vector<LLIR_BR *>();
     land_insts = vector<LLIR_BR *>();
     SRC cond = ctx->cond()->accept(this);
+    // file in lor branch target
+    for (auto lor_inst : lor_insts) {
+        lor_inst->tar_true = bb_idx;
+    }
     bool has_else = (ctx->stmt().size() > 1);
     LLIR_BR *br_if_else = new LLIR_BR(true, cond, bb_idx ,0);
     LLIR_BR *br_if2else_end = new LLIR_BR(false, SRC(), 0 , 0);
     LLIR_BR *br_else2else_end = new LLIR_BR(false, SRC(), 0 , 0);
     cur_basicblock->basic_block.push_back(br_if_else);
-    // file in lor branch target
-    for (auto lor_inst : lor_insts) {
-        lor_inst->tar_true = bb_idx;
-    }
     // if stmt body
     dbg("Enter If-body");
     if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[0]); node != nullptr) {
@@ -684,6 +697,9 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
         br_if2else_end->tar_true = cur_basicblock->bb_idx;
         br_else2else_end->tar_true = cur_basicblock->bb_idx;
     }
+    for (auto land_inst : land_insts) {
+        land_inst->tar_false = cur_basicblock->bb_idx;
+    }    
     lor_insts  = last_lor_insts;
     land_insts = last_land_insts;
     dbg("exit visitIfStmt");
@@ -699,11 +715,7 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
     lor_insts  = vector<LLIR_BR *>();
     land_insts = vector<LLIR_BR *>();
     LLIR_BR *br2while_cond = new LLIR_BR(false, SRC(), cur_basicblock->bb_idx + 1, 0);
-    // file in lor land branch target
-    for (auto lor_inst : lor_insts) {
-        lor_inst->tar_true = bb_idx;
-    }
-    cur_basicblock->basic_block.push_back(br2while_cond);
+    BasicBlock *alloca_branch_bb = cur_basicblock;
     cur_scope_elements->push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
     int32_t last_continue_target = continue_target;
@@ -712,8 +724,15 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
     break_insts = vector<LLIR_BR *>();
     // while condition
     SRC cond = ctx->cond()->accept(this);
+    // file in lor land branch target
+    for (auto lor_inst : lor_insts) {
+        dbg("Fill in lor true target");
+        lor_inst->tar_true = bb_idx;
+    }
     LLIR_BR *while_br_inst = new LLIR_BR(true, cond, bb_idx, 0);
     cur_basicblock->basic_block.push_back(while_br_inst);
+    bool last_loop_mode = loop_mode;
+    loop_mode = true;
     if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()); node != nullptr) {
         // 在这里遇到了`Block`作为循环体的`While`
         // 但是无法在生成`Block`的中途插入跳转语句
@@ -758,14 +777,25 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
         cur_scope_elements = last_scope_elements;
         cur_basicblock = new BasicBlock(bb_idx++);
     }
+    loop_mode = last_loop_mode;
+    if (loop_mode == false) {
+        for (auto alloca_inst : alloca_insts) {
+            alloca_branch_bb->basic_block.push_back(alloca_inst);
+        }
+        alloca_insts.resize(0);
+    }
+    alloca_branch_bb->basic_block.push_back(br2while_cond);
     for (int32_t idx = 0; idx < break_insts.size(); ++idx) {
         break_insts[idx]->tar_true = cur_basicblock->bb_idx;
     }
-    lor_insts  = last_lor_insts;
-    land_insts = last_land_insts;
     continue_target = last_continue_target;
     break_insts = last_break_insts;
     while_br_inst->tar_false = cur_basicblock->bb_idx;
+    for (auto land_inst : land_insts) {
+        land_inst->tar_false = cur_basicblock->bb_idx;
+    }
+    lor_insts  = last_lor_insts;
+    land_insts = last_land_insts;
     dbg("exit visitWhileStmt");
     return nullptr;
 }

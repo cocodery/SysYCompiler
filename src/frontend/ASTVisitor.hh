@@ -28,6 +28,8 @@ private:
     int32_t bb_idx;
     int32_t sp_idx;
     bool init_args;
+    bool loop_mode;
+    vector<LLIR_ALLOCA *> alloca_insts;
     CompUnit &ir;
     vector<pair<SysYParser::InitVarDefContext *, VarPair>> glb_var_init;
     vector<Info *> *cur_scope_elements;
