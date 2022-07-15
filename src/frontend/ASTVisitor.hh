@@ -36,6 +36,8 @@ private:
     FunctionInfo   *cur_func_info;
     int32_t continue_target;
     vector<LLIR_BR *> break_insts;
+    vector<LLIR_BR *> lor_insts;
+    vector<LLIR_BR *> land_insts;
 // Funtion for helping Build IR and Symbol Table
 public:
     bool have_main_func;

@@ -54,7 +54,7 @@ string RelOpToStr(RelOp op) {
     if (op == LTH) return "slt";
     else if (op == LEQ) return "sle";
     else if (op == EQU) return "eq";
-    else if (op == NEQ) return "uq";
+    else if (op == NEQ) return "ne";
     dbg("Unknown RelOp");
     exit(EXIT_FAILURE);
 }
@@ -80,6 +80,7 @@ string DeclTypeToStr(DeclType type) {
     switch (type) {
         case TypeInt: return "i32";
         case TypeFloat: return "float";
+        case TypeBool: return "i1";
         case TypeVoid: return "void";
         default: break;
     }

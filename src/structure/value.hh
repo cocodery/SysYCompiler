@@ -19,17 +19,6 @@ public:
     string ToString();
 };
 
-class IRValue {
-public:
-    VarType type;
-    VirtReg reg;
-    bool is_left_value;
-public:
-    IRValue() : reg(VirtReg(-1)){ }
-    IRValue(VarType t, VirtReg vg, bool ass = false);
-    bool can_assign() { return !type.is_const && !type.is_array; };
-};
-
 CTValue operator + (CTValue lhs, CTValue rhs);
 CTValue operator - (CTValue lhs, CTValue rhs);
 CTValue operator * (CTValue lhs, CTValue rhs);

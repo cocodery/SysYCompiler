@@ -198,21 +198,17 @@ antlrcpp::Any ASTVisitor::visitCompUnit(SysYParser::CompUnitContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitDecl(SysYParser::DeclContext *ctx) {
-    cout << "enter Decl" << endl;
     visitChildren(ctx);
-    cout << "exit Decl" << endl;
     return nullptr;
 }
 
 // finished
 // 设置全局变量`type`, 这个变量仅在变量声明时起作用，结束后恢复
 antlrcpp::Any ASTVisitor::visitConstDecl(SysYParser::ConstDeclContext *ctx) {
-    cout << "enter ConstDecl" << endl;
     DeclType last_type = cur_type;
     cur_type = getDeclType(ctx->children[1]->getText());
     visitChildren(ctx);
     cur_type = last_type;
-    cout << "exit ConstDecl" << endl;
     return nullptr;
 }
 
@@ -226,7 +222,7 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 // 若有初值则会进行初始化
 // 将变量插入当前作用域的符号表
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
-    cout << "enter ConstDef" << endl;
+    dbg("enter ConstDef");
     string var_name = ctx->Identifier()->getText();
     dbg(var_name);
     if (cur_vartable->findInCurTable(var_name)) {
@@ -274,7 +270,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         cur_basicblock->basic_block.push_back(alloc_inst);
         local_const_list_init(pair);
     }
-    cout << "exit ConstDef" << endl;
+    dbg("exit ConstDef");
     return nullptr;
 }
 
@@ -292,18 +288,16 @@ antlrcpp::Any ASTVisitor::visitListConstInitVal(SysYParser::ListConstInitValCont
 
 // finished
 antlrcpp::Any ASTVisitor::visitVarDecl(SysYParser::VarDeclContext *ctx) {
-    cout << "enter VarDecl" << endl;
     DeclType last_type = cur_type;
     cur_type = getDeclType(ctx->children[0]->getText());
     visitChildren(ctx);
     cur_type = last_type;
-    cout << "exit VarDecl" << endl;
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx) {
-    cout << "enter UninitVarDef" << endl;
+    dbg("enter UninitVarDef");
     string var_name = ctx->Identifier()->getText();
     if (cur_vartable->findInCurTable(var_name)) {
         dbg(var_name + " is in cur_vartable");
@@ -334,13 +328,13 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
         // they are assigned by `0`
         // glb_var_init.push_back(make_pair(nullptr, var_pair));
     }
-    cout << "exit UninitVarDef" << endl;
+    dbg("exit UninitVarDef");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
-    cout << "enter InitVarDef" << endl;
+    dbg("enter visitInitVarDef");
     // push to variable table, similar with `UninitVarDef`
     string var_name = ctx->Identifier()->getText();
     if (cur_vartable->findInCurTable(var_name)) {
@@ -374,7 +368,7 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     } else {
         glb_var_init.push_back(make_pair(ctx, var_pair));
     }
-    cout << "exit InitVarDef" << endl;
+    dbg("exit InitVarDef");
     return nullptr;
 }
 
@@ -394,7 +388,7 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
 // 函数声明分析，获取函数声明，返回类型，参数表
 // 因为不存在函数内声明函数的情况，因此直接将函数定义插入函数表
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
-    cout << "enter FuncDef" << endl;
+    dbg("enter visitFuncDef");
     Function *func = new Function;
     string func_name = ctx->Identifier()->getText();
     dbg(func_name);
@@ -423,9 +417,18 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     ir.functions.push_back(func);
     // parse function body
     func->main_scope = ctx->block()->accept(this);
+    dbg(func->main_scope->get_last_bb()->bb_idx);
+    auto last_block = func->main_scope->get_last_bb();
+    int32_t lb_size = last_block->basic_block.size();
+    LLIR_RET *ret_inst = new LLIR_RET((ret_type != TypeVoid), SRC(new CTValue(ret_type, 0, 0)));
+    if (lb_size == 0) {
+        last_block->basic_block.push_back(ret_inst);
+    } else if (auto last_inst = dynamic_cast<LLIR_RET *>(last_block->basic_block[lb_size - 1]); last_inst == nullptr) {
+        last_block->basic_block.push_back(ret_inst);
+    }
     // push to function table
     cur_func_info = nullptr;
-    cout << "exit FuncDef" << endl;
+    dbg("exit visitFuncDef");
     return nullptr;
 }
 
@@ -464,7 +467,7 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
 // `Block`分析
 // 将该作用域下的符号表，指令保存
 antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
-    cout << "enter Block" << endl;
+    dbg("enter visitBlock");
     // 将上个作用域的基本块push进来
     cur_scope_elements->push_back(cur_basicblock);
     // save `cur_scope` `cur_vartable` `cur_elements`
@@ -502,24 +505,40 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cur_scope_elements = last_scope_elements;
     // 新的基本块
     cur_basicblock = new BasicBlock(bb_idx++);
-    cout << "exit Block" << endl;
+    dbg("exit visitBlock");
     return block_scope;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitBlockItem(SysYParser::BlockItemContext *ctx) {
-    return visitChildren(ctx);
+    auto stmt_node = ctx->stmt();
+    if (auto stmt_node = ctx->stmt(); stmt_node != nullptr) {
+        if (auto blockstmt_node = dynamic_cast<SysYParser::BlockStmtContext *>(stmt_node); blockstmt_node != nullptr) {
+            LLIR_BR *br_inst1 = new LLIR_BR(false, SRC(), cur_basicblock->bb_idx + 1, 0);
+            cur_basicblock->basic_block.push_back(br_inst1);
+            Scope *block_stmt = stmt_node->accept(this);
+            BasicBlock *last_bb = block_stmt->get_last_bb();
+            LLIR_BR *br_inst2 = new LLIR_BR(false, SRC(), cur_basicblock->bb_idx, 0);
+            last_bb->basic_block.push_back(br_inst2);
+            return blockstmt_node;
+        } else {
+            return visitChildren(ctx);
+        }
+    } else {
+        return visitChildren(ctx);
+    }
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitAssignment(SysYParser::AssignmentContext *ctx) {
+    dbg("visit visitAssignment");
     SRC lhs = ctx->lVal()->accept(this);
     SRC rhs = ctx->exp()->accept(this);
     VirtReg *lhs_reg = lhs.ToVirtReg();
-    VirtReg *rhs_reg = rhs.ToVirtReg();
     assert(lhs_reg->assign == true);
     LLIR_STORE *store_inst = new LLIR_STORE(lhs, rhs);
     cur_basicblock->basic_block.push_back(store_inst);
+    dbg("exit visitAssignment");
     return nullptr;
 }
 
@@ -530,30 +549,37 @@ antlrcpp::Any ASTVisitor::visitExpStmt(SysYParser::ExpStmtContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
-    cout << "enter BlockStmt" << endl;
+    dbg("enter visitBlockStmt");
     Scope *block_stmt = ctx->block()->accept(this);
     cur_scope->elements->push_back(block_stmt);
-    cout << "exit BlockStmt" << endl;
+    dbg("exit visitBlockStmt");
     return block_stmt;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
-    cout << "enter visitIfStmt" << endl;
+    dbg("enter visitIfStmt");
+    // store last condition
+    vector<LLIR_BR *> last_lor_insts  = lor_insts;
+    vector<LLIR_BR *> last_land_insts = land_insts;
+    lor_insts  = vector<LLIR_BR *>();
+    land_insts = vector<LLIR_BR *>();
     SRC cond = ctx->cond()->accept(this);
-    LLIR_BR *br_if_inst = new LLIR_BR(true, cond, bb_idx, 0);
-    LLIR_BR *br_else_inst = nullptr;
-    cur_basicblock->basic_block.push_back(br_if_inst);
     bool has_else = (ctx->stmt().size() > 1);
+    LLIR_BR *br_if_else = new LLIR_BR(true, cond, bb_idx ,0);
+    LLIR_BR *br_if2else_end = new LLIR_BR(false, SRC(), 0 , 0);
+    LLIR_BR *br_else2else_end = new LLIR_BR(false, SRC(), 0 , 0);
+    cur_basicblock->basic_block.push_back(br_if_else);
+    // file in lor branch target
+    for (auto lor_inst : lor_insts) {
+        lor_inst->tar_true = bb_idx;
+    }
     // if stmt body
     dbg("Enter If-body");
     if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[0]); node != nullptr) {
         dbg("Block If-Stmt Context");
         Scope *block_stmt = node->accept(this);
-        if (has_else) {
-            br_else_inst = new LLIR_BR(false, SRC(), 0, 0);
-            block_stmt->get_last_bb()->basic_block.push_back(br_else_inst);
-        }
+        block_stmt->get_last_bb()->basic_block.push_back(br_if2else_end);
     } else {
         dbg("Other If-Stmt Context");
         cur_scope_elements->push_back(cur_basicblock);
@@ -571,10 +597,7 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
         cur_basicblock = new BasicBlock(bb_idx++);
 
         ctx->stmt()[0]->accept(this);
-        if (has_else) {
-            br_else_inst = new LLIR_BR(false, SRC(), 0, 0);
-            cur_basicblock->basic_block.push_back(br_else_inst);
-        }
+        cur_basicblock->basic_block.push_back(br_if2else_end);
         cur_scope_elements->push_back(cur_basicblock);
 
         last_scope->elements->push_back(cur_scope);
@@ -586,11 +609,15 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     // else stmt body
     if (has_else) {
         dbg("Enter Else-body");
-        br_if_inst->tar_false = bb_idx;
+        br_if_else->tar_false = cur_basicblock->bb_idx + 1;
+        // file in lor branch target
+        for (auto land_inst : land_insts) {
+            land_inst->tar_false = bb_idx;
+        }
         if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[1]); node != nullptr) {
             dbg("Block Else-Stmt Context");
             Scope *block_stmt = node->accept(this);
-            block_stmt->get_last_bb()->basic_block.push_back(br_else_inst);
+            block_stmt->get_last_bb()->basic_block.push_back(br_else2else_end);
         } else {
             dbg("Other Else-Stmt Context");
             cur_scope_elements->push_back(cur_basicblock);
@@ -608,7 +635,7 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
             cur_basicblock = new BasicBlock(bb_idx++);
 
             ctx->stmt()[1]->accept(this);
-            cur_basicblock->basic_block.push_back(br_else_inst);
+            cur_basicblock->basic_block.push_back(br_else2else_end);
             cur_scope_elements->push_back(cur_basicblock);
 
             last_scope->elements->push_back(cur_scope);
@@ -617,18 +644,59 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
             cur_scope_elements = last_scope_elements;
             cur_basicblock = new BasicBlock(bb_idx++);
         }
-        br_else_inst->tar_true = cur_basicblock->bb_idx;
+        br_if2else_end->tar_true = cur_basicblock->bb_idx;
+        br_else2else_end->tar_true = cur_basicblock->bb_idx;
     } else {
-        br_if_inst->tar_false = cur_basicblock->bb_idx;
+        dbg("Create a Empty Else-Stmt");
+        br_if_else->tar_false = cur_basicblock->bb_idx + 1;
+        // file in lor branch target
+        for (auto land_inst : land_insts) {
+            land_inst->tar_false = bb_idx;
+        }
+        cur_scope_elements->push_back(cur_basicblock);
+        Scope          *last_scope = cur_scope;
+        VariableTable  *last_vartable = cur_vartable;
+        vector<Info *> *last_scope_elements = cur_scope_elements;
+
+        Scope *block_scope = new Scope(sp_idx++);
+        block_scope->local_table = new VariableTable;
+        block_scope->elements = new vector<Info *>;
+        block_scope->parent = last_scope;
+        cur_scope = block_scope;
+        cur_vartable = block_scope->local_table;
+        cur_scope_elements = block_scope->elements;
+        cur_basicblock = new BasicBlock(bb_idx++);
+
+        cur_basicblock->basic_block.push_back(br_else2else_end);
+        cur_scope_elements->push_back(cur_basicblock);
+
+        last_scope->elements->push_back(cur_scope);
+        cur_scope = last_scope;
+        cur_vartable = last_vartable;
+        cur_scope_elements = last_scope_elements;
+        cur_basicblock = new BasicBlock(bb_idx++);
+        br_if2else_end->tar_true = cur_basicblock->bb_idx;
+        br_else2else_end->tar_true = cur_basicblock->bb_idx;
     }
-    cout << "exit visitIfStmt" << endl;
+    lor_insts  = last_lor_insts;
+    land_insts = last_land_insts;
+    dbg("exit visitIfStmt");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
-    cout << "enter visitWhileStmt" << endl;
+    dbg("enter visitWhileStmt");
+    // store last condition
+    vector<LLIR_BR *> last_lor_insts  = lor_insts;
+    vector<LLIR_BR *> last_land_insts = land_insts;
+    lor_insts  = vector<LLIR_BR *>();
+    land_insts = vector<LLIR_BR *>();
     LLIR_BR *br2while_cond = new LLIR_BR(false, SRC(), cur_basicblock->bb_idx + 1, 0);
+    // file in lor land branch target
+    for (auto lor_inst : lor_insts) {
+        lor_inst->tar_true = bb_idx;
+    }
     cur_basicblock->basic_block.push_back(br2while_cond);
     cur_scope_elements->push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
@@ -646,11 +714,19 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
         // 因此我们要进入`Block`中找到其最后一个`basic_block`
         // 并插入`Jump_Inst`
         dbg("Block Stmt Context");
+        // file in lor branch target
+        for (auto land_inst : land_insts) {
+            land_inst->tar_false = bb_idx;
+        }
         Scope *block_stmt = node->accept(this);
         LLIR_BR *br_while_start = new LLIR_BR(false, SRC(), continue_target, 0);
         block_stmt->get_last_bb()->basic_block.push_back(br_while_start);
     } else {
         dbg("Other Stmt Context");
+        // file in lor branch target
+        for (auto land_inst : land_insts) {
+            land_inst->tar_false = bb_idx;
+        }
         cur_scope_elements->push_back(cur_basicblock);
         Scope          *last_scope = cur_scope;
         VariableTable  *last_vartable = cur_vartable;
@@ -679,39 +755,41 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
     for (int32_t idx = 0; idx < break_insts.size(); ++idx) {
         break_insts[idx]->tar_true = cur_basicblock->bb_idx;
     }
+    lor_insts  = last_lor_insts;
+    land_insts = last_land_insts;
     continue_target = last_continue_target;
     break_insts = last_break_insts;
     while_br_inst->tar_false = cur_basicblock->bb_idx;
-    cout << "exit visitWhileStmt" << endl;
+    dbg("exit visitWhileStmt");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitBreakStmt(SysYParser::BreakStmtContext *ctx) {
-    cout << "enter visitBreakStmt" << endl;
+    dbg("enter visitBreakStmt");
     LLIR_BR *jmp_inst = new LLIR_BR(false, SRC(), 0, 0);
     cur_basicblock->basic_block.push_back(jmp_inst);
     break_insts.push_back(jmp_inst);
     cur_scope_elements->push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
-    cout << "exit visitBreakStmt" << endl;
+    dbg("exit visitBreakStmt");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitContinueStmt(SysYParser::ContinueStmtContext *ctx) {
-    cout << "enter ContinueStmt" << endl;
+    dbg("enter visitContinueStmt");
     LLIR_BR *jmp_inst = new LLIR_BR(false, SRC(), continue_target, 0);
     cur_basicblock->basic_block.push_back(jmp_inst);
     cur_scope_elements->push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
-    cout << "exit ContinueStmt" << endl;
+    dbg("enter visitContinueStmt");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
-    cout << "enter visitReturnStmt" << endl;
+    dbg("enter visitReturnStmt");
     // if ctx->exp() == nullptr, means it's a function without return value
     bool has_retvalue = (ctx->exp() != nullptr);
     LLIR_RET *ret_inst = nullptr;
@@ -745,34 +823,53 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
     cur_basicblock->basic_block.push_back(ret_inst); // 将指令加入基本块
     cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
     cur_basicblock = new BasicBlock(bb_idx++);
-    cout << "exit visitReturnStmt" << endl;
+    dbg("exit visitReturnStmt");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitExp(SysYParser::ExpContext *ctx) {
-    return ctx->addExp()->accept(this);
+    dbg("enter visitExp");
+    SRC exp = ctx->addExp()->accept(this);
+    dbg("exit visitExp");
+    return exp;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
-    return ctx->lOrExp()->accept(this);
+    dbg("enter visitCond");
+    SRC cond =  ctx->lOrExp()->accept(this);
+    if (CTValue *ctv = cond.ToCTValue(); ctv != nullptr) {
+
+    } else {
+        VirtReg *reg = cond.ToVirtReg();
+        if (reg->type.decl_type != TypeBool) {
+            VirtReg *icmp_dst = new VirtReg(var_idx++, TypeBool);
+            LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_dst), cond, SRC(new CTValue(TypeInt, 0, 0)));
+            cur_basicblock->basic_block.push_back(icmp_inst);
+            cond = SRC(icmp_dst);
+        }
+    }
+    dbg("exit visitCond");
+    return cond;
 }
 
 // finished
 // 进入这个产生式并不知道他将作为左值还是右值
 // 所以在这里我们仅返回存储使用的变量的地址
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
-    cout << "enter LVal" << endl;
-    SRC variable = cur_scope->resolve(ctx->Identifier()->getText(), cur_func_info);
+    string var_name = ctx->Identifier()->getText();
+    dbg("enter LVal for " + var_name);
+    SRC variable = cur_scope->resolve(var_name, cur_func_info);
     assert(variable.ToCTValue() != nullptr || variable.ToVirtReg() != nullptr);
     // 常量
     if (CTValue *ctv = variable.ToCTValue(); ctv != nullptr) {
-        cout << "exit visitLVal with a constant" << endl;
+        dbg("exit visitLVal with a constant");
         return SRC(ctv);
     } else { // 标量
         VirtReg *reg = variable.ToVirtReg();
         if (reg->type.is_array == false) {
+            dbg("exit visitLVal with a scalar variable");
             return SRC(reg);
         }
     }
@@ -800,7 +897,7 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, offset, VarType(false, type.is_array, false, reg->type.decl_type));
     cur_basicblock->basic_block.push_back(gep_inst2);
     dbg(reg->ToString());
-    cout << "exit visitLVal with a variable or array" << endl;
+    dbg( "exit visitLVal with a variable or array");
     return SRC(ptr2);
 }
 
@@ -811,7 +908,7 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp1(SysYParser::PrimaryExp1Context *ctx) 
 
 // finished
 antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) {
-    cout << "enter visitPrimaryExp2" << endl;
+    dbg("enter visitPrimaryExp2");
     SRC src = ctx->lVal()->accept(this);
     SRC dst;
     if (CTValue *ctv = src.ToCTValue(); ctv != nullptr) {
@@ -828,15 +925,16 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
             cur_basicblock->basic_block.push_back(load_inst);
         }
     }
-    cout << "exit visitPrimaryExp2" << endl;
+    dbg("exit visitPrimaryExp2");
     return dst;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
-    cout << "enter visitPrimaryExp3" << endl;
+    dbg("enter visitPrimaryExp3");
     SRC src = ctx->number()->accept(this);
-    cout << "exit visitPrimaryExp3" << endl;
+    dbg(src.ToString());
+    dbg("exit visitPrimaryExp3");
     return src;
 }
 
@@ -857,14 +955,15 @@ antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
-    cout << "enter visitUnary1" << endl;
+    dbg("enter visitUnary1");
     SRC ret = ctx->primaryExp()->accept(this);
-    cout << "exit visitUnary1" << endl;
+    dbg("exit visitUnary1");
     return ret;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
+    dbg("enter visitUnary2");
     string func_name = ctx->Identifier()->getText();
     vector<SRC> args;
     if (func_name == "starttime") {
@@ -883,12 +982,13 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
     }
     LLIR_CALL *call_inst = new LLIR_CALL(dst, args, func_info);
     cur_basicblock->basic_block.push_back(call_inst);
+    dbg("exit visitUnary2");
     return dst;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
-    cout << "enter unary3" << endl;
+    dbg("enter visitUnary3");
     string op = ctx->unaryOp()->getText();
     SRC src = ctx->unaryExp()->accept(this);
     if (CTValue *ctv = src.ToCTValue(); ctv != nullptr) {
@@ -896,24 +996,49 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
         // 可以直接计算, 无关所处状态
         if (op == "-") {
             CTValue *uop_ctv = new CTValue(ctv->type, -ctv->int_value, -ctv->float_value);
+            dbg("exit visitUnary3 with CTValue SUB");
             return SRC(uop_ctv);
         } else if (op == "+") {
+            dbg("exit visitUnary3 with CTValue ADD");
             return SRC(ctv);
         } else {
             CTValue *uop_ctv = new CTValue(TypeInt, !ctv->int_value, !ctv->float_value);
+            dbg("exit visitUnary3 with CTValue NEG");
             return SRC(uop_ctv);
         }
     } else {
         VirtReg *reg = src.ToVirtReg();
-        if (op == "-" || op == "!") {
-            VarType _type = reg->type;
-            CTValue *zero = new CTValue(_type.decl_type, 0, 0);
+        VarType _type = reg->type;
+        if (op == "-") {
+            if (_type.decl_type == TypeBool) {
+                VirtReg *zext_dst = new VirtReg(var_idx++, VarType(TypeInt));
+                 LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_dst), SRC(reg));
+                cur_basicblock->basic_block.push_back(zext_inst);
+                reg = zext_dst;
+                _type = TypeInt;
+            }
             VirtReg *dst = new VirtReg(var_idx++, _type);
-            LLIR_BIN *bin_inst = new LLIR_BIN(SUB, dst, SRC(zero), SRC(reg));
+            LLIR_BIN *bin_inst = new LLIR_BIN(SUB, dst, SRC(new CTValue(_type.decl_type, 0, 0)), SRC(reg));
+            dbg(bin_inst->src1.ToCTValue()->ToString());
             cur_basicblock->basic_block.push_back(bin_inst);
+            dbg("exit visitUnary3 with VirtReg SUB");
+            dbg(bin_inst->ToString());
             return SRC(dst);
-        } else {
+        } else if (op == "+") {
+            dbg("exit visitUnary3 with VirtReg ADD");
             return SRC(reg);
+        } else {
+            if (reg->type.decl_type != TypeBool) {
+                VirtReg *icmp_dst = new VirtReg(var_idx++, VarType(TypeBool));
+                LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_dst), SRC(reg), SRC(new CTValue(_type.decl_type, 0, 0)));
+                cur_basicblock->basic_block.push_back(icmp_inst);
+                reg = icmp_dst;
+            }
+            VirtReg *dst = new VirtReg(var_idx++, VarType(TypeBool));
+            LLIR_XOR *xor_inst = new LLIR_XOR(dst, SRC(reg));
+            cur_basicblock->basic_block.push_back(xor_inst);
+            dbg("exit visitUnary3 with VirtReg NEG");
+            return SRC(dst);
         }
     }
 }
@@ -946,7 +1071,7 @@ antlrcpp::Any ASTVisitor::visitMul1(SysYParser::Mul1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
-    cout << "enter visitMul2" << endl;
+    dbg("enter visitMul2");
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->mulExp()->accept(this);
     SRC rhs = ctx->unaryExp()->accept(this);
@@ -976,16 +1101,18 @@ antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
         }
         CTValue *mul = new CTValue(_type, imul, fmul);
         dbg(mul->ToString());
-        cout << "exit visitMul2 with 2 CTValue" << endl;
+        dbg("exit visitMul2 with 2 CTValue");
         return SRC(mul);
     } else { // 当其中至少有一个是`VirtReg`
         // 暂不处理类型不匹配情况
         VirtReg *reg1 = lhs.ToVirtReg();
         VirtReg *reg2 = rhs.ToVirtReg();
-        SRC dst = SRC(new VirtReg(var_idx++, reg1->type));
+        VarType _type = (reg2 == nullptr) ? reg1->type : reg2->type;
+        SRC dst = SRC(new VirtReg(var_idx++, _type));
         LLIR_BIN *bop_inst = nullptr;
         LLIR_FBIN *fbop_inst = nullptr;
         if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
+            dbg("exit visitMul2 with VirtReg and CTValue");
             if (reg1->type.decl_type != ctv2->type) {
 
             }
@@ -995,15 +1122,17 @@ antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
                 fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, SRC(reg1), SRC(ctv2));
             }
         } else if (ctv1 && !ctv2 && !reg1 && reg2) { // lhs -> CTValue, rhs -> VirtReg
+            dbg("exit visitMul2 with CTValue and VirtReg");
             if (ctv1->type != reg2->type.decl_type) {
 
             }
-            if (reg1->type.decl_type == TypeInt) {
+            if (ctv1->type == TypeInt) {
                 bop_inst = new LLIR_BIN(StrToBinOp(op), dst, SRC(ctv1), SRC(reg2));
             } else {
                 fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, SRC(ctv1), SRC(reg2));
             }
         } else if (!ctv1 && !ctv2 && reg1 && reg2) { // lhs -> VirtReg, rhs -> VirtReg
+            dbg("exit visitMul2 with 2 VirtReg");
             if (reg1->type.decl_type != reg2->type.decl_type) {
 
             }
@@ -1029,11 +1158,13 @@ antlrcpp::Any ASTVisitor::visitAdd1(SysYParser::Add1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
+    dbg("enter visitAdd2");
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->addExp()->accept(this);
     SRC rhs = ctx->mulExp()->accept(this);
     // 当两个操作数都是`CTValue`
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
+    dbg("get two oprand");
         DeclType _type = ctv1->type;
         int iadd = 0;
         float fadd = 0;
@@ -1055,15 +1186,18 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
         }
         CTValue *add = new CTValue(_type, iadd, fadd);
         dbg(add->ToString());
+        dbg("exit visitAdd2 with 2 CTValue");
         return SRC(add);
     } else { // 当其中至少有一个是`VirtReg`
         // 暂不处理类型不匹配情况
         VirtReg *reg1 = lhs.ToVirtReg();
         VirtReg *reg2 = rhs.ToVirtReg();
-        SRC dst = SRC(new VirtReg(var_idx++, reg1->type));
+        VarType _type = (reg2 == nullptr) ? reg1->type : reg2->type;
+        SRC dst = SRC(new VirtReg(var_idx++, _type));
         LLIR_BIN *bop_inst = nullptr;
         LLIR_FBIN *fbop_inst = nullptr;
         if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
+            dbg("exit visitAdd2 with VirtReg and CTValue");
             if (reg1->type.decl_type != ctv2->type) {
 
             }
@@ -1073,15 +1207,17 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
                 fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, SRC(reg1), SRC(ctv2));
             }
         } else if (ctv1 && !ctv2 && !reg1 && reg2) { // lhs -> CTValue, rhs -> VirtReg
+            dbg("exit visitAdd2 with CTValue and VirtReg");
             if (ctv1->type != reg2->type.decl_type) {
 
             }
-            if (reg1->type.decl_type == TypeInt) {
+            if (ctv1->type == TypeInt) {
                 bop_inst = new LLIR_BIN(StrToBinOp(op), dst, SRC(ctv1), SRC(reg2));
             } else {
                 fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, SRC(ctv1), SRC(reg2));
             }
         } else if (!ctv1 && !ctv2 && reg1 && reg2) { // lhs -> VirtReg, rhs -> VirtReg
+            dbg("exit visitAdd2 with 2 VirtReg");
             if (reg1->type.decl_type != reg2->type.decl_type) {
 
             }
@@ -1096,6 +1232,7 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
         } else {
             cur_basicblock->basic_block.push_back(fbop_inst);
         }
+        dbg(dst.ToString());
         return dst;
     }
 }
@@ -1107,6 +1244,8 @@ antlrcpp::Any ASTVisitor::visitRel1(SysYParser::Rel1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
+    dbg("enter visitRel2");
+    dbg(ctx->getText());
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->relExp()->accept(this);
     SRC rhs = ctx->addExp()->accept(this);
@@ -1118,6 +1257,7 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
         std::swap(lhs, rhs);
     }
     // 当两个操作数都是`CTValue`
+    dbg("enter process visitRel2");
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
         DeclType _type = ctv1->type;
         int irel = 0;
@@ -1134,18 +1274,37 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
         }
         CTValue *rel = new CTValue(_type, irel, frel);
         dbg(rel->ToString());
+        dbg("exit visitRel2 with 2 CTValue");
         return SRC(rel);
     } else { // 当其中至少有一个是`VirtReg`
         // 暂不处理类型不匹配情况
         VirtReg *reg1 = lhs.ToVirtReg();
         VirtReg *reg2 = rhs.ToVirtReg();
-        SRC dst = SRC(new VirtReg(var_idx++, reg1->type));
         LLIR_ICMP *icmp_inst = nullptr;
         LLIR_FCMP *fcmp_inst = nullptr;
+        if (reg1 != nullptr) {
+            if (reg1->type.decl_type == TypeBool) {
+                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
+                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg1));
+                cur_basicblock->basic_block.push_back(zext_inst);
+                reg1 = zext_reg;
+            }
+        }
+        if (reg2 != nullptr) {
+            if (reg2->type.decl_type == TypeBool) {
+                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
+                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg2));
+                cur_basicblock->basic_block.push_back(zext_inst);
+                reg2 = zext_reg;
+            }
+        }
+        SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
+        dbg("enter visitRel2 with at least a VirtReg");
         if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
             if (reg1->type.decl_type != ctv2->type) {
 
             }
+            dbg("exit visitRel2 with VirtReg and CTValue");
             if (reg1->type.decl_type == TypeInt) {
                 icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(reg1), SRC(ctv2));
             } else {
@@ -1155,7 +1314,8 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
             if (ctv1->type != reg2->type.decl_type) {
 
             }
-            if (reg1->type.decl_type == TypeInt) {
+            dbg("exit visitRel2 with CTValue and VirtReg");
+            if (reg2->type.decl_type == TypeInt) {
                 icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(ctv1), SRC(reg2));
             } else {
                 
@@ -1164,6 +1324,7 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
             if (reg1->type.decl_type != reg2->type.decl_type) {
 
             }
+            dbg("exit visitRel2 with 2 VirtReg");
             if (reg1->type.decl_type == TypeInt) {
                 icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(reg1), SRC(reg2));
             } else {
@@ -1186,9 +1347,11 @@ antlrcpp::Any ASTVisitor::visitEq1(SysYParser::Eq1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
+    dbg("enter visitEq2");
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->eqExp()->accept(this);
     SRC rhs = ctx->relExp()->accept(this);
+    dbg("exit visitEq2");
     // 当两个操作数都是`CTValue`
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
         DeclType _type = ctv1->type;
@@ -1211,9 +1374,25 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
         // 暂不处理类型不匹配情况
         VirtReg *reg1 = lhs.ToVirtReg();
         VirtReg *reg2 = rhs.ToVirtReg();
-        SRC dst = SRC(new VirtReg(var_idx++, reg1->type));
         LLIR_ICMP *icmp_inst = nullptr;
         LLIR_FCMP *fcmp_inst = nullptr;
+        if (reg1 != nullptr) {
+            if (reg1->type.decl_type == TypeBool) {
+                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
+                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg1));
+                cur_basicblock->basic_block.push_back(zext_inst);
+                reg1 = zext_reg;
+            }
+        }
+        if (reg2 != nullptr) {
+            if (reg2->type.decl_type == TypeBool) {
+                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
+                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg2));
+                cur_basicblock->basic_block.push_back(zext_inst);
+                reg2 = zext_reg;
+            }
+        }
+        SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
         if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
             if (reg1->type.decl_type != ctv2->type) {
 
@@ -1227,7 +1406,7 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
             if (ctv1->type != reg2->type.decl_type) {
 
             }
-            if (reg1->type.decl_type == TypeInt) {
+            if (ctv1->type == TypeInt) {
                 icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(ctv1), SRC(reg2));
             } else {
                 
@@ -1258,15 +1437,28 @@ antlrcpp::Any ASTVisitor::visitLAnd1(SysYParser::LAnd1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
+    dbg("enter visitLAnd2");
     SRC dst;
     dst = ctx->lAndExp()->accept(this);
-    LLIR_BR *br_inst1 = new LLIR_BR(true, dst, 0, 0);
-    cur_basicblock->basic_block.push_back(br_inst1);
+    if (CTValue *ctv = dst.ToCTValue(); ctv != nullptr) {
+
+    } else {
+        VirtReg *reg = dst.ToVirtReg();
+        if (reg->type.decl_type != TypeBool) {
+            VirtReg *icmp_reg = new VirtReg(var_idx++, VarType(TypeBool));
+            LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_reg), dst, SRC(new CTValue(TypeInt, 0, 0)));
+            cur_basicblock->basic_block.push_back(icmp_inst);
+            dst = SRC(icmp_reg);
+        }
+    }
+    LLIR_BR *br_inst = new LLIR_BR(true, dst, 0, 0);
+    cur_basicblock->basic_block.push_back(br_inst);
     cur_scope_elements->push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
-    br_inst1->tar_true = cur_basicblock->bb_idx;
+    br_inst->tar_true = cur_basicblock->bb_idx;
     dst = ctx->eqExp()->accept(this);
-    br_inst1->tar_false = cur_basicblock->bb_idx + 1;
+    land_insts.push_back(br_inst);
+    dbg("exit visitLAnd2");
     return dst;
 }
 
@@ -1277,23 +1469,43 @@ antlrcpp::Any ASTVisitor::visitLOr1(SysYParser::LOr1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
+    dbg("enter visitLOr2");
+    // store last condition
+    vector<LLIR_BR *> last_land_insts = land_insts;
+    land_insts = vector<LLIR_BR *>();
     SRC dst;
     dst = ctx->lOrExp()->accept(this);
-    LLIR_BR *br_inst1 = new LLIR_BR(true, dst, 0, 0);
-    cur_basicblock->basic_block.push_back(br_inst1);
+    for (auto land_inst : land_insts) {
+        land_inst->tar_false = bb_idx;
+    }
+    land_insts = last_land_insts;
+    if (CTValue *ctv = dst.ToCTValue(); ctv != nullptr) {
+
+    } else {
+        VirtReg *reg = dst.ToVirtReg();
+        if (reg->type.decl_type != TypeBool) {
+            VirtReg *icmp_reg = new VirtReg(var_idx++, VarType(TypeBool));
+            LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_reg), dst, SRC(new CTValue(TypeInt, 0, 0)));
+            cur_basicblock->basic_block.push_back(icmp_inst);
+            dst = SRC(icmp_reg);
+        }
+    }
+    LLIR_BR *br_inst = new LLIR_BR(true, dst, 0, 0);
+    cur_basicblock->basic_block.push_back(br_inst);
     cur_scope_elements->push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
-    br_inst1->tar_false = cur_basicblock->bb_idx;
+    br_inst->tar_false = cur_basicblock->bb_idx;
     dst = ctx->lAndExp()->accept(this);
-    br_inst1->tar_true = cur_basicblock->bb_idx + 1;
+    lor_insts.push_back(br_inst);
+    dbg("exit visitLOr2");
     return dst;
 }
 
 // finished
 // 返回表达式的类型由type限定, 存在隐患
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
-    cout << "enter constexp" << endl;
+    dbg("enter constexp");
     SRC result = ctx->addExp()->accept(this);
-    cout << "exit constexp" << endl;
+    dbg("exit constexp");
     return result;
 }

@@ -3,9 +3,12 @@
 int32_t tab_num = 1;
 
 void BasicBlock::printBlock() {
+    // /*
     if (basic_block.size()) {
         llir << get_tabs(tab_num-1) << "Block" << bb_idx << ":" << endl;
     }
+    // */
+    // llir << get_tabs(tab_num-1) << "Block" << bb_idx << ":" << endl;
     for (auto inst: basic_block) {
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {
@@ -32,8 +35,14 @@ void BasicBlock::printBlock() {
         Case (LLIR_CALL, call_inst, inst) {
             llir << get_tabs() << call_inst->ToString() << endl;
         }
+        Case (LLIR_ZEXT, zext_inst, inst) {
+            llir << get_tabs() << zext_inst->ToString() << endl;
+        }
         Case (LLIR_GEP, gep_inst, inst) {
             llir << get_tabs() << gep_inst->ToString() << endl;
+        }
+        Case (LLIR_XOR, xor_inst, inst) {
+            llir << get_tabs() << xor_inst->ToString() << endl;
         }
     }
 }
@@ -41,7 +50,6 @@ void BasicBlock::printBlock() {
 SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
     auto cur_scope = this;
     VariableTable *cur_table = nullptr;
-    int32_t idx = 0;
     while (cur_scope != nullptr) {
         cur_table = cur_scope->local_table;
         // search cur scope's variable table first
@@ -192,6 +200,7 @@ void CompUnit::DebugGlobalTable() {
     VariableTable *global_table = global_scope->local_table;
     int32_t glb_var_idx = 1;
     for (auto pair: global_table->var_table) {
+        if (pair.second->type.is_const && !pair.second->type.is_array) continue;
         llir << "    " << "@_" << glb_var_idx++ << " = ";
         Variable *var = pair.second;
         if (var->type.is_const) { 

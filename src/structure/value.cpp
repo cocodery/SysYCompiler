@@ -1,7 +1,5 @@
 #include "value.hh"
 
-IRValue::IRValue(VarType t, VirtReg vg, bool ass) : type(t), reg(vg), is_left_value(ass) { }
-
 CTValue::CTValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), float_value(fv) { }
 
 string CTValue::ToString() {

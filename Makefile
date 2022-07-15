@@ -5,8 +5,10 @@ CMAKE := cmake
 MAKE := make
 GDB := gdb
 LLDB := lldb
+TEST_DIR := ./compiler2022/公开样例与运行时库/functional
 
-TEST := 00_main.sy
+TEST := 00
+CASE = $(shell find $(TEST_DIR) -name "$(TEST)*.sy")
 
 $(shell mkdir -p $(BUILD_DIR))
 
@@ -18,12 +20,13 @@ build:
 .PHONY: run
 run:
 	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm main.sy ; cd ..
-# @llvm-link sylib.ll main.ll -S -o run.ll
+	@llvm-link sylib.ll main.ll -S -o run.ll
 
 .PHONY: test
 test:
-	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm compiler2022/公开样例与运行时库/functional/$(TEST); cd ..
-# @llvm-link sylib.ll main.ll -S -o run.ll
+	@echo $(CASE)
+	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm $(CASE); cd ..
+	@llvm-link sylib.ll main.ll -S -o run.ll
 
 .PHONY: gdb
 gdb:
