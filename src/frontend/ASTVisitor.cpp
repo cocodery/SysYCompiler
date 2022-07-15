@@ -1395,16 +1395,13 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
         int irel = 0;
         float frel = 0;
         if (op == "==") {
-            irel = ctv1->int_value < ctv2->int_value;
-            frel = ctv1->float_value < ctv2->float_value;
+            irel = ctv1->int_value == ctv2->int_value;
+            frel = ctv1->float_value == ctv2->float_value;
         } else if (op == "!=") {
-            irel = ctv1->int_value <= ctv2->int_value;
-            frel = ctv1->float_value <= ctv2->float_value;
+            irel = ctv1->int_value != ctv2->int_value;
+            frel = ctv1->float_value != ctv2->float_value;
         }
-        if (ctv1->type != ctv2->type) {
-            _type = TypeFloat;
-        }
-        CTValue *eq = new CTValue(_type, irel, frel);
+        CTValue *eq = new CTValue(TypeBool, irel, frel);
         dbg(eq->ToString());
         return SRC(eq);
     } else { // 当其中至少有一个是`VirtReg`
