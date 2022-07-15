@@ -135,6 +135,10 @@ public:
 
 class LLIR_ZEXT: public Inst {
 public:
+    SRC dst, src;
+public:
+    LLIR_ZEXT(SRC _dst, SRC _src): dst(_dst), src(_src) { }
+    string ToString();
 };
 
 class LLIR_FPEXT: public Inst {

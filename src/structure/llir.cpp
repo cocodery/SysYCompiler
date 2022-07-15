@@ -153,6 +153,15 @@ string LLIR_CALL::ToString() {
     return ss.str();
 }
 
+string LLIR_ZEXT::ToString() {
+    std::stringstream ss;
+    VirtReg *dst_reg = dst.ToVirtReg(), *src_reg = src.ToVirtReg();
+    assert(dst_reg != nullptr && src_reg != nullptr);
+    ss << dst_reg->ToString() << " = zext i1 ";
+    ss << src_reg->ToString() << " to i32";
+    return ss.str();
+}
+
 // LLVM-IR Signed-Int-TO-Float-Point
 string LLIR_SITOFP::ToString() {
     std::stringstream ss;

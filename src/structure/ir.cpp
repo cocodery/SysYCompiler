@@ -35,6 +35,9 @@ void BasicBlock::printBlock() {
         Case (LLIR_CALL, call_inst, inst) {
             llir << get_tabs() << call_inst->ToString() << endl;
         }
+        Case (LLIR_ZEXT, zext_inst, inst) {
+            llir << get_tabs() << zext_inst->ToString() << endl;
+        }
         Case (LLIR_GEP, gep_inst, inst) {
             llir << get_tabs() << gep_inst->ToString() << endl;
         }
