@@ -24,6 +24,7 @@ private:
     DeclType cur_type;
     DeclType ret_type;
     int32_t var_idx;
+    int32_t glb_var_idx;
     int32_t bb_idx;
     int32_t sp_idx;
     bool init_args;

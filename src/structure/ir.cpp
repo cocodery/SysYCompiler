@@ -198,11 +198,11 @@ void CompUnit::DebugUserFuncs() {
 void CompUnit::DebugGlobalTable() {
     llir << "; Global Variable" << endl;
     VariableTable *global_table = global_scope->local_table;
-    int32_t glb_var_idx = 1;
     for (auto pair: global_table->var_table) {
         if (pair.second->type.is_const && !pair.second->type.is_array) continue;
-        llir << "    " << "@_" << glb_var_idx++ << " = ";
         Variable *var = pair.second;
+        llir << "    " << "@_" << var->var_idx << " = ";
+        // var->var_idx = glb_var_idx;
         if (var->type.is_const) { 
             llir << "constant " << var->type.printVarTypeForAlc() << " ";
             if (var->type.is_array) {

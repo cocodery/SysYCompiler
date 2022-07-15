@@ -4,6 +4,7 @@ ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
     cur_type = TypeVoid;
     var_idx = 1;
+    glb_var_idx = 1;
     bb_idx = 1;
     sp_idx = 1;
     init_args = false;
@@ -238,7 +239,10 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         dbg(const_var.array_dims);
     }
     Variable *const_variable = nullptr;
-    if (const_var.is_array) const_variable = new Variable(var_idx++);
+    if (const_var.is_array) {
+        int32_t idx = (cur_func_info != nullptr) ? var_idx++ : glb_var_idx++;
+        const_variable = new Variable(var_idx++);
+    }
     else const_variable = new Variable(-1);
     // 分析`const`变量的初值
     auto init_node = ctx->constInitVal();
@@ -303,7 +307,8 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
         dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
-    Variable *variable = new Variable(var_idx++);
+    int32_t idx = (cur_func_info != nullptr) ? var_idx++ : glb_var_idx++;
+    Variable *variable = new Variable(idx);
     bool is_array = !(ctx->constExp().size() == 0);
     DeclType type = cur_type;
     VarType var(false, is_array, false, type);
@@ -341,7 +346,8 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
         dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
-    Variable *variable = new Variable(var_idx++);
+    int32_t idx = (cur_func_info != nullptr) ? var_idx++ : glb_var_idx++;
+    Variable *variable = new Variable(idx);
     bool is_array = !(ctx->constExp().size() == 0);
     DeclType type = cur_type;
     VarType var(false, is_array, false, type);
@@ -874,6 +880,7 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
         }
     }
     VirtReg *reg = variable.ToVirtReg();
+    dbg(reg->reg_id, reg->global);
     SRC offset = SRC(new CTValue(TypeInt, 0, 0));
     vector<int32_t> arr_dim = reg->type.get_dims();
     int32_t size = ctx->exp().size();
