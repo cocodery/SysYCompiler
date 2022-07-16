@@ -1,13 +1,23 @@
-TOPNAME := compiler
+TOPNAME := compiler 
 BUILD_DIR := ./build
 BINARY := $(BUILD_DIR)/$(TOPNAME)
 CMAKE := cmake
 MAKE := make
 GDB := gdb
 LLDB := lldb
-TEST_DIR := ./compiler2022/公开样例与运行时库/functional
+MODE := func # func or perf, selet functional or performance
+TEST_MODE := functional # test case directory
 
+# re-define 
+ifeq ($(MODE), "func")
+	TEST_MODE = functional 
+else
+	TEST_MODE = performance
+endif
+
+TEST_DIR := ./compiler2022/公开样例与运行时库/$(TEST_MODE)
 TEST := 00
+
 CASE = $(shell find $(TEST_DIR) -name "$(TEST)*.sy")
 
 $(shell mkdir -p $(BUILD_DIR))
@@ -24,8 +34,8 @@ run:
 
 .PHONY: test
 test:
-	@echo $(CASE)
 	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm $(CASE); cd ..
+	@echo $(CASE)
 	@llvm-link sylib.ll main.ll -S -o run.ll
 
 .PHONY: gdb
