@@ -43,6 +43,7 @@ public:
     Scope(int32_t _idx) : sp_idx(_idx) { local_table = nullptr; elements = nullptr; parent = nullptr; }
     SRC resolve(string var_name, FunctionInfo *cur_func_info);
     BasicBlock *get_last_bb();
+    void buildScopeCFG(vector<BasicBlock *> all_blocks);
     void printElements();
     void printScope();
 };

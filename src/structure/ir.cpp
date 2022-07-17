@@ -7,8 +7,20 @@ Inst *BasicBlock::lastInst() {
 }
 
 void BasicBlock::printBlock() {
-    if (false || basic_block.size()) {
-        llir << get_tabs(tab_num-1) << "Block" << bb_idx << ":" << endl;
+    if (true && basic_block.size()) {
+        llir << get_tabs(tab_num - 1) << "Block" << bb_idx << ":" << endl;
+        llir << get_tabs() << "; preds = ";
+        for (auto &&parant : parants) {
+            llir << parant->bb_idx << " ";
+        }
+        llir << endl;
+        llir << get_tabs() << "; child = ";
+        for (auto &&child : childrens) {
+            llir << child->bb_idx << " ";
+        }
+        llir << endl;
+    } else {
+        return;
     }
     for (auto inst: basic_block) {
         // LLVM IR
@@ -84,6 +96,37 @@ BasicBlock *Scope::get_last_bb() {
     return dynamic_cast<BasicBlock *>(*iter);
 }
 
+void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
+    for (auto iter = elements->begin(); iter != elements->end(); ++iter) {
+        if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
+            scope_node->buildScopeCFG(all_blocks);
+        } else {
+            BasicBlock *bb_node = dynamic_cast<BasicBlock *>(*iter);
+            auto &&last_inst = bb_node->lastInst();
+            if (last_inst == nullptr) {
+                iter = elements->erase(iter);
+                iter = iter - 1;
+            } else if (auto &&br_inst = dynamic_cast<LLIR_BR *>(last_inst); br_inst != nullptr) {
+                BasicBlock *child_bb1 = all_blocks[br_inst->tar_true  - 1];
+                BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
+                bb_node->childrens.push_back(child_bb1);
+                child_bb1->parants.push_back(bb_node);
+                if (br_inst->has_cond) {
+                    bb_node->childrens.push_back(child_bb2);
+                    child_bb2->parants.push_back(bb_node);
+                }
+            } else if (auto &&ret_inst = dynamic_cast<LLIR_RET *>(last_inst); ret_inst != nullptr) {
+                // 基本块的最后一个指令是`return instruction`
+                // 当前作用域在此基本块之后的`elements`全部无效
+                elements->erase(iter + 1, elements->end());
+            } else {
+                dbg("UnExcepted Last Instruction");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+}
+
 void Scope::printElements() {
     for (auto iter = elements->begin(); iter != elements->end(); ++iter) {
         if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
@@ -116,18 +159,7 @@ void Function::printCallInfo() {
 }
 
 void Function::buildCFG() {
-    dbg(this->all_blocks.size());
-    for (auto &&block : all_blocks) {
-        cout << "%Block" << block->bb_idx << " " << block->basic_block.size() << "    ";
-        if (auto &&inst = block->lastInst(); inst != nullptr) {
-            if (auto ret_inst = dynamic_cast<LLIR_RET *>(inst); ret_inst != nullptr) {
-                cout << ret_inst->ToString();
-            } else if (auto br_inst = dynamic_cast<LLIR_BR *>(inst); br_inst != nullptr) {
-                cout << br_inst->ToString();
-            }
-        }
-        cout << endl;
-    }
+    main_scope->buildScopeCFG(all_blocks);
 }
 
 void LibFunction::printFunction() {
