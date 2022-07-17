@@ -253,7 +253,6 @@ void CompUnit::DebugLibFuncs() {
 void CompUnit::DebugUserFuncs() {
     llir << "; User Functions" << endl;
     for (auto &&function : functions) {
-        function->buildCFG();
         llir << get_tabs();
         llir << function->func_info.printFunctionInfo() << endl;
         function->printCallInfo();

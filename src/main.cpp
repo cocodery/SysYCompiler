@@ -12,6 +12,7 @@
 #include "frontend/SysYLexer.h"
 #include "frontend/SysYParser.h"
 #include "frontend/ASTVisitor.hh"
+#include "optimizer/pass_manager.hh"
 
 // #include "optimizer/dag.hh"
 
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]) {
 
     SysYParser::CompUnitContext *root = parser.compUnit();
 
-    CompUnit ir("../main.ll");
+    CompUnit ir;
     
     ASTVisitor visitor(ir);
 
@@ -75,11 +76,10 @@ int main(int argc, char *argv[]) {
         // exit(EXIT_FAILURE);
     }
 
-    ir.DebugGlobalTable();
+    PassManager pass_manager(ir.global_scope, ir.functions);
+    pass_manager.excute_pass();
 
-    ir.DebugUserFuncs();
-
-    ir.DebugLibFuncs();
+    ir.GenerateLLIR("../main.ll");
 
     cout << "Compiler Complete" << endl;
 
