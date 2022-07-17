@@ -2,13 +2,14 @@
 
 int32_t tab_num = 1;
 
+Inst *BasicBlock::lastInst() {
+    return basic_block.size() > 0 ? basic_block[basic_block.size() - 1] : nullptr;
+}
+
 void BasicBlock::printBlock() {
-    // /*
-    if (basic_block.size()) {
+    if (false || basic_block.size()) {
         llir << get_tabs(tab_num-1) << "Block" << bb_idx << ":" << endl;
     }
-    // */
-    // llir << get_tabs(tab_num-1) << "Block" << bb_idx << ":" << endl;
     for (auto inst: basic_block) {
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {
@@ -102,13 +103,38 @@ void Scope::printScope() {
     tab_num -= 1;
 }
 
+void Function::printCallInfo() {
+    llir << get_tabs() << "; " <<  func_info.func_name << " call function : ";
+    if (called_funcs.size()) {
+        for (auto &&func_info : called_funcs) {
+            llir << func_info->func_name << " ";
+        }
+    } else {
+        llir << "`no function be called`";
+    }
+    llir << endl;
+}
+
+void Function::buildCFG() {
+    dbg(this->all_blocks.size());
+    for (auto &&block : all_blocks) {
+        cout << "%Block" << block->bb_idx << " " << block->basic_block.size() << "    ";
+        if (auto &&inst = block->lastInst(); inst != nullptr) {
+            if (auto ret_inst = dynamic_cast<LLIR_RET *>(inst); ret_inst != nullptr) {
+                cout << ret_inst->ToString();
+            } else if (auto br_inst = dynamic_cast<LLIR_BR *>(inst); br_inst != nullptr) {
+                cout << br_inst->ToString();
+            }
+        }
+        cout << endl;
+    }
+}
+
 void LibFunction::printFunction() {
     llir << libfunc_info.printFunctionInfo(true) << endl;
 }
 
-CompUnit::CompUnit(string _llir) {
-// open llvm ir file
-    llir.open(_llir);
+CompUnit::CompUnit() {
 // Global  symtable Init Part
     global_scope = new Scope(0);
     global_scope->local_table = new VariableTable;
@@ -176,21 +202,30 @@ FunctionInfo *CompUnit::getFunctionInfo(string func_name) {
     return nullptr;
 }
 
+void CompUnit::GenerateLLIR(string _llir) {
+    llir.open(_llir);
+    DebugGlobalTable();
+    DebugUserFuncs();
+    DebugLibFuncs();
+    llir.close();
+}
+
 void CompUnit::DebugLibFuncs() {
     llir << "; Init Lib Functions" << endl;
-    for (int i = 0; i < 12; ++i) {
+    for (auto &&libfunction : lib_functions) {
         llir << "    ";
-        lib_functions[i]->printFunction();
+        libfunction->printFunction();
     }
 }
 
 void CompUnit::DebugUserFuncs() {
     llir << "; User Functions" << endl;
-    int size = functions.size();
-    for (int i = 0; i < size; ++i) {
-        llir << "    ";
-        llir << functions[i]->func_info.printFunctionInfo() << endl;
-        functions[i]->main_scope->printScope();
+    for (auto &&function : functions) {
+        function->buildCFG();
+        llir << get_tabs();
+        llir << function->func_info.printFunctionInfo() << endl;
+        function->printCallInfo();
+        function->main_scope->printScope();
         llir << get_tabs() << "}" << endl;
     }
 }

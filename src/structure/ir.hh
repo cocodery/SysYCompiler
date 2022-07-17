@@ -29,6 +29,7 @@ public:
     vector<BasicBlock *> childrens; 
 public:
     BasicBlock(int32_t _idx) : bb_idx(_idx) { }
+    Inst *lastInst();
     void printBlock();
 };
 
@@ -50,6 +51,11 @@ class Function {
 public:
     FunctionInfo func_info;
     Scope *main_scope;
+    vector<BasicBlock *> all_blocks;
+    vector<FunctionInfo *> called_funcs;
+public:
+    void printCallInfo();
+    void buildCFG();
 };
 
 class LibFunction {
@@ -66,8 +72,9 @@ public:
     vector<Function *> functions;
     LibFunction *lib_functions[12];
 public:
-    CompUnit(string _llir);
+    CompUnit();
     FunctionInfo *getFunctionInfo(string func_name);
+    void GenerateLLIR(string _llir);
     void DebugLibFuncs();
     void DebugUserFuncs();
     void DebugGlobalTable();
