@@ -36,7 +36,7 @@ private:
     Scope          *cur_scope;
     VariableTable  *cur_vartable;
     BasicBlock     *cur_basicblock;
-    FunctionInfo   *cur_func_info;
+    Function       *cur_func;
     int32_t continue_target;
     vector<LLIR_BR *> break_insts;
     vector<LLIR_BR *> lor_insts;
