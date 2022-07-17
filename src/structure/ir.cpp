@@ -2,13 +2,26 @@
 
 int32_t tab_num = 1;
 
+Inst *BasicBlock::lastInst() {
+    return basic_block.size() > 0 ? basic_block[basic_block.size() - 1] : nullptr;
+}
+
 void BasicBlock::printBlock() {
-    // /*
-    if (basic_block.size()) {
-        llir << get_tabs(tab_num-1) << "Block" << bb_idx << ":" << endl;
+    if (true && basic_block.size()) {
+        llir << get_tabs(tab_num - 1) << "Block" << bb_idx << ":" << endl;
+        llir << get_tabs() << "; preds = ";
+        for (auto &&parant : parants) {
+            llir << parant->bb_idx << " ";
+        }
+        llir << endl;
+        llir << get_tabs() << "; child = ";
+        for (auto &&child : childrens) {
+            llir << child->bb_idx << " ";
+        }
+        llir << endl;
+    } else {
+        return;
     }
-    // */
-    // llir << get_tabs(tab_num-1) << "Block" << bb_idx << ":" << endl;
     for (auto inst: basic_block) {
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {
@@ -83,6 +96,37 @@ BasicBlock *Scope::get_last_bb() {
     return dynamic_cast<BasicBlock *>(*iter);
 }
 
+void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
+    for (auto iter = elements->begin(); iter != elements->end(); ++iter) {
+        if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
+            scope_node->buildScopeCFG(all_blocks);
+        } else {
+            BasicBlock *bb_node = dynamic_cast<BasicBlock *>(*iter);
+            auto &&last_inst = bb_node->lastInst();
+            if (last_inst == nullptr) {
+                iter = elements->erase(iter);
+                iter = iter - 1;
+            } else if (auto &&br_inst = dynamic_cast<LLIR_BR *>(last_inst); br_inst != nullptr) {
+                BasicBlock *child_bb1 = all_blocks[br_inst->tar_true  - 1];
+                BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
+                bb_node->childrens.push_back(child_bb1);
+                child_bb1->parants.push_back(bb_node);
+                if (br_inst->has_cond) {
+                    bb_node->childrens.push_back(child_bb2);
+                    child_bb2->parants.push_back(bb_node);
+                }
+            } else if (auto &&ret_inst = dynamic_cast<LLIR_RET *>(last_inst); ret_inst != nullptr) {
+                // 基本块的最后一个指令是`return instruction`
+                // 当前作用域在此基本块之后的`elements`全部无效
+                elements->erase(iter + 1, elements->end());
+            } else {
+                dbg("UnExcepted Last Instruction");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+}
+
 void Scope::printElements() {
     for (auto iter = elements->begin(); iter != elements->end(); ++iter) {
         if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
@@ -102,13 +146,27 @@ void Scope::printScope() {
     tab_num -= 1;
 }
 
+void Function::printCallInfo() {
+    llir << get_tabs() << "; " <<  func_info.func_name << " call function : ";
+    if (called_funcs.size()) {
+        for (auto &&func_info : called_funcs) {
+            llir << func_info->func_name << " ";
+        }
+    } else {
+        llir << "`no function be called`";
+    }
+    llir << endl;
+}
+
+void Function::buildCFG() {
+    main_scope->buildScopeCFG(all_blocks);
+}
+
 void LibFunction::printFunction() {
     llir << libfunc_info.printFunctionInfo(true) << endl;
 }
 
-CompUnit::CompUnit(string _llir) {
-// open llvm ir file
-    llir.open(_llir);
+CompUnit::CompUnit() {
 // Global  symtable Init Part
     global_scope = new Scope(0);
     global_scope->local_table = new VariableTable;
@@ -176,21 +234,29 @@ FunctionInfo *CompUnit::getFunctionInfo(string func_name) {
     return nullptr;
 }
 
+void CompUnit::GenerateLLIR(string _llir) {
+    llir.open(_llir);
+    DebugGlobalTable();
+    DebugUserFuncs();
+    DebugLibFuncs();
+    llir.close();
+}
+
 void CompUnit::DebugLibFuncs() {
     llir << "; Init Lib Functions" << endl;
-    for (int i = 0; i < 12; ++i) {
+    for (auto &&libfunction : lib_functions) {
         llir << "    ";
-        lib_functions[i]->printFunction();
+        libfunction->printFunction();
     }
 }
 
 void CompUnit::DebugUserFuncs() {
     llir << "; User Functions" << endl;
-    int size = functions.size();
-    for (int i = 0; i < size; ++i) {
-        llir << "    ";
-        llir << functions[i]->func_info.printFunctionInfo() << endl;
-        functions[i]->main_scope->printScope();
+    for (auto &&function : functions) {
+        llir << get_tabs();
+        llir << function->func_info.printFunctionInfo() << endl;
+        function->printCallInfo();
+        function->main_scope->printScope();
         llir << get_tabs() << "}" << endl;
     }
 }
