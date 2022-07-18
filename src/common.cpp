@@ -82,6 +82,7 @@ string DeclTypeToStr(DeclType type) {
         case TypeFloat: return "float";
         case TypeBool: return "i1";
         case TypeVoid: return "void";
+        case TypeByte: return "i8";
         default: break;
     }
     dbg("Unknown Declare Type");
