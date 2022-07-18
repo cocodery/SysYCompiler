@@ -169,3 +169,12 @@ public:
     LLIR_XOR(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
 };
+
+class LLIR_BC: public Inst {
+public: 
+    SRC dst;
+    SRC src;
+public:
+    LLIR_BC(SRC _dst, SRC _src): dst(_dst), src(_src) { }
+    string ToString();
+};

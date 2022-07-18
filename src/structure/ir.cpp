@@ -57,6 +57,9 @@ void BasicBlock::printBlock() {
         Case (LLIR_XOR, xor_inst, inst) {
             llir << get_tabs() << xor_inst->ToString() << endl;
         }
+        Case (LLIR_BC, bc_inst, inst) {
+            llir << get_tabs() << bc_inst->ToString() << endl; 
+        }
     }
 }
 
@@ -174,17 +177,19 @@ CompUnit::CompUnit() {
 // Global  Function Init Part
     functions.empty();
 // Library Funtions Init Part
-    string func_name[12] = { "getint"   , "getch"    , "getfloat", "getarray",
+    string func_name[13] = { "getint"   , "getch"    , "getfloat", "getarray",
                              "getfarray", "putint"   , "putch"   , "putfloat", 
                              "putarray" , "putfarray", 
-                             "_sysy_starttime", "_sysy_stoptime" };
-    DeclType ret_type[12] = {  TypeInt, TypeInt, TypeFloat, TypeInt, 
+                             "_sysy_starttime", "_sysy_stoptime",
+                             "llvm.memset.p0i8.i32" };
+    DeclType ret_type[13] = {  TypeInt, TypeInt, TypeFloat, TypeInt, 
                                TypeInt, TypeVoid, TypeVoid, TypeVoid,
                                TypeVoid, TypeVoid,
-                               TypeVoid, TypeVoid };
-    for (int32_t i = 0; i < 12; ++i) {
+                               TypeVoid, TypeVoid,
+                               TypeVoid };
+    for (int32_t i = 0; i < 13; ++i) {
         lib_functions[i] = new LibFunction;
-        lib_functions[i]->is_used = false;
+        lib_functions[i]->libfunc_info.is_used = false;
         lib_functions[i]->libfunc_info.func_name = func_name[i];
         lib_functions[i]->libfunc_info.return_type = ret_type[i];
     }
@@ -218,6 +223,12 @@ CompUnit::CompUnit() {
     lib_functions[10]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
     // sysy_stoptime
     lib_functions[11]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
+    // memset
+    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true, true, TypeByte)));
+    lib_functions[12]->libfunc_info.func_args[0].second.array_dims.push_back(-1);
+    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeByte)));
+    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
+    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeBool)));
 }
 
 FunctionInfo *CompUnit::getFunctionInfo(string func_name) {
@@ -245,19 +256,23 @@ void CompUnit::GenerateLLIR(string _llir) {
 void CompUnit::DebugLibFuncs() {
     llir << "; Init Lib Functions" << endl;
     for (auto &&libfunction : lib_functions) {
-        llir << "    ";
-        libfunction->printFunction();
+        if (libfunction->libfunc_info.is_used) {
+            llir << "    ";
+            libfunction->printFunction();
+        }
     }
 }
 
 void CompUnit::DebugUserFuncs() {
     llir << "; User Functions" << endl;
     for (auto &&function : functions) {
-        llir << get_tabs();
-        llir << function->func_info.printFunctionInfo() << endl;
-        function->printCallInfo();
-        function->main_scope->printScope();
-        llir << get_tabs() << "}" << endl;
+        if (function->func_info.is_used) {
+            llir << get_tabs();
+            llir << function->func_info.printFunctionInfo() << endl;
+            function->printCallInfo();
+            function->main_scope->printScope();
+            llir << get_tabs() << "}" << endl;
+        }
     }
 }
 

@@ -120,7 +120,9 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
             LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, value, SRC(new CTValue(TypeInt, 0, 0)), var);
             cur_basicblock->basic_block.push_back(gep_inst1);
             DeclType type = var.decl_type;
-            for (int idx = 0; idx <var.elements_number(); ++idx) {
+            int32_t number = var.elements_number();
+            /*
+            for (int idx = 0; idx < number; ++idx) {
                 VirtReg *ptr2 = new VirtReg(var_idx++, VarType(type));
                 LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, idx, idx)), VarType(type));
                 cur_basicblock->basic_block.push_back(gep_inst2);
@@ -128,7 +130,23 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
                 LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
                 cur_basicblock->basic_block.push_back(store_inst);
             }
-        }
+            */
+            VirtReg *ptr2 = new VirtReg(var_idx++, VarType(type));
+            LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, 0, 0)), VarType(type));
+            cur_basicblock->basic_block.push_back(gep_inst2);
+            VirtReg *ptr_i8 = new VirtReg(var_idx++, VarType(false, true, false, TypeByte));
+            LLIR_BC *bc_inst = new LLIR_BC(SRC(ptr_i8), SRC(ptr2));
+            cur_basicblock->basic_block.push_back(bc_inst);
+            FunctionInfo *func_info = ir.getFunctionInfo("llvm.memset.p0i8.i32");
+            func_info->is_used = true;
+            vector<SRC> args;
+            args.push_back(ptr_i8);
+            args.push_back(SRC(new CTValue(TypeByte, 0, 0)));
+            args.push_back(SRC(new CTValue(TypeInt, number * 4, number * 4)));
+            args.push_back(SRC(new CTValue(TypeBool, 0, 0)));
+            LLIR_CALL *call_inst = new LLIR_CALL(SRC(), args, func_info);
+            cur_basicblock->basic_block.push_back(call_inst);
+        } 
         return;
     }
     auto init_node = ctx->initVal();
@@ -413,6 +431,7 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     string func_name = ctx->Identifier()->getText();
     dbg(func_name);
     FunctionInfo func_info;
+    func_info.is_used = false;
     // get function name
     func_info.func_name = func_name; 
     // get function ret_type
@@ -423,7 +442,10 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
         func_info.func_args = ctx->funcFParams()->accept(this).as<vector<pair<string, VarType>>>();
     }
     // tag we have `main function`
-    if (func_name == "main") have_main_func = true;
+    if (func_name == "main") {
+        have_main_func = true;
+        func_info.is_used = true;
+    }
     func->func_info = func_info;
     // reset variable idx in function
     var_idx = func_info.func_args.size() == 0 ? 1 : func_info.func_args.size();
@@ -1035,6 +1057,7 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
         args = ctx->funcRParams()->accept(this).as<vector<SRC>>();
     }
     FunctionInfo *func_info = ir.getFunctionInfo(func_name);
+    func_info->is_used = true;
     cur_func->called_funcs.push_back(func_info);
     SRC dst;
     if (func_info->return_type != TypeVoid) {

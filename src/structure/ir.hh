@@ -62,7 +62,6 @@ public:
 class LibFunction {
 public:
     FunctionInfo libfunc_info;
-    bool is_used;
 public:
     void printFunction();
 };
@@ -71,7 +70,7 @@ class CompUnit: public Info {
 public:
     Scope *global_scope;
     vector<Function *> functions;
-    LibFunction *lib_functions[12];
+    LibFunction *lib_functions[13];
 public:
     CompUnit();
     FunctionInfo *getFunctionInfo(string func_name);

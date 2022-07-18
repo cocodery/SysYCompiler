@@ -9,11 +9,11 @@ MODE := func # func or perf, selet functional or performance
 TEST_MODE := functional # test case directory
 
 # re-define 
-ifeq ($(MODE), "func")
-	TEST_MODE = functional 
-else
-	TEST_MODE = performance
-endif
+#ifeq ($(MODE), "func")
+#	TEST_MODE = functional 
+#else
+#	TEST_MODE = performance
+#endif
 
 TEST_DIR := ./compiler2022/公开样例与运行时库/$(TEST_MODE)
 TEST := 00

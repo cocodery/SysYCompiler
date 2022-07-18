@@ -18,7 +18,7 @@ string get_tabs(int);
 int parseNum(const char *number_str);
 
 enum DeclType {
-    TypeVoid, TypeInt, TypeFloat, TypeBool,
+    TypeVoid, TypeInt, TypeFloat, TypeBool, TypeByte
 };
 
 enum BinOp {
