@@ -74,7 +74,7 @@ string VarType::printVarTypeForArg() {
 FunctionInfo::FunctionInfo() : return_type(TypeVoid) { }
 
 FunctionInfo::FunctionInfo(string _name, DeclType _type, vector<pair<string, VarType>> _args)
-    : func_name(_name), return_type(_type), func_args(_args) { }
+    : is_used(false), func_name(_name), return_type(_type), func_args(_args) { }
 
 void Variable::printVariable(string var_name) {
     if (type.is_const == true) cout << "const ";

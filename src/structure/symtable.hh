@@ -64,6 +64,7 @@ public:
 
 class FunctionInfo {
 public:
+    bool is_used;
     string func_name;
     DeclType return_type;
     vector<pair<string, VarType>> func_args;
