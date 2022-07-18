@@ -10,6 +10,8 @@ string CTValue::ToString() {
         ss << float_value;
     } else if (type == TypeBool) {
         ss << int_value;
+    } else if (type == TypeByte) {
+        ss << int_value;
     } else {
         dbg("UnExpected DeclType");
     }
