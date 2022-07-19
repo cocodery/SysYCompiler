@@ -7,16 +7,16 @@ Inst *BasicBlock::lastInst() {
 }
 
 void BasicBlock::printBlock() {
-    if (true && basic_block.size()) {
+    if (valuable) {
         llir << get_tabs(tab_num - 1) << "Block" << bb_idx << ":" << endl;
         llir << get_tabs() << "; preds = ";
-        for (auto &&parant : parants) {
-            llir << parant->bb_idx << " ";
+        for (auto &&parant : preds) {
+            llir << parant.first << " ";
         }
         llir << endl;
-        llir << get_tabs() << "; child = ";
-        for (auto &&child : childrens) {
-            llir << child->bb_idx << " ";
+        llir << get_tabs() << "; succs = ";
+        for (auto &&child : succs) {
+            llir << child.first << " ";
         }
         llir << endl;
     } else {
@@ -100,6 +100,12 @@ BasicBlock *Scope::get_last_bb() {
 }
 
 void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
+    // insert entry and exit basicblock
+    BasicBlock *entrybb = new BasicBlock(0 , true);
+    BasicBlock *exitbb  = new BasicBlock(-1, true);
+    // first bb's preds is entrybb
+    entrybb->succs.insert({(*all_blocks.begin())->bb_idx, *all_blocks.begin()});
+    (*all_blocks.begin())->preds.insert({entrybb->bb_idx, entrybb});
     for (auto iter = elements->begin(); iter != elements->end(); ++iter) {
         if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
             scope_node->buildScopeCFG(all_blocks);
@@ -113,23 +119,27 @@ void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
                 bb_node->valuable = true;
                 BasicBlock *child_bb1 = all_blocks[br_inst->tar_true  - 1];
                 BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
-                bb_node->childrens.push_back(child_bb1);
-                child_bb1->parants.push_back(bb_node);
+                bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
+                child_bb1->preds.insert({bb_node->bb_idx, bb_node});
                 if (br_inst->has_cond) {
-                    bb_node->childrens.push_back(child_bb2);
-                    child_bb2->parants.push_back(bb_node);
+                    bb_node->succs.insert({child_bb2->bb_idx, child_bb2});
+                    child_bb2->preds.insert({bb_node->bb_idx, bb_node});
                 }
             } else if (auto &&ret_inst = dynamic_cast<LLIR_RET *>(last_inst); ret_inst != nullptr) {
                 // 基本块的最后一个指令是`return instruction`
                 // 当前作用域在此基本块之后的`elements`全部无效
-                bb_node->valuable = true;
+                bb_node->valuable = (bb_node->preds.size() != 0);
                 elements->erase(iter + 1, elements->end());
+                bb_node->succs.insert({exitbb->bb_idx, exitbb});
+                exitbb->preds.insert({bb_node->bb_idx, bb_node});
             } else {
                 dbg("UnExcepted Last Instruction");
                 exit(EXIT_FAILURE);
             }
         }
     }
+    all_blocks.insert(all_blocks.begin(), entrybb);
+    all_blocks.push_back(exitbb);
 }
 
 void Scope::printElements() {
@@ -164,10 +174,20 @@ void Function::printCallInfo() {
 }
 
 void Function::buildCFG() {
+    // build control-flow-graph
     main_scope->buildScopeCFG(all_blocks);
+    // delete unreachable block
     for (auto iter = all_blocks.begin(); iter != all_blocks.end(); ++iter) {
         if (!(*iter)->valuable) {
             iter = all_blocks.erase(iter) - 1;
+        }
+    }
+}
+
+void Function::DebugAllBB() {
+    for (auto &&bb : all_blocks) {
+        if (bb->valuable) {
+            bb->printBlock();
         }
     }
 }

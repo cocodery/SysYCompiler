@@ -6,6 +6,7 @@
 #include <variant>
 #include <string>
 #include <set>
+#include <map>
 
 #include "../common.hh"
 #include "symtable.hh"
@@ -16,6 +17,7 @@ using std::ostream;
 using std::vector;
 using std::string;
 using std::set;
+using std::map;
 using std::ofstream;
 using std::make_pair;
 
@@ -26,10 +28,10 @@ public:
     int32_t bb_idx;
     bool valuable;
     vector<Inst *> basic_block;
-    vector<BasicBlock *> parants;
-    vector<BasicBlock *> childrens; 
+    map<int32_t, BasicBlock *> preds;
+    map<int32_t, BasicBlock *> succs; 
 public:
-    BasicBlock(int32_t _idx) : bb_idx(_idx), valuable(false) { }
+    BasicBlock(int32_t _idx, bool _value = false) : bb_idx(_idx), valuable(_value) { }
     Inst *lastInst();
     void printBlock();
 };
@@ -58,6 +60,7 @@ public:
 public:
     void printCallInfo();
     void buildCFG();
+    void DebugAllBB();
 };
 
 class LibFunction {
