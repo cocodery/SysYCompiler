@@ -60,7 +60,6 @@ public:
 public:
     void printCallInfo();
     void buildCFG();
-    void DebugAllBB();
 };
 
 class LibFunction {

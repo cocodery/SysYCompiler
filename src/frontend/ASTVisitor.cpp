@@ -1058,7 +1058,7 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
     }
     FunctionInfo *func_info = ir.getFunctionInfo(func_name);
     func_info->is_used = true;
-    cur_func->called_funcs.push_back(func_info);
+    cur_func->called_funcs.insert(func_info);
     SRC dst;
     if (func_info->return_type != TypeVoid) {
         dst = SRC(new VirtReg(var_idx++, VarType(func_info->return_type)));

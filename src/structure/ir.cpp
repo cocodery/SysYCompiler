@@ -100,12 +100,6 @@ BasicBlock *Scope::get_last_bb() {
 }
 
 void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
-    // insert entry and exit basicblock
-    BasicBlock *entrybb = new BasicBlock(0 , true);
-    BasicBlock *exitbb  = new BasicBlock(-1, true);
-    // first bb's preds is entrybb
-    entrybb->succs.insert({(*all_blocks.begin())->bb_idx, *all_blocks.begin()});
-    (*all_blocks.begin())->preds.insert({entrybb->bb_idx, entrybb});
     for (auto iter = elements->begin(); iter != elements->end(); ++iter) {
         if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
             scope_node->buildScopeCFG(all_blocks);
@@ -130,16 +124,12 @@ void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
                 // 当前作用域在此基本块之后的`elements`全部无效
                 bb_node->valuable = (bb_node->preds.size() != 0);
                 elements->erase(iter + 1, elements->end());
-                bb_node->succs.insert({exitbb->bb_idx, exitbb});
-                exitbb->preds.insert({bb_node->bb_idx, bb_node});
             } else {
                 dbg("UnExcepted Last Instruction");
                 exit(EXIT_FAILURE);
             }
         }
     }
-    all_blocks.insert(all_blocks.begin(), entrybb);
-    all_blocks.push_back(exitbb);
 }
 
 void Scope::printElements() {
@@ -174,22 +164,30 @@ void Function::printCallInfo() {
 }
 
 void Function::buildCFG() {
+    // insert entry and exit basicblock
+    BasicBlock *entrybb = new BasicBlock(0 , true);
+    BasicBlock *exitbb  = new BasicBlock(-1, true);
+    // first bb's preds is entrybb
+    entrybb->succs.insert({(*all_blocks.begin())->bb_idx, *all_blocks.begin()});
+    (*all_blocks.begin())->preds.insert({entrybb->bb_idx, entrybb});
     // build control-flow-graph
+    dbg(all_blocks.size());
     main_scope->buildScopeCFG(all_blocks);
     // delete unreachable block
     for (auto iter = all_blocks.begin(); iter != all_blocks.end(); ++iter) {
         if (!(*iter)->valuable) {
             iter = all_blocks.erase(iter) - 1;
+        } else {
+            auto &&last_inst = (*iter)->lastInst();
+            if (auto && ret_inst = dynamic_cast<LLIR_RET *>(last_inst); ret_inst != nullptr) {
+                (*iter)->succs.insert({exitbb->bb_idx, exitbb});
+                exitbb->preds.insert({(*iter)->bb_idx, (*iter)});
+            }
         }
     }
-}
-
-void Function::DebugAllBB() {
-    for (auto &&bb : all_blocks) {
-        if (bb->valuable) {
-            bb->printBlock();
-        }
-    }
+    all_blocks.insert(all_blocks.begin(), entrybb);
+    all_blocks.push_back(exitbb);
+    dbg(all_blocks.size());
 }
 
 void LibFunction::printFunction() {
