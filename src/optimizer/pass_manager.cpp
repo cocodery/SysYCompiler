@@ -2,6 +2,8 @@
 
 void PassManager::buildCFGs() {
     for (auto &&function : functions) {
-        function->buildCFG();
+        if (function->func_info.is_used){
+            function->buildCFG();
+        }
     }
 }

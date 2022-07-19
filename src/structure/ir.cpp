@@ -110,6 +110,7 @@ void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
                 iter = elements->erase(iter);
                 iter = iter - 1;
             } else if (auto &&br_inst = dynamic_cast<LLIR_BR *>(last_inst); br_inst != nullptr) {
+                bb_node->valuable = true;
                 BasicBlock *child_bb1 = all_blocks[br_inst->tar_true  - 1];
                 BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
                 bb_node->childrens.push_back(child_bb1);
@@ -121,6 +122,7 @@ void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
             } else if (auto &&ret_inst = dynamic_cast<LLIR_RET *>(last_inst); ret_inst != nullptr) {
                 // 基本块的最后一个指令是`return instruction`
                 // 当前作用域在此基本块之后的`elements`全部无效
+                bb_node->valuable = true;
                 elements->erase(iter + 1, elements->end());
             } else {
                 dbg("UnExcepted Last Instruction");
@@ -163,6 +165,11 @@ void Function::printCallInfo() {
 
 void Function::buildCFG() {
     main_scope->buildScopeCFG(all_blocks);
+    for (auto iter = all_blocks.begin(); iter != all_blocks.end(); ++iter) {
+        if (!(*iter)->valuable) {
+            iter = all_blocks.erase(iter) - 1;
+        }
+    }
 }
 
 void LibFunction::printFunction() {

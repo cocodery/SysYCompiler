@@ -5,7 +5,7 @@
 #include <vector>
 #include <variant>
 #include <string>
-#include <map>
+#include <set>
 
 #include "../common.hh"
 #include "symtable.hh"
@@ -15,7 +15,7 @@
 using std::ostream;
 using std::vector;
 using std::string;
-using std::map;
+using std::set;
 using std::ofstream;
 using std::make_pair;
 
@@ -24,11 +24,12 @@ static ofstream llir;
 class BasicBlock: public Info {
 public:
     int32_t bb_idx;
+    bool valuable;
     vector<Inst *> basic_block;
     vector<BasicBlock *> parants;
     vector<BasicBlock *> childrens; 
 public:
-    BasicBlock(int32_t _idx) : bb_idx(_idx) { }
+    BasicBlock(int32_t _idx) : bb_idx(_idx), valuable(false) { }
     Inst *lastInst();
     void printBlock();
 };
@@ -53,7 +54,7 @@ public:
     FunctionInfo func_info;
     Scope *main_scope;
     vector<BasicBlock *> all_blocks;
-    vector<FunctionInfo *> called_funcs;
+    set<FunctionInfo *> called_funcs;
 public:
     void printCallInfo();
     void buildCFG();
