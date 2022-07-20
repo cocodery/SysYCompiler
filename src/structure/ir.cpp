@@ -105,6 +105,8 @@ SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
     assert(cur_table != nullptr);
 }
 
+// 仅能在优化之前使用
+// 目前仅用于前端代码
 BasicBlock *Scope::get_last_bb() {
     int element_size = elements->size();
     auto iter = elements->begin();
@@ -211,9 +213,9 @@ void Function::buildDom() {
     for (int32_t idx = 1; idx <= size; ++idx) {
         all_blocks[idx]->initDom(all_blocks);
     }
-    for (auto &&block : all_blocks) {
-        cout << block->bb_idx << " " << block->dom.size() << endl;
-    }
+    // for (auto &&block : all_blocks) {
+    //     cout << block->bb_idx << " " << block->dom.size() << endl;
+    // }
     bool change = true;
     while (change) {
         change = false;
@@ -226,13 +228,13 @@ void Function::buildDom() {
             }
         }
     }
-    for (auto&& block : all_blocks) {
-        cout << block->bb_idx << " ";
-        for (auto &&dom : block->dom) {
-            cout << dom->bb_idx << " ";
-        }
-        cout << endl;
-    }
+    // for (auto&& block : all_blocks) {
+    //     cout << block->bb_idx << " ";
+    //     for (auto &&dom : block->dom) {
+    //         cout << dom->bb_idx << " ";
+    //     }
+    //     cout << endl;
+    // }
 }
 
 void LibFunction::printFunction() {

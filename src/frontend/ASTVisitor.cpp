@@ -459,6 +459,7 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     ir.functions.push_back(func);
     // parse function body
     func->main_scope = ctx->block()->accept(this);
+    func->var_idx = var_idx;
     dbg(func->main_scope->get_last_bb()->bb_idx);
     auto last_block = func->main_scope->get_last_bb();
     int32_t lb_size = last_block->basic_block.size();
