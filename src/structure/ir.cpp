@@ -71,10 +71,22 @@ void BasicBlock::initDom(vector<BasicBlock *> all_blocks) {
 
 set<BasicBlock *> BasicBlock::predsDomInter() {
     set<BasicBlock *> ret = (*preds.begin()).second->dom;
+    // for (auto &&block : ret) {
+    //     cout << block->bb_idx << ' ';
+    // }
+    // cout << endl;
     for (auto &&pred : preds) {
+        // cout << pred.first << ' ';
         auto pred_dom = pred.second->dom;
-        set_intersection(ret.begin(), ret.end(), pred_dom.begin(), pred_dom.end(), inserter(ret, ret.begin()));
+        set<BasicBlock *> tmp;
+        set_intersection(ret.begin(), ret.end(), pred_dom.begin(), pred_dom.end(), inserter(tmp, tmp.begin()));
+        ret = tmp;
+        // for (auto &&block : ret) {
+        //     cout << block->bb_idx << ' ';
+        // }
+        // cout << endl;
     }
+    ret.insert(this);
     return ret;
 }
 
@@ -127,14 +139,18 @@ void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
                 iter = elements->erase(iter);
                 iter = iter - 1;
             } else if (auto &&br_inst = dynamic_cast<LLIR_BR *>(last_inst); br_inst != nullptr) {
-                bb_node->valuable = true;
-                BasicBlock *child_bb1 = all_blocks[br_inst->tar_true  - 1];
-                BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
-                bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
-                child_bb1->preds.insert({bb_node->bb_idx, bb_node});
-                if (br_inst->has_cond) {
-                    bb_node->succs.insert({child_bb2->bb_idx, child_bb2});
-                    child_bb2->preds.insert({bb_node->bb_idx, bb_node});
+                bb_node->valuable = (bb_node->preds.size() != 0);
+                // BB-preds都是顺序填入的
+                // 没有preds的BB属于不可达BB
+                if (bb_node->valuable) {
+                    BasicBlock *child_bb1 = all_blocks[br_inst->tar_true  - 1];
+                    BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
+                    bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
+                    child_bb1->preds.insert({bb_node->bb_idx, bb_node});
+                    if (br_inst->has_cond) {
+                        bb_node->succs.insert({child_bb2->bb_idx, child_bb2});
+                        child_bb2->preds.insert({bb_node->bb_idx, bb_node});
+                    }
                 }
             } else if (auto &&ret_inst = dynamic_cast<LLIR_RET *>(last_inst); ret_inst != nullptr) {
                 // 基本块的最后一个指令是`return instruction`
@@ -188,7 +204,6 @@ void Function::buildCFG() {
     entrybb->succs.insert({(*all_blocks.begin())->bb_idx, *all_blocks.begin()});
     (*all_blocks.begin())->preds.insert({entrybb->bb_idx, entrybb});
     // build control-flow-graph
-    dbg(all_blocks.size());
     main_scope->buildScopeCFG(all_blocks);
     // delete unreachable block
     for (auto iter = all_blocks.begin(); iter != all_blocks.end(); ++iter) {
@@ -204,7 +219,6 @@ void Function::buildCFG() {
     }
     all_blocks.insert(all_blocks.begin(), entrybb); // first element of all_block must be `entrybb`
     all_blocks.push_back(exitbb);
-    dbg(all_blocks.size());
 }
 
 void Function::buildDom() {
@@ -221,7 +235,6 @@ void Function::buildDom() {
         change = false;
         for (int32_t idx = 1; idx <= size; ++idx) {
             set<BasicBlock *> tmp = all_blocks[idx]->predsDomInter();
-            tmp.insert(all_blocks[idx]);
             if (tmp != all_blocks[idx]->dom) {
                 all_blocks[idx]->dom = tmp;
                 change = true;
@@ -229,7 +242,7 @@ void Function::buildDom() {
         }
     }
     // for (auto&& block : all_blocks) {
-    //     cout << block->bb_idx << " ";
+    //     cout << block->bb_idx << " doms  = ";
     //     for (auto &&dom : block->dom) {
     //         cout << dom->bb_idx << " ";
     //     }

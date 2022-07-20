@@ -426,10 +426,9 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
 // 函数声明分析，获取函数声明，返回类型，参数表
 // 因为不存在函数内声明函数的情况，因此直接将函数定义插入函数表
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
-    dbg("enter visitFuncDef");
     Function *func = new Function;
     string func_name = ctx->Identifier()->getText();
-    dbg(func_name);
+    dbg("enter visitFuncDef " + func_name);
     FunctionInfo func_info;
     func_info.is_used = false;
     // get function name
@@ -466,13 +465,13 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     LLIR_RET *ret_inst = new LLIR_RET((ret_type != TypeVoid), SRC(new CTValue(ret_type, 0, 0)));
     if (lb_size == 0) {
         last_block->basic_block.push_back(ret_inst);
-    } else if (auto last_inst = dynamic_cast<LLIR_RET *>(last_block->basic_block[lb_size - 1]); last_inst == nullptr) {
+    } else if (auto last_inst = dynamic_cast<LLIR_RET *>(last_block->lastInst()); last_inst == nullptr) {
         last_block->basic_block.push_back(ret_inst);
     }
     // push to function table
     cur_func = nullptr;
     cur_basicblock = nullptr;
-    dbg("exit visitFuncDef");
+    dbg("exit visitFuncDef " + func_name);
     return nullptr;
 }
 

@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     
     ASTVisitor visitor(ir);
 
-    cout << "Start Compiler" << endl;
+    cout << "Start Compilation" << endl;
 
     visitor.visitCompUnit(root);
     if (visitor.have_main_func == false) {
@@ -76,12 +76,14 @@ int main(int argc, char *argv[]) {
         // exit(EXIT_FAILURE);
     }
 
+    cout << "Start Optimization" << endl;
+
     PassManager pass_manager(ir.global_scope, ir.functions);
     pass_manager.excute_pass();
 
     ir.GenerateLLIR("../main.ll");
 
-    cout << "Compiler Complete" << endl;
+    cout << "Compilation Complete" << endl;
 
     return 0;
 }
