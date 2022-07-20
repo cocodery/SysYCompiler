@@ -63,6 +63,21 @@ void BasicBlock::printBlock() {
     }
 }
 
+void BasicBlock::initDom(vector<BasicBlock *> all_blocks) {
+    for (auto &&block : all_blocks) {
+        dom.insert(block);
+    }
+}
+
+set<BasicBlock *> BasicBlock::predsDomInter() {
+    set<BasicBlock *> ret = (*preds.begin()).second->dom;
+    for (auto &&pred : preds) {
+        auto pred_dom = pred.second->dom;
+        set_intersection(ret.begin(), ret.end(), pred_dom.begin(), pred_dom.end(), inserter(ret, ret.begin()));
+    }
+    return ret;
+}
+
 SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
     auto cur_scope = this;
     VariableTable *cur_table = nullptr;
@@ -185,9 +200,39 @@ void Function::buildCFG() {
             }
         }
     }
-    all_blocks.insert(all_blocks.begin(), entrybb);
+    all_blocks.insert(all_blocks.begin(), entrybb); // first element of all_block must be `entrybb`
     all_blocks.push_back(exitbb);
     dbg(all_blocks.size());
+}
+
+void Function::buildDom() {
+    int size = all_blocks.size() - 1;
+    all_blocks[0]->dom.insert(all_blocks[0]);
+    for (int32_t idx = 1; idx <= size; ++idx) {
+        all_blocks[idx]->initDom(all_blocks);
+    }
+    for (auto &&block : all_blocks) {
+        cout << block->bb_idx << " " << block->dom.size() << endl;
+    }
+    bool change = true;
+    while (change) {
+        change = false;
+        for (int32_t idx = 1; idx <= size; ++idx) {
+            set<BasicBlock *> tmp = all_blocks[idx]->predsDomInter();
+            tmp.insert(all_blocks[idx]);
+            if (tmp != all_blocks[idx]->dom) {
+                all_blocks[idx]->dom = tmp;
+                change = true;
+            }
+        }
+    }
+    for (auto&& block : all_blocks) {
+        cout << block->bb_idx << " ";
+        for (auto &&dom : block->dom) {
+            cout << dom->bb_idx << " ";
+        }
+        cout << endl;
+    }
 }
 
 void LibFunction::printFunction() {

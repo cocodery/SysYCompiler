@@ -7,3 +7,11 @@ void PassManager::buildCFGs() {
         }
     }
 }
+
+void PassManager::buildDoms() {
+    for (auto &&function : functions) {
+        if (function->func_info.is_used) {
+            function->buildDom();
+        }
+    }
+}

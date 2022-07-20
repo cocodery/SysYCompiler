@@ -11,6 +11,8 @@ public:
     PassManager(Scope *glb_scope, vector<Function *> funcs) : global_scope(glb_scope), functions(funcs) { }
     void excute_pass() {
         buildCFGs();
+        buildDoms();
     }
     void buildCFGs();
+    void buildDoms();
 };

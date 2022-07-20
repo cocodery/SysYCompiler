@@ -17,6 +17,9 @@ using std::ostream;
 using std::vector;
 using std::string;
 using std::set;
+using std::set_union;
+using std::set_intersection;
+using std::inserter;
 using std::map;
 using std::ofstream;
 using std::make_pair;
@@ -30,10 +33,14 @@ public:
     vector<Inst *> basic_block;
     map<int32_t, BasicBlock *> preds;
     map<int32_t, BasicBlock *> succs; 
+    set<BasicBlock *> dom;
+    set<BasicBlock *> idoms;
 public:
     BasicBlock(int32_t _idx, bool _value = false) : bb_idx(_idx), valuable(_value) { }
     Inst *lastInst();
     void printBlock();
+    void initDom(vector<BasicBlock *> all_blocks);
+    set<BasicBlock *> predsDomInter();
 };
 
 class Scope: public Info {
@@ -60,6 +67,7 @@ public:
 public:
     void printCallInfo();
     void buildCFG();
+    void buildDom();
 };
 
 class LibFunction {
