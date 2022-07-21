@@ -12,7 +12,9 @@ public:
     void excute_pass() {
         buildCFGs();
         buildDoms();
+        buildIDoms();
     }
     void buildCFGs();
     void buildDoms();
+    void buildIDoms();
 };

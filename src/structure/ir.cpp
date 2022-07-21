@@ -69,6 +69,27 @@ void BasicBlock::initDom(vector<BasicBlock *> all_blocks) {
     }
 }
 
+void BasicBlock::initIDom(BasicBlock *entrybb) {
+    if (dom.size() > 1) {
+        // cout << bb_idx << "'s Dom : ";
+        // for (auto &&block : dom) {
+        //     cout << block->bb_idx << ' ';
+        // }
+        // cout << endl;
+        idom = entrybb; // init idom with entrybb
+        // assign idom with the nearest bb
+        for (auto &&iter = dom.begin(); iter != dom.end(); ++iter) {
+            int32_t iter_bb_idx = (*iter)->bb_idx; 
+            if (iter_bb_idx > idom->bb_idx && iter_bb_idx != bb_idx) {
+                idom = *iter;
+            }
+        }
+        // insert `this` to idom-bb as a domer
+        idom->domers.insert(this);
+        // cout << "idom " << idom->bb_idx << endl;
+    }
+}
+
 set<BasicBlock *> BasicBlock::predsDomInter() {
     set<BasicBlock *> ret = (*preds.begin()).second->dom;
     // for (auto &&block : ret) {
@@ -245,6 +266,19 @@ void Function::buildDom() {
     //     cout << block->bb_idx << " doms  = ";
     //     for (auto &&dom : block->dom) {
     //         cout << dom->bb_idx << " ";
+    //     }
+    //     cout << endl;
+    // }
+}
+
+void Function::buildIDom() {
+    for (auto &&block : all_blocks) {
+        block->initIDom(all_blocks[0]);
+    }
+    // for (auto &&block : all_blocks) {
+    //     cout << "BB" << block->bb_idx << " domers ";
+    //     for (auto &&bb : block->domers) {
+    //         cout << bb->bb_idx << ' ';
     //     }
     //     cout << endl;
     // }

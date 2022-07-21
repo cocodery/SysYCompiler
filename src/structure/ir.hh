@@ -33,13 +33,15 @@ public:
     vector<Inst *> basic_block;
     map<int32_t, BasicBlock *> preds;
     map<int32_t, BasicBlock *> succs; 
-    set<BasicBlock *> dom;
-    set<BasicBlock *> idoms;
+    set<BasicBlock *> dom; // 支配节点集; 必经节点
+    BasicBlock *idom; // 直接支配节点
+    set<BasicBlock *> domers; // 支配者节点集 
 public:
-    BasicBlock(int32_t _idx, bool _value = false) : bb_idx(_idx), valuable(_value) { }
+    BasicBlock(int32_t _idx, bool _value = false) : bb_idx(_idx), valuable(_value), idom(nullptr) { }
     Inst *lastInst();
     void printBlock();
     void initDom(vector<BasicBlock *> all_blocks);
+    void initIDom(BasicBlock *entrybb);
     set<BasicBlock *> predsDomInter();
 };
 
@@ -69,6 +71,7 @@ public:
     void printCallInfo();
     void buildCFG();
     void buildDom();
+    void buildIDom();
 };
 
 class LibFunction {

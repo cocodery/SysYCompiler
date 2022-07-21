@@ -15,3 +15,11 @@ void PassManager::buildDoms() {
         }
     }
 }
+
+void PassManager::buildIDoms() {
+    for (auto &&function : functions) {
+        if (function->func_info.is_used) {
+            function->buildIDom();
+        }
+    }
+}
