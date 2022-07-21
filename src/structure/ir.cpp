@@ -284,6 +284,31 @@ void Function::buildIDom() {
     // }
 }
 
+void Function::initBBDF() {
+    // init DF(n) with { `empty` }
+    for (auto &&block : all_blocks) {
+        block->DomFrontier.clear();
+    }
+    for (auto &&block : all_blocks) {
+        if (block->preds.size() > 1) {
+            for (auto &&pred : block->preds) {
+                BasicBlock *runner = pred.second;
+                while (runner->bb_idx != block->idom->bb_idx) {
+                    runner->DomFrontier.insert(block);
+                    runner = runner->idom;
+                }
+            }
+        }
+    }
+    // for (auto &&block : all_blocks) {
+    //     dbg(block->bb_idx);
+    //     for (auto &&bb : block->DomFrontier) {
+    //         cout << bb->bb_idx << ' ';
+    //     }
+    //     cout << endl;
+    // }
+}
+
 void LibFunction::printFunction() {
     llir << libfunc_info.printFunctionInfo(true) << endl;
 }

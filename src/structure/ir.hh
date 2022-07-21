@@ -36,6 +36,7 @@ public:
     set<BasicBlock *> dom; // 支配节点集; 必经节点
     BasicBlock *idom; // 直接支配节点
     set<BasicBlock *> domers; // 支配者节点集 
+    set<BasicBlock *> DomFrontier;
 public:
     BasicBlock(int32_t _idx, bool _value = false) : bb_idx(_idx), valuable(_value), idom(nullptr) { }
     Inst *lastInst();
@@ -72,6 +73,7 @@ public:
     void buildCFG();
     void buildDom();
     void buildIDom();
+    void initBBDF();
 };
 
 class LibFunction {
