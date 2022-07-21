@@ -60,6 +60,12 @@ void BasicBlock::printBlock() {
         Case (LLIR_BC, bc_inst, inst) {
             llir << get_tabs() << bc_inst->ToString() << endl; 
         }
+        Case (LLIR_SITOFP, itf_inst, inst) {
+            llir << get_tabs() << itf_inst->ToString() << endl;
+        }
+        Case (LLIR_FPTOSI, fti_inst, inst) {
+            llir << get_tabs() << fti_inst->ToString() << endl;
+        }
     }
 }
 

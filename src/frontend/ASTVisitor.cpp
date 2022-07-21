@@ -163,6 +163,7 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
     }
 }
 
+// 暂时没有考虑float数组初始化
 void ASTVisitor::local_const_list_init(VarPair var_pair) {
     string var_name = var_pair.first;
     VarType var = var_pair.second->type;
@@ -883,6 +884,7 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
                 if (reg->type.decl_type == TypeInt) {
                     LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(dst_reg), SRC(dst));
                     cur_basicblock->basic_block.push_back(itf_inst);
+                    dst = SRC(dst_reg);
                 } else if (reg->type.decl_type == TypeFloat) {
                     LLIR_FPTOSI *fti_inst = new LLIR_FPTOSI(SRC(dst_reg), SRC(dst));
                     cur_basicblock->basic_block.push_back(fti_inst);
