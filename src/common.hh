@@ -33,7 +33,9 @@ string BinOpToStr(BinOp op);
 
 BinOp StrToBinOp(string op);
 
-string RelOpToStr(RelOp op);
+string RelOpToStr_int(RelOp op);
+
+string RelOpToStr_float(RelOp op);
 
 RelOp StrToRelOp(string op);
 

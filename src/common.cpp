@@ -50,11 +50,20 @@ BinOp StrToBinOp(string op) {
     exit(EXIT_FAILURE);
 }
 
-string RelOpToStr(RelOp op) {
+string RelOpToStr_int(RelOp op) {
     if (op == LTH) return "slt";
     else if (op == LEQ) return "sle";
     else if (op == EQU) return "eq";
     else if (op == NEQ) return "ne";
+    dbg("Unknown RelOp");
+    exit(EXIT_FAILURE);
+}
+
+string RelOpToStr_float(RelOp op) {
+    if (op == LTH) return "olt";
+    else if (op == LEQ) return "ole";
+    else if (op == EQU) return "oeq";
+    else if (op == NEQ) return "one";
     dbg("Unknown RelOp");
     exit(EXIT_FAILURE);
 }
