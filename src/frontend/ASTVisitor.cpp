@@ -32,7 +32,7 @@ vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *>
 
 // finished
 // 递归的对数组初始化进行分析
-void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<float>& flist) {
+void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<double>& flist) {
     int32_t total_size = 1; // 当前初始化维度的`size`
     for (auto i: array_dims) {
         total_size *= i;
@@ -1028,9 +1028,10 @@ antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
-    float float_literal = 0;
-    sscanf(ctx->FloatLiteral()->getText().c_str(), "%a", &float_literal);
+    double float_literal = 0;
+    sscanf(ctx->FloatLiteral()->getText().c_str(), "%lf", &float_literal);
     CTValue *ret = new CTValue(TypeFloat, float_literal, float_literal);
+    dbg(ret->float_value);
     return SRC(ret);
 }
 
