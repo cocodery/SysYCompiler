@@ -107,7 +107,7 @@ string LLIR_LOAD::ToString() {
 // LLVM-IR Store
 string LLIR_STORE::ToString() {
     std::stringstream ss;
-    // assert(dst.getType() == src.getType());
+    assert(dst.getType() == src.getType());
     VirtReg *dst_reg = dst.ToVirtReg();
     ss << "store " << dst_reg->type.printVarTypeForAlc();
     ss << " " << src.ToString() << ", ";
@@ -201,7 +201,7 @@ string LLIR_SITOFP::ToString() {
 // LLVM-IR Float-Point-TO-Signed-Int
 string LLIR_FPTOSI::ToString() {
     std::stringstream ss;
-    // assert(dst.getType() == TypeInt && src.getType() == TypeFloat);
+    assert(dst.getType() == TypeInt && src.getType() == TypeFloat);
     VirtReg *dst_reg = dst.ToVirtReg();
     ss << dst_reg->ToString() << " = fptosi float ";
     ss << src.ToString() << " to i32";
