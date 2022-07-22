@@ -467,7 +467,7 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     }
     func->func_info = func_info;
     // reset variable idx in function
-    var_idx = func_info.func_args.size() == 0 ? 1 : func_info.func_args.size();
+    var_idx = func_info.func_args.size() == 0 ? 0 : func_info.func_args.size();
     sp_idx = 1;
     bb_idx = 1;
     init_args = true;
