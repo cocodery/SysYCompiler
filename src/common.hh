@@ -3,6 +3,9 @@
 #define DBG_MARCO_NO_WARNING
 #include "dbg.h"
 
+#define FOUR_SPACES "    "
+#define EIGHT_SPACES "        "
+
 #include <cstdlib>
 #include <string>
 #include <vector>

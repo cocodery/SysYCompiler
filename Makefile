@@ -25,7 +25,7 @@ $(shell mkdir -p $(BUILD_DIR))
 .PHONY: build
 build:
 	$(CMAKE) -S . -B $(BUILD_DIR)
-	$(MAKE) -C $(BUILD_DIR) --file=Makefile -j2 -s
+	$(MAKE) -C $(BUILD_DIR) --file=Makefile -j8 -s
 
 .PHONY: run
 run:

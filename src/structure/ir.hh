@@ -37,6 +37,7 @@ public:
     BasicBlock *idom; // 直接支配节点
     set<BasicBlock *> domers; // 支配者节点集 
     set<BasicBlock *> DomFrontier;
+    set<int32_t> LiveUse, LiveDef, LiveIn, LiveOut, tmpLiveOut;
 public:
     BasicBlock(int32_t _idx, bool _value = false) : bb_idx(_idx), valuable(_value), idom(nullptr) { }
     Inst *lastInst();
