@@ -19,6 +19,7 @@ public:
     SRC(CTValue *_ctv): ctv(_ctv), reg(nullptr) { }
     SRC(VirtReg *_reg): ctv(nullptr), reg(_reg) { }
     string ToString();
+    DeclType getType();
     CTValue *ToCTValue() {
         return (ctv == nullptr )? nullptr : ctv;
     };
@@ -117,6 +118,12 @@ public:
 
 class LLIR_FCMP: public Inst {
 public:
+    RelOp op;
+    SRC dst;
+    SRC src1, src2;
+public:
+    LLIR_FCMP(RelOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
+    string ToString();
 };
 
 class LLIR_PHI: public Inst {

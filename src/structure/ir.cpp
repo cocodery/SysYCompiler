@@ -33,6 +33,9 @@ void BasicBlock::printBlock() {
         Case (LLIR_BIN, bin_inst, inst) {
             llir << get_tabs() << bin_inst->ToString() << endl;
         }
+        Case (LLIR_FBIN, fbin_inst, inst) {
+            llir << get_tabs() << fbin_inst->ToString() << endl;
+        }
         Case (LLIR_ALLOCA, alloc_inst, inst) {
             llir << get_tabs() << alloc_inst->ToString() << endl;
         }
@@ -44,6 +47,9 @@ void BasicBlock::printBlock() {
         }
         Case (LLIR_ICMP, icmp_inst, inst) {
             llir << get_tabs() << icmp_inst->ToString() << endl;
+        }
+        Case (LLIR_FCMP, fcmp_inst, inst) {
+            llir << get_tabs() << fcmp_inst->ToString() << endl;
         }
         Case (LLIR_CALL, call_inst, inst) {
             llir << get_tabs() << call_inst->ToString() << endl;
@@ -60,7 +66,61 @@ void BasicBlock::printBlock() {
         Case (LLIR_BC, bc_inst, inst) {
             llir << get_tabs() << bc_inst->ToString() << endl; 
         }
+        Case (LLIR_SITOFP, itf_inst, inst) {
+            llir << get_tabs() << itf_inst->ToString() << endl;
+        }
+        Case (LLIR_FPTOSI, fti_inst, inst) {
+            llir << get_tabs() << fti_inst->ToString() << endl;
+        }
     }
+}
+
+void BasicBlock::initDom(vector<BasicBlock *> all_blocks) {
+    for (auto &&block : all_blocks) {
+        dom.insert(block);
+    }
+}
+
+void BasicBlock::initIDom(BasicBlock *entrybb) {
+    if (dom.size() > 1) {
+        // cout << bb_idx << "'s Dom : ";
+        // for (auto &&block : dom) {
+        //     cout << block->bb_idx << ' ';
+        // }
+        // cout << endl;
+        idom = entrybb; // init idom with entrybb
+        // assign idom with the nearest bb
+        for (auto &&iter = dom.begin(); iter != dom.end(); ++iter) {
+            int32_t iter_bb_idx = (*iter)->bb_idx; 
+            if (iter_bb_idx > idom->bb_idx && iter_bb_idx != bb_idx) {
+                idom = *iter;
+            }
+        }
+        // insert `this` to idom-bb as a domer
+        idom->domers.insert(this);
+        // cout << "idom " << idom->bb_idx << endl;
+    }
+}
+
+set<BasicBlock *> BasicBlock::predsDomInter() {
+    set<BasicBlock *> ret = (*preds.begin()).second->dom;
+    // for (auto &&block : ret) {
+    //     cout << block->bb_idx << ' ';
+    // }
+    // cout << endl;
+    for (auto &&pred : preds) {
+        // cout << pred.first << ' ';
+        auto pred_dom = pred.second->dom;
+        set<BasicBlock *> tmp;
+        set_intersection(ret.begin(), ret.end(), pred_dom.begin(), pred_dom.end(), inserter(tmp, tmp.begin()));
+        ret = tmp;
+        // for (auto &&block : ret) {
+        //     cout << block->bb_idx << ' ';
+        // }
+        // cout << endl;
+    }
+    ret.insert(this);
+    return ret;
 }
 
 SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
@@ -90,6 +150,8 @@ SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
     assert(cur_table != nullptr);
 }
 
+// 仅能在优化之前使用
+// 目前仅用于前端代码
 BasicBlock *Scope::get_last_bb() {
     int element_size = elements->size();
     auto iter = elements->begin();
@@ -110,14 +172,18 @@ void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
                 iter = elements->erase(iter);
                 iter = iter - 1;
             } else if (auto &&br_inst = dynamic_cast<LLIR_BR *>(last_inst); br_inst != nullptr) {
-                bb_node->valuable = true;
-                BasicBlock *child_bb1 = all_blocks[br_inst->tar_true  - 1];
-                BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
-                bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
-                child_bb1->preds.insert({bb_node->bb_idx, bb_node});
-                if (br_inst->has_cond) {
-                    bb_node->succs.insert({child_bb2->bb_idx, child_bb2});
-                    child_bb2->preds.insert({bb_node->bb_idx, bb_node});
+                bb_node->valuable = (bb_node->preds.size() != 0);
+                // BB-preds都是顺序填入的
+                // 没有preds的BB属于不可达BB
+                if (bb_node->valuable) {
+                    BasicBlock *child_bb1 = all_blocks[br_inst->tar_true  - 1];
+                    BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
+                    bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
+                    child_bb1->preds.insert({bb_node->bb_idx, bb_node});
+                    if (br_inst->has_cond) {
+                        bb_node->succs.insert({child_bb2->bb_idx, child_bb2});
+                        child_bb2->preds.insert({bb_node->bb_idx, bb_node});
+                    }
                 }
             } else if (auto &&ret_inst = dynamic_cast<LLIR_RET *>(last_inst); ret_inst != nullptr) {
                 // 基本块的最后一个指令是`return instruction`
@@ -171,7 +237,6 @@ void Function::buildCFG() {
     entrybb->succs.insert({(*all_blocks.begin())->bb_idx, *all_blocks.begin()});
     (*all_blocks.begin())->preds.insert({entrybb->bb_idx, entrybb});
     // build control-flow-graph
-    dbg(all_blocks.size());
     main_scope->buildScopeCFG(all_blocks);
     // delete unreachable block
     for (auto iter = all_blocks.begin(); iter != all_blocks.end(); ++iter) {
@@ -185,9 +250,75 @@ void Function::buildCFG() {
             }
         }
     }
-    all_blocks.insert(all_blocks.begin(), entrybb);
+    all_blocks.insert(all_blocks.begin(), entrybb); // first element of all_block must be `entrybb`
     all_blocks.push_back(exitbb);
-    dbg(all_blocks.size());
+}
+
+void Function::buildDom() {
+    int size = all_blocks.size() - 1;
+    all_blocks[0]->dom.insert(all_blocks[0]);
+    for (int32_t idx = 1; idx <= size; ++idx) {
+        all_blocks[idx]->initDom(all_blocks);
+    }
+    // for (auto &&block : all_blocks) {
+    //     cout << block->bb_idx << " " << block->dom.size() << endl;
+    // }
+    bool change = true;
+    while (change) {
+        change = false;
+        for (int32_t idx = 1; idx <= size; ++idx) {
+            set<BasicBlock *> tmp = all_blocks[idx]->predsDomInter();
+            if (tmp != all_blocks[idx]->dom) {
+                all_blocks[idx]->dom = tmp;
+                change = true;
+            }
+        }
+    }
+    // for (auto&& block : all_blocks) {
+    //     cout << block->bb_idx << " doms  = ";
+    //     for (auto &&dom : block->dom) {
+    //         cout << dom->bb_idx << " ";
+    //     }
+    //     cout << endl;
+    // }
+}
+
+void Function::buildIDom() {
+    for (auto &&block : all_blocks) {
+        block->initIDom(all_blocks[0]);
+    }
+    // for (auto &&block : all_blocks) {
+    //     cout << "BB" << block->bb_idx << " domers ";
+    //     for (auto &&bb : block->domers) {
+    //         cout << bb->bb_idx << ' ';
+    //     }
+    //     cout << endl;
+    // }
+}
+
+void Function::initBBDF() {
+    // init DF(n) with { `empty` }
+    for (auto &&block : all_blocks) {
+        block->DomFrontier.clear();
+    }
+    for (auto &&block : all_blocks) {
+        if (block->preds.size() > 1) {
+            for (auto &&pred : block->preds) {
+                BasicBlock *runner = pred.second;
+                while (runner->bb_idx != block->idom->bb_idx) {
+                    runner->DomFrontier.insert(block);
+                    runner = runner->idom;
+                }
+            }
+        }
+    }
+    // for (auto &&block : all_blocks) {
+    //     dbg(block->bb_idx);
+    //     for (auto &&bb : block->DomFrontier) {
+    //         cout << bb->bb_idx << ' ';
+    //     }
+    //     cout << endl;
+    // }
 }
 
 void LibFunction::printFunction() {

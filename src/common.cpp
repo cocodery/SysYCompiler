@@ -30,12 +30,21 @@ int parseNum(const char *number_str) {
     return ret;
 }
 
-string BinOpToStr(BinOp op) {
+string BinOpToStr_int(BinOp op) {
     if (op == ADD) return "add";
     else if (op == SUB) return "sub";
     else if (op == MUL) return "mul";
     else if (op == DIV) return "sdiv";
     else if (op == REM) return "srem";
+    dbg("Unknown BinOp");
+    exit(EXIT_FAILURE);
+}
+
+string BinOpToStr_float(BinOp op) {
+    if (op == ADD) return "fadd";
+    else if (op == SUB) return "fsub";
+    else if (op == MUL) return "fmul";
+    else if (op == DIV) return "fdiv";
     dbg("Unknown BinOp");
     exit(EXIT_FAILURE);
 }
@@ -50,11 +59,20 @@ BinOp StrToBinOp(string op) {
     exit(EXIT_FAILURE);
 }
 
-string RelOpToStr(RelOp op) {
+string RelOpToStr_int(RelOp op) {
     if (op == LTH) return "slt";
     else if (op == LEQ) return "sle";
     else if (op == EQU) return "eq";
     else if (op == NEQ) return "ne";
+    dbg("Unknown RelOp");
+    exit(EXIT_FAILURE);
+}
+
+string RelOpToStr_float(RelOp op) {
+    if (op == LTH) return "olt";
+    else if (op == LEQ) return "ole";
+    else if (op == EQU) return "oeq";
+    else if (op == NEQ) return "one";
     dbg("Unknown RelOp");
     exit(EXIT_FAILURE);
 }
