@@ -223,7 +223,8 @@ string LLIR_BC::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg(), *src_reg = src.ToVirtReg();
     assert(dst_reg != nullptr && src_reg != nullptr);
-    ss << dst_reg->ToString() << " = bitcast i32* ";
+    ss << dst_reg->ToString() << " = bitcast ";
+    ss << DeclTypeToStr(src.getType()) << "* ";
     ss << src_reg->ToString() << " to i8*";
     return ss.str();
 }
