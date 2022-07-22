@@ -14,7 +14,6 @@ DeclType SRC::getType() {
     if (ctv != nullptr) {
         return ctv->type;
     } else {
-        assert(reg->type.is_array == false);
         return reg->type.decl_type;
     }
 }
@@ -59,7 +58,7 @@ string LLIR_BIN::ToString() {
     assert(dst_reg->type.decl_type == TypeInt);
     assert(src1.getType() == TypeInt && src2.getType() == TypeInt);
     ss << dst_reg->ToString() << " = ";
-    ss << BinOpToStr(op) << " i32 ";
+    ss << BinOpToStr_int(op) << " i32 ";
     ss << src1.ToString();
     ss << ", ";
     ss << src2.ToString();
@@ -72,8 +71,8 @@ string LLIR_FBIN::ToString() {
     VirtReg *dst_reg = dst.ToVirtReg();
     assert(dst_reg->type.decl_type == TypeFloat);
     assert(src1.getType() == TypeFloat && src2.getType() == TypeFloat);
-    ss << dst_reg->ToString() << " = f";
-    ss << BinOpToStr(op) << " float ";
+    ss << dst_reg->ToString() << " = ";
+    ss << BinOpToStr_float(op) << " float ";
     ss << src1.ToString();
     ss << ", ";
     ss << src2.ToString();
@@ -108,7 +107,7 @@ string LLIR_LOAD::ToString() {
 // LLVM-IR Store
 string LLIR_STORE::ToString() {
     std::stringstream ss;
-    assert(dst.getType() == src.getType());
+    // assert(dst.getType() == src.getType());
     VirtReg *dst_reg = dst.ToVirtReg();
     ss << "store " << dst_reg->type.printVarTypeForAlc();
     ss << " " << src.ToString() << ", ";
@@ -202,7 +201,7 @@ string LLIR_SITOFP::ToString() {
 // LLVM-IR Float-Point-TO-Signed-Int
 string LLIR_FPTOSI::ToString() {
     std::stringstream ss;
-    assert(dst.getType() == TypeInt && src.getType() == TypeFloat);
+    // assert(dst.getType() == TypeInt && src.getType() == TypeFloat);
     VirtReg *dst_reg = dst.ToVirtReg();
     ss << dst_reg->ToString() << " = fptosi float ";
     ss << src.ToString() << " to i32";

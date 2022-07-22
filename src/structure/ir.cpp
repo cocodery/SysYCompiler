@@ -33,6 +33,9 @@ void BasicBlock::printBlock() {
         Case (LLIR_BIN, bin_inst, inst) {
             llir << get_tabs() << bin_inst->ToString() << endl;
         }
+        Case (LLIR_FBIN, fbin_inst, inst) {
+            llir << get_tabs() << fbin_inst->ToString() << endl;
+        }
         Case (LLIR_ALLOCA, alloc_inst, inst) {
             llir << get_tabs() << alloc_inst->ToString() << endl;
         }
@@ -44,6 +47,9 @@ void BasicBlock::printBlock() {
         }
         Case (LLIR_ICMP, icmp_inst, inst) {
             llir << get_tabs() << icmp_inst->ToString() << endl;
+        }
+        Case (LLIR_FCMP, fcmp_inst, inst) {
+            llir << get_tabs() << fcmp_inst->ToString() << endl;
         }
         Case (LLIR_CALL, call_inst, inst) {
             llir << get_tabs() << call_inst->ToString() << endl;
