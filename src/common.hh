@@ -29,7 +29,9 @@ enum RelOp {
     LTH, LEQ, EQU, NEQ,
 };
 
-string BinOpToStr(BinOp op);
+string BinOpToStr_int(BinOp op);
+
+string BinOpToStr_float(BinOp op);
 
 BinOp StrToBinOp(string op);
 
