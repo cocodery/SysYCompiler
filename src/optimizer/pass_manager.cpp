@@ -1,25 +1,26 @@
 #include "pass_manager.hh"
 
-void PassManager::buildCFGs() {
-    for (auto &&function : functions) {
-        if (function->func_info.is_used){
-            function->buildCFG();
-        }
-    }
-}
-
-void PassManager::buildDoms() {
+void PassManager::compDomInfo() {
     for (auto &&function : functions) {
         if (function->func_info.is_used) {
             function->buildDom();
         }
     }
-}
-
-void PassManager::buildIDoms() {
     for (auto &&function : functions) {
         if (function->func_info.is_used) {
             function->buildIDom();
         }
+    } 
+    for (auto &&function : functions) {
+        if (function->func_info.is_used) {
+            function->initBBDF();
+        }
+    }
+}
+
+void PassManager::mem2reg() {
+    for (auto &&function : functions) {
+        Mem2Reg mem2reg = Mem2Reg(function);
+        mem2reg.initMem2Reg();
     }
 }

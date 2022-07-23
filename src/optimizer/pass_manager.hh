@@ -2,6 +2,7 @@
 
 #include "../common.hh"
 #include "../structure/ir.hh"
+#include "mem2reg.hh"
 
 class PassManager {
 public:
@@ -10,11 +11,19 @@ public:
 public:
     PassManager(Scope *glb_scope, vector<Function *> funcs) : global_scope(glb_scope), functions(funcs) { }
     void excute_pass() {
-        buildCFGs();
-        buildDoms();
-        buildIDoms();
+        for (auto &&function : functions) {
+            if (function->func_info.is_used){
+                function->buildCFG();
+            }
+        }
+
+        // remove one-inst block
+
+        compDomInfo();
+
+        mem2reg();
     }
-    void buildCFGs();
-    void buildDoms();
-    void buildIDoms();
+    void compDomInfo();
+
+    void mem2reg();
 };
