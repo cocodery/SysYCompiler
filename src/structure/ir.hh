@@ -43,7 +43,6 @@ public:
     Inst *lastInst();
     void printBlock();
     void initDom(vector<BasicBlock *> all_blocks);
-    void initIDom(BasicBlock *entrybb);
     set<BasicBlock *> predsDomInter();
 };
 
