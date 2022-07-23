@@ -21,6 +21,6 @@ void PassManager::compDomInfo() {
 void PassManager::mem2reg() {
     for (auto &&function : functions) {
         Mem2Reg mem2reg = Mem2Reg(function);
-        mem2reg.initMem2Reg();
+        // mem2reg.runMem2Reg();
     }
 }

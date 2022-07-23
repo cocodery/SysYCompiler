@@ -7,13 +7,18 @@ class Mem2Reg {
 public:
     Function *function;
 
-    set<VirtReg *> global;
-    set<BasicBlock *> blocks;
+    vector<vector<BasicBlock *>> defBlocks;
+    vector<LLIR_ALLOCA *> allocaInsts;
+    map<LLIR_ALLOCA*, int32_t> allocaLoopup;
 public:
     Mem2Reg(Function *func) : function(func) {
-        global.clear();
-        blocks.clear();
+        defBlocks.clear();
+        allocaInsts.clear();
+        allocaLoopup.clear();
     }
-    void removeUsedVar();
-    void initMem2Reg();
+    set<pair<int32_t, bool>> initDelVarSet();
+    void removeUsedVar(set<pair<int32_t, bool>> &del_variable);
+    LLIR_ALLOCA *getAllocaInst(VirtReg *reg);
+    bool inDefBlocks(int32_t index ,BasicBlock *block);
+    void runMem2Reg();
 };
