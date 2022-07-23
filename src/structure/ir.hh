@@ -22,6 +22,7 @@ using std::set_intersection;
 using std::inserter;
 using std::map;
 using std::ofstream;
+using std::pair;
 using std::make_pair;
 
 static ofstream llir;
@@ -33,6 +34,7 @@ public:
     vector<Inst *> basic_block;
     map<int32_t, BasicBlock *> preds;
     map<int32_t, BasicBlock *> succs; 
+    bool dirty;
     set<BasicBlock *> dom; // 支配节点集; 必经节点
     BasicBlock *idom; // 直接支配节点
     set<BasicBlock *> domers; // 支配者节点集 

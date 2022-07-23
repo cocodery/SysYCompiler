@@ -72,6 +72,9 @@ void BasicBlock::printBlock() {
         Case (LLIR_FPTOSI, fti_inst, inst) {
             llir << get_tabs() << fti_inst->ToString() << endl;
         }
+        Case (LLIR_PHI, phi_inst, inst) {
+            llir << get_tabs() << phi_inst->ToString() << endl; 
+        }
     }
 }
 

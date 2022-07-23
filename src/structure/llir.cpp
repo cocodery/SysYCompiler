@@ -153,6 +153,12 @@ string LLIR_FCMP::ToString() {
     return ss.str();
 }
 
+string LLIR_PHI::ToString() {
+    std::stringstream ss;
+
+    return ss.str();
+}
+
 string LLIR_CALL::ToString() {
     std::stringstream ss;
     DeclType ret_type = func_info->return_type;
