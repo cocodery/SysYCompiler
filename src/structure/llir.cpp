@@ -155,8 +155,16 @@ string LLIR_FCMP::ToString() {
 
 string LLIR_PHI::ToString() {
     std::stringstream ss;
-
-    return ss.str();
+    VirtReg *dst_reg = dst.ToVirtReg();
+    assert(dst_reg != nullptr);
+    ss << "; "<<  dst_reg->ToString() << " = phi " << dst_reg->type.printVarTypeForAlc() << " ";
+    for (auto &&pair : srcs) {
+        ss << "[" << pair.first.ToString() << ", %Block" << pair.second << "], "; 
+    }
+    string ret = ss.str();
+    ret.pop_back();
+    ret.pop_back();
+    return ret;
 }
 
 string LLIR_CALL::ToString() {

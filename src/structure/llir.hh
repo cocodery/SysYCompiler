@@ -129,11 +129,11 @@ public:
 class LLIR_PHI: public Inst {
 public:
     SRC dst;
-    vector<SRC> srcs;
+    vector<pair<SRC, int32_t>> srcs;
 public:
     // ToDo:
-    LLIR_PHI() { };
-    LLIR_PHI(SRC _dst, vector<SRC> _srcs) : dst(_dst), srcs(_srcs) { };
+    LLIR_PHI(SRC _dst) : dst(_dst) { };
+    LLIR_PHI(SRC _dst, vector<pair<SRC, int32_t>> _srcs) : dst(_dst), srcs(_srcs) { };
     string ToString();
 };
 
