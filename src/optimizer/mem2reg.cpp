@@ -88,7 +88,7 @@ void Mem2Reg::runMem2Reg() {
             Case (LLIR_ALLOCA, alloca_inst, inst) {
                 allocaInsts.push_back(alloca_inst);
                 allocaLoopup[alloca_inst] = allocaInsts.size() - 1;
-                defBlocks.push_back(vector<BasicBlock *>());
+                defBlocks.push_back(set<BasicBlock *>());
             } else {
                 continue;
             }
@@ -104,16 +104,18 @@ void Mem2Reg::runMem2Reg() {
                     continue;
                 }
                 if (allocaLoopup.find(alloca_inst) != allocaLoopup.end()) {
-                    defBlocks[allocaLoopup[alloca_inst]].push_back(block);
+                    defBlocks[allocaLoopup[alloca_inst]].insert(block);
                 }
             }
         }
     }
     // insert phi inst
+    auto &&var_idx = function->var_idx;
     queue<BasicBlock *> W;
     map<LLIR_PHI *, int32_t> phi2AllocaMap;
     for (auto &&alloca_inst : allocaInsts) {
         int32_t index = allocaLoopup[alloca_inst];
+        DeclType type = alloca_inst->reg.getType();
         for (auto &&block : all_blocks) {
             block->dirty = false;
         }
@@ -126,13 +128,46 @@ void Mem2Reg::runMem2Reg() {
             for (auto &&df : block->DomFrontier) {
                 if (!df->dirty) { // avoid repeat phi-inst be generated
                     df->dirty = true;
-                    LLIR_PHI *phi_inst = new LLIR_PHI();
+                    LLIR_PHI *phi_inst = new LLIR_PHI(SRC(new VirtReg(var_idx++, type)));
+                    df->basic_block.insert(df->basic_block.begin(), phi_inst); // insert phi to bb-front
                     phi2AllocaMap[phi_inst] = index; // phi-srcs from defBlocks[index]
                     if (!inDefBlocks(index, df)) {
                         W.push(df);
                     }
                 }
             }
+        }
+    }
+    // rename
+    vector<SRC> values;
+    for (auto &&alloca_inst : allocaInsts) {
+        values.push_back(SRC());
+    }
+    for (auto &&block : all_blocks) {
+        block->dirty = false;
+    }
+    stack<RenameData *> renameDataStack;
+    renameDataStack.push(new RenameData(*all_blocks.begin(), nullptr, values));
+    while(!renameDataStack.empty()) {
+        RenameData *data = renameDataStack.top();
+        renameDataStack.pop();
+        vector<SRC> cur_values = values;
+
+        for (auto &&inst : data->block->basic_block) {
+            Case (LLIR_PHI, phi_inst, inst) {
+                if (phi2AllocaMap.find(phi_inst) != phi2AllocaMap.end()) {
+                    
+                }
+            }
+        }
+
+        if (data->block->dirty) {
+            continue;
+        }
+        data->block->dirty = true;
+
+        for (auto &&pair : data->block->succs) {
+            renameDataStack.push(new RenameData(pair.second, data->block, cur_values));
         }
     }
 }
