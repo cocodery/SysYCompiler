@@ -77,7 +77,6 @@ bool Mem2Reg::inDefBlocks(int32_t index ,BasicBlock *block) {
 }
 
 void Mem2Reg::runMem2Reg() {
-    dbg(function->func_info.func_name);
     // delete unused variable
     auto &&del_variable = initDelVarSet();
     removeUsedVar(del_variable);
@@ -109,10 +108,6 @@ void Mem2Reg::runMem2Reg() {
                 }
             }
         }
-    }
-    dbg("AllocaLookUp");
-    for (auto &&pair : allocaLoopup) {
-        dbg(pair.second, pair.first->ToString());
     }
     // insert phi inst
     auto &&var_idx = function->var_idx;
@@ -172,13 +167,11 @@ void Mem2Reg::runMem2Reg() {
             auto inst = *inst_iter;
             bool removeInst = false;
             Case (LLIR_ALLOCA, alloca_inst, inst) {
-                cout << alloca_inst->ToString() << endl;
                 if (allocaLoopup.find(alloca_inst) != allocaLoopup.end()) {
                     data->block->removeInst(alloca_inst);
                     removeInst = true;
                 }
             } else Case (LLIR_LOAD, load_inst, inst) {
-                cout << load_inst->ToString() << endl;
                 auto &&load_src = load_inst->src.ToVirtReg();
                 assert(load_src != nullptr);
                 auto &&alloca_inst = getAllocaInst(load_src);
@@ -187,7 +180,6 @@ void Mem2Reg::runMem2Reg() {
                 data->block->removeInst(load_inst);
                 removeInst = true;
             } else Case (LLIR_STORE, store_inst, inst) {
-                cout << store_inst->ToString() << endl;
                 auto &&store_dst = store_inst->dst.ToVirtReg();
                 assert(store_dst != nullptr);
                 auto &&alloca_inst = getAllocaInst(store_dst);
