@@ -77,6 +77,7 @@ bool Mem2Reg::inDefBlocks(int32_t index ,BasicBlock *block) {
 }
 
 void Mem2Reg::runMem2Reg() {
+    dbg(function->func_info.func_name);
     // delete unused variable
     auto &&del_variable = initDelVarSet();
     removeUsedVar(del_variable);
@@ -109,6 +110,10 @@ void Mem2Reg::runMem2Reg() {
             }
         }
     }
+    dbg("AllocaLookUp");
+    for (auto &&pair : allocaLoopup) {
+        dbg(pair.second, pair.first->ToString());
+    }
     // insert phi inst
     auto &&var_idx = function->var_idx;
     queue<BasicBlock *> W;
@@ -116,9 +121,6 @@ void Mem2Reg::runMem2Reg() {
     for (auto &&alloca_inst : allocaInsts) {
         int32_t index = allocaLoopup[alloca_inst];
         DeclType type = alloca_inst->reg.getType();
-        for (auto &&block : all_blocks) {
-            block->dirty = false;
-        }
         for (auto &&block : defBlocks[index]) {
             W.push(block);
         }
@@ -141,7 +143,7 @@ void Mem2Reg::runMem2Reg() {
     // rename
     vector<SRC> values;
     for (auto &&alloca_inst : allocaInsts) {
-        values.push_back(SRC());
+        values.push_back(SRC(new CTValue(alloca_inst->reg.getType(), 0, 0)));
     }
     for (auto &&block : all_blocks) {
         block->dirty = false;
@@ -152,11 +154,13 @@ void Mem2Reg::runMem2Reg() {
         RenameData *data = renameDataStack.top();
         renameDataStack.pop();
         vector<SRC> cur_values = values;
+        auto &&data_bb = data->block->basic_block;
 
-        for (auto &&inst : data->block->basic_block) {
+        for (auto &&inst : data_bb) {
             Case (LLIR_PHI, phi_inst, inst) {
                 if (phi2AllocaMap.find(phi_inst) != phi2AllocaMap.end()) {
-                    
+                    int32_t predIndex = data->pred->bb_idx;
+                    phi_inst->insertValue(data->values[phi2AllocaMap[phi_inst]], predIndex);
                 }
             }
         }
@@ -164,7 +168,41 @@ void Mem2Reg::runMem2Reg() {
         if (data->block->dirty) {
             continue;
         }
-        data->block->dirty = true;
+        for (auto &&inst_iter = data_bb.begin(); inst_iter != data_bb.end();) {
+            auto inst = *inst_iter;
+            bool removeInst = false;
+            Case (LLIR_ALLOCA, alloca_inst, inst) {
+                cout << alloca_inst->ToString() << endl;
+                if (allocaLoopup.find(alloca_inst) != allocaLoopup.end()) {
+                    data->block->removeInst(alloca_inst);
+                    removeInst = true;
+                }
+            } else Case (LLIR_LOAD, load_inst, inst) {
+                cout << load_inst->ToString() << endl;
+                auto &&load_src = load_inst->src.ToVirtReg();
+                assert(load_src != nullptr);
+                auto &&alloca_inst = getAllocaInst(load_src);
+                int allocaIndex = allocaLoopup[alloca_inst];
+                load_inst->dst = cur_values[allocaIndex];
+                data->block->removeInst(load_inst);
+                removeInst = true;
+            } else Case (LLIR_STORE, store_inst, inst) {
+                cout << store_inst->ToString() << endl;
+                auto &&store_dst = store_inst->dst.ToVirtReg();
+                assert(store_dst != nullptr);
+                auto &&alloca_inst = getAllocaInst(store_dst);
+                int allocaIndex = allocaLoopup[alloca_inst];
+                cur_values[allocaIndex] = store_inst->src;
+                data->block->removeInst(store_inst);
+                removeInst = true;
+            } else Case (LLIR_PHI, phi_inst, inst) {
+                int allocaIndex = phi2AllocaMap[phi_inst];
+                cur_values[allocaIndex] = phi_inst->dst;
+            } 
+            if (!removeInst) {
+                inst_iter += 1;
+            }
+        }
 
         for (auto &&pair : data->block->succs) {
             renameDataStack.push(new RenameData(pair.second, data->block, cur_values));

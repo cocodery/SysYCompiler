@@ -133,7 +133,15 @@ public:
 public:
     // ToDo:
     LLIR_PHI(SRC _dst) : dst(_dst) { };
-    LLIR_PHI(SRC _dst, vector<pair<SRC, int32_t>> _srcs) : dst(_dst), srcs(_srcs) { };
+    void insertValue(SRC src, int32_t index) {
+        for (auto &&pair : srcs) {
+            if (pair.second == index) {
+                pair.first = src;
+                return;
+            }
+        }
+        srcs.push_back({src, index});
+    }
     string ToString();
 };
 
