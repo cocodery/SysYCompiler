@@ -7,6 +7,9 @@
 #define IF_GLOBAL_RETURN_NEG_ID(regPtr)\
     ((regPtr)->global ? -(regPtr)->reg_id : (regPtr)->reg_id)
 
+#define IF_IS_REG_THEN_PUSH_BACK(vec, regPtr)\
+    {if (regPtr) vec.push_back(IF_GLOBAL_RETURN_NEG_ID(regPtr));}
+
 void GenerateLiveInfo(const CompUnit &ir)
 {
     printf("\n-----GenerateLiveInfo Start----\n");
@@ -14,7 +17,7 @@ void GenerateLiveInfo(const CompUnit &ir)
     {
         printf("In Function \"%s\":\n", functionPtr->func_info.func_name.c_str());
         
-        printf("* Generate LiveUse & LiveDef\n");
+        printf(" * Generate LiveUse & LiveDef\n");
         for (auto &&bbPtr : functionPtr->all_blocks)
         {
             if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
@@ -42,27 +45,24 @@ void GenerateLiveInfo(const CompUnit &ir)
                     //cout << get_tabs() << ret_inst->ToString() << endl;
 
                     // return src
-                    if (ret_inst->has_retvalue && ret_inst->ret_value.reg)
-                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(ret_inst->ret_value.reg));
+                    if (ret_inst->has_retvalue)
+                        IF_IS_REG_THEN_PUSH_BACK(src_regids, ret_inst->ret_value.reg);
                 }
                 Case (LLIR_BR, br_inst, instPtr)
                 {
                     //cout << get_tabs() << br_inst->ToString() << endl;
 
                     // if (src) goto label1;
-                    // else goto label2;
                     if (br_inst->has_cond)
-                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(br_inst->cond.reg));
+                        IF_IS_REG_THEN_PUSH_BACK(src_regids, br_inst->cond.reg);
                 }
                 Case (LLIR_BIN, bin_inst, instPtr)
                 {
                     //cout << get_tabs() << bin_inst->ToString() << endl;
 
                     // dst = src1 + src2
-                    if (bin_inst->src1.reg)
-                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(bin_inst->src1.reg));
-                    if (bin_inst->src2.reg)
-                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(bin_inst->src2.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, bin_inst->src1.reg);
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, bin_inst->src2.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(bin_inst->dst.reg);
                 }
                 Case (LLIR_FBIN, fbin_inst, instPtr)
@@ -70,10 +70,8 @@ void GenerateLiveInfo(const CompUnit &ir)
                     //cout << get_tabs() << fbin_inst->ToString() << endl;
 
                     // dst = src1 + src2
-                    if (fbin_inst->src1.reg)
-                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(fbin_inst->src1.reg));
-                    if (fbin_inst->src2.reg)
-                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(fbin_inst->src2.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, fbin_inst->src1.reg);
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, fbin_inst->src2.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(fbin_inst->dst.reg);
                 }
                 //Case (LLIR_ALLOCA, alloc_inst, instPtr) {}
@@ -82,7 +80,7 @@ void GenerateLiveInfo(const CompUnit &ir)
                     //cout << get_tabs() << load_inst->ToString() << endl;
                     
                     // dst = *src
-                    src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(load_inst->src.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, load_inst->src.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(load_inst->dst.reg);
                 }
                 Case (LLIR_STORE, store_inst, instPtr)
@@ -90,8 +88,7 @@ void GenerateLiveInfo(const CompUnit &ir)
                     //cout << get_tabs() << store_inst->ToString() << endl;
 
                     // *dst = src
-                    if (store_inst->src.reg)
-                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(store_inst->src.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, store_inst->src.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg);
                 }
                 Case (LLIR_ICMP, icmp_inst, instPtr)
@@ -110,10 +107,8 @@ void GenerateLiveInfo(const CompUnit &ir)
                     //cout << get_tabs() << fcmp_inst->ToString() << endl;
                 
                     // dst = src1 < src2
-                    if (fcmp_inst->src1.reg)
-                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(fcmp_inst->src1.reg));
-                    if (fcmp_inst->src2.reg)
-                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(fcmp_inst->src2.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src1.reg);
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src2.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(fcmp_inst->dst.reg);
                 }
                 Case (LLIR_CALL, call_inst, instPtr)
@@ -122,8 +117,7 @@ void GenerateLiveInfo(const CompUnit &ir)
                 
                     // [dst = ] func(arg1, arg2, ...)
                     for (auto &&arg : call_inst->args)
-                        if (arg.reg)
-                            src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(arg.reg));
+                        IF_IS_REG_THEN_PUSH_BACK(src_regids, arg.reg);
                     if (call_inst->func_info->return_type != TypeVoid)
                         dst_regid = IF_GLOBAL_RETURN_NEG_ID(call_inst->dst.reg);
                 }
@@ -132,7 +126,7 @@ void GenerateLiveInfo(const CompUnit &ir)
                     //cout << get_tabs() << zext_inst->ToString() << endl;
                 
                     // dst = (int) src
-                    src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(zext_inst->src.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, zext_inst->src.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(zext_inst->dst.reg);
                 }
                 Case (LLIR_GEP, gep_inst, instPtr)
@@ -140,9 +134,8 @@ void GenerateLiveInfo(const CompUnit &ir)
                     //cout << get_tabs() << gep_inst->ToString() << endl;
                     
                     // dst = *(src + off)
-                    if (gep_inst->off.reg)
-                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(gep_inst->off.reg));
-                    src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(gep_inst->src.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->off.reg);
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->src.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(gep_inst->dst.reg);
                 }
                 Case (LLIR_XOR, xor_inst, instPtr)
@@ -150,14 +143,14 @@ void GenerateLiveInfo(const CompUnit &ir)
                     //cout << get_tabs() << xor_inst->ToString() << endl;
                     
                     // dst = ~ src
-                    src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(xor_inst->src.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, xor_inst->src.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(xor_inst->dst.reg);
                 }
                 Case (LLIR_BC, bc_inst, instPtr) {
                     //cout << get_tabs() << bc_inst->ToString() << endl; 
 
                     // dst = (char)src
-                    src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(bc_inst->src.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, bc_inst->src.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(bc_inst->dst.reg);
                 }
                 Case (LLIR_SITOFP, itf_inst, instPtr)
@@ -165,7 +158,7 @@ void GenerateLiveInfo(const CompUnit &ir)
                     //cout << get_tabs() << itf_inst->ToString() << endl;
                     
                     // dst = (float) src
-                    src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(itf_inst->src.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, itf_inst->src.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(itf_inst->dst.reg);
                 }
                 Case (LLIR_FPTOSI, fti_inst, instPtr)
@@ -173,7 +166,7 @@ void GenerateLiveInfo(const CompUnit &ir)
                     //cout << get_tabs() << fti_inst->ToString() << endl;
                     
                     // dst = (int) src
-                    src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(fti_inst->src.reg));
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, fti_inst->src.reg);
                     dst_regid = IF_GLOBAL_RETURN_NEG_ID(fti_inst->dst.reg);
                 }
 
@@ -193,7 +186,7 @@ void GenerateLiveInfo(const CompUnit &ir)
             printf("\n");
         }
     
-        printf("* Generate LiveIn & LiveOut\n");       
+        printf(" * Generate LiveIn & LiveOut\n");       
         bool liveOutChanged;
         do
         {
@@ -247,8 +240,158 @@ void GenerateLiveInfo(const CompUnit &ir)
             printf("\n");
         }
 
-        printf("* Generate LiveInterval\n");
+        printf(" * Generate LiveInterval\n");
+        // Instruction Indexing
+        int instOffset = 0;
+        for (auto &&bbPtr : functionPtr->all_blocks)
+        {
+            bbPtr->firstInstIndex = instOffset;
+            instOffset += bbPtr->basic_block.size();
+        }
 
+        /*for (auto &&bbIt = functionPtr->all_blocks.rbegin();
+            bbIt != functionPtr->all_blocks.rend();
+            ++bbIt)
+        {
+            auto &&bbPtr = *bbIt;
+            for (auto &&vReg : bbPtr->LiveOut)
+                ExtendRangeOrAddRange();
+            for (auto &&instIt = bbPtr->basic_block.rbegin();
+                instIt != bbPtr->basic_block.rend();
+                ++instIt)
+            {
+                auto &&instPtr = *instIt;
+                Case (LLIR_RET, ret_inst, instPtr)
+                {
+                    //cout << get_tabs() << ret_inst->ToString() << endl;
+
+                    // return src
+                    if (ret_inst->has_retvalue)
+                        IF_IS_REG_THEN_PUSH_BACK(src_regids, ret_inst->ret_value.reg);
+                }
+                Case (LLIR_BR, br_inst, instPtr)
+                {
+                    //cout << get_tabs() << br_inst->ToString() << endl;
+
+                    // if (src) goto label1;
+                    if (br_inst->has_cond)
+                        IF_IS_REG_THEN_PUSH_BACK(src_regids, br_inst->cond.reg);
+                }
+                Case (LLIR_BIN, bin_inst, instPtr)
+                {
+                    //cout << get_tabs() << bin_inst->ToString() << endl;
+
+                    // dst = src1 + src2
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, bin_inst->src1.reg);
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, bin_inst->src2.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(bin_inst->dst.reg);
+                }
+                Case (LLIR_FBIN, fbin_inst, instPtr)
+                {
+                    //cout << get_tabs() << fbin_inst->ToString() << endl;
+
+                    // dst = src1 + src2
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, fbin_inst->src1.reg);
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, fbin_inst->src2.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(fbin_inst->dst.reg);
+                }
+                //Case (LLIR_ALLOCA, alloc_inst, instPtr) {}
+                Case (LLIR_LOAD, load_inst, instPtr)
+                {
+                    //cout << get_tabs() << load_inst->ToString() << endl;
+                    
+                    // dst = *src
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, load_inst->src.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(load_inst->dst.reg);
+                }
+                Case (LLIR_STORE, store_inst, instPtr)
+                {
+                    //cout << get_tabs() << store_inst->ToString() << endl;
+
+                    // *dst = src
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, store_inst->src.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg);
+                }
+                Case (LLIR_ICMP, icmp_inst, instPtr)
+                {
+                    //cout << get_tabs() << icmp_inst->ToString() << endl;
+                
+                    // dst = src1 < src2
+                    if (icmp_inst->src1.reg)
+                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(icmp_inst->src1.reg));
+                    if (icmp_inst->src2.reg)
+                        src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(icmp_inst->src2.reg));
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(icmp_inst->dst.reg);
+                }
+                Case (LLIR_FCMP, fcmp_inst, instPtr)
+                {
+                    //cout << get_tabs() << fcmp_inst->ToString() << endl;
+                
+                    // dst = src1 < src2
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src1.reg);
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src2.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(fcmp_inst->dst.reg);
+                }
+                Case (LLIR_CALL, call_inst, instPtr)
+                {
+                    //cout << get_tabs() << call_inst->ToString() << endl;
+                
+                    // [dst = ] func(arg1, arg2, ...)
+                    for (auto &&arg : call_inst->args)
+                        IF_IS_REG_THEN_PUSH_BACK(src_regids, arg.reg);
+                    if (call_inst->func_info->return_type != TypeVoid)
+                        dst_regid = IF_GLOBAL_RETURN_NEG_ID(call_inst->dst.reg);
+                }
+                Case (LLIR_ZEXT, zext_inst, instPtr)
+                {
+                    //cout << get_tabs() << zext_inst->ToString() << endl;
+                
+                    // dst = (int) src
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, zext_inst->src.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(zext_inst->dst.reg);
+                }
+                Case (LLIR_GEP, gep_inst, instPtr)
+                {
+                    //cout << get_tabs() << gep_inst->ToString() << endl;
+                    
+                    // dst = *(src + off)
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->off.reg);
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->src.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(gep_inst->dst.reg);
+                }
+                Case (LLIR_XOR, xor_inst, instPtr)
+                {
+                    //cout << get_tabs() << xor_inst->ToString() << endl;
+                    
+                    // dst = ~ src
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, xor_inst->src.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(xor_inst->dst.reg);
+                }
+                Case (LLIR_BC, bc_inst, instPtr) {
+                    //cout << get_tabs() << bc_inst->ToString() << endl; 
+
+                    // dst = (char)src
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, bc_inst->src.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(bc_inst->dst.reg);
+                }
+                Case (LLIR_SITOFP, itf_inst, instPtr)
+                {
+                    //cout << get_tabs() << itf_inst->ToString() << endl;
+                    
+                    // dst = (float) src
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, itf_inst->src.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(itf_inst->dst.reg);
+                }
+                Case (LLIR_FPTOSI, fti_inst, instPtr)
+                {
+                    //cout << get_tabs() << fti_inst->ToString() << endl;
+                    
+                    // dst = (int) src
+                    IF_IS_REG_THEN_PUSH_BACK(src_regids, fti_inst->src.reg);
+                    dst_regid = IF_GLOBAL_RETURN_NEG_ID(fti_inst->dst.reg);
+                }
+            }
+        }*/
     }
 
              

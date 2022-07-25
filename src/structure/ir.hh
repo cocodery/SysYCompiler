@@ -38,6 +38,7 @@ public:
     set<BasicBlock *> domers; // 支配者节点集 
     set<BasicBlock *> DomFrontier;
     set<int32_t> LiveUse, LiveDef, LiveIn, LiveOut;
+    int32_t firstInstIndex; // 首个指令的编号
 public:
     BasicBlock(int32_t _idx, bool _value = false) : bb_idx(_idx), valuable(_value), idom(nullptr) { }
     Inst *lastInst();
