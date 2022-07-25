@@ -43,9 +43,11 @@ public:
 public:
     BasicBlock(int32_t _idx, bool _value = false) : bb_idx(_idx), valuable(_value), idom(nullptr) { }
     Inst *lastInst();
+    void debugBlock();
     void printBlock();
     void initDom(vector<BasicBlock *> all_blocks);
     set<BasicBlock *> predsDomInter();
+    void removeInst(Inst *inst);
 };
 
 class Scope: public Info {

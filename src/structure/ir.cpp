@@ -6,6 +6,65 @@ Inst *BasicBlock::lastInst() {
     return basic_block.size() > 0 ? basic_block[basic_block.size() - 1] : nullptr;
 }
 
+void BasicBlock::debugBlock() {
+    cout << get_tabs(tab_num - 1) << "Block" << bb_idx << ":" << endl;
+    for (auto inst: basic_block) {
+        // LLVM IR
+        Case (LLIR_RET, ret_inst, inst) {
+            cout << get_tabs() << ret_inst->ToString() << endl;
+        }
+        Case (LLIR_BR, br_inst, inst) {
+            cout <<get_tabs() << br_inst->ToString() << endl;
+        }
+        Case (LLIR_BIN, bin_inst, inst) {
+            cout << get_tabs() << bin_inst->ToString() << endl;
+        }
+        Case (LLIR_FBIN, fbin_inst, inst) {
+            cout << get_tabs() << fbin_inst->ToString() << endl;
+        }
+        Case (LLIR_ALLOCA, alloc_inst, inst) {
+            cout << get_tabs() << alloc_inst->ToString() << endl;
+        }
+        Case (LLIR_LOAD, load_inst, inst) {
+            cout << get_tabs() << load_inst->ToString() << endl;
+        }
+        Case (LLIR_STORE, store_inst, inst) {
+            cout << get_tabs() << store_inst->ToString() << endl;
+        }
+        Case (LLIR_ICMP, icmp_inst, inst) {
+            cout << get_tabs() << icmp_inst->ToString() << endl;
+        }
+        Case (LLIR_FCMP, fcmp_inst, inst) {
+            cout << get_tabs() << fcmp_inst->ToString() << endl;
+        }
+        Case (LLIR_CALL, call_inst, inst) {
+            cout << get_tabs() << call_inst->ToString() << endl;
+        }
+        Case (LLIR_ZEXT, zext_inst, inst) {
+            cout << get_tabs() << zext_inst->ToString() << endl;
+        }
+        Case (LLIR_GEP, gep_inst, inst) {
+            cout << get_tabs() << gep_inst->ToString() << endl;
+        }
+        Case (LLIR_XOR, xor_inst, inst) {
+            cout << get_tabs() << xor_inst->ToString() << endl;
+        }
+        Case (LLIR_BC, bc_inst, inst) {
+            cout << get_tabs() << bc_inst->ToString() << endl; 
+        }
+        Case (LLIR_SITOFP, itf_inst, inst) {
+            cout << get_tabs() << itf_inst->ToString() << endl;
+        }
+        Case (LLIR_FPTOSI, fti_inst, inst) {
+            cout << get_tabs() << fti_inst->ToString() << endl;
+        }
+        Case (LLIR_PHI, phi_inst, inst) {
+            cout << get_tabs() << phi_inst->ToString() << endl; 
+        }
+    }
+}
+
+
 void BasicBlock::printBlock() {
     if (valuable) {
         llir << get_tabs(tab_num - 1) << "Block" << bb_idx << ":" << endl;
@@ -103,6 +162,16 @@ set<BasicBlock *> BasicBlock::predsDomInter() {
     }
     ret.insert(this);
     return ret;
+}
+
+void BasicBlock::removeInst(Inst *inst) {
+    for (auto &&iter = basic_block.begin(); iter != basic_block.end(); ++iter) {
+        if (*iter == inst) {
+            basic_block.erase(iter);
+            return;
+        }
+    }
+    dbg("not exist inst");
 }
 
 SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
