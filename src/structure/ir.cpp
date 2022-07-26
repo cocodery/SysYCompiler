@@ -85,53 +85,37 @@ void BasicBlock::printBlock() {
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {
             llir << get_tabs() << ret_inst->ToString() << endl;
-        }
-        Case (LLIR_BR, br_inst, inst) {
+        } else Case (LLIR_BR, br_inst, inst) {
             llir <<get_tabs() << br_inst->ToString() << endl;
-        }
-        Case (LLIR_BIN, bin_inst, inst) {
+        } else Case (LLIR_BIN, bin_inst, inst) {
             llir << get_tabs() << bin_inst->ToString() << endl;
-        }
-        Case (LLIR_FBIN, fbin_inst, inst) {
+        } else Case (LLIR_FBIN, fbin_inst, inst) {
             llir << get_tabs() << fbin_inst->ToString() << endl;
-        }
-        Case (LLIR_ALLOCA, alloc_inst, inst) {
+        } else Case (LLIR_ALLOCA, alloc_inst, inst) {
             llir << get_tabs() << alloc_inst->ToString() << endl;
-        }
-        Case (LLIR_LOAD, load_inst, inst) {
+        } else Case (LLIR_LOAD, load_inst, inst) {
             llir << get_tabs() << load_inst->ToString() << endl;
-        }
-        Case (LLIR_STORE, store_inst, inst) {
+        } else Case (LLIR_STORE, store_inst, inst) {
             llir << get_tabs() << store_inst->ToString() << endl;
-        }
-        Case (LLIR_ICMP, icmp_inst, inst) {
+        } else Case (LLIR_ICMP, icmp_inst, inst) {
             llir << get_tabs() << icmp_inst->ToString() << endl;
-        }
-        Case (LLIR_FCMP, fcmp_inst, inst) {
+        } else Case (LLIR_FCMP, fcmp_inst, inst) {
             llir << get_tabs() << fcmp_inst->ToString() << endl;
-        }
-        Case (LLIR_CALL, call_inst, inst) {
+        } else Case (LLIR_CALL, call_inst, inst) {
             llir << get_tabs() << call_inst->ToString() << endl;
-        }
-        Case (LLIR_ZEXT, zext_inst, inst) {
+        } else Case (LLIR_ZEXT, zext_inst, inst) {
             llir << get_tabs() << zext_inst->ToString() << endl;
-        }
-        Case (LLIR_GEP, gep_inst, inst) {
+        } else Case (LLIR_GEP, gep_inst, inst) {
             llir << get_tabs() << gep_inst->ToString() << endl;
-        }
-        Case (LLIR_XOR, xor_inst, inst) {
+        } else Case (LLIR_XOR, xor_inst, inst) {
             llir << get_tabs() << xor_inst->ToString() << endl;
-        }
-        Case (LLIR_BC, bc_inst, inst) {
+        } else Case (LLIR_BC, bc_inst, inst) {
             llir << get_tabs() << bc_inst->ToString() << endl; 
-        }
-        Case (LLIR_SITOFP, itf_inst, inst) {
+        } else Case (LLIR_SITOFP, itf_inst, inst) {
             llir << get_tabs() << itf_inst->ToString() << endl;
-        }
-        Case (LLIR_FPTOSI, fti_inst, inst) {
+        } else Case (LLIR_FPTOSI, fti_inst, inst) {
             llir << get_tabs() << fti_inst->ToString() << endl;
-        }
-        Case (LLIR_PHI, phi_inst, inst) {
+        } else Case (LLIR_PHI, phi_inst, inst) {
             llir << get_tabs() << phi_inst->ToString() << endl; 
         }
     }
@@ -164,14 +148,38 @@ set<BasicBlock *> BasicBlock::predsDomInter() {
     return ret;
 }
 
-void BasicBlock::removeInst(Inst *inst) {
-    for (auto &&iter = basic_block.begin(); iter != basic_block.end(); ++iter) {
-        if (*iter == inst) {
-            basic_block.erase(iter);
-            return;
+void BasicBlock::replaceSRC(SRC old_var, SRC new_var) {
+    for (auto &&inst : basic_block) {
+        Case (LLIR_RET, ret_inst, inst) {
+            ret_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_BR, br_inst, inst) {
+            br_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_BIN, bin_inst, inst) {
+            bin_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_FBIN, fbin_inst, inst) {
+            fbin_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_LOAD, load_inst, inst) {
+            load_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_ICMP, icmp_inst, inst) {
+            icmp_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_FCMP, fcmp_inst, inst) {
+            fcmp_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_CALL, call_inst, inst) {
+            call_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_ZEXT, zext_inst, inst) {
+            zext_inst->replaceSRC(old_var, new_var);            
+        } else Case (LLIR_GEP, gep_inst, inst) {
+            gep_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_XOR, xor_inst, inst) {
+            xor_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_SITOFP, itf_inst, inst) {
+            itf_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_FPTOSI, fti_inst, inst) {
+            fti_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_PHI, phi_inst, inst) {
+            phi_inst->replaceSRC(old_var, new_var); 
         }
     }
-    dbg("not exist inst");
 }
 
 SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
@@ -388,6 +396,12 @@ void Function::initBBDF() {
     //     }
     //     cout << endl;
     // }
+}
+
+void Function::replaceSRCs(SRC old_var, SRC new_var) {
+    for (auto &&block : all_blocks) {
+        block->replaceSRC(old_var, new_var);
+    }
 }
 
 void LibFunction::printFunction() {
