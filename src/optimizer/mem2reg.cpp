@@ -60,7 +60,7 @@ LLIR_ALLOCA *Mem2Reg::getAllocaInst(VirtReg *reg) {
     for (auto &&alloca_inst : allocaInsts) {
         auto &&alloca_dst = alloca_inst->reg.ToVirtReg();
         assert(alloca_dst != nullptr);
-        if (reg->reg_id == alloca_dst->reg_id && reg->global == alloca_dst->global) {
+        if (reg == alloca_dst) {
             return alloca_inst;
         }
     }
@@ -77,7 +77,6 @@ bool Mem2Reg::inDefBlocks(int32_t index ,BasicBlock *block) {
 }
 
 void Mem2Reg::runMem2Reg() {
-    dbg(function->func_info.func_name);
     // delete unused variable
     auto &&del_variable = initDelVarSet();
     removeUsedVar(del_variable);
@@ -109,10 +108,6 @@ void Mem2Reg::runMem2Reg() {
                 }
             }
         }
-    }
-    dbg("AllocaLookUp");
-    for (auto &&pair : allocaLoopup) {
-        dbg(pair.second, pair.first->ToString());
     }
     // insert phi inst
     auto &&var_idx = function->var_idx;
@@ -171,20 +166,17 @@ void Mem2Reg::runMem2Reg() {
         data->block->dirty = true;
         for (auto &&inst_iter = data_bb.begin(); inst_iter != data_bb.end(); ++inst_iter) {
             auto inst = *inst_iter;
-            bool removeInst = false;
             Case (LLIR_ALLOCA, alloca_inst, inst) {
                 if (allocaLoopup.find(alloca_inst) != allocaLoopup.end()) {
                     inst_iter = data_bb.erase(inst_iter) - 1;
-                    removeInst = true;
                 }
             } else Case (LLIR_LOAD, load_inst, inst) {
                 auto &&load_src = load_inst->src.ToVirtReg();
                 assert(load_src != nullptr);
                 auto &&alloca_inst = getAllocaInst(load_src);
                 int allocaIndex = allocaLoopup[alloca_inst];
-                load_inst->dst = cur_values[allocaIndex];
+                function->replaceSRCs(load_inst->dst, cur_values[allocaIndex]);
                 inst_iter = data_bb.erase(inst_iter) - 1;
-                removeInst = true;
             } else Case (LLIR_STORE, store_inst, inst) {
                 auto &&store_dst = store_inst->dst.ToVirtReg();
                 assert(store_dst != nullptr);
@@ -192,7 +184,6 @@ void Mem2Reg::runMem2Reg() {
                 int allocaIndex = allocaLoopup[alloca_inst];
                 cur_values[allocaIndex] = store_inst->src;
                 inst_iter = data_bb.erase(inst_iter) - 1;
-                removeInst = true;
             } else Case (LLIR_PHI, phi_inst, inst) {
                 int allocaIndex = phi2AllocaMap[phi_inst];
                 cur_values[allocaIndex] = phi_inst->dst;

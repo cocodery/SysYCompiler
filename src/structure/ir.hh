@@ -47,7 +47,7 @@ public:
     void printBlock();
     void initDom(vector<BasicBlock *> all_blocks);
     set<BasicBlock *> predsDomInter();
-    void removeInst(Inst *inst);
+    void replaceSRC(SRC old_var, SRC new_var);
 };
 
 class Scope: public Info {
@@ -78,6 +78,7 @@ public:
     void buildDom();
     void buildIDom();
     void initBBDF();
+    void replaceSRCs(SRC old_var, SRC new_var);
 };
 
 class LibFunction {

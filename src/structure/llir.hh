@@ -35,6 +35,9 @@ public:
 public:
     LLIR_RET(bool _hrv, SRC _vr): has_retvalue(_hrv), ret_value(_vr) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_BR: public Inst {
@@ -46,6 +49,9 @@ public:
 public:
     LLIR_BR(bool _hs, SRC _cond,int32_t _t, int32_t _f) : has_cond(_hs), cond(_cond), tar_true(_t), tar_false(_f) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_BIN: public Inst {
@@ -56,6 +62,9 @@ public:
 public:
     LLIR_BIN(BinOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_FBIN: public Inst {
@@ -66,6 +75,9 @@ public:
 public:
     LLIR_FBIN(BinOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_ALLOCA: public Inst {
@@ -84,6 +96,9 @@ public:
 public:
     LLIR_LOAD(SRC _dst, SRC _src) : dst(_dst), src(_src) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_STORE: public Inst {
@@ -104,6 +119,9 @@ public:
 public:
     LLIR_GEP(SRC _dst, SRC _src, SRC _off, VarType _type) : dst(_dst), src(_src), off(_off), type(_type) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_ICMP: public Inst {
@@ -114,6 +132,9 @@ public:
 public:
     LLIR_ICMP(RelOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_FCMP: public Inst {
@@ -124,6 +145,9 @@ public:
 public:
     LLIR_FCMP(RelOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_PHI: public Inst {
@@ -143,6 +167,9 @@ public:
         srcs.push_back({src, index});
     }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_CALL: public Inst {
@@ -153,6 +180,9 @@ public:
 public:
     LLIR_CALL(SRC _dst, vector<SRC> _args, FunctionInfo *_func_info) : dst(_dst), args(_args), func_info(_func_info) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_ZEXT: public Inst {
@@ -161,10 +191,9 @@ public:
 public:
     LLIR_ZEXT(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
-};
+    void replaceSRC(SRC old_var, SRC new_var) {
 
-class LLIR_FPEXT: public Inst {
-public:
+    }
 };
 
 class LLIR_SITOFP: public Inst {
@@ -173,6 +202,9 @@ public:
 public:
     LLIR_SITOFP(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_FPTOSI: public Inst {
@@ -181,6 +213,9 @@ public:
 public:
     LLIR_FPTOSI(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_XOR : public Inst {
@@ -190,6 +225,9 @@ public:
 public:
     LLIR_XOR(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
+    void replaceSRC(SRC old_var, SRC new_var) {
+
+    }
 };
 
 class LLIR_BC: public Inst {
