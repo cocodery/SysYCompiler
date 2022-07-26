@@ -168,40 +168,35 @@ void Mem2Reg::runMem2Reg() {
         if (data->block->dirty) {
             continue;
         }
-        for (auto &&inst_iter = data_bb.begin(); inst_iter != data_bb.end();) {
+        data->block->dirty = true;
+        for (auto &&inst_iter = data_bb.begin(); inst_iter != data_bb.end(); ++inst_iter) {
             auto inst = *inst_iter;
             bool removeInst = false;
             Case (LLIR_ALLOCA, alloca_inst, inst) {
-                cout << alloca_inst->ToString() << endl;
                 if (allocaLoopup.find(alloca_inst) != allocaLoopup.end()) {
-                    data->block->removeInst(alloca_inst);
+                    inst_iter = data_bb.erase(inst_iter) - 1;
                     removeInst = true;
                 }
             } else Case (LLIR_LOAD, load_inst, inst) {
-                cout << load_inst->ToString() << endl;
                 auto &&load_src = load_inst->src.ToVirtReg();
                 assert(load_src != nullptr);
                 auto &&alloca_inst = getAllocaInst(load_src);
                 int allocaIndex = allocaLoopup[alloca_inst];
                 load_inst->dst = cur_values[allocaIndex];
-                data->block->removeInst(load_inst);
+                inst_iter = data_bb.erase(inst_iter) - 1;
                 removeInst = true;
             } else Case (LLIR_STORE, store_inst, inst) {
-                cout << store_inst->ToString() << endl;
                 auto &&store_dst = store_inst->dst.ToVirtReg();
                 assert(store_dst != nullptr);
                 auto &&alloca_inst = getAllocaInst(store_dst);
                 int allocaIndex = allocaLoopup[alloca_inst];
                 cur_values[allocaIndex] = store_inst->src;
-                data->block->removeInst(store_inst);
+                inst_iter = data_bb.erase(inst_iter) - 1;
                 removeInst = true;
             } else Case (LLIR_PHI, phi_inst, inst) {
                 int allocaIndex = phi2AllocaMap[phi_inst];
                 cur_values[allocaIndex] = phi_inst->dst;
             } 
-            if (!removeInst) {
-                inst_iter += 1;
-            }
         }
 
         for (auto &&pair : data->block->succs) {
