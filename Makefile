@@ -31,18 +31,18 @@ $(shell mkdir -p $(BUILD_DIR))
 
 .PHONY: build
 build:
-	$(CMAKE) -S . -B $(BUILD_DIR)
-	$(MAKE) -C $(BUILD_DIR) --file=Makefile -j8 -s
+	@$(CMAKE) -S . -B $(BUILD_DIR)
+	@$(MAKE) -C $(BUILD_DIR) --file=Makefile -j8 -s
 
 .PHONY: run
 run:
-	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm main.sy ; cd ..
+	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm ../main.sy ; cd ..
 	@llvm-link sylib.ll main.ll -S -o run.ll
 	@echo $(TEST_NUM)
 
 .PHONY: test
 test:
-	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm $(CASE); cd ..
+	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm ../$(CASE); cd ..
 	@echo $(CASE)
 	@llvm-link sylib.ll main.ll -S -o run.ll
 

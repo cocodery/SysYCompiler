@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
     // cout << "Start Optimization" << endl;
 
     PassManager pass_manager(ir.global_scope, ir.functions);
-    // pass_manager.excute_pass();
+    pass_manager.excute_pass();
 
     // ----- CodeGen -----
 
