@@ -73,6 +73,8 @@ public:
     Scope *main_scope;
     vector<BasicBlock *> all_blocks;
     set<FunctionInfo *> called_funcs;
+    typedef pair<int32_t, int32_t> RANGE;
+    map<int32_t, RANGE> LiveInterval; // 整个function中每个变量的LiveInterval
 public:
     void printCallInfo();
     void buildCFG();
@@ -80,6 +82,10 @@ public:
     void buildIDom();
     void initBBDF();
     void replaceSRCs(SRC old_var, SRC new_var);
+
+    // 生成LiveInterval
+    void ExtendRangeOrAddRange(int32_t varIdx, int32_t rangeStart, int32_t rangeEnd);
+    void CutRange(int32_t varIdx, int32_t rangeCut);
 };
 
 class LibFunction {
