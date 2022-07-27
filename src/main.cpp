@@ -77,6 +77,13 @@ int main(int argc, char *argv[]) {
         // exit(EXIT_FAILURE);
     }
 
+    for (auto &&function : ir.functions) {
+        if (function->func_info.is_used) {
+            function->buildCFG();
+        }
+    }
+    ir.GenerateLLIR("../main0.ll");
+
     cout << "Start Optimization" << endl;
 
     PassManager pass_manager(ir.global_scope, ir.functions);
