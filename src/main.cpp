@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 
     // ----- CodeGen -----
 
-    GenerateLiveInfo(ir);
+    // GenerateLiveInfo(ir);
 
     // -------------------
 

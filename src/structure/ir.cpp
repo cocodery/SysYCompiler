@@ -6,6 +6,65 @@ Inst *BasicBlock::lastInst() {
     return basic_block.size() > 0 ? basic_block[basic_block.size() - 1] : nullptr;
 }
 
+void BasicBlock::debugBlock() {
+    cout << get_tabs(tab_num - 1) << "Block" << bb_idx << ":" << endl;
+    for (auto inst: basic_block) {
+        // LLVM IR
+        Case (LLIR_RET, ret_inst, inst) {
+            cout << get_tabs() << ret_inst->ToString() << endl;
+        }
+        Case (LLIR_BR, br_inst, inst) {
+            cout <<get_tabs() << br_inst->ToString() << endl;
+        }
+        Case (LLIR_BIN, bin_inst, inst) {
+            cout << get_tabs() << bin_inst->ToString() << endl;
+        }
+        Case (LLIR_FBIN, fbin_inst, inst) {
+            cout << get_tabs() << fbin_inst->ToString() << endl;
+        }
+        Case (LLIR_ALLOCA, alloc_inst, inst) {
+            cout << get_tabs() << alloc_inst->ToString() << endl;
+        }
+        Case (LLIR_LOAD, load_inst, inst) {
+            cout << get_tabs() << load_inst->ToString() << endl;
+        }
+        Case (LLIR_STORE, store_inst, inst) {
+            cout << get_tabs() << store_inst->ToString() << endl;
+        }
+        Case (LLIR_ICMP, icmp_inst, inst) {
+            cout << get_tabs() << icmp_inst->ToString() << endl;
+        }
+        Case (LLIR_FCMP, fcmp_inst, inst) {
+            cout << get_tabs() << fcmp_inst->ToString() << endl;
+        }
+        Case (LLIR_CALL, call_inst, inst) {
+            cout << get_tabs() << call_inst->ToString() << endl;
+        }
+        Case (LLIR_ZEXT, zext_inst, inst) {
+            cout << get_tabs() << zext_inst->ToString() << endl;
+        }
+        Case (LLIR_GEP, gep_inst, inst) {
+            cout << get_tabs() << gep_inst->ToString() << endl;
+        }
+        Case (LLIR_XOR, xor_inst, inst) {
+            cout << get_tabs() << xor_inst->ToString() << endl;
+        }
+        Case (LLIR_BC, bc_inst, inst) {
+            cout << get_tabs() << bc_inst->ToString() << endl; 
+        }
+        Case (LLIR_SITOFP, itf_inst, inst) {
+            cout << get_tabs() << itf_inst->ToString() << endl;
+        }
+        Case (LLIR_FPTOSI, fti_inst, inst) {
+            cout << get_tabs() << fti_inst->ToString() << endl;
+        }
+        Case (LLIR_PHI, phi_inst, inst) {
+            cout << get_tabs() << phi_inst->ToString() << endl; 
+        }
+    }
+}
+
+
 void BasicBlock::printBlock() {
     if (valuable) {
         llir << get_tabs(tab_num - 1) << "Block" << bb_idx << ":" << endl;
@@ -98,27 +157,6 @@ void BasicBlock::initDom(vector<BasicBlock *> all_blocks) {
     }
 }
 
-void BasicBlock::initIDom(BasicBlock *entrybb) {
-    if (dom.size() > 1) {
-        // cout << bb_idx << "'s Dom : ";
-        // for (auto &&block : dom) {
-        //     cout << block->bb_idx << ' ';
-        // }
-        // cout << endl;
-        idom = entrybb; // init idom with entrybb
-        // assign idom with the nearest bb
-        for (auto &&iter = dom.begin(); iter != dom.end(); ++iter) {
-            int32_t iter_bb_idx = (*iter)->bb_idx; 
-            if (iter_bb_idx > idom->bb_idx && iter_bb_idx != bb_idx) {
-                idom = *iter;
-            }
-        }
-        // insert `this` to idom-bb as a domer
-        idom->domers.insert(this);
-        // cout << "idom " << idom->bb_idx << endl;
-    }
-}
-
 set<BasicBlock *> BasicBlock::predsDomInter() {
     set<BasicBlock *> ret = (*preds.begin()).second->dom;
     // for (auto &&block : ret) {
@@ -138,6 +176,40 @@ set<BasicBlock *> BasicBlock::predsDomInter() {
     }
     ret.insert(this);
     return ret;
+}
+
+void BasicBlock::replaceSRC(SRC old_var, SRC new_var) {
+    for (auto &&inst : basic_block) {
+        Case (LLIR_RET, ret_inst, inst) {
+            ret_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_BR, br_inst, inst) {
+            br_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_BIN, bin_inst, inst) {
+            bin_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_FBIN, fbin_inst, inst) {
+            fbin_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_LOAD, load_inst, inst) {
+            load_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_ICMP, icmp_inst, inst) {
+            icmp_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_FCMP, fcmp_inst, inst) {
+            fcmp_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_CALL, call_inst, inst) {
+            call_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_ZEXT, zext_inst, inst) {
+            zext_inst->replaceSRC(old_var, new_var);            
+        } else Case (LLIR_GEP, gep_inst, inst) {
+            gep_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_XOR, xor_inst, inst) {
+            xor_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_SITOFP, itf_inst, inst) {
+            itf_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_FPTOSI, fti_inst, inst) {
+            fti_inst->replaceSRC(old_var, new_var);
+        } else Case (LLIR_PHI, phi_inst, inst) {
+            phi_inst->replaceSRC(old_var, new_var); 
+        }
+    }
 }
 
 SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
@@ -301,8 +373,26 @@ void Function::buildDom() {
 }
 
 void Function::buildIDom() {
+    BasicBlock *entrybb = *all_blocks.begin();
     for (auto &&block : all_blocks) {
-        block->initIDom(all_blocks[0]);
+        if (block->dom.size() > 1) {
+            // cout << bb_idx << "'s Dom : ";
+            // for (auto &&block : dom) {
+            //     cout << block->bb_idx << ' ';
+            // }
+            // cout << endl;
+            block->idom = entrybb; // init idom with entrybb
+            // assign idom with the nearest bb
+            for (auto &&iter = block->dom.begin(); iter != block->dom.end(); ++iter) {
+                int32_t iter_bb_idx = (*iter)->bb_idx; 
+                if (iter_bb_idx > block->idom->bb_idx && iter_bb_idx != block->bb_idx) {
+                    block->idom = *iter;
+                }
+            }
+            // insert `this` to idom-bb as a domer
+            block->idom->domers.insert(block);
+            // cout << "idom " << idom->bb_idx << endl;
+        }
     }
     // for (auto &&block : all_blocks) {
     //     cout << "BB" << block->bb_idx << " domers ";
@@ -336,6 +426,12 @@ void Function::initBBDF() {
     //     }
     //     cout << endl;
     // }
+}
+
+void Function::replaceSRCs(SRC old_var, SRC new_var) {
+    for (auto &&block : all_blocks) {
+        block->replaceSRC(old_var, new_var);
+    }
 }
 
 void LibFunction::printFunction() {

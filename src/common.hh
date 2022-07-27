@@ -27,10 +27,12 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <queue>
 #include <cassert>
 
 using std::string;
 using std::vector;
+using std::queue;
 
 extern int32_t tab_num;
 string get_tabs();
