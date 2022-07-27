@@ -35,8 +35,10 @@ public:
 public:
     LLIR_RET(bool _hrv, SRC _vr): has_retvalue(_hrv), ret_value(_vr) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&ret_reg = ret_value.ToVirtReg(); ret_reg != nullptr && *old_reg == *ret_reg) {
+            ret_value = new_var;
+        }
     }
 };
 
@@ -49,9 +51,6 @@ public:
 public:
     LLIR_BR(bool _hs, SRC _cond,int32_t _t, int32_t _f) : has_cond(_hs), cond(_cond), tar_true(_t), tar_false(_f) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
-    }
 };
 
 class LLIR_BIN: public Inst {
@@ -62,8 +61,13 @@ public:
 public:
     LLIR_BIN(BinOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src1_reg = src1.ToVirtReg(); src1_reg != nullptr && *old_reg == *src1_reg) {
+            src1 = new_var;
+        }
+        if (auto &&src2_reg = src2.ToVirtReg(); src2_reg != nullptr && *old_reg == *src2_reg) {
+            src2 = new_var;
+        }
     }
 };
 
@@ -75,8 +79,13 @@ public:
 public:
     LLIR_FBIN(BinOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src1_reg = src1.ToVirtReg(); src1_reg != nullptr && *old_reg == *src1_reg) {
+            src1 = new_var;
+        }
+        if (auto &&src2_reg = src2.ToVirtReg(); src2_reg != nullptr && *old_reg == *src2_reg) {
+            src2 = new_var;
+        }
     }
 };
 
@@ -96,9 +105,6 @@ public:
 public:
     LLIR_LOAD(SRC _dst, SRC _src) : dst(_dst), src(_src) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
-    }
 };
 
 class LLIR_STORE: public Inst {
@@ -119,8 +125,13 @@ public:
 public:
     LLIR_GEP(SRC _dst, SRC _src, SRC _off, VarType _type) : dst(_dst), src(_src), off(_off), type(_type) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src_reg = src.ToVirtReg(); src_reg != nullptr && *old_reg == *src_reg) {
+            src = new_var;
+        }
+        if (auto &&off_reg = off.ToVirtReg(); off_reg != nullptr && *old_reg == *off_reg) {
+            off = new_var;
+        }
     }
 };
 
@@ -132,8 +143,13 @@ public:
 public:
     LLIR_ICMP(RelOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src1_reg = src1.ToVirtReg(); src1_reg != nullptr && *old_reg == *src1_reg) {
+            src1 = new_var;
+        }
+        if (auto &&src2_reg = src2.ToVirtReg(); src2_reg != nullptr && *old_reg == *src2_reg) {
+            src2 = new_var;
+        }
     }
 };
 
@@ -145,8 +161,13 @@ public:
 public:
     LLIR_FCMP(RelOp _op, SRC _dst, SRC _src1, SRC _src2) : op(_op), dst(_dst), src1(_src1), src2(_src2) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src1_reg = src1.ToVirtReg(); src1_reg != nullptr && *old_reg == *src1_reg) {
+            src1 = new_var;
+        }
+        if (auto &&src2_reg = src2.ToVirtReg(); src2_reg != nullptr && *old_reg == *src2_reg) {
+            src2 = new_var;
+        }
     }
 };
 
@@ -167,8 +188,12 @@ public:
         srcs.push_back({src, index});
     }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        for (auto &&pair : srcs) {
+            if (auto &&src_reg = pair.first.ToVirtReg(); src_reg != nullptr && *old_reg == *src_reg) {
+                pair.first = new_var;
+            }
+        }
     }
 };
 
@@ -180,8 +205,12 @@ public:
 public:
     LLIR_CALL(SRC _dst, vector<SRC> _args, FunctionInfo *_func_info) : dst(_dst), args(_args), func_info(_func_info) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        for (auto &&arg : args) {
+            if (auto &&arg_reg = arg.ToVirtReg(); arg_reg != nullptr && *old_reg == *arg_reg) {
+                arg = new_var;
+            }
+        }
     }
 };
 
@@ -191,8 +220,10 @@ public:
 public:
     LLIR_ZEXT(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src_reg = src.ToVirtReg(); src_reg != nullptr && *old_reg == *src_reg) {
+            src = new_var;
+        }
     }
 };
 
@@ -202,8 +233,10 @@ public:
 public:
     LLIR_SITOFP(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src_reg = src.ToVirtReg(); src_reg != nullptr && *old_reg == *src_reg) {
+            src = new_var;
+        }
     }
 };
 
@@ -213,8 +246,10 @@ public:
 public:
     LLIR_FPTOSI(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src_reg = src.ToVirtReg(); src_reg != nullptr && *old_reg == *src_reg) {
+            src = new_var;
+        }
     }
 };
 
@@ -225,8 +260,10 @@ public:
 public:
     LLIR_XOR(SRC _dst, SRC _src): dst(_dst), src(_src) { }
     string ToString();
-    void replaceSRC(SRC old_var, SRC new_var) {
-
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src_reg = src.ToVirtReg(); src_reg != nullptr && *old_reg == *src_reg) {
+            src = new_var;
+        }
     }
 };
 

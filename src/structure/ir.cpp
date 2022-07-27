@@ -7,59 +7,43 @@ Inst *BasicBlock::lastInst() {
 }
 
 void BasicBlock::debugBlock() {
-    cout << get_tabs(tab_num - 1) << "Block" << bb_idx << ":" << endl;
+    // cout << get_tabs(tab_num - 1) << "Block" << bb_idx << ":" << endl;
     for (auto inst: basic_block) {
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {
-            cout << get_tabs() << ret_inst->ToString() << endl;
-        }
-        Case (LLIR_BR, br_inst, inst) {
-            cout <<get_tabs() << br_inst->ToString() << endl;
-        }
-        Case (LLIR_BIN, bin_inst, inst) {
-            cout << get_tabs() << bin_inst->ToString() << endl;
-        }
-        Case (LLIR_FBIN, fbin_inst, inst) {
-            cout << get_tabs() << fbin_inst->ToString() << endl;
-        }
-        Case (LLIR_ALLOCA, alloc_inst, inst) {
-            cout << get_tabs() << alloc_inst->ToString() << endl;
-        }
-        Case (LLIR_LOAD, load_inst, inst) {
-            cout << get_tabs() << load_inst->ToString() << endl;
-        }
-        Case (LLIR_STORE, store_inst, inst) {
-            cout << get_tabs() << store_inst->ToString() << endl;
-        }
-        Case (LLIR_ICMP, icmp_inst, inst) {
-            cout << get_tabs() << icmp_inst->ToString() << endl;
-        }
-        Case (LLIR_FCMP, fcmp_inst, inst) {
-            cout << get_tabs() << fcmp_inst->ToString() << endl;
-        }
-        Case (LLIR_CALL, call_inst, inst) {
-            cout << get_tabs() << call_inst->ToString() << endl;
-        }
-        Case (LLIR_ZEXT, zext_inst, inst) {
-            cout << get_tabs() << zext_inst->ToString() << endl;
-        }
-        Case (LLIR_GEP, gep_inst, inst) {
-            cout << get_tabs() << gep_inst->ToString() << endl;
-        }
-        Case (LLIR_XOR, xor_inst, inst) {
-            cout << get_tabs() << xor_inst->ToString() << endl;
-        }
-        Case (LLIR_BC, bc_inst, inst) {
-            cout << get_tabs() << bc_inst->ToString() << endl; 
-        }
-        Case (LLIR_SITOFP, itf_inst, inst) {
-            cout << get_tabs() << itf_inst->ToString() << endl;
-        }
-        Case (LLIR_FPTOSI, fti_inst, inst) {
-            cout << get_tabs() << fti_inst->ToString() << endl;
-        }
-        Case (LLIR_PHI, phi_inst, inst) {
-            cout << get_tabs() << phi_inst->ToString() << endl; 
+            // cout << get_tabs() << ret_inst->ToString() << endl;
+        } else Case (LLIR_BR, br_inst, inst) {
+            // cout <<get_tabs() << br_inst->ToString() << endl;
+        } else Case (LLIR_BIN, bin_inst, inst) {
+            // cout << get_tabs() << bin_inst->ToString() << endl;
+        } else Case (LLIR_FBIN, fbin_inst, inst) {
+            // cout << get_tabs() << fbin_inst->ToString() << endl;
+        } else Case (LLIR_ALLOCA, alloc_inst, inst) {
+            // cout << get_tabs() << alloc_inst->ToString() << endl;
+        } else Case (LLIR_LOAD, load_inst, inst) {
+            // cout << get_tabs() << load_inst->ToString() << endl;
+        } else Case (LLIR_STORE, store_inst, inst) {
+            // cout << get_tabs() << store_inst->ToString() << endl;
+        } else Case (LLIR_ICMP, icmp_inst, inst) {
+            // cout << get_tabs() << icmp_inst->ToString() << endl;
+        } else Case (LLIR_FCMP, fcmp_inst, inst) {
+            // cout << get_tabs() << fcmp_inst->ToString() << endl;
+        } else Case (LLIR_CALL, call_inst, inst) {
+            // cout << get_tabs() << call_inst->ToString() << endl;
+        } else Case (LLIR_ZEXT, zext_inst, inst) {
+            // cout << get_tabs() << zext_inst->ToString() << endl;
+        } else Case (LLIR_GEP, gep_inst, inst) {
+            // cout << get_tabs() << gep_inst->ToString() << endl;
+        } else Case (LLIR_XOR, xor_inst, inst) {
+            // cout << get_tabs() << xor_inst->ToString() << endl;
+        } else Case (LLIR_BC, bc_inst, inst) {
+            // cout << get_tabs() << bc_inst->ToString() << endl; 
+        } else Case (LLIR_SITOFP, itf_inst, inst) {
+            // cout << get_tabs() << itf_inst->ToString() << endl;
+        } else Case (LLIR_FPTOSI, fti_inst, inst) {
+            // cout << get_tabs() << fti_inst->ToString() << endl;
+        } else Case (LLIR_PHI, phi_inst, inst) {
+            // cout << get_tabs() << phi_inst->ToString() << endl; 
         }
     }
 }
@@ -86,68 +70,40 @@ void BasicBlock::printBlock() {
         // LLVM IR
         Case (LLIR_RET, ret_inst, inst) {
             llir << get_tabs() << ret_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_BR, br_inst, inst) {
+        } else Case (LLIR_BR, br_inst, inst) {
             llir << get_tabs() << br_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_BIN, bin_inst, inst) {
+        } else Case (LLIR_BIN, bin_inst, inst) {
             llir << get_tabs() << bin_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_FBIN, fbin_inst, inst) {
+        } else Case (LLIR_FBIN, fbin_inst, inst) {
             llir << get_tabs() << fbin_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_ALLOCA, alloc_inst, inst) {
+        } else Case (LLIR_ALLOCA, alloc_inst, inst) {
             llir << get_tabs() << alloc_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_LOAD, load_inst, inst) {
+        } else Case (LLIR_LOAD, load_inst, inst) {
             llir << get_tabs() << load_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_STORE, store_inst, inst) {
+        } else Case (LLIR_STORE, store_inst, inst) {
             llir << get_tabs() << store_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_ICMP, icmp_inst, inst) {
+        } else Case (LLIR_ICMP, icmp_inst, inst) {
             llir << get_tabs() << icmp_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_FCMP, fcmp_inst, inst) {
+        } else Case (LLIR_FCMP, fcmp_inst, inst) {
             llir << get_tabs() << fcmp_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_CALL, call_inst, inst) {
+        } else Case (LLIR_CALL, call_inst, inst) {
             llir << get_tabs() << call_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_ZEXT, zext_inst, inst) {
+        } else Case (LLIR_ZEXT, zext_inst, inst) {
             llir << get_tabs() << zext_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_GEP, gep_inst, inst) {
+        } else Case (LLIR_GEP, gep_inst, inst) {
             llir << get_tabs() << gep_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_XOR, xor_inst, inst) {
+        } else Case (LLIR_XOR, xor_inst, inst) {
             llir << get_tabs() << xor_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_BC, bc_inst, inst) {
+        } else Case (LLIR_BC, bc_inst, inst) {
             llir << get_tabs() << bc_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_SITOFP, itf_inst, inst) {
+        } else Case (LLIR_SITOFP, itf_inst, inst) {
             llir << get_tabs() << itf_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
-        }
-        Case (LLIR_FPTOSI, fti_inst, inst) {
+        } else Case (LLIR_FPTOSI, fti_inst, inst) {
             llir << get_tabs() << fti_inst->ToString();
-            llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
+        } else Case (LLIR_PHI, phi_inst, inst) {
+            llir << get_tabs() << phi_inst->ToString();
         }
+        llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
     }
 }
 
@@ -160,54 +116,50 @@ void BasicBlock::initDom(vector<BasicBlock *> all_blocks) {
 set<BasicBlock *> BasicBlock::predsDomInter() {
     set<BasicBlock *> ret = (*preds.begin()).second->dom;
     // for (auto &&block : ret) {
-    //     cout << block->bb_idx << ' ';
+    //     // cout << block->bb_idx << ' ';
     // }
-    // cout << endl;
+    // // cout << endl;
     for (auto &&pred : preds) {
-        // cout << pred.first << ' ';
+        // // cout << pred.first << ' ';
         auto pred_dom = pred.second->dom;
         set<BasicBlock *> tmp;
         set_intersection(ret.begin(), ret.end(), pred_dom.begin(), pred_dom.end(), inserter(tmp, tmp.begin()));
         ret = tmp;
         // for (auto &&block : ret) {
-        //     cout << block->bb_idx << ' ';
+        //     // cout << block->bb_idx << ' ';
         // }
-        // cout << endl;
+        // // cout << endl;
     }
     ret.insert(this);
     return ret;
 }
 
-void BasicBlock::replaceSRC(SRC old_var, SRC new_var) {
+void BasicBlock::replaceSRC(VirtReg *old_reg, SRC new_var) {
     for (auto &&inst : basic_block) {
         Case (LLIR_RET, ret_inst, inst) {
-            ret_inst->replaceSRC(old_var, new_var);
-        } else Case (LLIR_BR, br_inst, inst) {
-            br_inst->replaceSRC(old_var, new_var);
+            ret_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_BIN, bin_inst, inst) {
-            bin_inst->replaceSRC(old_var, new_var);
+            bin_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_FBIN, fbin_inst, inst) {
-            fbin_inst->replaceSRC(old_var, new_var);
-        } else Case (LLIR_LOAD, load_inst, inst) {
-            load_inst->replaceSRC(old_var, new_var);
+            fbin_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_ICMP, icmp_inst, inst) {
-            icmp_inst->replaceSRC(old_var, new_var);
+            icmp_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_FCMP, fcmp_inst, inst) {
-            fcmp_inst->replaceSRC(old_var, new_var);
+            fcmp_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_CALL, call_inst, inst) {
-            call_inst->replaceSRC(old_var, new_var);
+            call_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_ZEXT, zext_inst, inst) {
-            zext_inst->replaceSRC(old_var, new_var);            
+            zext_inst->replaceSRC(old_reg, new_var);            
         } else Case (LLIR_GEP, gep_inst, inst) {
-            gep_inst->replaceSRC(old_var, new_var);
+            gep_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_XOR, xor_inst, inst) {
-            xor_inst->replaceSRC(old_var, new_var);
+            xor_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_SITOFP, itf_inst, inst) {
-            itf_inst->replaceSRC(old_var, new_var);
+            itf_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_FPTOSI, fti_inst, inst) {
-            fti_inst->replaceSRC(old_var, new_var);
+            fti_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_PHI, phi_inst, inst) {
-            phi_inst->replaceSRC(old_var, new_var); 
+            phi_inst->replaceSRC(old_reg, new_var); 
         }
     }
 }
@@ -219,7 +171,7 @@ SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
         cur_table = cur_scope->local_table;
         // search cur scope's variable table first
         if (cur_table->findInCurTable(var_name)) {
-            cout << "find in `Scope`" << cur_scope->sp_idx << endl;
+            // cout << "find in `Scope`" << cur_scope->sp_idx << endl;
             auto var = cur_table->getInCurTable(var_name);
             if (var->type.is_array == false && var->type.is_const) {
                 return SRC(new CTValue(var->type.decl_type, var->int_scalar, var->float_scalar));
@@ -227,13 +179,13 @@ SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
             return SRC(new VirtReg(var->var_idx, var->type, (cur_scope->parent == nullptr)));
         }
         if (cur_func_args != nullptr && cur_scope->parent->parent == nullptr) { // if not in table, search in function args
-            cout << "not find in `Scope`" << cur_scope->sp_idx << " var_table, goto function arguments" << endl;
+            // cout << "not find in `Scope`" << cur_scope->sp_idx << " var_table, goto function arguments" << endl;
             auto pair = cur_func_args->findInFuncArgs(var_name);
             if (pair.second.decl_type != TypeVoid) {
                 return SRC(new VirtReg(pair.first, pair.second, (cur_scope->parent == nullptr)));
             }
         }
-        cout << "not find in `Scope`" << cur_scope->sp_idx << " var_table, goto parent table" << endl;
+        // cout << "not find in `Scope`" << cur_scope->sp_idx << " var_table, goto parent table" << endl;
         cur_scope = cur_scope->parent;
     }
     assert(cur_table != nullptr);
@@ -280,7 +232,7 @@ void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
                 bb_node->valuable = (bb_node->preds.size() != 0);
                 elements->erase(iter + 1, elements->end());
             } else {
-                dbg("UnExcepted Last Instruction");
+                // dbg("UnExcepted Last Instruction");
                 exit(EXIT_FAILURE);
             }
         }
@@ -350,7 +302,7 @@ void Function::buildDom() {
         all_blocks[idx]->initDom(all_blocks);
     }
     // for (auto &&block : all_blocks) {
-    //     cout << block->bb_idx << " " << block->dom.size() << endl;
+    //     // cout << block->bb_idx << " " << block->dom.size() << endl;
     // }
     bool change = true;
     while (change) {
@@ -364,11 +316,11 @@ void Function::buildDom() {
         }
     }
     // for (auto&& block : all_blocks) {
-    //     cout << block->bb_idx << " doms  = ";
+    //     // cout << block->bb_idx << " doms  = ";
     //     for (auto &&dom : block->dom) {
-    //         cout << dom->bb_idx << " ";
+    //         // cout << dom->bb_idx << " ";
     //     }
-    //     cout << endl;
+    //     // cout << endl;
     // }
 }
 
@@ -376,11 +328,11 @@ void Function::buildIDom() {
     BasicBlock *entrybb = *all_blocks.begin();
     for (auto &&block : all_blocks) {
         if (block->dom.size() > 1) {
-            // cout << bb_idx << "'s Dom : ";
+            // // cout << bb_idx << "'s Dom : ";
             // for (auto &&block : dom) {
-            //     cout << block->bb_idx << ' ';
+            //     // cout << block->bb_idx << ' ';
             // }
-            // cout << endl;
+            // // cout << endl;
             block->idom = entrybb; // init idom with entrybb
             // assign idom with the nearest bb
             for (auto &&iter = block->dom.begin(); iter != block->dom.end(); ++iter) {
@@ -391,15 +343,15 @@ void Function::buildIDom() {
             }
             // insert `this` to idom-bb as a domer
             block->idom->domers.insert(block);
-            // cout << "idom " << idom->bb_idx << endl;
+            // // cout << "idom " << idom->bb_idx << endl;
         }
     }
     // for (auto &&block : all_blocks) {
-    //     cout << "BB" << block->bb_idx << " domers ";
+    //     // cout << "BB" << block->bb_idx << " domers ";
     //     for (auto &&bb : block->domers) {
-    //         cout << bb->bb_idx << ' ';
+    //         // cout << bb->bb_idx << ' ';
     //     }
-    //     cout << endl;
+    //     // cout << endl;
     // }
 }
 
@@ -420,17 +372,17 @@ void Function::initBBDF() {
         }
     }
     // for (auto &&block : all_blocks) {
-    //     dbg(block->bb_idx);
+    //     // dbg(block->bb_idx);
     //     for (auto &&bb : block->DomFrontier) {
-    //         cout << bb->bb_idx << ' ';
+    //         // cout << bb->bb_idx << ' ';
     //     }
-    //     cout << endl;
+    //     // cout << endl;
     // }
 }
 
-void Function::replaceSRCs(SRC old_var, SRC new_var) {
+void Function::replaceSRCs(VirtReg *old_reg, SRC new_var) {
     for (auto &&block : all_blocks) {
-        block->replaceSRC(old_var, new_var);
+        block->replaceSRC(old_reg, new_var);
     }
 }
 
@@ -591,6 +543,6 @@ void CompUnit::DebugGlobalTable() {
         }
         llir << ", align 4" << endl;
     }
-    cout << "Global Init Block" << endl;
+    // cout << "Global Init Block" << endl;
     global_scope->elements->resize(1);
 }

@@ -17,7 +17,7 @@ int32_t VarType::elements_number() {
 }
 
 int32_t VarType::get_index(vector<int32_t>& arr_idx) {
-    dbg(array_dims);
+    // dbg(array_dims);
     int32_t step = 1, ret = 0;
     size_t next = array_dims.size() - 1;
     for (size_t i = arr_idx.size() - 1; i < arr_idx.size(); --i) {
@@ -27,7 +27,7 @@ int32_t VarType::get_index(vector<int32_t>& arr_idx) {
         --next;
         }
     }
-    dbg(ret);
+    // dbg(ret);
     return ret;
 }
 
@@ -77,34 +77,38 @@ FunctionInfo::FunctionInfo(string _name, DeclType _type, vector<pair<string, Var
     : is_used(false), func_name(_name), return_type(_type), func_args(_args) { }
 
 void Variable::printVariable(string var_name) {
-    if (type.is_const == true) cout << "const ";
-    cout << DeclTypeToStr(type.decl_type) << ' ' << var_name;
+    if (type.is_const == true) // cout << "const ";
+    // cout << DeclTypeToStr(type.decl_type) << ' ' << var_name;
     if (type.is_array) {
         for (int i = 0; i < type.array_dims.size(); ++i) {
-            cout << '[' << type.array_dims[i] << ']';
+            // cout << '[' << type.array_dims[i] << ']';
         }
     }
-    cout << ' ';
+    // cout << ' ';
     if (type.is_const) {
-        cout << "= ";
+        // cout << "= ";
         if (!type.is_array) {
-            if (type.decl_type == TypeInt) cout << int_scalar;
-            else if (type.decl_type == TypeFloat) cout << float_scalar;
+            if (type.decl_type == TypeInt) { 
+                // cout << int_scalar;
+            }
+            else if (type.decl_type == TypeFloat) {
+                // cout << float_scalar;
+            }
         } else {
-            cout << "{ ";
+            // cout << "{ ";
             if (type.decl_type == TypeInt) {
                 for (int i = 0; i < int_list.size(); ++i) {
-                    cout << int_list[i] << ' ';
+                    // cout << int_list[i] << ' ';
                 }
             } else if (type.decl_type == TypeFloat) {
                 for (int i = 0; i < float_list.size(); ++i) {
-                    cout << float_list[i] << ' ';
+                    // cout << float_list[i] << ' ';
                 }
             }
-            cout << '}';
+            // cout << '}';
         }
     }
-    cout << "; // index = " << var_idx <<  endl;
+    // cout << "; // index = " << var_idx <<  endl;
 }
 
 bool VariableTable::findInCurTable(string name) {
@@ -128,7 +132,7 @@ Variable *VariableTable::getInCurTable(string name) {
 void VariableTable::printVaribaleTable() {
     int size = var_table.size();
     for (int i = 0; i < size; ++i) {
-        cout << get_tabs();
+        // cout << get_tabs();
         var_table[i].second->printVariable(var_table[i].first);
     }
 }

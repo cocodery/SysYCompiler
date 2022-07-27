@@ -48,7 +48,7 @@ public:
     void printBlock();
     void initDom(vector<BasicBlock *> all_blocks);
     set<BasicBlock *> predsDomInter();
-    void replaceSRC(SRC old_var, SRC new_var);
+    void replaceSRC(VirtReg *old_reg, SRC new_var);
 };
 
 class Scope: public Info {
@@ -81,7 +81,7 @@ public:
     void buildDom();
     void buildIDom();
     void initBBDF();
-    void replaceSRCs(SRC old_var, SRC new_var);
+    void replaceSRCs(VirtReg *old_reg, SRC new_var);
 
     // 生成LiveInterval
     void ExtendRangeOrAddRange(int32_t varIdx, int32_t rangeStart, int32_t rangeEnd);
