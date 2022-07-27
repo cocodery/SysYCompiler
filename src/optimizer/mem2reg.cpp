@@ -60,7 +60,7 @@ LLIR_ALLOCA *Mem2Reg::getAllocaInst(VirtReg *reg) {
     for (auto &&alloca_inst : allocaInsts) {
         auto &&alloca_dst = alloca_inst->reg.ToVirtReg();
         assert(alloca_dst != nullptr);
-        if (reg == alloca_dst) {
+        if (*reg == *alloca_dst) {
             return alloca_inst;
         }
     }
@@ -148,8 +148,12 @@ void Mem2Reg::runMem2Reg() {
     while(!renameDataStack.empty()) {
         RenameData *data = renameDataStack.top();
         renameDataStack.pop();
-        vector<SRC> cur_values = values;
+        vector<SRC> cur_values = data->values;
         auto &&data_bb = data->block->basic_block;
+        dbg("cur_values1");
+            for (auto &&value : cur_values) {
+                cout << value.ToString() << endl;
+            }
 
         for (auto &&inst : data_bb) {
             Case (LLIR_PHI, phi_inst, inst) {
@@ -175,7 +179,7 @@ void Mem2Reg::runMem2Reg() {
                 assert(load_src != nullptr);
                 auto &&alloca_inst = getAllocaInst(load_src);
                 int allocaIndex = allocaLoopup[alloca_inst];
-                function->replaceSRCs(load_inst->dst, cur_values[allocaIndex]);
+                function->replaceSRCs(load_inst->dst.reg, cur_values[allocaIndex]);
                 inst_iter = data_bb.erase(inst_iter) - 1;
             } else Case (LLIR_STORE, store_inst, inst) {
                 auto &&store_dst = store_inst->dst.ToVirtReg();
@@ -189,8 +193,16 @@ void Mem2Reg::runMem2Reg() {
                 cur_values[allocaIndex] = phi_inst->dst;
             } 
         }
+            dbg("cur_values2");
+            for (auto &&value : cur_values) {
+                cout << value.ToString() << endl;
+            }
 
         for (auto &&pair : data->block->succs) {
+            dbg("cur_values3");
+            for (auto &&value : cur_values) {
+                cout << value.ToString() << endl;
+            }
             renameDataStack.push(new RenameData(pair.second, data->block, cur_values));
         }
     }
