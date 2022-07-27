@@ -60,7 +60,7 @@ LLIR_ALLOCA *Mem2Reg::getAllocaInst(VirtReg *reg) {
     for (auto &&alloca_inst : allocaInsts) {
         auto &&alloca_dst = alloca_inst->reg.ToVirtReg();
         assert(alloca_dst != nullptr);
-        if (reg == alloca_dst) {
+        if (*reg == *alloca_dst) {
             return alloca_inst;
         }
     }
@@ -86,9 +86,12 @@ void Mem2Reg::runMem2Reg() {
     for (auto &&block : all_blocks) {
         for (auto &&inst : block->basic_block) {
             Case (LLIR_ALLOCA, alloca_inst, inst) {
-                allocaInsts.push_back(alloca_inst);
-                allocaLoopup[alloca_inst] = allocaInsts.size() - 1;
-                defBlocks.push_back(set<BasicBlock *>());
+                auto &&var = alloca_inst->var;
+                if (var->type.is_array == false) {
+                    allocaInsts.push_back(alloca_inst);
+                    allocaLoopup[alloca_inst] = allocaInsts.size() - 1;
+                    defBlocks.push_back(set<BasicBlock *>());
+                }
             } else {
                 continue;
             }
@@ -148,7 +151,7 @@ void Mem2Reg::runMem2Reg() {
     while(!renameDataStack.empty()) {
         RenameData *data = renameDataStack.top();
         renameDataStack.pop();
-        vector<SRC> cur_values = values;
+        vector<SRC> cur_values = data->values;
         auto &&data_bb = data->block->basic_block;
 
         for (auto &&inst : data_bb) {
@@ -174,16 +177,20 @@ void Mem2Reg::runMem2Reg() {
                 auto &&load_src = load_inst->src.ToVirtReg();
                 assert(load_src != nullptr);
                 auto &&alloca_inst = getAllocaInst(load_src);
-                int allocaIndex = allocaLoopup[alloca_inst];
-                function->replaceSRCs(load_inst->dst, cur_values[allocaIndex]);
-                inst_iter = data_bb.erase(inst_iter) - 1;
+                if (alloca_inst != nullptr) {
+                    int allocaIndex = allocaLoopup[alloca_inst];
+                    function->replaceSRCs(load_inst->dst.reg, cur_values[allocaIndex]);
+                    inst_iter = data_bb.erase(inst_iter) - 1;
+                }
             } else Case (LLIR_STORE, store_inst, inst) {
                 auto &&store_dst = store_inst->dst.ToVirtReg();
                 assert(store_dst != nullptr);
                 auto &&alloca_inst = getAllocaInst(store_dst);
-                int allocaIndex = allocaLoopup[alloca_inst];
-                cur_values[allocaIndex] = store_inst->src;
-                inst_iter = data_bb.erase(inst_iter) - 1;
+                if (alloca_inst != nullptr) {
+                    int allocaIndex = allocaLoopup[alloca_inst];
+                    cur_values[allocaIndex] = store_inst->src;
+                    inst_iter = data_bb.erase(inst_iter) - 1;
+                }
             } else Case (LLIR_PHI, phi_inst, inst) {
                 int allocaIndex = phi2AllocaMap[phi_inst];
                 cur_values[allocaIndex] = phi_inst->dst;

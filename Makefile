@@ -16,6 +16,8 @@ TEST_MODE := functional # test case directory
 #endif
 
 TEST_DIR := ./compiler2022/公开样例与运行时库/$(TEST_MODE)
+TEST_CASES := $(shell find $(TEST_DIR) -name ".sy")
+TEST_NAME := $(words $(TEST_CASES));
 TEST := 00
 
 CASE = $(shell find $(TEST_DIR) -name "$(TEST)*.sy")
@@ -37,6 +39,55 @@ test:
 	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm $(CASE); cd ..
 	@echo $(CASE)
 	@llvm-link sylib.ll main.ll -S -o run.ll
+
+.PHONY: all
+all:
+	@success=0
+	@for file in $(sort $(TEST_CASES))
+	do
+		ASM=$${file%.*}.s
+		LOG=$${file%.*}.log
+		BIN=$${file%.*}.bin
+		RES=$${file%.*}.res
+		IN=$${file%.*}.in
+		OUT=$${file%.*}.out
+		FILE=$${file##*/}
+		FILE=$${FILE%.*}
+		timeout 500s $(BINARY) -S -o $${ASM} $${file} > $${LOG}
+		RETURN_VALUE=$$?
+		if [ $$RETURN_VALUE = 124 ]; then
+			echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Timeout\033[0m"
+			continue
+		else if [ $$RETURN_VALUE != 0 ]; then
+			echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Error\033[0m"
+			continue
+			fi
+		fi
+		# arm-linux-gnueabihf-gcc -march=armv7-a -o $${BIN} $${ASM} -Lsysyruntimelibrary -lsysy -static >>$${LOG} 2>&1
+		# if [ $$? != 0 ]; then
+		# 	echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mAssemble Error\033[0m"
+		# else
+		# 	if [ -f "$${IN}" ]; then
+		# 		timeout 500s qemu-arm -L /usr/arm-linux-gnueabihf $${BIN} <$${IN} >$${RES} 2>>$${LOG}
+		# 	else
+		# 		timeout 500s qemu-arm -L /usr/arm-linux-gnueabihf $${BIN} >$${RES} 2>>$${LOG}
+		# 	fi
+		# 	RETURN_VALUE=$$?
+		# 	FINAL=`tail -c 1 $${RES}`
+		# 	[ $${FINAL} ] && echo "\n$${RETURN_VALUE}" >> $${RES} || echo "$${RETURN_VALUE}" >> $${RES}
+
+		# 	diff -Z $${RES} $${OUT} >/dev/null 2>&1
+		# 	if [ $$? != 0 ]; then
+		# 		echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mWrong Answer\033[0m"
+		# 	else
+		# 		success=$$((success + 1))
+		# 		echo "\033[1;32mPASS:\033[0m $${FILE}"
+		# 	fi
+		# fi
+	done
+	# echo "\033[1;33mTotal: $(TEST_NAME)\t\033[1;32mAccept: $${success}\t\033[1;31mFail: $$(($(TEST_NAME) - $${success}))\033[0m"
+	# [ $(TEST_NAME) = $${success} ] && echo "\033[5;32mAll Accepted. Congratulations!\033[0m"
+	# :
 
 .PHONY: gdb
 gdb:
