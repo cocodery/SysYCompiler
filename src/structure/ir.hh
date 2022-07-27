@@ -81,7 +81,7 @@ public:
     void buildDom();
     void buildIDom();
     void initBBDF();
-    void replaceSRCs(SRC old_var, SRC new_var);
+    void replaceSRCs(VirtReg *old_var, SRC new_var);
 
     // 生成LiveInterval
     void ExtendRangeOrAddRange(int32_t varIdx, int32_t rangeStart, int32_t rangeEnd);

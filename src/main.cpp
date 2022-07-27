@@ -50,8 +50,8 @@ int main(int argc, char *argv[]) {
         input = argv[optind];
     }
     
-    dbg(input, output, irfile, opt, print_usage);
-    ifstream src{"../" + input};
+    // dbg(input, output, irfile, opt, print_usage);
+    ifstream src{input};
     if (!src.is_open()) {
         cerr << "cannot open input file" << endl;
         return EXIT_FAILURE;
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
     
     ASTVisitor visitor(ir);
 
-    cout << "Start Compilation" << endl;
+    // cout << "Start Compilation" << endl;
 
     visitor.visitCompUnit(root);
     if (visitor.have_main_func == false) {
@@ -84,10 +84,10 @@ int main(int argc, char *argv[]) {
     }
     ir.GenerateLLIR("../main0.ll");
 
-    cout << "Start Optimization" << endl;
+    // cout << "Start Optimization" << endl;
 
     PassManager pass_manager(ir.global_scope, ir.functions);
-    pass_manager.excute_pass();
+    // pass_manager.excute_pass();
 
     // ----- CodeGen -----
 
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
 
     ir.GenerateLLIR("../main.ll");
 
-    cout << "Compilation Complete" << endl;
+    // cout << "Compilation Complete" << endl;
 
     return 0;
 }
