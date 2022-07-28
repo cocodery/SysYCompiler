@@ -13,6 +13,7 @@
 #include "frontend/SysYParser.h"
 #include "frontend/ASTVisitor.hh"
 #include "optimizer/pass_manager.hh"
+#include "codegen/armv8/liveness_info.hh"
 
 // #include "optimizer/dag.hh"
 
@@ -49,8 +50,8 @@ int main(int argc, char *argv[]) {
         input = argv[optind];
     }
     
-    dbg(input, output, irfile, opt, print_usage);
-    ifstream src{"../" + input};
+    // dbg(input, output, irfile, opt, print_usage);
+    ifstream src{input};
     if (!src.is_open()) {
         cerr << "cannot open input file" << endl;
         return EXIT_FAILURE;
@@ -68,7 +69,7 @@ int main(int argc, char *argv[]) {
     
     ASTVisitor visitor(ir);
 
-    cout << "Start Compiler" << endl;
+    // cout << "Start Compilation" << endl;
 
     visitor.visitCompUnit(root);
     if (visitor.have_main_func == false) {
@@ -76,12 +77,27 @@ int main(int argc, char *argv[]) {
         // exit(EXIT_FAILURE);
     }
 
+    for (auto &&function : ir.functions) {
+        if (function->func_info.is_used) {
+            function->buildCFG();
+        }
+    }
+    ir.GenerateLLIR("../main0.ll");
+
+    // cout << "Start Optimization" << endl;
+
     PassManager pass_manager(ir.global_scope, ir.functions);
     pass_manager.excute_pass();
 
+    // ----- CodeGen -----
+
+    // GenerateLiveInfo(ir);
+
+    // -------------------
+
     ir.GenerateLLIR("../main.ll");
 
-    cout << "Compiler Complete" << endl;
+    // cout << "Compilation Complete" << endl;
 
     return 0;
 }

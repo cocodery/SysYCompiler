@@ -44,9 +44,9 @@ public:
     int32_t var_idx;
     VarType type;
     int32_t int_scalar;
-    float float_scalar;
+    double float_scalar;
     vector<int32_t> int_list;
-    vector<float> float_list;
+    vector<double> float_list;
 public:
     void printVariable(string var_name);
     Variable(int vi) : var_idx(vi) { }

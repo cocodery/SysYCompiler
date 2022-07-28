@@ -32,7 +32,7 @@ vector<int32_t> ASTVisitor::get_array_dims(vector<SysYParser::ConstExpContext *>
 
 // finished
 // 递归的对数组初始化进行分析
-void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<float>& flist) {
+void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<double>& flist) {
     int32_t total_size = 1; // 当前初始化维度的`size`
     for (auto i: array_dims) {
         total_size *= i;
@@ -82,6 +82,19 @@ void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarTy
             LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
             cur_basicblock->basic_block.push_back(gep_inst2);
             SRC value = scalar_node->exp()->accept(this);
+            // dbg(value.ToString(), DeclTypeToStr(value.getType()), _type.decl_type);
+            if (value.getType() != _type.decl_type) {
+                SRC value_cast = SRC(new VirtReg(var_idx++, _type.decl_type));
+                if (_type.decl_type == TypeInt) {
+                    LLIR_FPTOSI *fti_inst = new LLIR_FPTOSI(value_cast, value);
+                    cur_basicblock->basic_block.push_back(fti_inst);
+                    value = value_cast;
+                } else {
+                    LLIR_SITOFP *itf_inst = new LLIR_SITOFP(value_cast, value);
+                    cur_basicblock->basic_block.push_back(itf_inst);
+                    value = value_cast;
+                }
+            }
             LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
             cur_basicblock->basic_block.push_back(store_inst);
             ++off;
@@ -93,12 +106,18 @@ void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarTy
             cnt += total_size / arr_dim[0];
         }
     }
+    SRC zero_ctv = SRC(new CTValue(TypeInt, 0, 0));
+    if (_type.decl_type == TypeFloat){
+        SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
+        LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, zero_ctv);
+        cur_basicblock->basic_block.push_back(itf_inst);
+        zero_ctv = zero_float;
+    }
     while (cnt < total_size) {
         VirtReg *ptr2 = new VirtReg(var_idx++, VarType(ptr1->type.decl_type));
         LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
         cur_basicblock->basic_block.push_back(gep_inst2);
-        SRC value = SRC(new CTValue(_type.decl_type, 0, 0));
-        LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
+        LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), zero_ctv);
         cur_basicblock->basic_block.push_back(store_inst);
         ++off;
         ++cnt;
@@ -163,6 +182,7 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
     }
 }
 
+// 暂时没有考虑float数组初始化
 void ASTVisitor::local_const_list_init(VarPair var_pair) {
     string var_name = var_pair.first;
     VarType var = var_pair.second->type;
@@ -243,20 +263,20 @@ antlrcpp::Any ASTVisitor::visitBType(SysYParser::BTypeContext *ctx) {
 // 若有初值则会进行初始化
 // 将变量插入当前作用域的符号表
 antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
-    dbg("enter ConstDef");
+    // dbg("enter ConstDef");
     string var_name = ctx->Identifier()->getText();
-    dbg(var_name);
+    // dbg(var_name);
     if (cur_vartable->findInCurTable(var_name)) {
-        dbg(var_name + " is in cur_vartable");
+        // dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
     bool is_array = !(ctx->constExp().size() == 0);
     DeclType type = cur_type;
     VarType const_var(true, is_array, false, type);
-    dbg(var_name, DeclTypeToStr(const_var.decl_type));
+    // dbg(var_name, DeclTypeToStr(const_var.decl_type));
     if (const_var.is_array == true) {
         const_var.array_dims = get_array_dims(ctx->constExp());
-        dbg(const_var.array_dims);
+        // dbg(const_var.array_dims);
     }
     Variable *const_variable = nullptr;
     if (const_var.is_array) {
@@ -273,16 +293,16 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         assert(ctv != nullptr);
         const_variable->int_scalar = ctv->int_value;
         const_variable->float_scalar = ctv->float_value;
-        dbg(const_variable->int_scalar, const_variable->float_scalar);
+        // dbg(const_variable->int_scalar, const_variable->float_scalar);
     } else {
         auto node = dynamic_cast<SysYParser::ListConstInitValContext *>(init_node);
         parse_const_init(node, const_var.array_dims, const_variable->int_list, const_variable->float_list);
-        dbg(const_variable->int_list, const_variable->float_list);
+        // dbg(const_variable->int_list, const_variable->float_list);
     }
     const_variable->type = const_var;
     // 写入当前作用域的符号表
     if (cur_vartable->findInCurTable(var_name)) {
-        dbg(var_name + " is in cur_vartable");
+        // dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
     auto pair = make_pair(var_name, const_variable);
@@ -298,19 +318,19 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         }
         local_const_list_init(pair);
     }
-    dbg("exit ConstDef");
+    // dbg("exit ConstDef");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitScalarConstInitVal(SysYParser::ScalarConstInitValContext *ctx) {
-    dbg("Program should never reach Function visitScalarConstInitVal");
+    // dbg("Program should never reach Function visitScalarConstInitVal");
     exit(EXIT_FAILURE);
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitListConstInitVal(SysYParser::ListConstInitValContext *ctx) {
-    dbg("Program should never reach Function visitListConstInitVal");
+    // dbg("Program should never reach Function visitListConstInitVal");
     exit(EXIT_FAILURE);
 }
 
@@ -325,10 +345,10 @@ antlrcpp::Any ASTVisitor::visitVarDecl(SysYParser::VarDeclContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx) {
-    dbg("enter UninitVarDef");
+    // dbg("enter UninitVarDef");
     string var_name = ctx->Identifier()->getText();
     if (cur_vartable->findInCurTable(var_name)) {
-        dbg(var_name + " is in cur_vartable");
+        // dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
     int32_t idx = (&cur_func->func_info != nullptr) ? var_idx++ : glb_var_idx++;
@@ -336,10 +356,10 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
     bool is_array = !(ctx->constExp().size() == 0);
     DeclType type = cur_type;
     VarType var(false, is_array, false, type);
-    dbg(var_name, DeclTypeToStr(var.decl_type));
+    // dbg(var_name, DeclTypeToStr(var.decl_type));
     if (var.is_array) {
         var.array_dims = get_array_dims(ctx->constExp());
-        dbg(var.array_dims);
+        // dbg(var.array_dims);
     }
     variable->type = var;
     VarPair var_pair = make_pair(var_name, variable);
@@ -354,24 +374,24 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
         }
     }
     if (&cur_func->func_info != nullptr) {
-        dbg("un init var def call generate_varinit_ir");
+        // dbg("un init var def call generate_varinit_ir");
         generate_varinit_ir(nullptr, var_pair);
     } else {
         // global uninit variable don't need to initlize
         // they are assigned by `0`
         // glb_var_init.push_back(make_pair(nullptr, var_pair));
     }
-    dbg("exit UninitVarDef");
+    // dbg("exit UninitVarDef");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
-    dbg("enter visitInitVarDef");
+    // dbg("enter visitInitVarDef");
     // push to variable table, similar with `UninitVarDef`
     string var_name = ctx->Identifier()->getText();
     if (cur_vartable->findInCurTable(var_name)) {
-        dbg(var_name + " is in cur_vartable");
+        // dbg(var_name + " is in cur_vartable");
         exit(EXIT_FAILURE);
     }
     int32_t idx = (&cur_func->func_info != nullptr) ? var_idx++ : glb_var_idx++;
@@ -379,10 +399,10 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     bool is_array = !(ctx->constExp().size() == 0);
     DeclType type = cur_type;
     VarType var(false, is_array, false, type);
-    dbg(var_name, DeclTypeToStr(var.decl_type));
+    // dbg(var_name, DeclTypeToStr(var.decl_type));
     if (var.is_array) {
         var.array_dims = get_array_dims(ctx->constExp());
-        dbg(var.array_dims);
+        // dbg(var.array_dims);
     }
     variable->type = var;
     VarPair var_pair = make_pair(var_name, variable);
@@ -406,19 +426,19 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     } else {
         glb_var_init.push_back(make_pair(ctx, var_pair));
     }
-    dbg("exit InitVarDef");
+    // dbg("exit InitVarDef");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitScalarInitVal(SysYParser::ScalarInitValContext *ctx) {
-    dbg("Program should never reach Function visitScalarInitVal");
+    // dbg("Program should never reach Function visitScalarInitVal");
     exit(EXIT_FAILURE);
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) {
-    dbg("Program should never reach Function visitListInitval");
+    // dbg("Program should never reach Function visitListInitval");
     exit(EXIT_FAILURE);
 }
 
@@ -426,10 +446,9 @@ antlrcpp::Any ASTVisitor::visitListInitval(SysYParser::ListInitvalContext *ctx) 
 // 函数声明分析，获取函数声明，返回类型，参数表
 // 因为不存在函数内声明函数的情况，因此直接将函数定义插入函数表
 antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
-    dbg("enter visitFuncDef");
     Function *func = new Function;
     string func_name = ctx->Identifier()->getText();
-    dbg(func_name);
+    // dbg("enter visitFuncDef " + func_name);
     FunctionInfo func_info;
     func_info.is_used = false;
     // get function name
@@ -448,7 +467,7 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     }
     func->func_info = func_info;
     // reset variable idx in function
-    var_idx = func_info.func_args.size() == 0 ? 1 : func_info.func_args.size();
+    var_idx = func_info.func_args.size() == 0 ? 0 : func_info.func_args.size();
     sp_idx = 1;
     bb_idx = 1;
     init_args = true;
@@ -459,25 +478,26 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     ir.functions.push_back(func);
     // parse function body
     func->main_scope = ctx->block()->accept(this);
-    dbg(func->main_scope->get_last_bb()->bb_idx);
+    func->var_idx = var_idx;
+    // dbg(func->main_scope->get_last_bb()->bb_idx);
     auto last_block = func->main_scope->get_last_bb();
     int32_t lb_size = last_block->basic_block.size();
     LLIR_RET *ret_inst = new LLIR_RET((ret_type != TypeVoid), SRC(new CTValue(ret_type, 0, 0)));
     if (lb_size == 0) {
         last_block->basic_block.push_back(ret_inst);
-    } else if (auto last_inst = dynamic_cast<LLIR_RET *>(last_block->basic_block[lb_size - 1]); last_inst == nullptr) {
+    } else if (auto last_inst = dynamic_cast<LLIR_RET *>(last_block->lastInst()); last_inst == nullptr) {
         last_block->basic_block.push_back(ret_inst);
     }
     // push to function table
     cur_func = nullptr;
     cur_basicblock = nullptr;
-    dbg("exit visitFuncDef");
+    // dbg("exit visitFuncDef " + func_name);
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitFuncType(SysYParser::FuncTypeContext *ctx) {
-    dbg("Program should never reach Function visitFuncType");
+    // dbg("Program should never reach Function visitFuncType");
     exit(EXIT_FAILURE);
 }
 
@@ -502,7 +522,7 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
         func_arg.array_dims = get_array_dims(ctx->constExp());
         func_arg.array_dims.insert(func_arg.array_dims.begin(), -1);
     }
-    dbg(func_arg.decl_type);
+    // dbg(func_arg.decl_type);
     return make_pair(ctx->Identifier()->getText(), func_arg);
 }
 
@@ -510,7 +530,7 @@ antlrcpp::Any ASTVisitor::visitFuncFParam(SysYParser::FuncFParamContext *ctx) {
 // `Block`分析
 // 将该作用域下的符号表，指令保存
 antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
-    dbg("enter visitBlock");
+    // dbg("enter visitBlock");
     // 将上个作用域的基本块push进来
     cur_scope_elements->push_back(cur_basicblock);
     if (cur_basicblock != nullptr) {
@@ -530,7 +550,7 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     cur_vartable = block_scope->local_table;
     cur_scope_elements = block_scope->elements;
     cur_basicblock = new BasicBlock(bb_idx++);
-    dbg(cur_basicblock->bb_idx);
+    // dbg(cur_basicblock->bb_idx);
     // 初始化全局变量
     if (cur_func->func_info.func_name == "main" && glb_var_init.size() != 0) {
         for (auto elm : glb_var_init) {
@@ -547,15 +567,15 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     // 新的基本块到右括号就结束了, push
     cur_scope_elements->push_back(cur_basicblock);
     cur_func->all_blocks.push_back(cur_basicblock);
-    dbg(cur_basicblock->bb_idx);
+    // dbg(cur_basicblock->bb_idx);
     // restore `cur_scope` `cur_vartable` `cur_elements`
     cur_scope = last_scope;
     cur_vartable = last_vartable;
     cur_scope_elements = last_scope_elements;
     // 新的基本块
     cur_basicblock = new BasicBlock(bb_idx++);
-    dbg(cur_basicblock->bb_idx);
-    dbg("exit visitBlock");
+    // dbg(cur_basicblock->bb_idx);
+    // dbg("exit visitBlock");
     return block_scope;
 }
 
@@ -581,14 +601,25 @@ antlrcpp::Any ASTVisitor::visitBlockItem(SysYParser::BlockItemContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitAssignment(SysYParser::AssignmentContext *ctx) {
-    dbg("visit visitAssignment");
+    // dbg("visit visitAssignment");
     SRC lhs = ctx->lVal()->accept(this);
     SRC rhs = ctx->exp()->accept(this);
-    VirtReg *lhs_reg = lhs.ToVirtReg();
-    assert(lhs_reg->assign == true);
+    if (lhs.getType() != rhs.getType()) {
+        if (rhs.getType() == TypeInt) {
+            SRC cast_rhs = SRC(new VirtReg(var_idx++, TypeFloat));
+            LLIR_SITOFP *itf_inst = new LLIR_SITOFP(cast_rhs, rhs);
+            cur_basicblock->basic_block.push_back(itf_inst);
+            rhs = cast_rhs;
+        } else {
+            SRC cast_rhs = SRC(new VirtReg(var_idx++, TypeInt));
+            LLIR_FPTOSI *itf_inst = new LLIR_FPTOSI(cast_rhs, rhs);
+            cur_basicblock->basic_block.push_back(itf_inst);
+            rhs = cast_rhs;
+        }
+    }
     LLIR_STORE *store_inst = new LLIR_STORE(lhs, rhs);
     cur_basicblock->basic_block.push_back(store_inst);
-    dbg("exit visitAssignment");
+    // dbg("exit visitAssignment");
     return nullptr;
 }
 
@@ -599,16 +630,16 @@ antlrcpp::Any ASTVisitor::visitExpStmt(SysYParser::ExpStmtContext *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitBlockStmt(SysYParser::BlockStmtContext *ctx) {
-    dbg("enter visitBlockStmt");
+    // dbg("enter visitBlockStmt");
     Scope *block_stmt = ctx->block()->accept(this);
     cur_scope->elements->push_back(block_stmt);
-    dbg("exit visitBlockStmt");
+    // dbg("exit visitBlockStmt");
     return block_stmt;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
-    dbg("enter visitIfStmt");
+    // dbg("enter visitIfStmt");
     // store last condition
     vector<LLIR_BR *> last_lor_insts  = lor_insts;
     vector<LLIR_BR *> last_land_insts = land_insts;
@@ -625,13 +656,13 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     LLIR_BR *br_else2else_end = new LLIR_BR(false, SRC(), 0 , 0);
     cur_basicblock->basic_block.push_back(br_if_else);
     // if stmt body
-    dbg("Enter If-body");
+    // dbg("Enter If-body");
     if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[0]); node != nullptr) {
-        dbg("Block If-Stmt Context");
+        // dbg("Block If-Stmt Context");
         Scope *block_stmt = node->accept(this);
         block_stmt->get_last_bb()->basic_block.push_back(br_if2else_end);
     } else {
-        dbg("Other If-Stmt Context");
+        // dbg("Other If-Stmt Context");
         cur_scope_elements->push_back(cur_basicblock);
         cur_func->all_blocks.push_back(cur_basicblock);
         Scope          *last_scope = cur_scope;
@@ -660,18 +691,18 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     }
     // else stmt body
     if (has_else) {
-        dbg("Enter Else-body");
+        // dbg("Enter Else-body");
         br_if_else->tar_false = cur_basicblock->bb_idx + 1;
         // file in lor branch target
         for (auto land_inst : land_insts) {
             land_inst->tar_false = bb_idx;
         }
         if (auto node = dynamic_cast<SysYParser::BlockStmtContext *>(ctx->stmt()[1]); node != nullptr) {
-            dbg("Block Else-Stmt Context");
+            // dbg("Block Else-Stmt Context");
             Scope *block_stmt = node->accept(this);
             block_stmt->get_last_bb()->basic_block.push_back(br_else2else_end);
         } else {
-            dbg("Other Else-Stmt Context");
+            // dbg("Other Else-Stmt Context");
             cur_scope_elements->push_back(cur_basicblock);
             cur_func->all_blocks.push_back(cur_basicblock);
             Scope          *last_scope = cur_scope;
@@ -701,7 +732,7 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
         br_if2else_end->tar_true = cur_basicblock->bb_idx;
         br_else2else_end->tar_true = cur_basicblock->bb_idx;
     } else {
-        dbg("Create a Empty Else-Stmt");
+        // dbg("Create a Empty Else-Stmt");
         br_if_else->tar_false = cur_basicblock->bb_idx + 1;
         // file in lor branch target
         for (auto land_inst : land_insts) {
@@ -739,13 +770,13 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
     }    
     lor_insts  = last_lor_insts;
     land_insts = last_land_insts;
-    dbg("exit visitIfStmt");
+    // dbg("exit visitIfStmt");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
-    dbg("enter visitWhileStmt");
+    // dbg("enter visitWhileStmt");
     // store last condition
     vector<LLIR_BR *> last_lor_insts  = lor_insts;
     vector<LLIR_BR *> last_land_insts = land_insts;
@@ -764,7 +795,7 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
     SRC cond = ctx->cond()->accept(this);
     // file in lor land branch target
     for (auto lor_inst : lor_insts) {
-        dbg("Fill in lor true target");
+        // dbg("Fill in lor true target");
         lor_inst->tar_true = bb_idx;
     }
     LLIR_BR *while_br_inst = new LLIR_BR(true, cond, bb_idx, 0);
@@ -776,7 +807,7 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
         // 但是无法在生成`Block`的中途插入跳转语句
         // 因此我们要进入`Block`中找到其最后一个`basic_block`
         // 并插入`Jump_Inst`
-        dbg("Block Stmt Context");
+        // dbg("Block Stmt Context");
         // file in lor branch target
         for (auto land_inst : land_insts) {
             land_inst->tar_false = bb_idx;
@@ -785,7 +816,7 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
         LLIR_BR *br_while_start = new LLIR_BR(false, SRC(), continue_target, 0);
         block_stmt->get_last_bb()->basic_block.push_back(br_while_start);
     } else {
-        dbg("Other Stmt Context");
+        // dbg("Other Stmt Context");
         // file in lor branch target
         for (auto land_inst : land_insts) {
             land_inst->tar_false = bb_idx;
@@ -836,38 +867,38 @@ antlrcpp::Any ASTVisitor::visitWhileStmt(SysYParser::WhileStmtContext *ctx) {
     }
     lor_insts  = last_lor_insts;
     land_insts = last_land_insts;
-    dbg("exit visitWhileStmt");
+    // dbg("exit visitWhileStmt");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitBreakStmt(SysYParser::BreakStmtContext *ctx) {
-    dbg("enter visitBreakStmt");
+    // dbg("enter visitBreakStmt");
     LLIR_BR *jmp_inst = new LLIR_BR(false, SRC(), 0, 0);
     cur_basicblock->basic_block.push_back(jmp_inst);
     break_insts.push_back(jmp_inst);
     cur_scope_elements->push_back(cur_basicblock);
     cur_func->all_blocks.push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
-    dbg("exit visitBreakStmt");
+    // dbg("exit visitBreakStmt");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitContinueStmt(SysYParser::ContinueStmtContext *ctx) {
-    dbg("enter visitContinueStmt");
+    // dbg("enter visitContinueStmt");
     LLIR_BR *jmp_inst = new LLIR_BR(false, SRC(), continue_target, 0);
     cur_basicblock->basic_block.push_back(jmp_inst);
     cur_scope_elements->push_back(cur_basicblock);
     cur_func->all_blocks.push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
-    dbg("enter visitContinueStmt");
+    // dbg("enter visitContinueStmt");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
-    dbg("enter visitReturnStmt");
+    // dbg("enter visitReturnStmt");
     // if ctx->exp() == nullptr, means it's a function without return value
     bool has_retvalue = (ctx->exp() != nullptr);
     LLIR_RET *ret_inst = nullptr;
@@ -883,12 +914,13 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
                 if (reg->type.decl_type == TypeInt) {
                     LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(dst_reg), SRC(dst));
                     cur_basicblock->basic_block.push_back(itf_inst);
+                    dst = SRC(dst_reg);
                 } else if (reg->type.decl_type == TypeFloat) {
                     LLIR_FPTOSI *fti_inst = new LLIR_FPTOSI(SRC(dst_reg), SRC(dst));
                     cur_basicblock->basic_block.push_back(fti_inst);
                     dst = SRC(dst_reg);
                 } else {
-                    dbg(DeclTypeToStr(reg->type.decl_type) + ", UnExpected Function Return Type");
+                    // dbg(DeclTypeToStr(reg->type.decl_type) + ", UnExpected Function Return Type");
                     exit(EXIT_FAILURE);
                 }
                 dst = SRC(dst_reg);
@@ -902,35 +934,53 @@ antlrcpp::Any ASTVisitor::visitReturnStmt(SysYParser::ReturnStmtContext *ctx) {
     cur_scope_elements->push_back(cur_basicblock); // return属于跳转指令, 该基本块结束
     cur_func->all_blocks.push_back(cur_basicblock);
     cur_basicblock = new BasicBlock(bb_idx++);
-    dbg(cur_basicblock->bb_idx);
-    dbg("exit visitReturnStmt");
+    // dbg(cur_basicblock->bb_idx);
+    // dbg("exit visitReturnStmt");
     return nullptr;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitExp(SysYParser::ExpContext *ctx) {
-    dbg("enter visitExp");
+    // dbg("enter visitExp");
     SRC exp = ctx->addExp()->accept(this);
-    dbg("exit visitExp");
+    // dbg("exit visitExp");
     return exp;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
-    dbg("enter visitCond");
+    // dbg("enter visitCond");
     SRC cond =  ctx->lOrExp()->accept(this);
     if (CTValue *ctv = cond.ToCTValue(); ctv != nullptr) {
-
+        if (ctv->type == TypeInt) {
+            ctv->int_value = (ctv->int_value != 0) ? 1 : 0;
+            ctv->type = TypeBool;
+        } else {
+            ctv->int_value = (ctv->float_value != 0) ? 1 : 0;
+            ctv->type = TypeBool;
+        }
     } else {
         VirtReg *reg = cond.ToVirtReg();
         if (reg->type.decl_type != TypeBool) {
-            VirtReg *icmp_dst = new VirtReg(var_idx++, TypeBool);
-            LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_dst), cond, SRC(new CTValue(TypeInt, 0, 0)));
-            cur_basicblock->basic_block.push_back(icmp_inst);
-            cond = SRC(icmp_dst);
+            VirtReg *cmp_dst = new VirtReg(var_idx++, TypeBool);
+            if (reg->type.decl_type == TypeInt) {
+                LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(cmp_dst), cond, SRC(new CTValue(TypeInt, 0, 0)));
+                cur_basicblock->basic_block.push_back(icmp_inst);
+            } else if (reg->type.decl_type == TypeFloat) {
+                SRC zero_ctv = SRC(new CTValue(TypeInt, 0, 0));
+                SRC zero_reg = SRC(new VirtReg(var_idx++, TypeInt));
+                LLIR_LOAD *load_inst = new LLIR_LOAD(zero_reg, zero_ctv);
+                cur_basicblock->basic_block.push_back(load_inst);
+                SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, zero_reg);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                LLIR_FCMP *fcmp_inst = new LLIR_FCMP(NEQ, SRC(cmp_dst), cond, zero_float);
+                cur_basicblock->basic_block.push_back(fcmp_inst);
+            }
+            cond = SRC(cmp_dst);
         }
     }
-    dbg("exit visitCond");
+    // dbg("exit visitCond");
     return cond;
 }
 
@@ -939,22 +989,22 @@ antlrcpp::Any ASTVisitor::visitCond(SysYParser::CondContext *ctx) {
 // 所以在这里我们仅返回存储使用的变量的地址
 antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     string var_name = ctx->Identifier()->getText();
-    dbg("enter LVal for " + var_name);
+    // dbg("enter LVal for " + var_name);
     SRC variable = cur_scope->resolve(var_name, &cur_func->func_info);
     assert(variable.ToCTValue() != nullptr || variable.ToVirtReg() != nullptr);
     // 常量
     if (CTValue *ctv = variable.ToCTValue(); ctv != nullptr) {
-        dbg("exit visitLVal with a constant");
+        // dbg("exit visitLVal with a constant");
         return SRC(ctv);
     } else { // 标量
         VirtReg *reg = variable.ToVirtReg();
         if (reg->type.is_array == false) {
-            dbg("exit visitLVal with a scalar variable");
+            // dbg("exit visitLVal with a scalar variable");
             return SRC(reg);
         }
     }
     VirtReg *reg = variable.ToVirtReg();
-    dbg(reg->reg_id, reg->global);
+    // dbg(reg->reg_id, reg->global);
     SRC offset = SRC(new CTValue(TypeInt, 0, 0));
     vector<int32_t> arr_dim = reg->type.get_dims();
     int32_t size = ctx->exp().size();
@@ -977,8 +1027,8 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, type.is_array, false, reg->type.decl_type));
     LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, offset, VarType(false, type.is_array, false, reg->type.decl_type));
     cur_basicblock->basic_block.push_back(gep_inst2);
-    dbg(reg->ToString());
-    dbg( "exit visitLVal with a variable or array");
+    // dbg(reg->ToString());
+    // dbg( "exit visitLVal with a variable or array");
     return SRC(ptr2);
 }
 
@@ -989,7 +1039,7 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp1(SysYParser::PrimaryExp1Context *ctx) 
 
 // finished
 antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) {
-    dbg("enter visitPrimaryExp2");
+    // dbg("enter visitPrimaryExp2");
     SRC src = ctx->lVal()->accept(this);
     SRC dst;
     if (CTValue *ctv = src.ToCTValue(); ctv != nullptr) {
@@ -1006,16 +1056,16 @@ antlrcpp::Any ASTVisitor::visitPrimaryExp2(SysYParser::PrimaryExp2Context *ctx) 
             cur_basicblock->basic_block.push_back(load_inst);
         }
     }
-    dbg("exit visitPrimaryExp2");
+    // dbg("exit visitPrimaryExp2");
     return dst;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitPrimaryExp3(SysYParser::PrimaryExp3Context *ctx) {
-    dbg("enter visitPrimaryExp3");
+    // dbg("enter visitPrimaryExp3");
     SRC src = ctx->number()->accept(this);
-    dbg(src.ToString());
-    dbg("exit visitPrimaryExp3");
+    // dbg(src.ToString());
+    // dbg("exit visitPrimaryExp3");
     return src;
 }
 
@@ -1028,23 +1078,24 @@ antlrcpp::Any ASTVisitor::visitNumber1(SysYParser::Number1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitNumber2(SysYParser::Number2Context *ctx) {
-    float float_literal = 0;
-    sscanf(ctx->FloatLiteral()->getText().c_str(), "%a", &float_literal);
+    double float_literal = 0;
+    sscanf(ctx->FloatLiteral()->getText().c_str(), "%lf", &float_literal);
     CTValue *ret = new CTValue(TypeFloat, float_literal, float_literal);
+    // dbg(ret->float_value);
     return SRC(ret);
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitUnary1(SysYParser::Unary1Context *ctx) {
-    dbg("enter visitUnary1");
+    // dbg("enter visitUnary1");
     SRC ret = ctx->primaryExp()->accept(this);
-    dbg("exit visitUnary1");
+    // dbg("exit visitUnary1");
     return ret;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
-    dbg("enter visitUnary2");
+    // dbg("enter visitUnary2");
     string func_name = ctx->Identifier()->getText();
     vector<SRC> args;
     if (func_name == "starttime") {
@@ -1058,20 +1109,48 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
     }
     FunctionInfo *func_info = ir.getFunctionInfo(func_name);
     func_info->is_used = true;
-    cur_func->called_funcs.push_back(func_info);
+    cur_func->called_funcs.insert(func_info);
+    int32_t rsize = args.size();
+    int32_t fsize = func_info->func_args.size();
+    if (rsize != fsize) {
+        // dbg("Unmatched Function Args Num");
+        exit(EXIT_FAILURE);
+    }
+    for (int32_t idx = 0; idx < rsize; ++idx) {
+        auto rarg = args[idx];
+        auto farg = func_info->func_args[idx];
+        // dbg(rarg.ToString());
+        if (rarg.getType() != farg.second.decl_type) {
+            if (farg.second.is_array) {
+                // dbg("Unmatch at %d Array Arg Type", idx);
+                exit(EXIT_FAILURE);
+            } 
+            if (farg.second.decl_type == TypeInt) {
+                SRC arg_cast = SRC(new VirtReg(var_idx++, TypeInt));
+                LLIR_FPTOSI *fti_inst = new LLIR_FPTOSI(arg_cast, rarg);
+                cur_basicblock->basic_block.push_back(fti_inst);
+                args[idx] = arg_cast;
+            } else {
+                SRC arg_cast = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(arg_cast, rarg);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                args[idx] = arg_cast;
+            }
+        }
+    }
     SRC dst;
     if (func_info->return_type != TypeVoid) {
         dst = SRC(new VirtReg(var_idx++, VarType(func_info->return_type)));
     }
     LLIR_CALL *call_inst = new LLIR_CALL(dst, args, func_info);
     cur_basicblock->basic_block.push_back(call_inst);
-    dbg("exit visitUnary2");
+    // dbg("exit visitUnary2");
     return dst;
 }
 
 // finished
 antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
-    dbg("enter visitUnary3");
+    // dbg("enter visitUnary3");
     string op = ctx->unaryOp()->getText();
     SRC src = ctx->unaryExp()->accept(this);
     if (CTValue *ctv = src.ToCTValue(); ctv != nullptr) {
@@ -1079,14 +1158,14 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
         // 可以直接计算, 无关所处状态
         if (op == "-") {
             CTValue *uop_ctv = new CTValue(ctv->type, -ctv->int_value, -ctv->float_value);
-            dbg("exit visitUnary3 with CTValue SUB");
+            // dbg("exit visitUnary3 with CTValue SUB");
             return SRC(uop_ctv);
         } else if (op == "+") {
-            dbg("exit visitUnary3 with CTValue ADD");
+            // dbg("exit visitUnary3 with CTValue ADD");
             return SRC(ctv);
         } else {
-            CTValue *uop_ctv = new CTValue(TypeInt, !ctv->int_value, !ctv->float_value);
-            dbg("exit visitUnary3 with CTValue NEG");
+            CTValue *uop_ctv = new CTValue(TypeBool, !ctv->int_value, !ctv->float_value);
+            // dbg("exit visitUnary3 with CTValue NEG");
             return SRC(uop_ctv);
         }
     } else {
@@ -1095,32 +1174,50 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
         if (op == "-") {
             if (_type.decl_type == TypeBool) {
                 VirtReg *zext_dst = new VirtReg(var_idx++, VarType(TypeInt));
-                 LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_dst), SRC(reg));
+                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_dst), SRC(reg));
                 cur_basicblock->basic_block.push_back(zext_inst);
                 reg = zext_dst;
-                _type = TypeInt;
+                _type = VarType(TypeInt);
             }
             VirtReg *dst = new VirtReg(var_idx++, _type);
-            LLIR_BIN *bin_inst = new LLIR_BIN(SUB, dst, SRC(new CTValue(_type.decl_type, 0, 0)), SRC(reg));
-            dbg(bin_inst->src1.ToCTValue()->ToString());
-            cur_basicblock->basic_block.push_back(bin_inst);
-            dbg("exit visitUnary3 with VirtReg SUB");
-            dbg(bin_inst->ToString());
+            if (_type.decl_type == TypeInt) {
+                LLIR_BIN *bin_inst = new LLIR_BIN(SUB, dst, SRC(new CTValue(_type.decl_type, 0, 0)), SRC(reg));
+                cur_basicblock->basic_block.push_back(bin_inst);
+            } else if (_type.decl_type == TypeFloat) {
+                SRC zero_ctv = SRC(new CTValue(TypeInt, 0, 0));
+                SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, new CTValue(TypeInt, 0, 0));
+                cur_basicblock->basic_block.push_back(itf_inst);
+                LLIR_FBIN *bin_inst = new LLIR_FBIN(SUB, dst, zero_float, SRC(reg));
+                cur_basicblock->basic_block.push_back(bin_inst);
+            }
+            // dbg("exit visitUnary3 with VirtReg SUB");
             return SRC(dst);
         } else if (op == "+") {
-            dbg("exit visitUnary3 with VirtReg ADD");
+            // dbg("exit visitUnary3 with VirtReg ADD");
             return SRC(reg);
-        } else {
+        } else { // op == "!"
             if (reg->type.decl_type != TypeBool) {
-                VirtReg *icmp_dst = new VirtReg(var_idx++, VarType(TypeBool));
-                LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_dst), SRC(reg), SRC(new CTValue(_type.decl_type, 0, 0)));
-                cur_basicblock->basic_block.push_back(icmp_inst);
-                reg = icmp_dst;
+                if (reg->type.decl_type == TypeInt) {
+                    VirtReg *icmp_dst = new VirtReg(var_idx++, VarType(TypeBool));
+                    LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_dst), SRC(reg), SRC(new CTValue(_type.decl_type, 0, 0)));
+                    cur_basicblock->basic_block.push_back(icmp_inst);
+                    reg = icmp_dst;
+                } else if (reg->type.decl_type == TypeFloat) {
+                    SRC zero_ctv = SRC(new CTValue(TypeInt, 0, 0));
+                    SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
+                    LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, new CTValue(TypeInt, 0, 0));
+                    cur_basicblock->basic_block.push_back(itf_inst);
+                    VirtReg *fcmp_dst = new VirtReg(var_idx++, VarType(TypeBool));
+                    LLIR_FCMP *icmp_inst = new LLIR_FCMP(NEQ, SRC(fcmp_dst), SRC(reg), zero_float);
+                    cur_basicblock->basic_block.push_back(icmp_inst);
+                    reg = fcmp_dst;
+                }
             }
             VirtReg *dst = new VirtReg(var_idx++, VarType(TypeBool));
             LLIR_XOR *xor_inst = new LLIR_XOR(dst, SRC(reg));
             cur_basicblock->basic_block.push_back(xor_inst);
-            dbg("exit visitUnary3 with VirtReg NEG");
+            // dbg("exit visitUnary3 with VirtReg NEG");
             return SRC(dst);
         }
     }
@@ -1128,7 +1225,7 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitUnaryOp(SysYParser::UnaryOpContext *ctx) {
-    dbg("Program should never reach Function visitListConstInitVal");
+    // dbg("Program should never reach Function visitListConstInitVal");
     exit(EXIT_FAILURE);
 }
 
@@ -1154,83 +1251,58 @@ antlrcpp::Any ASTVisitor::visitMul1(SysYParser::Mul1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitMul2(SysYParser::Mul2Context *ctx) {
-    dbg("enter visitMul2");
+    // dbg("enter visitMul2");
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->mulExp()->accept(this);
     SRC rhs = ctx->unaryExp()->accept(this);
+    DeclType type = (lhs.getType() == rhs.getType()) ? lhs.getType() : TypeFloat;
     // 当两个操作数都是`CTValue`
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
-        DeclType _type = ctv1->type;
         int imul = 0;
         float fmul = 0;
         if (op == "*") {
-            imul = ctv1->int_value * ctv2->int_value;
             fmul = ctv1->float_value * ctv2->float_value;
-            if (ctv1->type == TypeFloat || ctv2->type == TypeFloat) {
-                imul = fmul;
-            }
+            imul = (type == TypeInt) ? ctv1->int_value * ctv2->int_value : fmul;
         } else if (op == "/") {
-            imul = ctv1->int_value / ctv2->int_value;
             fmul = ctv1->float_value / ctv2->float_value;
-            if (ctv1->type == TypeFloat || ctv2->type == TypeFloat) {
-                imul = fmul;
-            }
+            imul = (type == TypeInt) ? ctv1->int_value / ctv2->int_value : fmul;
         } else {
             imul = ctv1->int_value % ctv2->int_value;
             fmul = imul;
         }
-        if (ctv1->type != ctv2->type) {
-            _type = TypeFloat;
-        }
-        CTValue *mul = new CTValue(_type, imul, fmul);
-        dbg(mul->ToString());
-        dbg("exit visitMul2 with 2 CTValue");
+        CTValue *mul = new CTValue(type, imul, fmul);
+        // dbg(mul->ToString());
+        // dbg("exit visitMul2 with 2 CTValue");
         return SRC(mul);
     } else { // 当其中至少有一个是`VirtReg`
-        // 暂不处理类型不匹配情况
-        VirtReg *reg1 = lhs.ToVirtReg();
-        VirtReg *reg2 = rhs.ToVirtReg();
-        VarType _type = (reg2 == nullptr) ? reg1->type : reg2->type;
-        SRC dst = SRC(new VirtReg(var_idx++, _type));
-        LLIR_BIN *bop_inst = nullptr;
-        LLIR_FBIN *fbop_inst = nullptr;
-        if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
-            dbg("exit visitMul2 with VirtReg and CTValue");
-            if (reg1->type.decl_type != ctv2->type) {
-
-            }
-            if (reg1->type.decl_type == TypeInt) {
-                bop_inst = new LLIR_BIN(StrToBinOp(op), dst, SRC(reg1), SRC(ctv2));
+        // dbg("exit visitMul2 with at least 1 VirtReg");
+        if (lhs.getType() == rhs.getType()) {
+            SRC dst = SRC(new VirtReg(var_idx++, type));
+            if (type == TypeInt) {
+                LLIR_BIN *bop_inst = new LLIR_BIN(StrToBinOp(op), dst, lhs, rhs);
+                cur_basicblock->basic_block.push_back(bop_inst);
             } else {
-                fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, SRC(reg1), SRC(ctv2));
+                LLIR_FBIN *fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, lhs, rhs);
+                cur_basicblock->basic_block.push_back(fbop_inst);
             }
-        } else if (ctv1 && !ctv2 && !reg1 && reg2) { // lhs -> CTValue, rhs -> VirtReg
-            dbg("exit visitMul2 with CTValue and VirtReg");
-            if (ctv1->type != reg2->type.decl_type) {
-
-            }
-            if (ctv1->type == TypeInt) {
-                bop_inst = new LLIR_BIN(StrToBinOp(op), dst, SRC(ctv1), SRC(reg2));
-            } else {
-                fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, SRC(ctv1), SRC(reg2));
-            }
-        } else if (!ctv1 && !ctv2 && reg1 && reg2) { // lhs -> VirtReg, rhs -> VirtReg
-            dbg("exit visitMul2 with 2 VirtReg");
-            if (reg1->type.decl_type != reg2->type.decl_type) {
-
-            }
-            if (reg1->type.decl_type == TypeInt) {
-                bop_inst = new LLIR_BIN(StrToBinOp(op), dst, SRC(reg1), SRC(reg2));
-            } else {
-                fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, SRC(reg1), SRC(reg2));
-            }
-        }
-        if (bop_inst != nullptr) {
-            cur_basicblock->basic_block.push_back(bop_inst);
+            return dst;
         } else {
+            if (lhs.getType() == TypeInt) {
+                SRC cast_lhs = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(cast_lhs), lhs);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                lhs = cast_lhs;
+            } else if (rhs.getType() == TypeInt) {
+                SRC cast_rhs = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(cast_rhs), rhs);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                rhs = cast_rhs;
+            }
+            SRC dst = SRC(new VirtReg(var_idx++, type));
+            LLIR_FBIN *fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, lhs, rhs);
             cur_basicblock->basic_block.push_back(fbop_inst);
+            return dst;
         }
-        return dst;
     }
 }
 
@@ -1241,82 +1313,55 @@ antlrcpp::Any ASTVisitor::visitAdd1(SysYParser::Add1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
-    dbg("enter visitAdd2");
+    // dbg("enter visitAdd2");
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->addExp()->accept(this);
     SRC rhs = ctx->mulExp()->accept(this);
+    DeclType type = (lhs.getType() == rhs.getType()) ? lhs.getType() : TypeFloat;
     // 当两个操作数都是`CTValue`
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
-    dbg("get two oprand");
-        DeclType _type = ctv1->type;
-        int iadd = 0;
-        float fadd = 0;
+        int imul = 0;
+        float fmul = 0;
         if (op == "+") {
-            iadd = ctv1->int_value + ctv2->int_value;
-            fadd = ctv1->float_value + ctv2->float_value;
-            if (ctv1->type == TypeFloat || ctv2->type == TypeFloat) {
-                iadd = fadd;
-            }
+            fmul = ctv1->float_value + ctv2->float_value;
+            imul = (type == TypeInt) ? ctv1->int_value + ctv2->int_value : fmul;
         } else if (op == "-") {
-            iadd = ctv1->int_value - ctv2->int_value;
-            fadd = ctv1->float_value - ctv2->float_value;
-            if (ctv1->type == TypeFloat || ctv2->type == TypeFloat) {
-                iadd = fadd;
-            }
+            fmul = ctv1->float_value - ctv2->float_value;
+            imul = (type == TypeInt) ? ctv1->int_value - ctv2->int_value : fmul;
         }
-        if (ctv1->type != ctv2->type) {
-            _type = TypeFloat;
-        }
-        CTValue *add = new CTValue(_type, iadd, fadd);
-        dbg(add->ToString());
-        dbg("exit visitAdd2 with 2 CTValue");
+        CTValue *add = new CTValue(type, imul, fmul);
+        // dbg(add->ToString());
+        // dbg("exit visitAdd2 with 2 CTValue");
         return SRC(add);
     } else { // 当其中至少有一个是`VirtReg`
-        // 暂不处理类型不匹配情况
-        VirtReg *reg1 = lhs.ToVirtReg();
-        VirtReg *reg2 = rhs.ToVirtReg();
-        VarType _type = (reg2 == nullptr) ? reg1->type : reg2->type;
-        SRC dst = SRC(new VirtReg(var_idx++, _type));
-        LLIR_BIN *bop_inst = nullptr;
-        LLIR_FBIN *fbop_inst = nullptr;
-        if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
-            dbg("exit visitAdd2 with VirtReg and CTValue");
-            if (reg1->type.decl_type != ctv2->type) {
-
-            }
-            if (reg1->type.decl_type == TypeInt) {
-                bop_inst = new LLIR_BIN(StrToBinOp(op), dst, SRC(reg1), SRC(ctv2));
+        // dbg("exit visitAdd2 with at least 1 VirtReg");
+        if (lhs.getType() == rhs.getType()) {
+            SRC dst = SRC(new VirtReg(var_idx++, type));
+            if (type == TypeInt) {
+                LLIR_BIN *bop_inst = new LLIR_BIN(StrToBinOp(op), dst, lhs, rhs);
+                cur_basicblock->basic_block.push_back(bop_inst);
             } else {
-                fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, SRC(reg1), SRC(ctv2));
+                LLIR_FBIN *fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, lhs, rhs);
+                cur_basicblock->basic_block.push_back(fbop_inst);
             }
-        } else if (ctv1 && !ctv2 && !reg1 && reg2) { // lhs -> CTValue, rhs -> VirtReg
-            dbg("exit visitAdd2 with CTValue and VirtReg");
-            if (ctv1->type != reg2->type.decl_type) {
-
-            }
-            if (ctv1->type == TypeInt) {
-                bop_inst = new LLIR_BIN(StrToBinOp(op), dst, SRC(ctv1), SRC(reg2));
-            } else {
-                fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, SRC(ctv1), SRC(reg2));
-            }
-        } else if (!ctv1 && !ctv2 && reg1 && reg2) { // lhs -> VirtReg, rhs -> VirtReg
-            dbg("exit visitAdd2 with 2 VirtReg");
-            if (reg1->type.decl_type != reg2->type.decl_type) {
-
-            }
-            if (reg1->type.decl_type == TypeInt) {
-                bop_inst = new LLIR_BIN(StrToBinOp(op), dst, SRC(reg1), SRC(reg2));
-            } else {
-                fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, SRC(reg1), SRC(reg2));
-            }
-        }
-        if (bop_inst != nullptr) {
-            cur_basicblock->basic_block.push_back(bop_inst);
+            return dst;
         } else {
+            if (lhs.getType() == TypeInt) {
+                SRC cast_lhs = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(cast_lhs), lhs);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                lhs = cast_lhs;
+            } else if (rhs.getType() == TypeInt) {
+                SRC cast_rhs = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(cast_rhs), rhs);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                rhs = cast_rhs;
+            }
+            SRC dst = SRC(new VirtReg(var_idx++, type));
+            LLIR_FBIN *fbop_inst = new LLIR_FBIN(StrToBinOp(op), dst, lhs, rhs);
             cur_basicblock->basic_block.push_back(fbop_inst);
+            return dst;
         }
-        dbg(dst.ToString());
-        return dst;
     }
 }
 
@@ -1327,8 +1372,8 @@ antlrcpp::Any ASTVisitor::visitRel1(SysYParser::Rel1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
-    dbg("enter visitRel2");
-    dbg(ctx->getText());
+    // dbg("enter visitRel2");
+    // dbg(ctx->getText());
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->relExp()->accept(this);
     SRC rhs = ctx->addExp()->accept(this);
@@ -1340,9 +1385,8 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
         std::swap(lhs, rhs);
     }
     // 当两个操作数都是`CTValue`
-    dbg("enter process visitRel2");
+    // dbg("enter process visitRel2");
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
-        DeclType _type = ctv1->type;
         int irel = 0;
         float frel = 0;
         if (op == "<") {
@@ -1352,74 +1396,51 @@ antlrcpp::Any ASTVisitor::visitRel2(SysYParser::Rel2Context *ctx) {
             irel = ctv1->int_value <= ctv2->int_value;
             frel = ctv1->float_value <= ctv2->float_value;
         }
-        if (ctv1->type != ctv2->type) {
-            _type = TypeFloat;
-        }
-        CTValue *rel = new CTValue(_type, irel, frel);
-        dbg(rel->ToString());
-        dbg("exit visitRel2 with 2 CTValue");
+        CTValue *rel = new CTValue(TypeBool, irel, frel);
+        // dbg(rel->ToString());
+        // dbg("exit visitRel2 with 2 CTValue");
         return SRC(rel);
     } else { // 当其中至少有一个是`VirtReg`
-        // 暂不处理类型不匹配情况
-        VirtReg *reg1 = lhs.ToVirtReg();
-        VirtReg *reg2 = rhs.ToVirtReg();
-        LLIR_ICMP *icmp_inst = nullptr;
-        LLIR_FCMP *fcmp_inst = nullptr;
-        if (reg1 != nullptr) {
-            if (reg1->type.decl_type == TypeBool) {
-                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
-                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg1));
-                cur_basicblock->basic_block.push_back(zext_inst);
-                reg1 = zext_reg;
-            }
+        // dbg("exit visitRel2 with at least 1 VirtReg");
+        if (lhs.getType() == TypeBool) {
+            SRC zext_src = SRC(new VirtReg(var_idx++, VarType(TypeInt)));
+            LLIR_ZEXT *zext_inst = new LLIR_ZEXT(zext_src, lhs);
+            cur_basicblock->basic_block.push_back(zext_inst);
+            lhs = zext_src;
         }
-        if (reg2 != nullptr) {
-            if (reg2->type.decl_type == TypeBool) {
-                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
-                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg2));
-                cur_basicblock->basic_block.push_back(zext_inst);
-                reg2 = zext_reg;
-            }
+        if (rhs.getType() == TypeBool) {
+            SRC zext_src = SRC(new VirtReg(var_idx++, VarType(TypeInt)));
+            LLIR_ZEXT *zext_inst = new LLIR_ZEXT(zext_src, rhs);
+            cur_basicblock->basic_block.push_back(zext_inst);
+            rhs = zext_src;
         }
-        SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
-        dbg("enter visitRel2 with at least a VirtReg");
-        if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
-            if (reg1->type.decl_type != ctv2->type) {
-
-            }
-            dbg("exit visitRel2 with VirtReg and CTValue");
-            if (reg1->type.decl_type == TypeInt) {
-                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(reg1), SRC(ctv2));
+        if (lhs.getType() == rhs.getType()) {
+            SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
+            if (lhs.getType() == TypeInt) {
+                LLIR_ICMP *icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, lhs, rhs);
+                cur_basicblock->basic_block.push_back(icmp_inst);
             } else {
-
+                LLIR_FCMP *fcmp_inst = new LLIR_FCMP(StrToRelOp(op), dst, lhs, rhs);
+                cur_basicblock->basic_block.push_back(fcmp_inst);
             }
-        } else if (ctv1 && !ctv2 && !reg1 && reg2) { // lhs -> CTValue, rhs -> VirtReg
-            if (ctv1->type != reg2->type.decl_type) {
-
-            }
-            dbg("exit visitRel2 with CTValue and VirtReg");
-            if (reg2->type.decl_type == TypeInt) {
-                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(ctv1), SRC(reg2));
-            } else {
-                
-            }
-        } else if (!ctv1 && !ctv2 && reg1 && reg2) { // lhs -> VirtReg, rhs -> VirtReg
-            if (reg1->type.decl_type != reg2->type.decl_type) {
-
-            }
-            dbg("exit visitRel2 with 2 VirtReg");
-            if (reg1->type.decl_type == TypeInt) {
-                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(reg1), SRC(reg2));
-            } else {
-                
-            }
-        }
-        if (icmp_inst != nullptr) {
-            cur_basicblock->basic_block.push_back(icmp_inst);
+            return dst;
         } else {
+            if (lhs.getType() == TypeInt) {
+                SRC cast_lhs = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(cast_lhs), lhs);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                lhs = cast_lhs;
+            } else if (rhs.getType() == TypeInt) {
+                SRC cast_rhs = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(cast_rhs), rhs);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                rhs = cast_rhs;
+            }
+            SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
+            LLIR_FCMP *fcmp_inst = new LLIR_FCMP(StrToRelOp(op), dst, lhs, rhs);
             cur_basicblock->basic_block.push_back(fcmp_inst);
+            return dst;
         }
-        return dst;
     }
 }
 
@@ -1430,83 +1451,68 @@ antlrcpp::Any ASTVisitor::visitEq1(SysYParser::Eq1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
-    dbg("enter visitEq2");
+    // dbg("enter visitEq2");
+    // dbg(ctx->getText());
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->eqExp()->accept(this);
     SRC rhs = ctx->relExp()->accept(this);
-    dbg("exit visitEq2");
     // 当两个操作数都是`CTValue`
+    // dbg("enter process visitEq2");
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
-        DeclType _type = ctv1->type;
-        int irel = 0;
-        float frel = 0;
+        int ieq = 0;
+        float feq = 0;
         if (op == "==") {
-            irel = ctv1->int_value == ctv2->int_value;
-            frel = ctv1->float_value == ctv2->float_value;
+            ieq = ctv1->int_value == ctv2->int_value;
+            feq = ctv1->float_value == ctv2->float_value;
         } else if (op == "!=") {
-            irel = ctv1->int_value != ctv2->int_value;
-            frel = ctv1->float_value != ctv2->float_value;
+            ieq = ctv1->int_value != ctv2->int_value;
+            feq = ctv1->float_value != ctv2->float_value;
         }
-        CTValue *eq = new CTValue(TypeBool, irel, frel);
-        dbg(eq->ToString());
+        CTValue *eq = new CTValue(TypeBool, ieq, feq);
+        // dbg(eq->ToString());
+        // dbg("exit visitEq2 with 2 CTValue");
         return SRC(eq);
     } else { // 当其中至少有一个是`VirtReg`
-        // 暂不处理类型不匹配情况
-        VirtReg *reg1 = lhs.ToVirtReg();
-        VirtReg *reg2 = rhs.ToVirtReg();
-        LLIR_ICMP *icmp_inst = nullptr;
-        LLIR_FCMP *fcmp_inst = nullptr;
-        if (reg1 != nullptr) {
-            if (reg1->type.decl_type == TypeBool) {
-                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
-                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg1));
-                cur_basicblock->basic_block.push_back(zext_inst);
-                reg1 = zext_reg;
-            }
+        // dbg("exit visitEq2 with at least 1 VirtReg");
+        if (lhs.getType() == TypeBool) {
+            SRC zext_src = SRC(new VirtReg(var_idx++, VarType(TypeInt)));
+            LLIR_ZEXT *zext_inst = new LLIR_ZEXT(zext_src, lhs);
+            cur_basicblock->basic_block.push_back(zext_inst);
+            lhs = zext_src;
         }
-        if (reg2 != nullptr) {
-            if (reg2->type.decl_type == TypeBool) {
-                VirtReg *zext_reg = new VirtReg(var_idx++, VarType(TypeInt));
-                LLIR_ZEXT *zext_inst = new LLIR_ZEXT(SRC(zext_reg), SRC(reg2));
-                cur_basicblock->basic_block.push_back(zext_inst);
-                reg2 = zext_reg;
-            }
+        if (rhs.getType() == TypeBool) {
+            SRC zext_src = SRC(new VirtReg(var_idx++, VarType(TypeInt)));
+            LLIR_ZEXT *zext_inst = new LLIR_ZEXT(zext_src, rhs);
+            cur_basicblock->basic_block.push_back(zext_inst);
+            rhs = zext_src;
         }
-        SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
-        if (!ctv1 && ctv2 && reg1 && !reg2) { // lhs -> VirtReg, rhs -> CTValue
-            if (reg1->type.decl_type != ctv2->type) {
-
-            }
-            if (reg1->type.decl_type == TypeInt) {
-                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(reg1), SRC(ctv2));
+        if (lhs.getType() == rhs.getType()) {
+            SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
+            if (lhs.getType() == TypeInt) {
+                LLIR_ICMP *icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, lhs, rhs);
+                cur_basicblock->basic_block.push_back(icmp_inst);
             } else {
-
+                LLIR_FCMP *fcmp_inst = new LLIR_FCMP(StrToRelOp(op), dst, lhs, rhs);
+                cur_basicblock->basic_block.push_back(fcmp_inst);
             }
-        } else if (ctv1 && !ctv2 && !reg1 && reg2) { // lhs -> CTValue, rhs -> VirtReg
-            if (ctv1->type != reg2->type.decl_type) {
-
-            }
-            if (ctv1->type == TypeInt) {
-                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(ctv1), SRC(reg2));
-            } else {
-                
-            }
-        } else if (!ctv1 && !ctv2 && reg1 && reg2) { // lhs -> VirtReg, rhs -> VirtReg
-            if (reg1->type.decl_type != reg2->type.decl_type) {
-
-            }
-            if (reg1->type.decl_type == TypeInt) {
-                icmp_inst = new LLIR_ICMP(StrToRelOp(op), dst, SRC(reg1), SRC(reg2));
-            } else {
-                
-            }
-        }
-        if (icmp_inst != nullptr) {
-            cur_basicblock->basic_block.push_back(icmp_inst);
+            return dst;
         } else {
+            if (lhs.getType() == TypeInt) {
+                SRC cast_lhs = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(cast_lhs), lhs);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                lhs = cast_lhs;
+            } else if (rhs.getType() == TypeInt) {
+                SRC cast_rhs = SRC(new VirtReg(var_idx++, TypeFloat));
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(cast_rhs), rhs);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                lhs = cast_rhs;
+            }
+            SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
+            LLIR_FCMP *fcmp_inst = new LLIR_FCMP(StrToRelOp(op), dst, lhs, rhs);
             cur_basicblock->basic_block.push_back(fcmp_inst);
+            return dst;
         }
-        return dst;
     }
 }
 
@@ -1517,18 +1523,23 @@ antlrcpp::Any ASTVisitor::visitLAnd1(SysYParser::LAnd1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
-    dbg("enter visitLAnd2");
+    // dbg("enter visitLAnd2");
     SRC dst;
     dst = ctx->lAndExp()->accept(this);
-    if (CTValue *ctv = dst.ToCTValue(); ctv != nullptr) {
-
-    } else {
-        VirtReg *reg = dst.ToVirtReg();
-        if (reg->type.decl_type != TypeBool) {
-            VirtReg *icmp_reg = new VirtReg(var_idx++, VarType(TypeBool));
-            LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_reg), dst, SRC(new CTValue(TypeInt, 0, 0)));
+    if (dst.getType() != TypeBool) {
+        if (dst.getType() == TypeInt) {
+            SRC icmp_dst = SRC(new VirtReg(var_idx++, VarType(TypeBool)));
+            LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, icmp_dst, dst, SRC(new CTValue(TypeInt, 0, 0)));
             cur_basicblock->basic_block.push_back(icmp_inst);
-            dst = SRC(icmp_reg);
+            dst = icmp_dst;
+        } else if (dst.getType() == TypeFloat) {
+            SRC fcmp_dst = SRC(new VirtReg(var_idx++, VarType(TypeBool)));
+            SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
+            LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, new CTValue(TypeInt, 0, 0));
+            cur_basicblock->basic_block.push_back(itf_inst);
+            LLIR_FCMP *fcmp_inst = new LLIR_FCMP(NEQ, fcmp_dst, dst, zero_float);
+            cur_basicblock->basic_block.push_back(fcmp_inst);
+            dst = fcmp_dst;
         }
     }
     LLIR_BR *br_inst = new LLIR_BR(true, dst, 0, 0);
@@ -1539,7 +1550,7 @@ antlrcpp::Any ASTVisitor::visitLAnd2(SysYParser::LAnd2Context *ctx) {
     br_inst->tar_true = cur_basicblock->bb_idx;
     dst = ctx->eqExp()->accept(this);
     land_insts.push_back(br_inst);
-    dbg("exit visitLAnd2");
+    // dbg("exit visitLAnd2");
     return dst;
 }
 
@@ -1550,7 +1561,7 @@ antlrcpp::Any ASTVisitor::visitLOr1(SysYParser::LOr1Context *ctx) {
 
 // finished
 antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
-    dbg("enter visitLOr2");
+    // dbg("enter visitLOr2");
     // store last condition
     vector<LLIR_BR *> last_land_insts = land_insts;
     land_insts = vector<LLIR_BR *>();
@@ -1560,15 +1571,20 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
         land_inst->tar_false = bb_idx;
     }
     land_insts = last_land_insts;
-    if (CTValue *ctv = dst.ToCTValue(); ctv != nullptr) {
-
-    } else {
-        VirtReg *reg = dst.ToVirtReg();
-        if (reg->type.decl_type != TypeBool) {
-            VirtReg *icmp_reg = new VirtReg(var_idx++, VarType(TypeBool));
-            LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, SRC(icmp_reg), dst, SRC(new CTValue(TypeInt, 0, 0)));
+    if (dst.getType() != TypeBool) {
+        if (dst.getType() == TypeInt) {
+            SRC icmp_dst = SRC(new VirtReg(var_idx++, VarType(TypeBool)));
+            LLIR_ICMP *icmp_inst = new LLIR_ICMP(NEQ, icmp_dst, dst, SRC(new CTValue(TypeInt, 0, 0)));
             cur_basicblock->basic_block.push_back(icmp_inst);
-            dst = SRC(icmp_reg);
+            dst = icmp_dst;
+        } else if (dst.getType() == TypeFloat) {
+            SRC fcmp_dst = SRC(new VirtReg(var_idx++, VarType(TypeBool)));
+            SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
+            LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, new CTValue(TypeInt, 0, 0));
+            cur_basicblock->basic_block.push_back(itf_inst);
+            LLIR_FCMP *fcmp_inst = new LLIR_FCMP(NEQ, fcmp_dst, dst, zero_float);
+            cur_basicblock->basic_block.push_back(fcmp_inst);
+            dst = fcmp_dst;
         }
     }
     LLIR_BR *br_inst = new LLIR_BR(true, dst, 0, 0);
@@ -1579,15 +1595,14 @@ antlrcpp::Any ASTVisitor::visitLOr2(SysYParser::LOr2Context *ctx) {
     br_inst->tar_false = cur_basicblock->bb_idx;
     dst = ctx->lAndExp()->accept(this);
     lor_insts.push_back(br_inst);
-    dbg("exit visitLOr2");
+    // dbg("exit visitLOr2");
     return dst;
 }
 
 // finished
-// 返回表达式的类型由type限定, 存在隐患
 antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
-    dbg("enter constexp");
+    // dbg("enter constexp");
     SRC result = ctx->addExp()->accept(this);
-    dbg("exit constexp");
+    // dbg("exit constexp");
     return result;
 }

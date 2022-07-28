@@ -48,7 +48,7 @@ public:
     
     vector<int32_t> get_array_dims(vector<SysYParser::ConstExpContext *>);
     
-    void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<float>& flist);
+    void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<double>& flist);
 
     void parse_variable_init(SysYParser::ListInitvalContext *node, VarType type, vector<int32_t> arr_dim, SRC addr, int32_t off);
 

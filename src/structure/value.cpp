@@ -7,7 +7,8 @@ string CTValue::ToString() {
     if (type == TypeInt) {
         ss << int_value;
     } else if (type == TypeFloat) {
-        ss << float_value;
+        uint64_t uint64_value = reinterpret_cast<uint64_t&>(float_value);
+        ss << "0x" << std::hex << uint64_value;
     } else if (type == TypeBool) {
         ss << int_value;
     } else if (type == TypeByte) {
