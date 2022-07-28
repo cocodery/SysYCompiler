@@ -1,7 +1,7 @@
 #include "pass_manager.hh"
 
 void PassManager::compDomInfo() {
-    dbg("run CompDomInfo pass");
+    // dbg("run CompDomInfo pass");
     for (auto &&function : functions) {
         if (function->func_info.is_used) {
             function->buildDom();
@@ -20,7 +20,7 @@ void PassManager::compDomInfo() {
 }
 
 void PassManager::mem2reg() {
-    dbg("run Mem2Reg pass");
+    // dbg("run Mem2Reg pass");
     for (auto &&function : functions) {
         Mem2Reg mem2reg = Mem2Reg(function);
         mem2reg.runMem2Reg();

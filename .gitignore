@@ -5,6 +5,7 @@ build/
 
 # log file
 *.log
+*.res
 
 # IDE
 .idea/
@@ -19,3 +20,6 @@ src/frontend/.antlr/
 # codegen
 *.asm
 *.ll
+
+#compiler2022
+compiler2022/*

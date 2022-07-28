@@ -119,6 +119,9 @@ void Mem2Reg::runMem2Reg() {
     for (auto &&alloca_inst : allocaInsts) {
         int32_t index = allocaLoopup[alloca_inst];
         DeclType type = alloca_inst->reg.getType();
+        for (auto &&block : all_blocks) {
+            block->dirty = false;
+        }
         for (auto &&block : defBlocks[index]) {
             W.push(block);
         }
