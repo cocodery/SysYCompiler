@@ -26,6 +26,9 @@ public:
     VirtReg *ToVirtReg() {
         return (reg == nullptr) ? nullptr : reg;
     }
+    bool operator == (SRC l) {
+        return (*ctv == *l.ctv && *reg == *l.reg);
+    }
 };
 
 class LLIR_RET: public Inst {
