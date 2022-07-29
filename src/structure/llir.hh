@@ -26,6 +26,15 @@ public:
     VirtReg *ToVirtReg() {
         return (reg == nullptr) ? nullptr : reg;
     }
+    bool operator == (SRC src) {
+        if (ctv && src.ToCTValue()) {
+            return *ctv == *src.ToCTValue();
+        } else if (reg && src.ToVirtReg()) {
+            return *reg == *src.ToVirtReg();
+        } else {
+            return false;
+        }
+    }
 };
 
 class LLIR_RET: public Inst {
