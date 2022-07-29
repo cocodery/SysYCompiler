@@ -114,6 +114,11 @@ public:
 public:
     LLIR_STORE(SRC _dst, SRC _src) : dst(_dst), src(_src) { }
     string ToString();
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src_reg = src.ToVirtReg(); src_reg != nullptr && *old_reg == *src_reg) {
+            src = new_var;
+        }
+    }
 };
 
 class LLIR_GEP: public Inst {
