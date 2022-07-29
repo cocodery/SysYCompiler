@@ -3,6 +3,7 @@
 #include "../common.hh"
 #include "../structure/ir.hh"
 #include "mem2reg.hh"
+#include "lvn.hh"
 
 class PassManager {
 public:
@@ -14,8 +15,12 @@ public:
         compDomInfo();
 
         mem2reg();
+
+        lvn();
     }
     void compDomInfo();
 
     void mem2reg();
+
+    void lvn();
 };

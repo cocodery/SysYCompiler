@@ -26,3 +26,11 @@ void PassManager::mem2reg() {
         mem2reg.runMem2Reg();
     }
 }
+
+void PassManager::lvn() {
+    // dbg("run local-variable-number pass");
+    for (auto &&function : functions) {
+        LVN lvn = LVN(function);
+        lvn.runLVN();
+    }
+}
