@@ -38,12 +38,10 @@ build:
 run:
 	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm ../main.sy ; cd ..
 	@llvm-link sylib.ll main.ll -S -o run.ll
-	@echo $(TEST_NUM)
 
 .PHONY: test
 test:
 	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o main.asm ../$(CASE); cd ..
-	@echo $(CASE)
 	@llvm-link sylib.ll main.ll -S -o run.ll
 
 .ONESHELL:
@@ -55,11 +53,12 @@ all:
 		ASM=$${file%.*}.s
 		LOG=$${file%.*}.log
 		RES=$${file%.*}.res
+		LL=$${file%.*}.ll
 		IN=$${file%.*}.in
 		OUT=$${file%.*}.out
 		FILE=$${file##*/}
 		FILE=$${FILE%.*}
-		timeout 500s ./$(BUILD_DIR)/$(TOPNAME) -S -o $${ASM} $${file} >> $${LOG}  
+		timeout 500s ./$(BUILD_DIR)/$(TOPNAME) -S -o $${ASM} -l $${LL} $${file}  >> $${LOG}
 		RETURN_VALUE=$$? 
 		if [ $$RETURN_VALUE = 124 ]; then
 			echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Timeout\033[0m"
@@ -69,14 +68,14 @@ all:
 			continue
 			fi
 		fi
-		llvm-link sylib.ll main.ll -S -o run.ll >> $${LOG} 2>&1
+		llvm-link sylib.ll $${LL} -S -o $${LL} >> $${LOG} 2>&1
 		if [ $$? != 0 ]; then
 			echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mAssemble Error\033[0m"
 		else
 			if [ -f "$${IN}" ]; then
-				timeout 500s lli run.ll < $${IN} > $${RES} 2>> $${LOG}
+				timeout 10s lli $${LL} < $${IN} > $${RES} 2>> $${LOG}
 			else
-				timeout 500s lli run.ll > $${RES} 2 >> $${LOG}
+				timeout 10s lli $${LL} > $${RES} 2 >> $${LOG}
 			fi
 			RETURN_VALUE=$$?
 			FINAL=`tail -c 1 $${RES}`
