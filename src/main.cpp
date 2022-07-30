@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
         input = argv[optind];
     }
     
-    // dbg(input, output, irfile, opt);
+    dbg(input, output, irfile, opt);
     ifstream src{input};
     if (!src.is_open()) {
         cerr << "cannot open input file" << endl;
