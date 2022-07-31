@@ -26,3 +26,12 @@ void PassManager::mem2reg() {
         mem2reg.runMem2Reg();
     }
 }
+
+void PassManager::lvn() {
+    for (auto &&function : functions) {
+        for (auto &&bb : function->all_blocks) {
+            LVN lvn;
+            lvn.ValueNumber(&bb->basic_block);
+        }
+    }
+}

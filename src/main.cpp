@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
         input = argv[optind];
     }
     
-    // dbg(input, output, irfile, opt, print_usage);
+    dbg(input, output, irfile, opt);
     ifstream src{input};
     if (!src.is_open()) {
         cerr << "cannot open input file" << endl;
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
 
     // -------------------
 
-    ir.GenerateLLIR("../main.ll");
+    ir.GenerateLLIR(irfile);
 
     // cout << "Compilation Complete" << endl;
 
