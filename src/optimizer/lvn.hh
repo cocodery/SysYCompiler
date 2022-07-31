@@ -37,7 +37,6 @@ public:
     vector<map<VirtReg *, SRC>> replaceMap;
     vector<map<VirtReg *, lvnNode>> lvnNodes;
 public:
-<<<<<<< HEAD
     LVN(Function *func) : function(func) {
         replaceMap.clear();
         lvnNodes.clear();
@@ -47,21 +46,6 @@ public:
     int ProcessInst(vector<Inst> *bb, Inst *inst, BinOp op, SRC dst, SRC src1, SRC src2);
     void Remove(string dst, vector<Inst> *bb);
     pair<int, string> FindTuple(tuple<int, int, string> t);
-    void ProcessBB(vector<Inst> *bb, string dst, string instead, auto i);
     int GetIndex(SRC dst);
     void display();
 };
-=======
-    void ValueNumber(vector<Inst *> *bb);
-    bool FindDst(lvnNode dst);
-    int ProcessInst(vector<Inst *> *bb, Inst *inst, BinOp op, SRC dst, SRC src1, SRC src2);
-    void ProcessInst(vector<Inst *> *bb, string op, string dst, string src);
-    void Remove(string dst, vector<Inst *> *bb);
-    pair<int, SRC> FindTuple(tuple<int, int, BinOp> t);
-    void ProcessBB(vector<Inst *> *bb, SRC dst, SRC instead, Inst *i);
-    int GetIndex(SRC dst);
-    void display();
-};
-
-
->>>>>>> master

@@ -22,8 +22,6 @@ public:
     }
     void compDomInfo();
 
-    void lvn();
-
     void mem2reg();
 
     void lvn();
