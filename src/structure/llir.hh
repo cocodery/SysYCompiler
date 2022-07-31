@@ -31,6 +31,8 @@ public:
             return *ctv == *src.ToCTValue();
         } else if (reg && src.ToVirtReg()) {
             return *reg == *src.ToVirtReg();
+        } else if (!ctv && !src.ToCTValue() && !reg && !src.ToVirtReg()) {
+            return true;
         } else {
             return false;
         }
