@@ -14,8 +14,6 @@ public:
     void excute_pass() {
         compDomInfo();
 
-        lvn();
-
         mem2reg();
 
         lvn();

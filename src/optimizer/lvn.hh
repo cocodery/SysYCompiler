@@ -2,21 +2,16 @@
 
 #include <iostream>
 #include <vector>
-#include <variant>
-#include <string>
-#include <tuple>
+#include <map>
 
 #include "../../common.hh"
 #include "../structure/ir.hh"
 #include "../structure/symtable.hh"
 #include "../structure/llir.hh"
-#include "../structure/value.hh"
 
 using std::ostream;
 using std::vector;
-using std::string;
 using std::map;
-using std::tuple;
 
 enum NodeOp {  
     Add, Sub, Mul, Div, Rem, 
@@ -41,19 +36,13 @@ class LVN{
 public:
     Function *function;
     map<int32_t, int32_t> bbIdxMapIdx;
-    vector<map<VirtReg *, SRC>> replaceMap;
     vector<map<SRC, lvnNode *>> lvnMapNodes;
 public:
     LVN(Function *func) : function(func) {
         bbIdxMapIdx.clear();
-        replaceMap.clear();
         lvnMapNodes.clear();
     }
     void runLVN();
     void valueNumber(BasicBlock *block);
-    void ProcessInst(vector<Inst> *bb, Inst *inst, BinOp op, SRC dst, SRC src1, SRC src2);
-    void Remove(string dst, vector<Inst> *bb);
-    void FindTuple(tuple<int, int, string> t);
-    void GetIndex(SRC dst);
-    void display();
+    bool checkInMap(BasicBlock *block, lvnNode *node);
 };
