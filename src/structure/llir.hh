@@ -37,6 +37,30 @@ public:
             return false;
         }
     }
+    bool operator < (SRC src) {
+        if (ctv && src.ToVirtReg()) {
+            return true;
+        } else if (reg && src.ToCTValue()) {
+            return false;
+        } else {
+            DeclType type = getType();
+            if (type != src.getType()) {
+                return (type == TypeInt);
+            }
+            if (ctv && src.ToCTValue()) {
+                if (type == TypeInt) {
+                    return ctv->int_value < src.ToCTValue()->int_value;
+                } else {
+                    return ctv->float_value < src.ToCTValue()->float_value;
+                }
+            } else {
+                return reg->reg_id < src.ToVirtReg()->reg_id;
+            }
+        }
+    }
+    bool operator < (const SRC src) const {
+        return *this < src;
+    }
 };
 
 class LLIR_RET: public Inst {
