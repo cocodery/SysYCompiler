@@ -446,6 +446,8 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         string comment;
         if (!varPtr->type.is_array) // not array
         {
+            if (varPtr->type.is_const)
+                continue;
             if (varPtr->type.decl_type == TypeInt) {
                 params.push_back(Param(Param::Str, std::to_string(varPtr->int_scalar).c_str()));
                 comment = "int "; }
