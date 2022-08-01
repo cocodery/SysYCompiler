@@ -44,5 +44,5 @@ public:
     }
     void runLVN();
     void valueNumber(BasicBlock *block);
-    bool checkInMap(BasicBlock *block, lvnNode *node);
+    SRC checkInMap(BasicBlock *block, lvnNode *node);
 };
