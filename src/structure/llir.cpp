@@ -1,5 +1,8 @@
 #include "llir.hh"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+
 string SRC::ToString() {
     if (ctv != nullptr) {
         return ctv->ToString();
@@ -242,3 +245,5 @@ string LLIR_BC::ToString() {
     ss << src_reg->ToString() << " to i8*";
     return ss.str();
 }
+
+#pragma GCC diagnostic pop

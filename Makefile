@@ -107,9 +107,9 @@ clean:
 clean-test:
 	-@rm -rf $(OUTPUT_ASM) $(OUTPUT_LOG) $(OUTPUT_RES) $(OUTPUT_IR)  
 
-.PHONY: submmit
-submmit:
-		clang++ -std=c++17 -O2 -lm -L/extlibs -I/extlibs -lantlr4-runtime 
+.PHONY: submit
+submit:
+		clang++ -std=c++17 -O2 -lm -L/extlibs -I/extlibs -lantlr4-runtime \
 		./src/common.cpp \
 		./src/main.cpp \
 		./src/optimizer/pass_manager.cpp \

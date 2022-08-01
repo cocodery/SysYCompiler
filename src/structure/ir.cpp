@@ -1,5 +1,9 @@
 #include "ir.hh"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+#pragma GCC diagnostic ignored "-Wunused-result"
+
 int32_t tab_num = 1;
 
 Inst *BasicBlock::lastInst() {
@@ -548,3 +552,5 @@ void CompUnit::DebugGlobalTable() {
     // cout << "Global Init Block" << endl;
     global_scope->elements->resize(1);
 }
+
+#pragma GCC diagnostic pop

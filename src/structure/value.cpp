@@ -1,5 +1,8 @@
 #include "value.hh"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+
 CTValue::CTValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), float_value(fv) { }
 
 string CTValue::ToString() {
@@ -108,3 +111,5 @@ CTValue operator ! (CTValue rhs) {
         return CTValue(TypeFloat, !rhs.int_value, !rhs.float_value);
     }
 }
+
+#pragma GCC diagnostic pop

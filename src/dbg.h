@@ -1,3 +1,6 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-W#pragma-messages"
+
 /*****************************************************************************
 
                                 dbg(...) macro
@@ -807,3 +810,5 @@ auto identity(T&&, U&&... u) -> last_t<U...> {
 #endif  // DBG_MACRO_DISABLE
 
 #endif  // DBG_MACRO_DBG_H
+
+#pragma GCC diagnostic pop
