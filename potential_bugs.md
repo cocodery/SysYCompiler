@@ -1,6 +1,6 @@
--- CodeGen
+- CodeGen
 1. LiveUse生成：如果一个函数的参数没有在函数体内被使用，可能会出问题（因为LiveUse和LiveDef中都没有它，但是传参的时候要用到）
--- IR
+- IR
 1. LLIR_RET指令：对于如下代码段
 ```c
 float main(){
