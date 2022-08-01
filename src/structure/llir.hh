@@ -37,29 +37,20 @@ public:
             return false;
         }
     }
-    bool operator < (SRC src) {
-        if (ctv && src.ToVirtReg()) {
-            return true;
-        } else if (reg && src.ToCTValue()) {
-            return false;
-        } else {
-            DeclType type = getType();
-            if (type != src.getType()) {
-                return (type == TypeInt);
-            }
-            if (ctv && src.ToCTValue()) {
-                if (type == TypeInt) {
-                    return ctv->int_value < src.ToCTValue()->int_value;
-                } else {
-                    return ctv->float_value < src.ToCTValue()->float_value;
-                }
-            } else {
-                return reg->reg_id < src.ToVirtReg()->reg_id;
-            }
-        }
-    }
-    bool operator < (const SRC src) const {
-        return *this < src;
+    bool operator < (const SRC &other) const {
+        // null < ctv < reg
+
+        // at least one operand is null
+        if (!ctv && !reg) // self is null
+            return other.ctv || other.reg; // smaller if other is non-null
+        if (!other.ctv && !other.reg) // other is null
+            return false; // always equal or larger
+
+        // both operands are either ctv or reg
+        if (ctv) // self is ctv
+            return other.ctv ? (*ctv < *other.ctv) : true;
+        else // self is reg
+            return other.reg ? (reg->reg_id < other.reg->reg_id) : false;
     }
 };
 
