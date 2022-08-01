@@ -8,3 +8,5 @@ float main(){
 }
 ```
 生成的LLIR_RET指令中，`ret_inst->ret_value.ctv->int_value`的值是3，但`ret_inst->ret_value.ctv->float_value`的值是0
+- 前端
+1. 非const全局变量初始化优化
