@@ -96,9 +96,7 @@ int main(int argc, char *argv[]) {
     GenerateLiveInfo(ir);
     AllocateRegistersForAllFunctions(ir);
     
-    const string asmfile = ("../main.s");
-    
-    GenerateAssembly(asmfile, ir);
+    GenerateAssembly(output, ir);
 
     // -------------------
 
