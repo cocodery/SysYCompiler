@@ -162,6 +162,9 @@ void BasicBlock::replaceSRC(VirtReg *old_reg, SRC new_var) {
             phi_inst->replaceSRC(old_reg, new_var); 
         } else Case (LLIR_STORE, store_inst, inst) {
             store_inst->replaceSRC(old_reg, new_var);
+            store_inst->replaceDst(old_reg, new_var);
+        } else Case (LLIR_LOAD, load_inst, inst) {
+            load_inst->replaceSRC(old_reg, new_var);
         }
     }
 }
