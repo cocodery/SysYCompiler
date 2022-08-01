@@ -173,6 +173,21 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
         auto scalar_init = dynamic_cast<SysYParser::ScalarInitValContext *>(init_node);
         SRC reg = cur_scope->resolve(var_name, &cur_func->func_info);
         SRC src = scalar_init->exp()->accept(this);
+        if (src.getType() != reg.getType()) {
+            VirtReg *reg_cast = new VirtReg(var_idx++, reg.getType());
+            if (reg_cast->type.decl_type == TypeInt) {
+                LLIR_FPTOSI *fti_inst = new LLIR_FPTOSI(SRC(reg_cast), src);
+                cur_basicblock->basic_block.push_back(fti_inst);
+                src = SRC(reg_cast);
+            } else if (reg_cast->type.decl_type == TypeFloat) {
+                LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(reg_cast), src);
+                cur_basicblock->basic_block.push_back(itf_inst);
+                src = SRC(reg_cast);
+            } else {
+                // dbg(DeclTypeToStr(reg->type.decl_type) + ", UnExpected Function Return Type");
+                exit(EXIT_FAILURE);
+            }
+        }
         LLIR_STORE* store_inst = new LLIR_STORE(reg, src);
         cur_basicblock->basic_block.push_back(store_inst);
     } else {

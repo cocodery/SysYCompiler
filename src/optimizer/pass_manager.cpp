@@ -28,10 +28,9 @@ void PassManager::mem2reg() {
 }
 
 void PassManager::lvn() {
+    // dbg("run local-variable-number pass");
     for (auto &&function : functions) {
-        for (auto &&bb : function->all_blocks) {
-            LVN lvn;
-            lvn.ValueNumber(&bb->basic_block);
-        }
+        LVN lvn = LVN(function);
+        lvn.runLVN();
     }
 }

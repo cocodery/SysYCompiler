@@ -14,13 +14,13 @@ public:
     void excute_pass() {
         compDomInfo();
 
-        lvn();
-
         mem2reg();
+
+        lvn();
     }
     void compDomInfo();
 
-    void lvn();
-
     void mem2reg();
+
+    void lvn();
 };
