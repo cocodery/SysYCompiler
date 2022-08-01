@@ -14,7 +14,8 @@
 #include "frontend/ASTVisitor.hh"
 #include "optimizer/pass_manager.hh"
 #include "codegen/armv8/liveness_info.hh"
-#include "codegen/armv8/register_allocation.hh""
+#include "codegen/armv8/register_allocation.hh"
+#include "codegen/armv8/codegen.hh"
 
 // #include "optimizer/dag.hh"
 
@@ -94,6 +95,10 @@ int main(int argc, char *argv[]) {
 
     GenerateLiveInfo(ir);
     AllocateRegistersForAllFunctions(ir);
+    
+    const string asmfile = ("../main.s");
+    
+    GenerateAssembly(asmfile, ir);
 
     // -------------------
 
