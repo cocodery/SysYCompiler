@@ -32,7 +32,7 @@ void Function::CutRange(int32_t varIdx, int32_t rangeCut)
     auto &&it = LiveInterval.find(varIdx);
     if (it == LiveInterval.end())
     {
-        printf("%d range cut, cut:%d, " RED "exception: LiveInterval not previously defined\n" RESET, varIdx, rangeCut);
+        printf("var %d range cut, cut:%d, " RED "exception: LiveInterval not previously defined\n" RESET, varIdx, rangeCut);
         return;
     }
     auto &&range = it->second;
@@ -40,13 +40,13 @@ void Function::CutRange(int32_t varIdx, int32_t rangeCut)
     auto &&rangeEnd = range.second;
     if (rangeStart <= rangeCut && rangeCut <= rangeEnd)
     {
-        //printf("%d range cut, before:%d", varIdx, range.first);
+        //printf("var %d range cut, before:%d", varIdx, range.first);
         rangeStart = rangeCut;
         //printf(", after:%d\n", range.first);
     }
     else
     {
-        printf("%d range cut, cut:%d, " RED "exception: cut out of range\n" RESET, varIdx, rangeCut);
+        printf("var %d range cut, cut:%d, " RED "exception: cut out of range\n" RESET, varIdx, rangeCut);
     }
 }
 
@@ -336,14 +336,19 @@ void GenerateLiveInfo(const CompUnit &ir)
         {
             auto &&varIdx = liveIntervalInfoPair.first;
             auto &&varRange = liveIntervalInfoPair.second;
-            printf(FOUR_SPACES "Var %d: ", varIdx);
-            printf("[%d, %d] ", varRange.first, varRange.second);
+            if (varIdx >= 0)
+                printf("Loc %4d|", varIdx);
+            else
+                printf("Glo*%4d|", -varIdx);
+            printf("[%4d,%4d]|", varRange.first, varRange.second);
+            for (int32_t i = 0; i <= varRange.second; ++i)
+                putchar((i < varRange.first) ? ' ' : '-');
             printf("\n");
         }
     }
 
              
-    printf("-----GenerateLiveInfo   End----\n\n");
+    printf("-----GenerateLiveInfo End----\n\n");
 }
 
 #endif
