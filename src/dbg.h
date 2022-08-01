@@ -1,5 +1,5 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-W#pragma-messages"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-W#pragma-messages"
 
 /*****************************************************************************
 
@@ -811,4 +811,4 @@ auto identity(T&&, U&&... u) -> last_t<U...> {
 
 #endif  // DBG_MACRO_DBG_H
 
-#pragma GCC diagnostic pop
+#pragma clang diagnostic pop

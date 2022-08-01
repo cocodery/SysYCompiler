@@ -1,7 +1,7 @@
 #include "llir.hh"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wreturn-type"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreturn-type"
 
 string SRC::ToString() {
     if (ctv != nullptr) {
@@ -246,4 +246,4 @@ string LLIR_BC::ToString() {
     return ss.str();
 }
 
-#pragma GCC diagnostic pop
+#pragma clang diagnostic pop

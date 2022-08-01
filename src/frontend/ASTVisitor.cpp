@@ -1,7 +1,7 @@
 #include "ASTVisitor.hh"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wtautological-pointer-compare"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-pointer-compare"
 
 ASTVisitor::ASTVisitor(CompUnit &_ir) : ir(_ir) {
     have_main_func = false;
@@ -1625,4 +1625,4 @@ antlrcpp::Any ASTVisitor::visitConstExp(SysYParser::ConstExpContext *ctx) {
     return result;
 }
 
-#pragma GCC diagnostic pop
+#pragma clang diagnostic pop

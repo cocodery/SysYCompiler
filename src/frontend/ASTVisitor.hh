@@ -1,7 +1,7 @@
 #pragma once
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Winconsistent-missing-override"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
 
 #include <string>
 #include <iostream>
@@ -278,4 +278,4 @@ lOrExp
     virtual antlrcpp::Any visitConstExp(SysYParser::ConstExpContext *ctx) override;
 };
 
-#pragma GCC diagnostic pop
+#pragma clang diagnostic pop

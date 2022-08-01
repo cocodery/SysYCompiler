@@ -1,7 +1,7 @@
 #include "value.hh"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wreturn-type"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreturn-type"
 
 CTValue::CTValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), float_value(fv) { }
 
@@ -112,4 +112,4 @@ CTValue operator ! (CTValue rhs) {
     }
 }
 
-#pragma GCC diagnostic pop
+#pragma clang diagnostic pop

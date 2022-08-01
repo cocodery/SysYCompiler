@@ -1,8 +1,8 @@
 #include "ir.hh"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wreturn-type"
-#pragma GCC diagnostic ignored "-Wunused-result"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreturn-type"
+#pragma clang diagnostic ignored "-Wunused-result"
 
 int32_t tab_num = 1;
 
@@ -553,4 +553,4 @@ void CompUnit::DebugGlobalTable() {
     global_scope->elements->resize(1);
 }
 
-#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
