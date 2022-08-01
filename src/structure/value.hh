@@ -17,8 +17,14 @@ public:
 public:
     CTValue(DeclType t = TypeVoid, int32_t iv = 0, float fv = 0);
     string ToString();
-    bool operator == (CTValue &ctv) {
+    bool operator == (const CTValue &ctv) const {
         return type == ctv.type && int_value == ctv.int_value && float_value == ctv.float_value;
+    }
+    bool operator < (const CTValue &other) const {
+        if (type == other.type)
+            return (type == TypeInt) ? (int_value < other.int_value) : (float_value < other.float_value);
+        else
+            return type < other.type;
     }
 };
 
