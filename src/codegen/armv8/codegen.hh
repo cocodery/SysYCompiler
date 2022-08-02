@@ -4,6 +4,7 @@
 #include "common.hh"
 #include "ir.hh"
 #include "liveness_info.hh"
+#include "register_allocation.hh"
 
 #include <sstream>
 
@@ -15,9 +16,9 @@ using std::stringstream;
 
 #define GET_LOCAL_VAR_NAME(x, y) ((string(LOCA_VAR_PREFIX) + x + "_" + std::to_string(y)).c_str())
 
-#define R_REGISTER_IN_BRACKETS(x) ((string("[r") + std::to_string(x) + "]").c_str())
+#define GET_ALLOCATION_RESULT(x, y) (x->AllocationResult.at(y))
 
-#define UNUSED_REGISTER_1 r12
+#define R_REGISTER_IN_BRACKETS(x) ((string("[r") + std::to_string(x) + "]").c_str())
 
 class Param
 {
@@ -89,11 +90,13 @@ public:
     enum InstType {
         EMPTY, DOT_GLOBAL, DOT_DATA, DOT_TEXT, BX,
         MOV, MOVT, MOVW, STR, LDR,
-        ADD, SUB, DOT_WORD, DOT_SPACE, MUL
+        ADD, SUB, DOT_WORD, DOT_SPACE, MUL,
+        PUSH, POP, BL
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
-        "add", "sub", ".word", ".space", "mul"
+        "add", "sub", ".word", ".space", "mul",
+        "push", "pop", "bl"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -274,8 +277,9 @@ void AddAsmCodeComment(vector<AsmCode> &asm_insts, const string& comment, int in
     asm_insts.push_back(AsmCode(AsmInst::EMPTY, "", comment, indent));
 }
 
-void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &AllocationResult, const string& funcname, Inst *instPtr, int indent)
+void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *instPtr, int indent)
 {
+    auto &&funcname = funcPtr->func_info.func_name;
     Case (LLIR_RET, ret_inst, instPtr)
     {
         //cout << get_tabs() << ret_inst->ToString() << endl;
@@ -292,12 +296,17 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
             else // virtreg
                 asm_insts.push_back(AsmCode(AsmInst::MOV,
                     {   Param(r0),
-                        Param(AllocationResult.at(ret_inst->ret_value.reg->reg_id))},
+                        Param(GET_ALLOCATION_RESULT(funcPtr, ret_inst->ret_value.reg->reg_id))},
                     indent));
         }
-        asm_insts.push_back(AsmCode(AsmInst::BX,
-            {Param(lr)},
-            indent));
+        if (!funcPtr->called_funcs.empty())
+            asm_insts.push_back(AsmCode(AsmInst::POP,
+                {Param(Param::Str, "{pc}")},
+                indent));
+        else
+            asm_insts.push_back(AsmCode(AsmInst::BX,
+                {Param(lr)},
+                indent));
     }
     Case (LLIR_STORE, store_inst, instPtr)
     {
@@ -308,7 +317,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
         if (store_inst->dst.reg->global) // if global add ldr inst
         {
             asm_insts.push_back(AsmCode(AsmInst::LDR,
-                {   Param(AllocationResult.at(IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg))),
+                {   Param(GET_ALLOCATION_RESULT(funcPtr, IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg))),
                     Param(Param::Addr, GET_GLOBAL_VAR_NAME(store_inst->dst.reg->reg_id))},
                 indent));
         }
@@ -320,13 +329,13 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
                 AddAsmCodeMoveIntToRegister(asm_insts, UNUSED_REGISTER_1, FLOAT_TO_INT(store_inst->src.ctv->float_value), indent);
             asm_insts.push_back(AsmCode(AsmInst::STR,
                 {   Param(UNUSED_REGISTER_1),
-                    Param(AllocationResult.at(IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg)))},
+                    Param(GET_ALLOCATION_RESULT(funcPtr, IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg)))},
                 indent));
         }
         else // virtreg
             asm_insts.push_back(AsmCode(AsmInst::STR,
-                {   Param(AllocationResult.at(store_inst->src.reg->reg_id)),
-                    Param(AllocationResult.at(IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg)))},
+                {   Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->src.reg->reg_id)),
+                    Param(GET_ALLOCATION_RESULT(funcPtr, IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg)))},
                 indent));
     }
     Case (LLIR_LOAD, load_inst, instPtr)
@@ -338,18 +347,18 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
         if (load_inst->src.reg->global) // if global use ldr rx, =y
         {
             asm_insts.push_back(AsmCode(AsmInst::LDR,
-                {   Param(AllocationResult.at(load_inst->dst.reg->reg_id)),
+                {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
                     Param(Param::Addr, GET_GLOBAL_VAR_NAME(load_inst->src.reg->reg_id))},
                 indent));
             asm_insts.push_back(AsmCode(AsmInst::LDR,
-                {   Param(AllocationResult.at(load_inst->dst.reg->reg_id)),
-                    Param(Param::Str, R_REGISTER_IN_BRACKETS(AllocationResult.at(load_inst->dst.reg->reg_id)))},
+                {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
+                    Param(Param::Str, R_REGISTER_IN_BRACKETS(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)))},
                 indent));
         }
         else // local
             asm_insts.push_back(AsmCode(AsmInst::LDR,
-                {   Param(AllocationResult.at(load_inst->dst.reg->reg_id)),
-                    Param(AllocationResult.at(load_inst->src.reg->reg_id))},
+                {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
+                    Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->src.reg->reg_id))},
                 indent));
     }
     Case (LLIR_BIN, bin_inst, instPtr)
@@ -362,11 +371,11 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
         if (bin_inst->src1.ctv)
             src1 = Param(bin_inst->src1.ctv->int_value);
         else
-            src1 = Param(AllocationResult.at(bin_inst->src1.reg->reg_id));
+            src1 = Param(GET_ALLOCATION_RESULT(funcPtr, bin_inst->src1.reg->reg_id));
         if (bin_inst->src2.ctv)
             src2 = Param(bin_inst->src2.ctv->int_value);
         else
-            src2 = Param(AllocationResult.at(bin_inst->src2.reg->reg_id));
+            src2 = Param(GET_ALLOCATION_RESULT(funcPtr, bin_inst->src2.reg->reg_id));
         
         switch(bin_inst->op)
         {
@@ -375,21 +384,21 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
                 std::swap(src1, src2);
             if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int && abs(src1.val.i) < abs(src2.val.i))
                 std::swap(src1, src2);
-            AddAsmCodeAddSub(asm_insts, AsmInst::ADD, AllocationResult.at(bin_inst->dst.reg->reg_id), src1, src2, indent);
+            AddAsmCodeAddSub(asm_insts, AsmInst::ADD, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
             break;
         case BinOp::SUB:
             if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int && abs(src1.val.i) < abs(src2.val.i)) {
                 std::swap(src1, src2);
                 src1.invert();
                 src2.invert(); }
-            AddAsmCodeAddSub(asm_insts, AsmInst::SUB, AllocationResult.at(bin_inst->dst.reg->reg_id), src1, src2, indent);
+            AddAsmCodeAddSub(asm_insts, AsmInst::SUB, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
             break;
         case BinOp::MUL:
             if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg)
                 std::swap(src1, src2);
             if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int && abs(src1.val.i) < abs(src2.val.i))
                 std::swap(src1, src2);
-            AddAsmCodeMul(asm_insts, AsmInst::MUL, AllocationResult.at(bin_inst->dst.reg->reg_id), src1, src2, indent);
+            AddAsmCodeMul(asm_insts, AsmInst::MUL, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
             break;
         case BinOp::DIV:
             break;
@@ -404,7 +413,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
 
         // dst = malloc(something);
         asm_insts.push_back(AsmCode(AsmInst::LDR,
-            {   Param(AllocationResult.at(alloc_inst->reg.reg->reg_id)),
+            {   Param(GET_ALLOCATION_RESULT(funcPtr, alloc_inst->reg.reg->reg_id)),
                 Param(Param::Addr, GET_LOCAL_VAR_NAME(funcname, alloc_inst->reg.reg->reg_id))},
             indent));
     }
@@ -416,13 +425,13 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
         // dst = *(src + off)
         if (gep_inst->src.reg->global) // if global use ldr rx, =y
             asm_insts.push_back(AsmCode(AsmInst::LDR,
-                {   Param(AllocationResult.at(gep_inst->dst.reg->reg_id)),
+                {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
                     Param(Param::Addr, GET_GLOBAL_VAR_NAME(gep_inst->src.reg->reg_id))},
                 indent));
         else // local
             asm_insts.push_back(AsmCode(AsmInst::MOV,
-            {   Param(AllocationResult.at(gep_inst->dst.reg->reg_id)),
-                Param(AllocationResult.at(gep_inst->src.reg->reg_id))},
+            {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
+                Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id))},
             indent));
 
         int32_t size_shift_bits = 2;
@@ -431,21 +440,64 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
             AddAsmCodeAddSub(
                 asm_insts,
                 AsmInst::ADD,
-                AllocationResult.at(gep_inst->dst.reg->reg_id),
-                Param(AllocationResult.at(gep_inst->dst.reg->reg_id)),
+                GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id),
+                Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
                 Param(gep_inst->off.ctv->int_value << size_shift_bits),
                 indent);
         else // offset is reg
             asm_insts.push_back(AsmCode(AsmInst::ADD,
-            {   Param(AllocationResult.at(gep_inst->dst.reg->reg_id)),
-                Param(AllocationResult.at(gep_inst->dst.reg->reg_id)),
-                Param(AllocationResult.at(gep_inst->off.reg->reg_id)),
+            {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
+                Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
+                Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->off.reg->reg_id)),
                 Param(Param::Str, (string("lsl #") + std::to_string(size_shift_bits)).c_str())},
             indent));
+    }
+    Case (LLIR_CALL, call_inst, instPtr)
+    {
+        //cout << get_tabs() << call_inst->ToString() << endl;
+        AddAsmCodeComment(asm_insts, call_inst->ToString(), indent);
+    
+        // [dst = ] func(arg1, arg2, ...)
+        // save regs
+        asm_insts.push_back(AsmCode(AsmInst::PUSH, {Param(Param::Str, REGS_TO_STACK)}, indent));
+
+        // move args
+            // TODO: more than 4 regs
+        for (size_t i = 0, siz = call_inst->args.size(); i < std::min(siz, (size_t)4); ++i)
+        {
+            auto &&arg = call_inst->args[i];
+            if (arg.ctv) // arg is const val
+            {
+                if (arg.ctv->type == TypeInt) // int
+                    AddAsmCodeMoveIntToRegister(asm_insts, REGs(i), arg.ctv->int_value, indent);
+                // TODO: float
+            }
+            else // arg is virtreg
+                asm_insts.push_back(AsmCode(AsmInst::MOV, 
+                {   Param(REGs(i)),
+                    Param(GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id))},
+                    indent));
+        }
         
-        //IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->off.reg);
-        //IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->src.reg);
-        //dst_regid = IF_GLOBAL_RETURN_NEG_ID(gep_inst->dst.reg);
+        // func call
+        asm_insts.push_back(AsmCode(AsmInst::BL, 
+            {Param(Param::Str, call_inst->func_info->func_name.c_str())},
+            indent));
+
+        // recover regs
+        asm_insts.push_back(AsmCode(AsmInst::POP, {Param(Param::Str, REGS_TO_STACK)}, indent));
+
+        // save return value
+        if (call_inst->func_info->return_type != TypeVoid)
+        {
+            // save to global
+                // TODO
+            // save to local
+            asm_insts.push_back(AsmCode(AsmInst::MOV, 
+            {   Param(GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id)),
+                Param(r0)},
+            indent));
+        }
     }
     /*Case (LLIR_BR, br_inst, instPtr)
     {
@@ -483,16 +535,6 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
         IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src1.reg);
         IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src2.reg);
         dst_regid = IF_GLOBAL_RETURN_NEG_ID(fcmp_inst->dst.reg);
-    }
-    Case (LLIR_CALL, call_inst, instPtr)
-    {
-        //cout << get_tabs() << call_inst->ToString() << endl;
-    
-        // [dst = ] func(arg1, arg2, ...)
-        for (auto &&arg : call_inst->args)
-            IF_IS_REG_THEN_PUSH_BACK(src_regids, arg.reg);
-        if (call_inst->func_info->return_type != TypeVoid)
-            dst_regid = IF_GLOBAL_RETURN_NEG_ID(call_inst->dst.reg);
     }
     Case (LLIR_ZEXT, zext_inst, instPtr)
     {
@@ -619,6 +661,11 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
     {
         int indent = 0;
         asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name, "", indent));
+
+        // if this function called other functions, push the lr register
+        if (!funcPtr->called_funcs.empty())
+            asm_insts.push_back(AsmCode(AsmInst::PUSH, {Param(Param::Str, "{lr}")}, 1));
+        
         for (auto &&bbPtr : funcPtr->all_blocks)
         {
             if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
@@ -629,7 +676,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
             for (auto &&instPtr : bbPtr->basic_block)
             {
                 ++indent;
-                AddAsmCodeFromLLIR(asm_insts, funcPtr->AllocationResult, funcPtr->func_info.func_name, instPtr, indent);
+                AddAsmCodeFromLLIR(asm_insts, funcPtr, instPtr, indent);
                 --indent;
             }
         }

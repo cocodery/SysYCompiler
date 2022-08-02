@@ -8,6 +8,12 @@
 
 // float: s0 tp s31 are generally usable
 
+#define UNUSED_REGISTER_1 (r0)
+
+#define REGS_TO_STACK ("{r1-r12}")
+
+#define CLAIM_AVAIL_REGS set<REGs> availRegs{r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12};
+
 #include "common.hh"
 #include "ir.hh"
 
@@ -16,7 +22,7 @@ void AllocateRegistersForFunction(Function &func)
     // TODO : SPILL
     printf("In Function \"%s\":\n", func.func_info.func_name.c_str());
     
-    set<REGs> availRegs{r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11};
+    CLAIM_AVAIL_REGS
     //set<REGs> availRegs{r0,  r1};
     std::list<int32_t> activeIntervals;
     
