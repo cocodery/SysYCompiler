@@ -422,11 +422,16 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
         AddAsmCodeComment(asm_insts, gep_inst->ToString(), indent);
         
         // dst = *(src + off)
-
-        asm_insts.push_back(AsmCode(AsmInst::MOV,
-        {   Param(AllocationResult.at(gep_inst->dst.reg->reg_id)),
-            Param(AllocationResult.at(gep_inst->src.reg->reg_id))},
-        indent));
+        if (gep_inst->src.reg->global) // if global use ldr rx, =y
+            asm_insts.push_back(AsmCode(AsmInst::LDR,
+                {   Param(AllocationResult.at(gep_inst->dst.reg->reg_id)),
+                    Param(Param::Addr, GET_GLOBAL_VAR_NAME(gep_inst->src.reg->reg_id))},
+                indent));
+        else // local
+            asm_insts.push_back(AsmCode(AsmInst::MOV,
+            {   Param(AllocationResult.at(gep_inst->dst.reg->reg_id)),
+                Param(AllocationResult.at(gep_inst->src.reg->reg_id))},
+            indent));
 
         int32_t size_shift_bits = 2;
 
@@ -567,11 +572,25 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         }
         else // array
         {
-            if (varPtr->type.decl_type == TypeInt) {
-                params.push_back(Param(Param::Str, std::to_string(varPtr->type.elements_number()).c_str()));
-                comment = "int "; }
-            comment += varName + "[];";
-            asm_insts.push_back(AsmCode(AsmInst::DOT_SPACE, GET_GLOBAL_VAR_NAME(varPtr->var_idx), params, comment, 1));
+            if (varPtr->type.is_const) // const array
+            {
+                if (varPtr->type.decl_type == TypeInt)
+                {
+                    for (auto &&elem : varPtr->int_list)
+                        params.push_back(Param(Param::Str, std::to_string(elem).c_str()));
+                    comment = "int ";
+                }
+                comment += varName + "[];";
+                asm_insts.push_back(AsmCode(AsmInst::DOT_WORD, GET_GLOBAL_VAR_NAME(varPtr->var_idx), params, comment, 1));
+            }   
+            else // non const array
+            {
+                if (varPtr->type.decl_type == TypeInt) {
+                    params.push_back(Param(Param::Str, std::to_string(varPtr->type.elements_number()).c_str()));
+                    comment = "int "; }
+                comment += varName + "[];";
+                asm_insts.push_back(AsmCode(AsmInst::DOT_SPACE, GET_GLOBAL_VAR_NAME(varPtr->var_idx), params, comment, 1));
+            }
         }
         // TODO: float
     }
