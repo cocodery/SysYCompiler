@@ -6,6 +6,7 @@
 #define FOUR_SPACES "    "
 #define EIGHT_SPACES "        "
 #define GLOB_VAR_PREFIX "global_var_"
+#define LOCA_VAR_PREFIX "local_arr_"
 #define RESET   "\033[0m"
 #define BLACK   "\033[30m"      /* Black */
 #define RED     "\033[31m"      /* Red */
