@@ -241,11 +241,11 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     }
 }
 
-void AddAsmCodeMul(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r, const Param &src1, const Param &src2, int indent)
+void AddAsmCodeMul(vector<AsmCode> &asm_insts, REGs r, const Param &src1, const Param &src2, int indent)
 {
     // assumes src2 is smaller (when possible, e.g. mul)
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
-        asm_insts.push_back(AsmCode(_i_typ,
+        asm_insts.push_back(AsmCode(AsmInst::MUL,
             {   Param(r),
                 src1,
                 src2},
@@ -253,7 +253,7 @@ void AddAsmCodeMul(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r,
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
         AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
-        asm_insts.push_back(AsmCode(_i_typ,
+        asm_insts.push_back(AsmCode(AsmInst::MUL,
             {   Param(r),
                 Param(r),
                 src1},
@@ -262,7 +262,7 @@ void AddAsmCodeMul(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r,
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
     {
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
-        asm_insts.push_back(AsmCode(_i_typ,
+        asm_insts.push_back(AsmCode(AsmInst::MUL,
             {   Param(r),
                 Param(r),
                 src2},
@@ -270,6 +270,66 @@ void AddAsmCodeMul(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r,
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i * src2.val.i, indent);
+}
+
+void AddAsmCodeDiv(vector<AsmCode> &asm_insts, REGs r, const Param &src1, const Param &src2, int indent)
+{
+    /*if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
+        asm_insts.push_back(AsmCode(AsmInst::MUL,
+            {   Param(r),
+                src1,
+                src2},
+            indent));
+    else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
+    {
+        AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
+        asm_insts.push_back(AsmCode(AsmInst::MUL,
+            {   Param(r),
+                Param(r),
+                src1},
+            indent));
+    }
+    else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
+    {
+        AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
+        asm_insts.push_back(AsmCode(AsmInst::MUL,
+            {   Param(r),
+                Param(r),
+                src2},
+            indent));
+    }*/ if (0) ;
+    else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
+        AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i / src2.val.i, indent);
+}
+
+void AddAsmCodeRem(vector<AsmCode> &asm_insts, REGs r, const Param &src1, const Param &src2, int indent)
+{
+    /*if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
+        asm_insts.push_back(AsmCode(AsmInst::MUL,
+            {   Param(r),
+                src1,
+                src2},
+            indent));
+    else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
+    {
+        AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
+        asm_insts.push_back(AsmCode(AsmInst::MUL,
+            {   Param(r),
+                Param(r),
+                src1},
+            indent));
+    }
+    else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
+    {
+        AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
+        asm_insts.push_back(AsmCode(AsmInst::MUL,
+            {   Param(r),
+                Param(r),
+                src2},
+            indent));
+    }*/ if (0) ;
+    else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
+        AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i % src2.val.i, indent);
 }
 
 void AddAsmCodeComment(vector<AsmCode> &asm_insts, const string& comment, int indent)
@@ -398,9 +458,13 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 std::swap(src1, src2);
             if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int && abs(src1.val.i) < abs(src2.val.i))
                 std::swap(src1, src2);
-            AddAsmCodeMul(asm_insts, AsmInst::MUL, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
+            AddAsmCodeMul(asm_insts, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
             break;
         case BinOp::DIV:
+            AddAsmCodeDiv(asm_insts, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
+            break;
+        case BinOp::REM:
+            AddAsmCodeRem(asm_insts, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
             break;
         default:
             break;
