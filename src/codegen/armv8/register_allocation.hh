@@ -16,14 +16,33 @@ void AllocateRegistersForFunction(Function &func)
     // TODO : SPILL
     printf("In Function \"%s\":\n", func.func_info.func_name.c_str());
     
-    set<REGs> availRegs{r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12};
+    set<REGs> availRegs{r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11};
     //set<REGs> availRegs{r0,  r1};
     std::list<int32_t> activeIntervals;
+    
+    // 给参数0到3分配寄存器
+    printf(" - pre allocation\n");
+    for (int i = 0; i <= 3; ++i)
+    {
+        // 不是参数或者这个参数没有被使用，跳过分配
+        if (i >= func.func_info.func_args.size() || 
+        func.LiveInterval.find(i) == func.LiveInterval.end())
+            continue;
+        func.AllocationResult.insert(make_pair(i, (REGs)i));
+        availRegs.erase((REGs)i);
+        activeIntervals.push_back(i);
+        printf(FOUR_SPACES "var: %d, reg %d\n", i, i);
+    }
+    printf(" ----\n");
 
     for (auto &&interval : func.LiveInterval)
     {
         auto &&varIndex = interval.first;
         auto &&varRange = interval.second;
+
+        // 已分配，跳过
+        if (func.AllocationResult.find(varIndex) != func.AllocationResult.end())
+            continue;
 
         // 删除旧变量的分配
         for (auto &&activeIntervalIndexIt = activeIntervals.begin();

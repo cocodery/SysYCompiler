@@ -17,6 +17,8 @@ using std::stringstream;
 
 #define R_REGISTER_IN_BRACKETS(x) ((string("[r") + std::to_string(x) + "]").c_str())
 
+#define UNUSED_REGISTER_1 r12
+
 class Param
 {
 public:
@@ -208,10 +210,10 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
                     src1,
                     src2},
                 indent));
-        else // src2 is too big to be packed into a single instruction
+        else // src2 is too big to be packed into a single instruction, convert sub to add
         {
-            AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
-            asm_insts.push_back(AsmCode(_i_typ,
+            AddAsmCodeMoveIntToRegister(asm_insts, r, ((_i_typ == AsmInst::ADD) ? src2.val.i : -src2.val.i), indent);
+            asm_insts.push_back(AsmCode(AsmInst::ADD,
                 {   Param(r),
                     Param(r),
                     src1},
@@ -221,21 +223,11 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg, should be sub only
     {
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
-        if (abs(src2.val.i) <= 256) // src2 is small enough
-            asm_insts.push_back(AsmCode(_i_typ,
-                {   Param(r),
-                    Param(r),
-                    src2},
-                indent));
-        else // src2 is too big to be packed into a single instruction
-        {
-            AddAsmCodeMoveIntToRegister(asm_insts, r0, src2.val.i, indent);
-            asm_insts.push_back(AsmCode(_i_typ,
-                {   Param(r),
-                    Param(r),
-                    Param(r0)},
-                indent));
-        }
+        asm_insts.push_back(AsmCode(_i_typ,
+            {   Param(r),
+                Param(r),
+                src2},
+            indent));
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
     {
@@ -323,11 +315,11 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
         if (store_inst->src.ctv) // ctvalue
         {
             if (store_inst->src.ctv->type == TypeInt) // int
-                AddAsmCodeMoveIntToRegister(asm_insts, r0, store_inst->src.ctv->int_value, indent);
+                AddAsmCodeMoveIntToRegister(asm_insts, UNUSED_REGISTER_1, store_inst->src.ctv->int_value, indent);
             else // float
-                AddAsmCodeMoveIntToRegister(asm_insts, r0, FLOAT_TO_INT(store_inst->src.ctv->float_value), indent);
+                AddAsmCodeMoveIntToRegister(asm_insts, UNUSED_REGISTER_1, FLOAT_TO_INT(store_inst->src.ctv->float_value), indent);
             asm_insts.push_back(AsmCode(AsmInst::STR,
-                {   Param(r0),
+                {   Param(UNUSED_REGISTER_1),
                     Param(AllocationResult.at(IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg)))},
                 indent));
         }
