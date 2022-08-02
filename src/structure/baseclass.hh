@@ -30,7 +30,7 @@ public:
         else ss << "%r" << reg_id;
         return ss.str();
     }
-    bool operator == (VirtReg &rhs) const {
-        return (reg_id == rhs.reg_id) && (global == rhs.global);
+    bool operator == (const VirtReg &rhs) const {
+        return (reg_id == rhs.reg_id) && (global == rhs.global) && (type == rhs.type);
     }
 };

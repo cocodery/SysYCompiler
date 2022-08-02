@@ -162,6 +162,9 @@ void BasicBlock::replaceSRC(VirtReg *old_reg, SRC new_var) {
             phi_inst->replaceSRC(old_reg, new_var); 
         } else Case (LLIR_STORE, store_inst, inst) {
             store_inst->replaceSRC(old_reg, new_var);
+            store_inst->replaceDst(old_reg, new_var);
+        } else Case (LLIR_LOAD, load_inst, inst) {
+            load_inst->replaceSRC(old_reg, new_var);
         }
     }
 }
@@ -382,7 +385,25 @@ void Function::initBBDF() {
     // }
 }
 
-void Function::replaceSRCs(VirtReg *old_reg, SRC new_var) {
+void Function::replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var) {
+    // for (auto &&block : all_blocks) {
+    //     block->dirty = false;
+    // }
+    // queue<BasicBlock *> queueBlocks;
+    // queueBlocks.push(block);
+    // while(!queueBlocks.empty()) {
+    //     BasicBlock *front = queueBlocks.front();
+    //     queueBlocks.pop();
+    //     if (front->dirty) {
+    //         continue;
+    //     }
+    //     front->dirty = true;
+    //     front->replaceSRC(old_reg, new_var);
+    //     for (auto &&succ : block->succs) {
+    //         queueBlocks.push(succ.second);
+    //     }
+    // }
+    
     for (auto &&block : all_blocks) {
         block->replaceSRC(old_reg, new_var);
     }

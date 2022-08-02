@@ -84,7 +84,7 @@ public:
     void buildDom();
     void buildIDom();
     void initBBDF();
-    void replaceSRCs(VirtReg *old_reg, SRC new_var);
+    void replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var);
 
     // codegen
     // 生成LiveInterval
