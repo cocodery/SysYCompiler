@@ -85,13 +85,11 @@ public:
     enum InstType {
         EMPTY, DOT_GLOBAL, DOT_DATA, DOT_TEXT, BX,
         MOV, MOVT, MOVW, STR, LDR,
-        ADD, SUB, DOT_WORD, DOT_SPACE, MUL,
-        SDIV
+        ADD, SUB, DOT_WORD, DOT_SPACE, MUL
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
-        "add", "sub", ".word", ".space", "mul",
-        "sdiv"
+        "add", "sub", ".word", ".space", "mul"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -191,7 +189,7 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
             indent));
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
-        if (src2.val.i >= -256 && src2.val.i <= 256) // src2 is small enough
+        if (abs(src2.val.i) <= 256) // src2 is small enough
             asm_insts.push_back(AsmCode(_i_typ,
                 {   Param(r),
                     src1,
@@ -210,7 +208,7 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg, should be sub only
     {
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
-        if (src2.val.i >= -256 && src2.val.i <= 256) // src2 is small enough
+        if (abs(src2.val.i) <= 256) // src2 is small enough
             asm_insts.push_back(AsmCode(_i_typ,
                 {   Param(r),
                     Param(r),
@@ -227,27 +225,13 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
         }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
-    {
-        AddAsmCodeMoveIntToRegister(asm_insts, r0, src1.val.i, indent);
-        if (src2.val.i >= -256 && src2.val.i <= 256) // src2 is small enough
-            asm_insts.push_back(AsmCode(_i_typ,
-                {   Param(r),
-                    Param(r0),
-                    src2},
-                indent));
-        else // src2 is too big to be packed into a single instruction
-        {
-            AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
-            asm_insts.push_back(AsmCode(_i_typ,
-                {   Param(r),
-                    Param(r),
-                    Param(r0)},
-                indent));
-        }
-    }
+        if (_i_typ == AsmInst::ADD)
+            AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i + src2.val.i, indent);
+        else
+            AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i - src2.val.i, indent);
 }
 
-void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r, const Param &src1, const Param &src2, int indent)
+void AddAsmCodeMul(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r, const Param &src1, const Param &src2, int indent)
 {
     // assumes src2 is smaller (when possible, e.g. mul)
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
@@ -275,15 +259,7 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
             indent));
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
-    {
-        AddAsmCodeMoveIntToRegister(asm_insts, r0, src1.val.i, indent);
-        AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
-        asm_insts.push_back(AsmCode(_i_typ,
-            {   Param(r),
-                Param(r),
-                Param(r0)},
-            indent));
-    }
+        AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i * src2.val.i, indent);
 }
 
 void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &AllocationResult, Inst *instPtr, int indent)
@@ -397,10 +373,10 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
                 std::swap(src1, src2);
             if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int && abs(src1.val.i) < abs(src2.val.i))
                 std::swap(src1, src2);
-            AddAsmCodeMulDiv(asm_insts, AsmInst::MUL, AllocationResult.at(bin_inst->dst.reg->reg_id), src1, src2, indent);
+            AddAsmCodeMul(asm_insts, AsmInst::MUL, AllocationResult.at(bin_inst->dst.reg->reg_id), src1, src2, indent);
             break;
         case BinOp::DIV:
-            AddAsmCodeMulDiv(asm_insts, AsmInst::SDIV, AllocationResult.at(bin_inst->dst.reg->reg_id), src1, src2, indent);
+            break;
         default:
             break;
         }
