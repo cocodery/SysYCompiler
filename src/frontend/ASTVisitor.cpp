@@ -81,7 +81,7 @@ void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarTy
     cur_basicblock->basic_block.push_back(gep_inst1);
     for (auto child : node->initVal()) {
         if (auto scalar_node = dynamic_cast<SysYParser::ScalarInitValContext *>(child); scalar_node != nullptr) {
-            VirtReg *ptr2 = new VirtReg(var_idx++, VarType(ptr1->type.decl_type));
+            VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, ptr1->type.decl_type));
             LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
             cur_basicblock->basic_block.push_back(gep_inst2);
             SRC value = scalar_node->exp()->accept(this);
@@ -117,7 +117,7 @@ void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarTy
         zero_ctv = zero_float;
     }
     while (cnt < total_size) {
-        VirtReg *ptr2 = new VirtReg(var_idx++, VarType(ptr1->type.decl_type));
+        VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, ptr1->type.decl_type));
         LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
         cur_basicblock->basic_block.push_back(gep_inst2);
         LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), zero_ctv);
@@ -153,7 +153,7 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
                 cur_basicblock->basic_block.push_back(store_inst);
             }
             */
-            VirtReg *ptr2 = new VirtReg(var_idx++, VarType(type));
+            VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, type));
             LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, 0, 0)), VarType(type));
             cur_basicblock->basic_block.push_back(gep_inst2);
             VirtReg *ptr_i8 = new VirtReg(var_idx++, VarType(false, true, false, TypeByte));
@@ -210,7 +210,7 @@ void ASTVisitor::local_const_list_init(VarPair var_pair) {
     cur_basicblock->basic_block.push_back(gep_inst1);
     int32_t idx = 0;
     for (idx = 0; idx < var_pair.second->int_list.size(); ++idx) {
-        VirtReg *ptr2 = new VirtReg(var_idx++, VarType(ptr1->type.decl_type));
+        VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, ptr1->type.decl_type));
         LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, idx, idx)), VarType(ptr1->type.decl_type));
         cur_basicblock->basic_block.push_back(gep_inst2);
         SRC value = SRC(new CTValue(var.decl_type, var_pair.second->int_list[idx], var_pair.second->float_list[idx]));

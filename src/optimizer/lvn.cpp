@@ -27,7 +27,7 @@ void LVN::valueNumber(BasicBlock *block) {
                 lvnMapNodes[mapIndex].insert({bin_inst->dst, node});
             } else {
                 assert(bin_inst->dst.ToVirtReg());
-                block->replaceSRC(bin_inst->dst.ToVirtReg(), new_value);
+                function->replaceSRCs(block, bin_inst->dst.ToVirtReg(), new_value);
                 iter = block->basic_block.erase(iter) - 1;
             }
         } else Case (LLIR_FBIN, fbin_inst, inst) {
@@ -38,7 +38,7 @@ void LVN::valueNumber(BasicBlock *block) {
                 lvnMapNodes[mapIndex].insert({fbin_inst->dst, node});
             } else {
                 assert(fbin_inst->dst.ToVirtReg());
-                block->replaceSRC(fbin_inst->dst.ToVirtReg(), new_value);
+                function->replaceSRCs(block, fbin_inst->dst.ToVirtReg(), new_value);
                 iter = block->basic_block.erase(iter) - 1;
             }
         } else Case (LLIR_ICMP, icmp_inst, inst) {
@@ -49,7 +49,7 @@ void LVN::valueNumber(BasicBlock *block) {
                 lvnMapNodes[mapIndex].insert({icmp_inst->dst, node});
             } else {
                 assert(icmp_inst->dst.ToVirtReg());
-                block->replaceSRC(icmp_inst->dst.ToVirtReg(), new_value);
+                function->replaceSRCs(block, icmp_inst->dst.ToVirtReg(), new_value);
                 iter = block->basic_block.erase(iter) - 1;
             }
         } else Case (LLIR_FCMP, fcmp_inst, inst) {
@@ -60,7 +60,7 @@ void LVN::valueNumber(BasicBlock *block) {
                 lvnMapNodes[mapIndex].insert({fcmp_inst->dst, node});
             } else {
                 assert(fcmp_inst->dst.ToVirtReg());
-                block->replaceSRC(fcmp_inst->dst.ToVirtReg(), new_value);
+                function->replaceSRCs(block, fcmp_inst->dst.ToVirtReg(), new_value);
                 iter = block->basic_block.erase(iter) - 1;
             }
         } else Case (LLIR_GEP, gep_inst, inst) {
@@ -71,7 +71,7 @@ void LVN::valueNumber(BasicBlock *block) {
                 lvnMapNodes[mapIndex].insert({gep_inst->dst, node});
             } else {
                 assert(gep_inst->dst.ToVirtReg());
-                block->replaceSRC(gep_inst->dst.ToVirtReg(), new_value);
+                function->replaceSRCs(block, gep_inst->dst.ToVirtReg(), new_value);
                 iter = block->basic_block.erase(iter) - 1;
             }
         }

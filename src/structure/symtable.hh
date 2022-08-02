@@ -37,6 +37,9 @@ public:
     VarType move_down();
     string printVarTypeForAlc();
     string printVarTypeForArg();
+    bool operator == (const VarType &rhs) const {
+        return (decl_type == rhs.decl_type) && (is_array == rhs.is_array);
+    }
 };
 
 class Variable {

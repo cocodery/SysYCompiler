@@ -182,7 +182,7 @@ void Mem2Reg::runMem2Reg() {
                 auto &&alloca_inst = getAllocaInst(load_src);
                 if (alloca_inst != nullptr) {
                     int allocaIndex = allocaLoopup[alloca_inst];
-                    function->replaceSRCs(load_inst->dst.reg, cur_values[allocaIndex]);
+                    function->replaceSRCs(data->block, load_inst->dst.reg, cur_values[allocaIndex]);
                     inst_iter = data_bb.erase(inst_iter) - 1;
                 }
             } else Case (LLIR_STORE, store_inst, inst) {
