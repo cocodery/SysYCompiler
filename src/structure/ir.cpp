@@ -385,7 +385,25 @@ void Function::initBBDF() {
     // }
 }
 
-void Function::replaceSRCs(VirtReg *old_reg, SRC new_var) {
+void Function::replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var) {
+    // for (auto &&block : all_blocks) {
+    //     block->dirty = false;
+    // }
+    // queue<BasicBlock *> queueBlocks;
+    // queueBlocks.push(block);
+    // while(!queueBlocks.empty()) {
+    //     BasicBlock *front = queueBlocks.front();
+    //     queueBlocks.pop();
+    //     if (front->dirty) {
+    //         continue;
+    //     }
+    //     front->dirty = true;
+    //     front->replaceSRC(old_reg, new_var);
+    //     for (auto &&succ : block->succs) {
+    //         queueBlocks.push(succ.second);
+    //     }
+    // }
+    
     for (auto &&block : all_blocks) {
         block->replaceSRC(old_reg, new_var);
     }
