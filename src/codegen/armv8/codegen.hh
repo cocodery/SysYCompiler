@@ -87,11 +87,13 @@ public:
     enum InstType {
         EMPTY, DOT_GLOBAL, DOT_DATA, DOT_TEXT, BX,
         MOV, MOVT, MOVW, STR, LDR,
-        ADD, SUB, DOT_WORD, DOT_SPACE, MUL
+        ADD, SUB, DOT_WORD, DOT_SPACE, MUL,
+        DOT_BALIGN
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
-        "add", "sub", ".word", ".space", "mul"
+        "add", "sub", ".word", ".space", "mul",
+        ".balign"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -443,7 +445,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, map<int32_t, REGs> &Allocati
             {   Param(AllocationResult.at(gep_inst->dst.reg->reg_id)),
                 Param(AllocationResult.at(gep_inst->dst.reg->reg_id)),
                 Param(AllocationResult.at(gep_inst->off.reg->reg_id)),
-                Param(Param::Str, (string("lsl #") + std::to_string(size_shift_bits)).c_str())},
+                Param(Param::Str, (string("LSL #") + std::to_string(size_shift_bits)).c_str())},
             indent));
         
         //IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->off.reg);
@@ -547,6 +549,8 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
     vector<AsmCode> asm_insts;
 
     asm_insts.push_back(AsmCode(AsmInst::DOT_DATA));
+
+    asm_insts.push_back(AsmCode(AsmInst::DOT_BALIGN, {Param(Param::Str, std::to_string(4).c_str())}));
 
     // global vars
     for (auto &&varPair : ir.global_scope->local_table->var_table)
