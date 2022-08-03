@@ -78,6 +78,7 @@ public:
     // codegen
     map<int32_t, RANGE> LiveInterval; // 整个function中每个变量的LiveInterval
     map<int32_t, REGs> AllocationResult; // 每个变量的分配情况
+    vector<Inst *> all_insts;
 public:
     void printCallInfo();
     void buildCFG();

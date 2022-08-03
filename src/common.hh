@@ -6,7 +6,7 @@
 #define FOUR_SPACES "    "
 #define EIGHT_SPACES "        "
 #define GLOB_VAR_PREFIX "global_var_"
-#define LOCA_VAR_PREFIX "local_arr_"
+#define LOCA_VAR_PREFIX "local_var_"
 #define RESET   "\033[0m"
 #define BLACK   "\033[30m"      /* Black */
 #define RED     "\033[31m"      /* Red */
@@ -25,16 +25,22 @@
 #define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
 #define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
+// codegen
+#define GLOBAL_VARIABLE_LOAD_STORE_REGISTER (r0)
+#define REGS_TO_STACK ("{r1-r12}")
+#define CLAIM_AVAIL_REGS set<REGs> availRegs{r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12};
 
 #include <cstdlib>
 #include <string>
 #include <vector>
 #include <queue>
 #include <cassert>
+#include <set>
 
 using std::string;
 using std::vector;
 using std::queue;
+using std::set;
 
 extern int32_t tab_num;
 string get_tabs();

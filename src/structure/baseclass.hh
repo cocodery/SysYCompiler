@@ -12,6 +12,8 @@ public:
 
 class Inst: public Info {
 public:
+    CLAIM_AVAIL_REGS
+public:
     virtual ~Inst() { }
 };
 

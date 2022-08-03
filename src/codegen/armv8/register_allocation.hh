@@ -8,12 +8,6 @@
 
 // float: s0 tp s31 are generally usable
 
-#define UNUSED_REGISTER_1 (r0)
-
-#define REGS_TO_STACK ("{r1-r12}")
-
-#define CLAIM_AVAIL_REGS set<REGs> availRegs{r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12};
-
 #include "common.hh"
 #include "ir.hh"
 
@@ -46,7 +40,7 @@ void AllocateRegistersForFunction(Function &func)
         auto &&varIndex = interval.first;
         auto &&varRange = interval.second;
 
-        // 已分配，跳过
+        // 该变量已分配，跳过（r0-r3传参寄存器）
         if (func.AllocationResult.find(varIndex) != func.AllocationResult.end())
             continue;
 
@@ -96,7 +90,30 @@ void AllocateRegistersForFunction(Function &func)
         }
     }
 
+    // 初始化all_insts
+    for (auto &&bbPtr : func.all_blocks)
+        for (auto &&instPtr : bbPtr->basic_block)
+            func.all_insts.push_back(instPtr);
 
+    // 给每个指令更新“在此处空闲的寄存器”信息
+    for (auto &&interval : func.LiveInterval)
+    {
+        auto &&varIndex = interval.first;
+        auto &&varRange = interval.second;
+        auto &&rangeBegin = varRange.first;
+        auto &&rangeEnd = varRange.second;
+        auto &&allocRes = func.AllocationResult.find(varIndex);
+
+        // 该变量未分配寄存器，即“溢出”
+        if (allocRes == func.AllocationResult.end())
+            continue;
+        else // 该变量被分配了寄存器，给它活跃区间内所有指令标记上“寄存器不可用”
+        {
+            auto &&allocatedRegister = allocRes->second;
+            for (auto &&i = rangeBegin; i <= rangeEnd; ++i)
+                func.all_insts[i]->availRegs.erase(allocatedRegister);
+        }
+    }
 }
 
 void AllocateRegistersForAllFunctions(const CompUnit &ir)

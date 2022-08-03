@@ -20,6 +20,11 @@ using std::stringstream;
 
 #define R_REGISTER_IN_BRACKETS(x) ((string("[r") + std::to_string(x) + "]").c_str())
 
+#define R_REGISTER_IN_BRACES(x) ((string("{r") + std::to_string(x) + "}").c_str())
+
+#define IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(_BORROR, _X, _INST_PTR) \
+    (_BORROR ? _X : *_INST_PTR->availRegs.begin())
+
 class Param
 {
 public:
@@ -383,14 +388,31 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
         if (store_inst->src.ctv) // ctvalue
         {
+            // 该情况需要借用寄存器
+            bool borrow = false;
+            if (instPtr->availRegs.empty()) // 如果此处没有空闲的寄存器
+            {
+                asm_insts.push_back(AsmCode(AsmInst::PUSH, {
+                    Param(Param::Str, R_REGISTER_IN_BRACKETS(GLOBAL_VARIABLE_LOAD_STORE_REGISTER))}, indent));
+                borrow = true;
+            }
             if (store_inst->src.ctv->type == TypeInt) // int
-                AddAsmCodeMoveIntToRegister(asm_insts, UNUSED_REGISTER_1, store_inst->src.ctv->int_value, indent);
+                AddAsmCodeMoveIntToRegister(asm_insts, IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                    GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                    instPtr), store_inst->src.ctv->int_value, indent);
             else // float
-                AddAsmCodeMoveIntToRegister(asm_insts, UNUSED_REGISTER_1, FLOAT_TO_INT(store_inst->src.ctv->float_value), indent);
+                AddAsmCodeMoveIntToRegister(asm_insts, IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                    GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                    instPtr), FLOAT_TO_INT(store_inst->src.ctv->float_value), indent);
             asm_insts.push_back(AsmCode(AsmInst::STR,
-                {   Param(UNUSED_REGISTER_1),
+                {   Param(IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                    GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                    instPtr)),
                     Param(GET_ALLOCATION_RESULT(funcPtr, IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg)))},
                 indent));
+            if (borrow)
+            asm_insts.push_back(AsmCode(AsmInst::POP, {
+                    Param(Param::Str, R_REGISTER_IN_BRACKETS(GLOBAL_VARIABLE_LOAD_STORE_REGISTER))}, indent));
         }
         else // virtreg
             asm_insts.push_back(AsmCode(AsmInst::STR,
