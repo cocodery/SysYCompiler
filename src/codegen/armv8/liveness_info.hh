@@ -62,14 +62,15 @@ void ProcessInst(vector <int32_t> &src_regids,
         if (ret_inst->has_retvalue)
             IF_IS_REG_THEN_PUSH_BACK(src_regids, ret_inst->ret_value.reg);
     }
-    Case (LLIR_BR, br_inst, instPtr)
+    // br和cmp指令总是连着，不需要分配寄存器传递结果
+    /*Case (LLIR_BR, br_inst, instPtr)
     {
         //cout << get_tabs() << br_inst->ToString() << endl;
 
         // if (src) goto label1;
-        if (br_inst->has_cond)
-            IF_IS_REG_THEN_PUSH_BACK(src_regids, br_inst->cond.reg);
-    }
+        //if (br_inst->has_cond)
+        //    IF_IS_REG_THEN_PUSH_BACK(src_regids, br_inst->cond.reg);
+    }*/
     Case (LLIR_BIN, bin_inst, instPtr)
     {
         //cout << get_tabs() << bin_inst->ToString() << endl;
@@ -120,7 +121,8 @@ void ProcessInst(vector <int32_t> &src_regids,
             src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(icmp_inst->src1.reg));
         if (icmp_inst->src2.reg)
             src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(icmp_inst->src2.reg));
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(icmp_inst->dst.reg);
+        // 不给icmp的结果分配寄存器
+        //dst_regid = IF_GLOBAL_RETURN_NEG_ID(icmp_inst->dst.reg);
     }
     Case (LLIR_FCMP, fcmp_inst, instPtr)
     {
@@ -129,7 +131,8 @@ void ProcessInst(vector <int32_t> &src_regids,
         // dst = src1 < src2
         IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src1.reg);
         IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src2.reg);
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(fcmp_inst->dst.reg);
+        // TODO：不给fcmp的结果分配寄存器
+        //dst_regid = IF_GLOBAL_RETURN_NEG_ID(fcmp_inst->dst.reg);
     }
     Case (LLIR_CALL, call_inst, instPtr)
     {

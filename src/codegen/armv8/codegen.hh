@@ -10,6 +10,8 @@
 
 using std::stringstream;
 
+static enum AsmBranchType{LT, LE, EQ, NE, AlwaysTrue, AlwaysFalse} b_type;
+
 #define FLOAT_TO_INT(x) (*((int *)(&(x))))
 
 #define GET_GLOBAL_VAR_NAME(x) ((string(GLOB_VAR_PREFIX) + std::to_string(x)).c_str())
@@ -24,6 +26,23 @@ using std::stringstream;
 
 #define IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(_BORROR, _X, _INST_PTR) \
     (_BORROR ? _X : *_INST_PTR->availRegs.begin())
+
+#define DECLEAR_BORROW_PUSH(_INST_PTR, _REG) \
+    bool borrow = false;\
+    if (_INST_PTR->availRegs.empty())\
+    {\
+        asm_insts.push_back(AsmCode(AsmInst::PUSH, {\
+            Param(Param::Str, R_REGISTER_IN_BRACKETS(_REG))}, indent));\
+        borrow = true;\
+    }
+
+#define DECLEAR_BORROW_POP(_REG) \
+    if (borrow)\
+    asm_insts.push_back(AsmCode(AsmInst::POP, {\
+            Param(Param::Str, R_REGISTER_IN_BRACKETS(_REG))}, indent));
+
+#define GET_BB_NAME(_FUNC_PTR, _BB_IDX) \
+    ((_FUNC_PTR->func_info.func_name+"_block_"+std::to_string(_BB_IDX)).c_str())
 
 class Param
 {
@@ -96,12 +115,14 @@ public:
         EMPTY, DOT_GLOBAL, DOT_DATA, DOT_TEXT, BX,
         MOV, MOVT, MOVW, STR, LDR,
         ADD, SUB, DOT_WORD, DOT_SPACE, MUL,
-        PUSH, POP, BL
+        PUSH, POP, BL, CMP, BLT,
+        BLE, BEQ, BNE, B
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
         "add", "sub", ".word", ".space", "mul",
-        "push", "pop", "bl"
+        "push", "pop", "bl", "cmp", "blt",
+        "ble", "beq", "bne", "b"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -342,6 +363,72 @@ void AddAsmCodeComment(vector<AsmCode> &asm_insts, const string& comment, int in
     asm_insts.push_back(AsmCode(AsmInst::EMPTY, "", comment, indent));
 }
 
+void AddAsmCodeCmp(vector<AsmCode> &asm_insts, Inst *instPtr, RelOp op, const Param &src1, const Param &src2, int indent)
+{
+    if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
+        asm_insts.push_back(AsmCode(AsmInst::CMP,
+            {   src1,
+                src2},
+            indent));
+    else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
+    {
+        if (abs(src2.val.i) <= 256) // src2 is small enough
+            asm_insts.push_back(AsmCode(AsmInst::CMP,
+                {   src1,
+                    src2},
+                indent));
+        else // src2 is too big to be packed into a single instruction, move src2 to an empty register
+        {
+            // 该情况需要借用寄存器
+            DECLEAR_BORROW_PUSH(instPtr, CMP_REGISTER)
+            AddAsmCodeMoveIntToRegister(asm_insts,
+                IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                instPtr), src2.val.i, indent);
+            asm_insts.push_back(AsmCode(AsmInst::CMP,
+                {   src1,
+                    IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                    GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                    instPtr)},
+                indent));
+            DECLEAR_BORROW_POP(CMP_REGISTER)
+        }
+    }
+    else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
+    {
+            // 该情况需要借用寄存器
+            DECLEAR_BORROW_PUSH(instPtr, CMP_REGISTER)
+            AddAsmCodeMoveIntToRegister(asm_insts,
+                IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                instPtr), src1.val.i, indent);
+            asm_insts.push_back(AsmCode(AsmInst::CMP,
+                {   IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                    GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                    instPtr),
+                    src2},
+                indent));
+            DECLEAR_BORROW_POP(CMP_REGISTER)
+    }
+    else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
+    {
+        switch (op)
+        {
+        case RelOp::LTH: b_type = (src1.val.i < src2.val.i) ? AlwaysTrue : AlwaysFalse; return;
+        case RelOp::LEQ: b_type = (src1.val.i <= src2.val.i) ? AlwaysTrue : AlwaysFalse; return;
+        case RelOp::EQU: b_type = (src1.val.i == src2.val.i) ? AlwaysTrue : AlwaysFalse; return;
+        case RelOp::NEQ: b_type = (src1.val.i != src2.val.i) ? AlwaysTrue : AlwaysFalse; return;
+        }
+    }
+    switch (op)
+    {
+    case RelOp::LTH: b_type = LT; break;
+    case RelOp::LEQ: b_type = LE; break;
+    case RelOp::EQU: b_type = EQ; break;
+    case RelOp::NEQ: b_type = NE; break;
+    }
+}
+
 void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *instPtr, int indent)
 {
     auto &&funcname = funcPtr->func_info.func_name;
@@ -389,13 +476,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         if (store_inst->src.ctv) // ctvalue
         {
             // 该情况需要借用寄存器
-            bool borrow = false;
-            if (instPtr->availRegs.empty()) // 如果此处没有空闲的寄存器
-            {
-                asm_insts.push_back(AsmCode(AsmInst::PUSH, {
-                    Param(Param::Str, R_REGISTER_IN_BRACKETS(GLOBAL_VARIABLE_LOAD_STORE_REGISTER))}, indent));
-                borrow = true;
-            }
+            DECLEAR_BORROW_PUSH(instPtr, GLOBAL_VARIABLE_LOAD_STORE_REGISTER)
             if (store_inst->src.ctv->type == TypeInt) // int
                 AddAsmCodeMoveIntToRegister(asm_insts, IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
                     GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
@@ -410,9 +491,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                     instPtr)),
                     Param(GET_ALLOCATION_RESULT(funcPtr, IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg)))},
                 indent));
-            if (borrow)
-            asm_insts.push_back(AsmCode(AsmInst::POP, {
-                    Param(Param::Str, R_REGISTER_IN_BRACKETS(GLOBAL_VARIABLE_LOAD_STORE_REGISTER))}, indent));
+            DECLEAR_BORROW_POP(GLOBAL_VARIABLE_LOAD_STORE_REGISTER)
         }
         else // virtreg
             asm_insts.push_back(AsmCode(AsmInst::STR,
@@ -585,14 +664,86 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             indent));
         }
     }
-    /*Case (LLIR_BR, br_inst, instPtr)
+    Case (LLIR_ICMP, icmp_inst, instPtr)
+    {
+        //cout << get_tabs() << icmp_inst->ToString() << endl;
+        AddAsmCodeComment(asm_insts, icmp_inst->ToString(), indent);
+
+        Param src1, src2;
+        if (icmp_inst->src1.ctv)
+            src1 = Param(icmp_inst->src1.ctv->int_value);
+        else
+            src1 = Param(GET_ALLOCATION_RESULT(funcPtr, icmp_inst->src1.reg->reg_id));
+        if (icmp_inst->src2.ctv)
+            src2 = Param(icmp_inst->src2.ctv->int_value);
+        else
+            src2 = Param(GET_ALLOCATION_RESULT(funcPtr, icmp_inst->src2.reg->reg_id));
+        // dst = src1 < src2
+        // treat as sub, but without swapping
+        // 在下面调用的函数中已经保存分支类型
+        AddAsmCodeCmp(asm_insts, instPtr, icmp_inst->op, src1, src2, indent);
+    }
+    Case (LLIR_BR, br_inst, instPtr)
     {
         //cout << get_tabs() << br_inst->ToString() << endl;
+        AddAsmCodeComment(asm_insts, br_inst->ToString(), indent);
 
-        // if (src) goto label1;
-        if (br_inst->has_cond)
-            IF_IS_REG_THEN_PUSH_BACK(src_regids, br_inst->cond.reg);
+        if (!br_inst->has_cond) // unconditional branch
+        {
+            asm_insts.push_back(AsmCode(AsmInst::B, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
+                indent));
+        }
+        else // conditional branch
+        {
+        switch (b_type)
+        {
+        case AsmBranchType::LT:
+            asm_insts.push_back(AsmCode(AsmInst::BLT, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
+                indent));
+            asm_insts.push_back(AsmCode(AsmInst::B, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
+                indent));
+            break;
+        case AsmBranchType::LE:
+            asm_insts.push_back(AsmCode(AsmInst::BLE, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
+                indent));
+            asm_insts.push_back(AsmCode(AsmInst::B, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
+                indent));
+            break;
+        case AsmBranchType::EQ:
+            asm_insts.push_back(AsmCode(AsmInst::BEQ, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
+                indent));
+            asm_insts.push_back(AsmCode(AsmInst::B, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
+                indent));
+            break;
+        case AsmBranchType::NE:
+            asm_insts.push_back(AsmCode(AsmInst::BNE, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
+                indent));
+            asm_insts.push_back(AsmCode(AsmInst::B, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
+                indent));
+            break;
+        case AsmBranchType::AlwaysTrue:
+            asm_insts.push_back(AsmCode(AsmInst::B, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
+                indent));
+            break;
+        case AsmBranchType::AlwaysFalse:
+            asm_insts.push_back(AsmCode(AsmInst::B, 
+            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
+                indent));
+            break;
+        }
+        }
     }
+    /*
     Case (LLIR_FBIN, fbin_inst, instPtr)
     {
         //cout << get_tabs() << fbin_inst->ToString() << endl;
@@ -601,17 +752,6 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         IF_IS_REG_THEN_PUSH_BACK(src_regids, fbin_inst->src1.reg);
         IF_IS_REG_THEN_PUSH_BACK(src_regids, fbin_inst->src2.reg);
         dst_regid = IF_GLOBAL_RETURN_NEG_ID(fbin_inst->dst.reg);
-    }
-    Case (LLIR_ICMP, icmp_inst, instPtr)
-    {
-        //cout << get_tabs() << icmp_inst->ToString() << endl;
-    
-        // dst = src1 < src2
-        if (icmp_inst->src1.reg)
-            src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(icmp_inst->src1.reg));
-        if (icmp_inst->src2.reg)
-            src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(icmp_inst->src2.reg));
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(icmp_inst->dst.reg);
     }
     Case (LLIR_FCMP, fcmp_inst, instPtr)
     {

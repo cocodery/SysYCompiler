@@ -26,7 +26,11 @@
 #define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
 // codegen
+
+// 临时的“帮手”寄存器，如果没有空闲寄存器就借用这个寄存器
 #define GLOBAL_VARIABLE_LOAD_STORE_REGISTER (r0)
+#define CMP_REGISTER (r0)
+
 #define REGS_TO_STACK ("{r1-r12}")
 #define CLAIM_AVAIL_REGS set<REGs> availRegs{r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12};
 
