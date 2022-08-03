@@ -10,7 +10,8 @@
 
 using std::stringstream;
 
-static enum AsmBranchType{LT, LE, EQ, NE, AlwaysTrue, AlwaysFalse} b_type;
+static enum AsmBranchType{LT, GE, LE, GT, EQ, NE, AlwaysTrue, AlwaysFalse} b_type;
+#define REVERSED_BRANCH_TYPE(_BT) ((AsmBranchType)(((char)_BT & 0xfe) | (~(char)_BT & 1)))
 
 #define FLOAT_TO_INT(x) (*((int *)(&(x))))
 
@@ -18,7 +19,7 @@ static enum AsmBranchType{LT, LE, EQ, NE, AlwaysTrue, AlwaysFalse} b_type;
 
 #define GET_LOCAL_VAR_NAME(x, y) ((string(LOCA_VAR_PREFIX) + x + "_" + std::to_string(y)).c_str())
 
-#define GET_ALLOCATION_RESULT(x, y) (x->AllocationResult.at(y))
+#define GET_ALLOCATION_RESULT(_FUNC_PTR, _VIRTREG_ID) (_FUNC_PTR->AllocationResult.at(_VIRTREG_ID))
 
 #define R_REGISTER_IN_BRACKETS(x) ((string("[r") + std::to_string(x) + "]").c_str())
 
@@ -116,19 +117,49 @@ public:
         MOV, MOVT, MOVW, STR, LDR,
         ADD, SUB, DOT_WORD, DOT_SPACE, MUL,
         PUSH, POP, BL, CMP, BLT,
-        BLE, BEQ, BNE, B
+        BLE, BEQ, BNE, B, BGT,
+        BGE, MOVLT, MOVGE, MOVLE, MOVGT,
+        MOVEQ, MOVNE
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
         "add", "sub", ".word", ".space", "mul",
         "push", "pop", "bl", "cmp", "blt",
-        "ble", "beq", "bne", "b"
+        "ble", "beq", "bne", "b", "bgt",
+        "bge", "movlt", "movge", "movle", "movgt",
+        "moveq", "movne"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
     const string &ToString()
     {
         return i_str[i_typ];
+    }
+    static InstType ConvertAsmBranchTypeToMoveInst(AsmBranchType b_typ)
+    {
+        switch(b_typ)
+        {
+            case AsmBranchType::LT: return MOVLT;
+            case AsmBranchType::GE: return MOVGE;
+            case AsmBranchType::LE: return MOVLE;
+            case AsmBranchType::GT: return MOVGT;
+            case AsmBranchType::EQ: return MOVEQ;
+            case AsmBranchType::NE: return MOVNE;
+            default: return MOV;
+        }
+    }
+    static InstType ConvertAsmBranchTypeToBranchInst(AsmBranchType b_typ)
+    {
+        switch(b_typ)
+        {
+            case AsmBranchType::LT: return BLT;
+            case AsmBranchType::GE: return BGE;
+            case AsmBranchType::LE: return BLE;
+            case AsmBranchType::GT: return BGT;
+            case AsmBranchType::EQ: return BEQ;
+            case AsmBranchType::NE: return BNE;
+            default: return B;
+        }
     }
 };
 
@@ -197,10 +228,12 @@ public:
     }
 };
 
-void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int indent)
+void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int indent, AsmInst::InstType conditional_move = AsmInst::MOV)
 {
+    // conditional move will only move '1' or '0' into the register,
+    // so it'll always fall this 'if'.
     if (i >= -257 && i <= 256)
-        asm_insts.push_back(AsmCode(AsmInst::MOV,
+        asm_insts.push_back(AsmCode(conditional_move,
             {Param(r), Param(i)},
             indent));
     else
@@ -383,12 +416,12 @@ void AddAsmCodeCmp(vector<AsmCode> &asm_insts, Inst *instPtr, RelOp op, const Pa
             DECLEAR_BORROW_PUSH(instPtr, CMP_REGISTER)
             AddAsmCodeMoveIntToRegister(asm_insts,
                 IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                CMP_REGISTER,
                 instPtr), src2.val.i, indent);
             asm_insts.push_back(AsmCode(AsmInst::CMP,
                 {   src1,
                     IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                    GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                    CMP_REGISTER,
                     instPtr)},
                 indent));
             DECLEAR_BORROW_POP(CMP_REGISTER)
@@ -400,11 +433,11 @@ void AddAsmCodeCmp(vector<AsmCode> &asm_insts, Inst *instPtr, RelOp op, const Pa
             DECLEAR_BORROW_PUSH(instPtr, CMP_REGISTER)
             AddAsmCodeMoveIntToRegister(asm_insts,
                 IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                CMP_REGISTER,
                 instPtr), src1.val.i, indent);
             asm_insts.push_back(AsmCode(AsmInst::CMP,
                 {   IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                    GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
+                    CMP_REGISTER,
                     instPtr),
                     src2},
                 indent));
@@ -696,52 +729,50 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
         else // conditional branch
         {
-        switch (b_type)
-        {
-        case AsmBranchType::LT:
-            asm_insts.push_back(AsmCode(AsmInst::BLT, 
-            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
-                indent));
-            asm_insts.push_back(AsmCode(AsmInst::B, 
-            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
-                indent));
-            break;
-        case AsmBranchType::LE:
-            asm_insts.push_back(AsmCode(AsmInst::BLE, 
-            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
-                indent));
-            asm_insts.push_back(AsmCode(AsmInst::B, 
-            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
-                indent));
-            break;
-        case AsmBranchType::EQ:
-            asm_insts.push_back(AsmCode(AsmInst::BEQ, 
-            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
-                indent));
-            asm_insts.push_back(AsmCode(AsmInst::B, 
-            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
-                indent));
-            break;
-        case AsmBranchType::NE:
-            asm_insts.push_back(AsmCode(AsmInst::BNE, 
-            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
-                indent));
-            asm_insts.push_back(AsmCode(AsmInst::B, 
-            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
-                indent));
-            break;
-        case AsmBranchType::AlwaysTrue:
-            asm_insts.push_back(AsmCode(AsmInst::B, 
-            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
-                indent));
-            break;
-        case AsmBranchType::AlwaysFalse:
-            asm_insts.push_back(AsmCode(AsmInst::B, 
-            {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
-                indent));
-            break;
+            if (b_type != AlwaysFalse)
+                asm_insts.push_back(AsmCode(AsmInst::ConvertAsmBranchTypeToBranchInst(b_type), 
+                {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
+                    indent));
+            if (b_type != AlwaysTrue)
+                asm_insts.push_back(AsmCode(AsmInst::B, 
+                {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
+                    indent));
         }
-        }
+    }
+    Case (LLIR_ZEXT, zext_inst, instPtr)
+    {
+        //cout << get_tabs() << zext_inst->ToString() << endl;
+        AddAsmCodeComment(asm_insts, zext_inst->ToString(), indent);
+
+        if (b_type != AlwaysFalse)
+            AddAsmCodeMoveIntToRegister(
+                asm_insts,
+                GET_ALLOCATION_RESULT(funcPtr, zext_inst->dst.reg->reg_id),
+                1,
+                indent,
+                AsmInst::ConvertAsmBranchTypeToMoveInst(b_type));
+        if (b_type != AlwaysTrue)
+            AddAsmCodeMoveIntToRegister(
+                asm_insts,
+                GET_ALLOCATION_RESULT(funcPtr, zext_inst->dst.reg->reg_id),
+                0,
+                indent,
+                AsmInst::ConvertAsmBranchTypeToMoveInst(REVERSED_BRANCH_TYPE(b_type)));
+
+        // dst = (int) src
+        /*IF_IS_REG_THEN_PUSH_BACK(src_regids, zext_inst->src.reg);
+        dst_regid = IF_GLOBAL_RETURN_NEG_ID(zext_inst->dst.reg);*/
+    }
+    Case (LLIR_XOR, xor_inst, instPtr)
+    {
+        //cout << get_tabs() << xor_inst->ToString() << endl;
+        AddAsmCodeComment(asm_insts, xor_inst->ToString(), indent);
+
+        // 给逻辑比较或逻辑运算结果取反，相当于给branch_type取反（每相邻的两个是相反的）
+        b_type = REVERSED_BRANCH_TYPE(b_type);
+        // dst = ~ src
+        /*IF_IS_REG_THEN_PUSH_BACK(src_regids, xor_inst->src.reg);
+        dst_regid = IF_GLOBAL_RETURN_NEG_ID(xor_inst->dst.reg);*/
     }
     /*
     Case (LLIR_FBIN, fbin_inst, instPtr)
@@ -761,22 +792,6 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src1.reg);
         IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src2.reg);
         dst_regid = IF_GLOBAL_RETURN_NEG_ID(fcmp_inst->dst.reg);
-    }
-    Case (LLIR_ZEXT, zext_inst, instPtr)
-    {
-        //cout << get_tabs() << zext_inst->ToString() << endl;
-    
-        // dst = (int) src
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, zext_inst->src.reg);
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(zext_inst->dst.reg);
-    }
-    Case (LLIR_XOR, xor_inst, instPtr)
-    {
-        //cout << get_tabs() << xor_inst->ToString() << endl;
-        
-        // dst = ~ src
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, xor_inst->src.reg);
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(xor_inst->dst.reg);
     }
     Case (LLIR_BC, bc_inst, instPtr)
     {

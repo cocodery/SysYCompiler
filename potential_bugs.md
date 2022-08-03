@@ -5,6 +5,11 @@
 4. 由于4k限制，大数组要用memset
 5. cmp指令没有交换，后期或许可以优化
 6. fcmp指令返回值没分配寄存器，可能是个坑
+7. mov整数的方式或许可以优化 (灵活的操作数2):
+```
+https://developer.arm.com/documentation/dui0068/b/ARM-Instruction-Reference/ARM-general-data-processing-instructions/Flexible-second-operand?lang=en
+8. (重要)：干掉全局变量的寄存器分配，rework内存分配机制，程序开始时在栈上分配
+```
 - IR
 1. LLIR_RET指令：对于如下代码段
 ```c

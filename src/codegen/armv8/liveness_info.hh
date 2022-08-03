@@ -149,7 +149,8 @@ void ProcessInst(vector <int32_t> &src_regids,
         //cout << get_tabs() << zext_inst->ToString() << endl;
     
         // dst = (int) src
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, zext_inst->src.reg);
+        // zext的作用是把逻辑值扩展为整形，全是从cmp来的，没有用到寄存器传递
+        //IF_IS_REG_THEN_PUSH_BACK(src_regids, zext_inst->src.reg);
         dst_regid = IF_GLOBAL_RETURN_NEG_ID(zext_inst->dst.reg);
     }
     Case (LLIR_GEP, gep_inst, instPtr)
@@ -166,8 +167,9 @@ void ProcessInst(vector <int32_t> &src_regids,
         //cout << get_tabs() << xor_inst->ToString() << endl;
         
         // dst = ~ src
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, xor_inst->src.reg);
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(xor_inst->dst.reg);
+        // xor的唯一作用是给逻辑结果取反，不需要寄存器传递
+        //IF_IS_REG_THEN_PUSH_BACK(src_regids, xor_inst->src.reg);
+        //dst_regid = IF_GLOBAL_RETURN_NEG_ID(xor_inst->dst.reg);
     }
     Case (LLIR_BC, bc_inst, instPtr)
     {
