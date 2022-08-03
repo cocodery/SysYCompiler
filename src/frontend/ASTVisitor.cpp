@@ -106,22 +106,22 @@ void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarTy
             cnt += total_size / arr_dim[0];
         }
     }
-    // SRC zero_ctv = SRC(new CTValue(TypeInt, 0, 0));
-    // if (_type.decl_type == TypeFloat){
-    //     SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
-    //     LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, zero_ctv);
-    //     cur_basicblock->basic_block.push_back(itf_inst);
-    //     zero_ctv = zero_float;
-    // }
-    // while (cnt < total_size) {
-    //     VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, ptr1->type.decl_type));
-    //     LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
-    //     cur_basicblock->basic_block.push_back(gep_inst2);
-    //     LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), zero_ctv);
-    //     cur_basicblock->basic_block.push_back(store_inst);
-    //     ++off;
-    //     ++cnt;
-    // }
+    SRC zero_ctv = SRC(new CTValue(TypeInt, 0, 0));
+    if (_type.decl_type == TypeFloat){
+        SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
+        LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, zero_ctv);
+        cur_basicblock->basic_block.push_back(itf_inst);
+        zero_ctv = zero_float;
+    }
+    while (cnt < total_size) {
+        VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, ptr1->type.decl_type));
+        LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
+        cur_basicblock->basic_block.push_back(gep_inst2);
+        LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), zero_ctv);
+        cur_basicblock->basic_block.push_back(store_inst);
+        ++off;
+        ++cnt;
+    }
     return;
 }
 
