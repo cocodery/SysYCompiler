@@ -148,7 +148,7 @@ public:
         PUSH, POP, BL, CMP, BLT,
         BLE, BEQ, BNE, B, BGT,
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
-        MOVEQ, MOVNE, UNDERSCORE_START
+        MOVEQ, MOVNE, DATA_INIT
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -156,7 +156,7 @@ public:
         "push", "pop", "bl", "cmp", "blt",
         "ble", "beq", "bne", "b", "bgt",
         "bge", "movlt", "movge", "movle", "movgt",
-        "moveq", "movne", "_start"
+        "moveq", "movne", "_data_init"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -921,11 +921,11 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
 
 vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir)
 {
-    vector<AsmCode> dot_data, underscore_start;
+    vector<AsmCode> dot_data, data_underscore_init;
     dot_data.push_back(AsmCode(AsmInst::DOT_DATA));
-    underscore_start.push_back(AsmCode(AsmInst::DOT_TEXT));
-    underscore_start.push_back(AsmCode(AsmInst::DOT_GLOBAL, {Param(Param::Str, "_start")}));
-    underscore_start.push_back(AsmCode(AsmInst::EMPTY, "_start"));
+    data_underscore_init.push_back(AsmCode(AsmInst::DOT_TEXT));
+    data_underscore_init.push_back(AsmCode(AsmInst::DOT_GLOBAL, {Param(Param::Str, "_data_init")}));
+    data_underscore_init.push_back(AsmCode(AsmInst::EMPTY, "_data_init"));
 
     // 局部变量 (alloca)
     for (auto &&funcPtr : ir.functions)
@@ -950,14 +950,14 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir)
                     {
                         dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx), {Param(Param::Str, "0")}, "", 1));
                         // 在栈上给数组分配空间，并赋值
-                        AddAsmCodeComment(underscore_start, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
+                        AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
                         // 计算指针的地址
                         int allocation_bytes = varPtr->type.elements_number() * 4;
-                        AddAsmCodeAddSub(underscore_start, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
-                        underscore_start.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                        AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
+                        data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
                         // 储存指针的地址
-                        underscore_start.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
-                        underscore_start.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                        data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
+                        data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
                     }
                 }
             }
@@ -998,42 +998,42 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir)
             comment += varName + ";";
             dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_GLOBAL_PTR_NAME(varPtr->var_idx), {Param(Param::Str, "0")}, comment, 1));
             // 在栈上给数组分配空间，并赋值
-            AddAsmCodeComment(underscore_start, "allocating stack memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
+            AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
             // 计算指针的地址
             int allocation_bytes = varPtr->type.elements_number() * 4;
             bytes_allocated_for_global_vars += allocation_bytes;
-            AddAsmCodeAddSub(underscore_start, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
-            underscore_start.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+            AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
+            data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
             // 储存指针的地址
-            underscore_start.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_GLOBAL_PTR_NAME(varPtr->var_idx))}, 1));
-            underscore_start.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+            data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_GLOBAL_PTR_NAME(varPtr->var_idx))}, 1));
+            data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
         }
     }
 
     if (bytes_allocated_for_global_vars)
     {
         // 打印给全局数组分配的空间，并对齐到8字节
-        AddAsmCodeComment(underscore_start, "bytes allocated for global arrays on stack: " + std::to_string(bytes_allocated_for_global_vars), 1);
+        AddAsmCodeComment(data_underscore_init, "bytes allocated for global arrays on stack: " + std::to_string(bytes_allocated_for_global_vars), 1);
         if (bytes_allocated_for_global_vars % 8 != 0) {
-            AddAsmCodeComment(underscore_start, "which is not aligned to 8 bytes, fixing...", 1);
-            underscore_start.push_back(AsmCode(AsmInst::SUB, {Param(sp), Param(sp), Param(4)}, 1));
+            AddAsmCodeComment(data_underscore_init, "which is not aligned to 8 bytes, fixing...", 1);
+            data_underscore_init.push_back(AsmCode(AsmInst::SUB, {Param(sp), Param(sp), Param(4)}, 1));
             bytes_allocated_for_global_vars += 4;}
 
         // 给全局数组memset
-        AddAsmCodeComment(underscore_start, "calling memset for global arrays", 1);
-        underscore_start.push_back(AsmCode(AsmInst::MOV, {Param(r0), Param(sp)}, 1));
-        AddAsmCodeMoveIntToRegister(underscore_start, r1, 0, 1);
-        AddAsmCodeMoveIntToRegister(underscore_start, r2, bytes_allocated_for_global_vars, 1);
-        AddAsmCodePushRegisters(underscore_start, {lr}, 1);
-        underscore_start.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memset")}, 1));
-        AddAsmCodePopRegisters(underscore_start, {lr}, 1);
+        AddAsmCodeComment(data_underscore_init, "calling memset for global arrays", 1);
+        data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(r0), Param(sp)}, 1));
+        AddAsmCodeMoveIntToRegister(data_underscore_init, r1, 0, 1);
+        AddAsmCodeMoveIntToRegister(data_underscore_init, r2, bytes_allocated_for_global_vars, 1);
+        AddAsmCodePushRegisters(data_underscore_init, {lr}, 1);
+        data_underscore_init.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memset")}, 1));
+        AddAsmCodePopRegisters(data_underscore_init, {lr}, 1);
     }
 
     // 全局常量数组赋值
     // TODO: 看起来已经被传播了，先不赋值了
 
     // return
-    for (auto &&elem : underscore_start)
+    for (auto &&elem : data_underscore_init)
         dot_data.push_back(elem);
     dot_data.push_back(AsmCode(AsmInst::B, {Param(Param::Str, "main")}, 1));
     return dot_data;
