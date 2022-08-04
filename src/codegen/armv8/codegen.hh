@@ -148,7 +148,7 @@ public:
         PUSH, POP, BL, CMP, BLT,
         BLE, BEQ, BNE, B, BGT,
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
-        MOVEQ, MOVNE, DATA_INIT
+        MOVEQ, MOVNE
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -156,7 +156,7 @@ public:
         "push", "pop", "bl", "cmp", "blt",
         "ble", "beq", "bne", "b", "bgt",
         "bge", "movlt", "movge", "movle", "movgt",
-        "moveq", "movne", "_data_init"
+        "moveq", "movne"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -919,13 +919,10 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
     }*/
 }
 
-vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir)
+vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode> &data_underscore_init)
 {
-    vector<AsmCode> dot_data, data_underscore_init;
+    vector<AsmCode> dot_data;
     dot_data.push_back(AsmCode(AsmInst::DOT_DATA));
-    data_underscore_init.push_back(AsmCode(AsmInst::DOT_TEXT));
-    data_underscore_init.push_back(AsmCode(AsmInst::DOT_GLOBAL, {Param(Param::Str, "_data_init")}));
-    data_underscore_init.push_back(AsmCode(AsmInst::EMPTY, "_data_init"));
 
     // 局部变量 (alloca)
     for (auto &&funcPtr : ir.functions)
@@ -1033,9 +1030,6 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir)
     // TODO: 看起来已经被传播了，先不赋值了
 
     // return
-    for (auto &&elem : data_underscore_init)
-        dot_data.push_back(elem);
-    dot_data.push_back(AsmCode(AsmInst::B, {Param(Param::Str, "main")}, 1));
     return dot_data;
 }
 
@@ -1044,24 +1038,34 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
 
     ofstream ofs(asmfile);
 
-    vector<AsmCode> asm_insts(InitDotDataAndUnderscoreStart(ir));
+    vector<AsmCode> data_init;
+
+    vector<AsmCode> asm_insts(InitDotDataAndUnderscoreStart(ir, data_init));
+
+    asm_insts.push_back(AsmCode(AsmInst::DOT_TEXT));
+    asm_insts.push_back(AsmCode(AsmInst::DOT_GLOBAL, {Param(Param::Str, "main")}));
 
     // all functions
     for (auto &&funcPtr : ir.functions)
     {
         int indent = 0;
         asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name, "", indent));
+        
+        // if current function is main, insert data init insts
+        if (funcPtr->func_info.func_name == "main")
+            for (auto &&elem : data_init)
+                asm_insts.push_back(elem);
 
         // if this function called other functions, push the lr register
         if (!funcPtr->called_funcs.empty())
             AddAsmCodePushRegisters(asm_insts, {lr}, 1);
-        
+
         for (auto &&bbPtr : funcPtr->all_blocks)
         {
             if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
                 continue;
             asm_insts.push_back(AsmCode(AsmInst::EMPTY,
-                funcPtr->func_info.func_name+"_block_"+std::to_string(bbPtr->bb_idx), "",
+                GET_BB_NAME(funcPtr, bbPtr->bb_idx), "",
                 indent));
             for (auto &&instPtr : bbPtr->basic_block)
             {
