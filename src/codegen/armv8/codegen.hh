@@ -13,7 +13,11 @@ using std::stringstream;
 static enum AsmBranchType{LT, GE, LE, GT, EQ, NE, AlwaysTrue, AlwaysFalse} b_type;
 #define REVERSED_BRANCH_TYPE(_BT) ((AsmBranchType)(((char)_BT & 0xfe) | (~(char)_BT & 1)))
 
-#define FLOAT_TO_INT(x) (*((int *)(&(x))))
+int DoubleToInt(double d)
+{
+    float f = d;
+    return *(int*)(&f);
+}
 
 #define GET_GLOBAL_PTR_NAME(_VAR_IDX) ((string(GLOB_PTR_PREFIX) + std::to_string(_VAR_IDX)).c_str())
 
@@ -148,7 +152,7 @@ public:
         PUSH, POP, BL, CMP, BLT,
         BLE, BEQ, BNE, B, BGT,
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
-        MOVEQ, MOVNE
+        MOVEQ, MOVNE, SDIV
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -156,7 +160,7 @@ public:
         "push", "pop", "bl", "cmp", "blt",
         "ble", "beq", "bne", "b", "bgt",
         "bge", "movlt", "movge", "movle", "movgt",
-        "moveq", "movne"
+        "moveq", "movne", "sdiv"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -299,7 +303,6 @@ void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int 
             indent));
     else
     {
-        cout << "i: " << i << endl;
         // low 16 bits
         if ((i & 0xffff) <= 0xff)
             asm_insts.push_back(AsmCode(AsmInst::MOV,
@@ -395,8 +398,8 @@ void AddAsmCodeMul(vector<AsmCode> &asm_insts, REGs r, const Param &src1, const 
 
 void AddAsmCodeDiv(vector<AsmCode> &asm_insts, REGs r, const Param &src1, const Param &src2, int indent)
 {
-    /*if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
-        asm_insts.push_back(AsmCode(AsmInst::MUL,
+    if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
+        asm_insts.push_back(AsmCode(AsmInst::SDIV,
             {   Param(r),
                 src1,
                 src2},
@@ -404,21 +407,21 @@ void AddAsmCodeDiv(vector<AsmCode> &asm_insts, REGs r, const Param &src1, const 
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
         AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
-        asm_insts.push_back(AsmCode(AsmInst::MUL,
+        asm_insts.push_back(AsmCode(AsmInst::SDIV,
             {   Param(r),
-                Param(r),
-                src1},
+                src1,
+                Param(r)},
             indent));
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
     {
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
-        asm_insts.push_back(AsmCode(AsmInst::MUL,
+        asm_insts.push_back(AsmCode(AsmInst::SDIV,
             {   Param(r),
                 Param(r),
                 src2},
             indent));
-    }*/ if (0) ;
+    }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i / src2.val.i, indent);
 }
@@ -539,7 +542,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 if (ret_inst->ret_value.ctv->type == TypeInt) // int
                     AddAsmCodeMoveIntToRegister(asm_insts, r0, ret_inst->ret_value.ctv->int_value, indent);
                 else // float
-                    AddAsmCodeMoveIntToRegister(asm_insts, r0, FLOAT_TO_INT(ret_inst->ret_value.ctv->float_value), indent);
+                    AddAsmCodeMoveIntToRegister(asm_insts, r0, DoubleToInt(ret_inst->ret_value.ctv->float_value), indent);
             else // virtreg
                 asm_insts.push_back(AsmCode(AsmInst::MOV,
                     {   Param(r0),
@@ -710,11 +713,8 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         
         // dst = *(src + off)
         if (gep_inst->src.reg->is_from_gep || gep_inst->src.reg->type.is_args && gep_inst->src.reg->type.is_array) // src是从gep来的，直接是元素指针
-            asm_insts.push_back(AsmCode(AsmInst::MOV,
-            {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
-                Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id))},
-            indent));
-        else // src是从alloca来的，没有被分配寄存器，需要分配一下寄存器(直接用dst)，再把指针load进来
+            ;
+        else // src是从alloca来的，没有被分配寄存器，需要分配一下寄存器(直接用dst)，再把指针load进来，此时offset一定为0
         {
             asm_insts.push_back(AsmCode(AsmInst::LDR,
                 {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
@@ -724,6 +724,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
                     Param(Param::Str, R_REGISTER_IN_BRACKETS(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)))},
                 indent)); // derefrence
+            return; // offset为0，可以直接return
         }
 
         // 加上偏移量
@@ -733,13 +734,13 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 asm_insts,
                 AsmInst::ADD,
                 GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id),
-                Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
+                Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id)),
                 Param(gep_inst->off.ctv->int_value << size_shift_bits),
                 indent);
         else // offset is reg
             asm_insts.push_back(AsmCode(AsmInst::ADD,
             {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
-                Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
+                Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id)),
                 Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->off.reg->reg_id)),
                 Param(Param::Str, (string("lsl #") + std::to_string(size_shift_bits)).c_str())},
             indent));
@@ -764,6 +765,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
 
         // 移动参数
             // TODO: more than 4 regs
+        vector<REGs> moved;
         for (size_t i = 0, siz = call_inst->args.size(); i < std::min(siz, (size_t)4); ++i)
         {
             auto &&arg = call_inst->args[i];
@@ -774,10 +776,24 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 // TODO: float
             }
             else // arg is virtreg
+            {
+                // 不需要移动
+                if (REGs(i) == GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id))
+                    continue;
                 asm_insts.push_back(AsmCode(AsmInst::MOV, 
-                {   Param(REGs(i)),
+                {   Param(REGs(i + 4)),
                     Param(GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id))},
                     indent));
+                moved.push_back(REGs(i));
+            }
+        }
+        // 解决踩踏的暂时方案
+        for (auto &&mvd : moved)
+        {
+            asm_insts.push_back(AsmCode(AsmInst::MOV, 
+            {   Param(REGs(mvd)),
+                Param(REGs(mvd + 4))},
+            indent));
         }
         
         // 函数调用
@@ -961,8 +977,9 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
         }
     }
 
-    // 全局变量
-    int bytes_allocated_for_global_vars = 0;
+    // 全局变量（不包括全局常量数组）
+    {
+    int bytes_allocated_for_global_non_const_arrays = 0;
     for (auto &&varPair : ir.global_scope->local_table->var_table)
     {
         auto &&varName = varPair.first;
@@ -984,6 +1001,8 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
         }
         else // 数组，在data区存指针
         {
+            if(varPtr->type.is_const)
+                continue; // 跳过全局常量数组
             if (varPtr->type.decl_type == TypeInt) {
                 /*for (auto &&elem : varPtr->int_list)
                     params.push_back(Param(Param::Str, std::to_string(elem).c_str()));*/
@@ -998,7 +1017,7 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
             AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
             // 计算指针的地址
             int allocation_bytes = varPtr->type.elements_number() * 4;
-            bytes_allocated_for_global_vars += allocation_bytes;
+            bytes_allocated_for_global_non_const_arrays += allocation_bytes;
             AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
             data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
             // 储存指针的地址
@@ -1007,27 +1026,93 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
         }
     }
 
-    if (bytes_allocated_for_global_vars)
+    if (bytes_allocated_for_global_non_const_arrays)
     {
-        // 打印给全局数组分配的空间，并对齐到8字节
-        AddAsmCodeComment(data_underscore_init, "bytes allocated for global arrays on stack: " + std::to_string(bytes_allocated_for_global_vars), 1);
-        if (bytes_allocated_for_global_vars % 8 != 0) {
+        // 打印给全局非const数组分配的空间，并对齐到8字节
+        AddAsmCodeComment(data_underscore_init, "bytes allocated for global non-const arrays on stack: " + std::to_string(bytes_allocated_for_global_non_const_arrays), 1);
+        if (bytes_allocated_for_global_non_const_arrays % 8 != 0) {
             AddAsmCodeComment(data_underscore_init, "which is not aligned to 8 bytes, fixing...", 1);
             data_underscore_init.push_back(AsmCode(AsmInst::SUB, {Param(sp), Param(sp), Param(4)}, 1));
-            bytes_allocated_for_global_vars += 4;}
+            bytes_allocated_for_global_non_const_arrays += 4;}
 
-        // 给全局数组memset
-        AddAsmCodeComment(data_underscore_init, "calling memset for global arrays", 1);
+        // 给全局非const数组memset
+        AddAsmCodeComment(data_underscore_init, "calling memset for global non-const arrays", 1);
         data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(r0), Param(sp)}, 1));
         AddAsmCodeMoveIntToRegister(data_underscore_init, r1, 0, 1);
-        AddAsmCodeMoveIntToRegister(data_underscore_init, r2, bytes_allocated_for_global_vars, 1);
+        AddAsmCodeMoveIntToRegister(data_underscore_init, r2, bytes_allocated_for_global_non_const_arrays, 1);
         AddAsmCodePushRegisters(data_underscore_init, {lr}, 1);
         data_underscore_init.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memset")}, 1));
         AddAsmCodePopRegisters(data_underscore_init, {lr}, 1);
     }
+    }
+    // 全局const数组
+    {
+    int bytes_allocated_for_global_const_arrays = 0;
+    for (auto &&varPair : ir.global_scope->local_table->var_table)
+    {
+        auto &&varName = varPair.first;
+        auto &&varPtr = varPair.second;
+        string comment;
+        if (!varPtr->type.is_array) // 标量
+            continue;
+        else // 数组，在data区存指针
+        {
+            if(!varPtr->type.is_const)
+                continue; // 跳过非常量数组
+            AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
+            if (varPtr->type.decl_type == TypeInt) {
+                // 倒序push, 一次12个
+                int pushed_bytes = 0;
+                int actual_pushed_bytes = 0;
+                for (auto &&it = varPtr->int_list.rbegin();it != varPtr->int_list.rend();)
+                {
+                    for (REGs i = r12;
+                        i >= r1 && it != varPtr->int_list.rend();
+                        i = (REGs)(i - 1), ++it, pushed_bytes += 4)
+                        AddAsmCodeMoveIntToRegister(data_underscore_init, i, *it, 1);
+                            AddAsmCodePushRegisters(data_underscore_init, CONST_ARRAY_INIT_REGISTERS, 1);
+                            actual_pushed_bytes += 4*12;
+                }
+                data_underscore_init.push_back(AsmCode(AsmInst::ADD, {Param(sp), Param(sp), Param(actual_pushed_bytes - pushed_bytes)}, 1));
+                bytes_allocated_for_global_const_arrays += pushed_bytes;
+                comment = "const int *";
+            }
+            else {
+                // 倒序push, 一次12个
+                int pushed_bytes = 0;
+                int actual_pushed_bytes = 0;
+                for (auto &&it = varPtr->float_list.rbegin();it != varPtr->float_list.rend();)
+                {
+                    for (REGs i = r12;
+                        i >= r1 && it != varPtr->float_list.rend();
+                        i = (REGs)(i - 1), ++it, pushed_bytes += 4)
+                        AddAsmCodeMoveIntToRegister(data_underscore_init, i, DoubleToInt(*it), 1);
+                            AddAsmCodePushRegisters(data_underscore_init, CONST_ARRAY_INIT_REGISTERS, 1);
+                            actual_pushed_bytes += 4*12;
+                }
+                data_underscore_init.push_back(AsmCode(AsmInst::ADD, {Param(sp), Param(sp), Param(actual_pushed_bytes - pushed_bytes)}, 1));
+                bytes_allocated_for_global_const_arrays += pushed_bytes;
+                comment = "const int *";
+                comment = "const float *";
+            }
+            comment += varName + ";";
+            dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_GLOBAL_PTR_NAME(varPtr->var_idx), {Param(Param::Str, "0")}, comment, 1));
+            // 储存指针的地址
+            data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_GLOBAL_PTR_NAME(varPtr->var_idx))}, 1));
+            data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+        }
+    }
 
-    // 全局常量数组赋值
-    // TODO: 看起来已经被传播了，先不赋值了
+    if (bytes_allocated_for_global_const_arrays)
+    {
+        // 打印给全局非const数组分配的空间，并对齐到8字节
+        AddAsmCodeComment(data_underscore_init, "bytes allocated for global const arrays on stack: " + std::to_string(bytes_allocated_for_global_const_arrays), 1);
+        if (bytes_allocated_for_global_const_arrays % 8 != 0) {
+            AddAsmCodeComment(data_underscore_init, "which is not aligned to 8 bytes, fixing...", 1);
+            data_underscore_init.push_back(AsmCode(AsmInst::SUB, {Param(sp), Param(sp), Param(4)}, 1));
+            bytes_allocated_for_global_const_arrays += 4;}
+    }
+    }
 
     // return
     return dot_data;
@@ -1037,11 +1122,10 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
 {
 
     ofstream ofs(asmfile);
+    ofs << ".cpu cortex-a72\n.arch armv8-a\n.fpu vfpv3-d16\n.arch_extension crc\n";
 
     vector<AsmCode> data_init;
-
     vector<AsmCode> asm_insts(InitDotDataAndUnderscoreStart(ir, data_init));
-
     asm_insts.push_back(AsmCode(AsmInst::DOT_TEXT));
     asm_insts.push_back(AsmCode(AsmInst::DOT_GLOBAL, {Param(Param::Str, "main")}));
 

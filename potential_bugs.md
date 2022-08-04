@@ -4,14 +4,15 @@
 1. LiveUse生成：如果一个函数的参数没有在函数体内被使用，可能会出问题（因为LiveUse和LiveDef中都没有它，但是传参的时候要用到）
 2. 减法取负优化 - 浮点可能出问题
 3. 暂时没有考虑函数参数超过四个的情况
-4. 由于4k限制，大数组要用memset
-5. cmp指令没有交换，后期或许可以优化
-6. fcmp指令返回值没分配寄存器，可能是个坑
-7. mov整数的方式或许可以优化 (灵活的操作数2):
+4. cmp指令没有交换，后期或许可以优化
+5. fcmp指令返回值没分配寄存器，可能是个坑
+6. mov整数的方式或许可以优化 (灵活的操作数2):
 ```
 https://developer.arm.com/documentation/dui0068/b/ARM-Instruction-Reference/ARM-general-data-processing-instructions/Flexible-second-operand?lang=en
-8. (重要)：干掉全局变量的寄存器分配，rework内存分配机制，程序开始时在栈上分配
-9. param中的str长度(128)
+7. param中的str长度(128)
+8. mod
+9. 传参踩踏
+10. ltorg
 ```
 - IR
 1. LLIR_RET指令：对于如下代码段

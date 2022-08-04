@@ -35,6 +35,7 @@
 #define CMP_REGISTER (r0)
 #define PRELLOC_REGISTER (r0)
 #define GEP_REGISTER (r0)
+#define CONST_ARRAY_INIT_REGISTERS {r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12}
 
 enum REGs { r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12,  sp,  lr,  pc,
             s0,  s1,  s2,  s3,  s4,  s5,  s6,  s7,  s8,  s9, s10, s11, s12, s13, s14, s15,
