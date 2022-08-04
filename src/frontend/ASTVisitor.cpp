@@ -296,7 +296,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     Variable *const_variable = nullptr;
     if (const_var.is_array) {
         int32_t idx = (&cur_func->func_info != nullptr) ? var_idx++ : glb_var_idx++;
-        const_variable = new Variable(var_idx++);
+        const_variable = new Variable(idx);
     }
     else const_variable = new Variable(-1);
     // 分析`const`变量的初值
