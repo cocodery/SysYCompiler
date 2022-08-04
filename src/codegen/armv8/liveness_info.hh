@@ -104,7 +104,7 @@ void ProcessInst(vector <int32_t> &src_regids,
         // dst = *src
         // load的src是指针类型，所有指针类型都是标号，不必分配寄存器
         // 但是，从gep来的指针类型需要分配寄存器
-        if (load_inst->src.reg->is_from_gep)
+        if (load_inst->src.reg->is_from_gep || load_inst->src.reg->type.is_args && load_inst->src.reg->type.is_array)
             IF_IS_REG_THEN_PUSH_BACK(src_regids, load_inst->src.reg);
         dst_regid = IF_GLOBAL_RETURN_NEG_ID(load_inst->dst.reg);
     }
@@ -116,7 +116,7 @@ void ProcessInst(vector <int32_t> &src_regids,
         IF_IS_REG_THEN_PUSH_BACK(src_regids, store_inst->src.reg);
         // store的dst是指针类型，所有从alloca来的指针类型都是标号，不必分配寄存器
         // 但是，从gep来的指针类型需要分配寄存器
-        if (store_inst->dst.reg->is_from_gep)
+        if (store_inst->dst.reg->is_from_gep || store_inst->dst.reg->type.is_args && store_inst->dst.reg->type.is_array)
             IF_IS_REG_THEN_PUSH_BACK(src_regids, store_inst->dst.reg);
     }
     Case (LLIR_ICMP, icmp_inst, instPtr)
@@ -167,7 +167,7 @@ void ProcessInst(vector <int32_t> &src_regids,
         // *dst = *(src + off)
         IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->off.reg);
         // alloca来的不需要分配寄存器，gep来的需要分配寄存器
-        if (gep_inst->src.reg->is_from_gep)
+        if (gep_inst->src.reg->is_from_gep || gep_inst->src.reg->type.is_args && gep_inst->src.reg->type.is_array)
             IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->src.reg);
         dst_regid = IF_GLOBAL_RETURN_NEG_ID(gep_inst->dst.reg);
         gep_inst->dst.reg->is_from_gep = true;

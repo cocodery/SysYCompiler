@@ -568,7 +568,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
                 STORE_REGISTER,
                 instPtr), store_inst->src.ctv->int_value, indent);
-            if (store_inst->dst.reg->is_from_gep) // dst是从gep来的，是数组元素指针，dst有分配寄存器
+            if (store_inst->dst.reg->is_from_gep || store_inst->dst.reg->type.is_args && store_inst->dst.reg->type.is_array) // dst是从gep来的，是数组元素指针，dst有分配寄存器
             {
                 asm_insts.push_back(AsmCode(AsmInst::STR,
                 {   Param(IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
@@ -600,7 +600,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
         else // src是虚拟寄存器
         {
-            if (store_inst->dst.reg->is_from_gep) // dst是从gep来的，是数组元素指针，dst有分配寄存器
+            if (store_inst->dst.reg->is_from_gep || store_inst->dst.reg->type.is_args && store_inst->dst.reg->type.is_array) // dst是从gep来的，是数组元素指针，dst有分配寄存器
             {
                 asm_insts.push_back(AsmCode(AsmInst::STR,
                     {   Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->src.reg->reg_id)),
@@ -634,7 +634,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         
         // dst = *src
         // alloc来的数组首指针不会直接load，肯定要经过gep转换为数组元素指针
-        if (load_inst->src.reg->is_from_gep) // src是从gep来的，是数组元素指针，src有分配寄存器
+        if (load_inst->src.reg->is_from_gep || load_inst->src.reg->type.is_args && load_inst->src.reg->type.is_array) // src是从gep来的，是数组元素指针，src有分配寄存器
         {
             asm_insts.push_back(AsmCode(AsmInst::MOV,
             {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
@@ -709,7 +709,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         AddAsmCodeComment(asm_insts, gep_inst->ToString(), indent);
         
         // dst = *(src + off)
-        if (gep_inst->src.reg->is_from_gep) // src是从gep来的，直接是元素指针
+        if (gep_inst->src.reg->is_from_gep || gep_inst->src.reg->type.is_args && gep_inst->src.reg->type.is_array) // src是从gep来的，直接是元素指针
             asm_insts.push_back(AsmCode(AsmInst::MOV,
             {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
                 Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id))},

@@ -23,6 +23,8 @@ public:
     VarType type;
     bool global;
     bool assign;
+
+    // codegen
     bool is_from_gep = false;
 public:
     VirtReg(int32_t _idx, VarType _type = VarType(TypeVoid), bool _glb = false, bool _assign = true) 
