@@ -15,9 +15,25 @@ static enum AsmBranchType{LT, GE, LE, GT, EQ, NE, AlwaysTrue, AlwaysFalse} b_typ
 
 #define FLOAT_TO_INT(x) (*((int *)(&(x))))
 
-#define GET_GLOBAL_VAR_NAME(x) ((string(GLOB_VAR_PREFIX) + std::to_string(x)).c_str())
+#define GET_GLOBAL_PTR_NAME(_VAR_IDX) ((string(GLOB_PTR_PREFIX) + std::to_string(_VAR_IDX)).c_str())
 
-#define GET_LOCAL_VAR_NAME(x, y) ((string(LOCA_VAR_PREFIX) + x + "_" + std::to_string(y)).c_str())
+#define GET_GLOBAL_VAR_NAME(_VAR_IDX) ((string(GLOB_VAR_PREFIX) + std::to_string(_VAR_IDX)).c_str())
+
+#define GET_LOCAL_PTR_NAME(_FUNC_PTR, _VAR_IDX) \
+    ((string(LOCA_PTR_PREFIX) + _FUNC_PTR->func_info.func_name + "_" + std::to_string(_VAR_IDX)).c_str())
+
+#define GET_LOCAL_VAR_NAME(_FUNC_PTR, _VAR_IDX) \
+    ((string(LOCA_VAR_PREFIX) + _FUNC_PTR->func_info.func_name + "_" + std::to_string(_VAR_IDX)).c_str())
+
+#define GET_PTR_NAME(_FUNC_PTR, _REG_PTR) \
+    (_REG_PTR->global ?\
+        GET_GLOBAL_PTR_NAME(_REG_PTR->reg_id) :\
+        GET_LOCAL_PTR_NAME(_FUNC_PTR, _REG_PTR->reg_id))
+
+#define GET_VAR_NAME(_FUNC_PTR, _REG_PTR) \
+    (_REG_PTR->global ?\
+        GET_GLOBAL_VAR_NAME(_REG_PTR->reg_id) :\
+        GET_LOCAL_VAR_NAME(_FUNC_PTR, _REG_PTR->reg_id))
 
 #define GET_ALLOCATION_RESULT(_FUNC_PTR, _VIRTREG_ID) (_FUNC_PTR->AllocationResult.at(_VIRTREG_ID))
 
@@ -25,22 +41,35 @@ static enum AsmBranchType{LT, GE, LE, GT, EQ, NE, AlwaysTrue, AlwaysFalse} b_typ
 
 #define R_REGISTER_IN_BRACES(x) ((string("{r") + std::to_string(x) + "}").c_str())
 
-#define IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(_BORROR, _X, _INST_PTR) \
-    (_BORROR ? _X : *_INST_PTR->availRegs.begin())
+#define IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(_BORROW, _X, _INST_PTR) \
+    (_BORROW ? _X : *_INST_PTR->availRegs.begin())
+
+#define IF_BORROW_SECOND_USE_X_OR_USE_LAST_AVAIL_REG(_BORROW_SECOND, _X, _INST_PTR) \
+    (_BORROW_SECOND ? _X : *_INST_PTR->availRegs.rbegin())
 
 #define DECLEAR_BORROW_PUSH(_INST_PTR, _REG) \
     bool borrow = false;\
     if (_INST_PTR->availRegs.empty())\
     {\
-        asm_insts.push_back(AsmCode(AsmInst::PUSH, {\
-            Param(Param::Str, R_REGISTER_IN_BRACKETS(_REG))}, indent));\
+        AddAsmCodePushRegisters(asm_insts, {_REG}, indent);\
         borrow = true;\
+    }
+
+#define DECLEAR_BORROW_SECOND_PUSH(_INST_PTR, _REG) \
+    bool borrow_second = false;\
+    if (_INST_PTR->availRegs.size() < 2)\
+    {\
+        AddAsmCodePushRegisters(asm_insts, {_REG}, indent);\
+        borrow_second = true;\
     }
 
 #define DECLEAR_BORROW_POP(_REG) \
     if (borrow)\
-    asm_insts.push_back(AsmCode(AsmInst::POP, {\
-            Param(Param::Str, R_REGISTER_IN_BRACKETS(_REG))}, indent));
+        AddAsmCodePopRegisters(asm_insts, {_REG}, indent);
+
+#define DECLEAR_BORROW_SECOND_POP(_REG) \
+    if (borrow_second)\
+        AddAsmCodePopRegisters(asm_insts, {_REG}, indent);
 
 #define GET_BB_NAME(_FUNC_PTR, _BB_IDX) \
     ((_FUNC_PTR->func_info.func_name+"_block_"+std::to_string(_BB_IDX)).c_str())
@@ -119,7 +148,7 @@ public:
         PUSH, POP, BL, CMP, BLT,
         BLE, BEQ, BNE, B, BGT,
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
-        MOVEQ, MOVNE
+        MOVEQ, MOVNE, UNDERSCORE_START
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -127,7 +156,7 @@ public:
         "push", "pop", "bl", "cmp", "blt",
         "ble", "beq", "bne", "b", "bgt",
         "bge", "movlt", "movge", "movle", "movgt",
-        "moveq", "movne"
+        "moveq", "movne", "_start"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -228,6 +257,38 @@ public:
     }
 };
 
+string GetRegList(const vector<REGs> &regs)
+{
+    string reglist("{");
+    for (auto &&reg : regs)
+    {
+        Param p(reg);
+        reglist += p.ToString() + ", ";
+    }
+    reglist.pop_back();
+    reglist.pop_back();
+    reglist += "}";
+    return reglist;
+}
+
+void AddAsmCodePushRegisters(vector<AsmCode> &asm_insts, const vector<REGs> &regs, int indent)
+{
+    auto &&cnt = regs.size();
+    if (cnt == 0) return;
+    asm_insts.push_back(AsmCode(AsmInst::PUSH, {Param(Param::Str, GetRegList(regs).c_str())}, indent));
+    if (cnt % 2 != 0)
+        asm_insts.push_back(AsmCode(AsmInst::SUB, {Param(sp), Param(sp), Param(4)}, indent));
+}
+
+void AddAsmCodePopRegisters(vector<AsmCode> &asm_insts, const vector<REGs> &regs, int indent)
+{
+    auto &&cnt = regs.size();
+    if (cnt == 0) return;
+    if (cnt % 2 != 0)
+        asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(sp), Param(sp), Param(4)}, indent));
+    asm_insts.push_back(AsmCode(AsmInst::POP, {Param(Param::Str, GetRegList(regs).c_str())}, indent));
+}
+
 void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int indent, AsmInst::InstType conditional_move = AsmInst::MOV)
 {
     // conditional move will only move '1' or '0' into the register,
@@ -238,6 +299,7 @@ void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int 
             indent));
     else
     {
+        cout << "i: " << i << endl;
         // low 16 bits
         if ((i & 0xffff) <= 0xff)
             asm_insts.push_back(AsmCode(AsmInst::MOV,
@@ -248,7 +310,7 @@ void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int 
                 {Param(r), Param((uint16_t)(i))},
                 indent));
         // high 16 bits
-        if (i < INT16_MIN || i > INT16_MAX)
+        if (i >> 16)
             asm_insts.push_back(AsmCode(AsmInst::MOVT,
                 {Param(r), Param((uint16_t)(i >> 16))},
                 indent));
@@ -485,9 +547,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                     indent));
         }
         if (!funcPtr->called_funcs.empty())
-            asm_insts.push_back(AsmCode(AsmInst::POP,
-                {Param(Param::Str, "{pc}")},
-                indent));
+            AddAsmCodePopRegisters(asm_insts, {pc}, indent);
         else
             asm_insts.push_back(AsmCode(AsmInst::BX,
                 {Param(lr)},
@@ -498,39 +558,74 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         //cout << get_tabs() << store_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, store_inst->ToString(), indent);
 
-        // *dst = src
-        if (store_inst->dst.reg->global) // if global add ldr inst
+        // *dst = src ; str src [dst]
+        // 解决SRC问题
+        if (store_inst->src.ctv) // 如果src是常量，它就没有被分配虚拟寄存器，需要借用
         {
-            asm_insts.push_back(AsmCode(AsmInst::LDR,
-                {   Param(GET_ALLOCATION_RESULT(funcPtr, IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg))),
-                    Param(Param::Addr, GET_GLOBAL_VAR_NAME(store_inst->dst.reg->reg_id))},
-                indent));
-        }
-        if (store_inst->src.ctv) // ctvalue
-        {
-            // 该情况需要借用寄存器
-            DECLEAR_BORROW_PUSH(instPtr, GLOBAL_VARIABLE_LOAD_STORE_REGISTER)
-            if (store_inst->src.ctv->type == TypeInt) // int
-                AddAsmCodeMoveIntToRegister(asm_insts, IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                    GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
-                    instPtr), store_inst->src.ctv->int_value, indent);
-            else // float
-                AddAsmCodeMoveIntToRegister(asm_insts, IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                    GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
-                    instPtr), FLOAT_TO_INT(store_inst->src.ctv->float_value), indent);
-            asm_insts.push_back(AsmCode(AsmInst::STR,
+            // 该情况需要给src借用寄存器
+            DECLEAR_BORROW_PUSH(instPtr, STORE_REGISTER)
+            AddAsmCodeMoveIntToRegister(asm_insts,
+                IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                STORE_REGISTER,
+                instPtr), store_inst->src.ctv->int_value, indent);
+            if (store_inst->dst.reg->is_from_gep) // dst是从gep来的，是数组元素指针，dst有分配寄存器
+            {
+                asm_insts.push_back(AsmCode(AsmInst::STR,
                 {   Param(IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                    GLOBAL_VARIABLE_LOAD_STORE_REGISTER,
-                    instPtr)),
-                    Param(GET_ALLOCATION_RESULT(funcPtr, IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg)))},
+                        STORE_REGISTER,
+                        instPtr)),
+                    Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->dst.reg->reg_id))},
                 indent));
-            DECLEAR_BORROW_POP(GLOBAL_VARIABLE_LOAD_STORE_REGISTER)
+            }
+            else // dst是从alloca来的变量（非数组），没有被分配寄存器，需要借用其他寄存器解除引用
+            {
+                DECLEAR_BORROW_SECOND_PUSH(instPtr, STORE_REGISTER_SECOND)
+                asm_insts.push_back(AsmCode(AsmInst::LDR,
+                    {   Param(IF_BORROW_SECOND_USE_X_OR_USE_LAST_AVAIL_REG(borrow_second,
+                            STORE_REGISTER_SECOND,
+                            instPtr)),
+                        Param(Param::Addr, GET_VAR_NAME(funcPtr, store_inst->dst.reg))},
+                    indent));
+                asm_insts.push_back(AsmCode(AsmInst::STR,
+                    {   Param(IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                            STORE_REGISTER,
+                            instPtr)),
+                        Param(IF_BORROW_SECOND_USE_X_OR_USE_LAST_AVAIL_REG(borrow_second,
+                            STORE_REGISTER_SECOND,
+                            instPtr))},
+                    indent));
+                DECLEAR_BORROW_SECOND_POP(STORE_REGISTER_SECOND)
+            }
+            DECLEAR_BORROW_POP(STORE_REGISTER)
         }
-        else // virtreg
-            asm_insts.push_back(AsmCode(AsmInst::STR,
-                {   Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->src.reg->reg_id)),
-                    Param(GET_ALLOCATION_RESULT(funcPtr, IF_GLOBAL_RETURN_NEG_ID(store_inst->dst.reg)))},
-                indent));
+        else // src是虚拟寄存器
+        {
+            if (store_inst->dst.reg->is_from_gep) // dst是从gep来的，是数组元素指针，dst有分配寄存器
+            {
+                asm_insts.push_back(AsmCode(AsmInst::STR,
+                    {   Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->src.reg->reg_id)),
+                        Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->dst.reg->reg_id))},
+                    indent));
+            }
+            else // dst是从alloca来的变量（非数组），没有被分配寄存器，需要借用其他寄存器解除引用
+            {
+                DECLEAR_BORROW_PUSH(instPtr, STORE_REGISTER)
+                asm_insts.push_back(AsmCode(AsmInst::LDR,
+                    {   Param(IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                            STORE_REGISTER,
+                            instPtr)),
+                        Param(Param::Addr, GET_VAR_NAME(funcPtr, store_inst->dst.reg))},
+                    indent));
+                asm_insts.push_back(AsmCode(AsmInst::STR,
+                    {   Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->src.reg->reg_id)),
+                        Param(IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+                            STORE_REGISTER,
+                            instPtr))},
+                    indent));
+                DECLEAR_BORROW_POP(STORE_REGISTER)
+            }
+        }
+        
     }
     Case (LLIR_LOAD, load_inst, instPtr)
     {
@@ -538,22 +633,26 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         AddAsmCodeComment(asm_insts, load_inst->ToString(), indent);
         
         // dst = *src
-        if (load_inst->src.reg->global) // if global use ldr rx, =y
+        // alloc来的数组首指针不会直接load，肯定要经过gep转换为数组元素指针
+        if (load_inst->src.reg->is_from_gep) // src是从gep来的，是数组元素指针，src有分配寄存器
+        {
+            asm_insts.push_back(AsmCode(AsmInst::MOV,
+            {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
+                Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->src.reg->reg_id))},
+            indent));
+        }
+        else // src是从alloca来的变量（非数组），没有被分配寄存器，需要分配一下寄存器，这里可直接借用dst
         {
             asm_insts.push_back(AsmCode(AsmInst::LDR,
                 {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
-                    Param(Param::Addr, GET_GLOBAL_VAR_NAME(load_inst->src.reg->reg_id))},
-                indent));
-            asm_insts.push_back(AsmCode(AsmInst::LDR,
-                {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
-                    Param(Param::Str, R_REGISTER_IN_BRACKETS(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)))},
+                    Param(Param::Addr, GET_VAR_NAME(funcPtr, load_inst->src.reg))},
                 indent));
         }
-        else // local
-            asm_insts.push_back(AsmCode(AsmInst::LDR,
-                {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
-                    Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->src.reg->reg_id))},
-                indent));
+        // 解除引用
+        asm_insts.push_back(AsmCode(AsmInst::LDR,
+            {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
+                Param(Param::Str, R_REGISTER_IN_BRACKETS(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)))},
+            indent));
     }
     Case (LLIR_BIN, bin_inst, instPtr)
     {
@@ -604,36 +703,31 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             break;
         }
     }
-    Case (LLIR_ALLOCA, alloc_inst, instPtr)
-    {
-        // get_tabs() << alloc_inst->ToString() << endl;
-        AddAsmCodeComment(asm_insts, alloc_inst->ToString(), indent);
-
-        // dst = malloc(something);
-        asm_insts.push_back(AsmCode(AsmInst::LDR,
-            {   Param(GET_ALLOCATION_RESULT(funcPtr, alloc_inst->reg.reg->reg_id)),
-                Param(Param::Addr, GET_LOCAL_VAR_NAME(funcname, alloc_inst->reg.reg->reg_id))},
-            indent));
-    }
     Case (LLIR_GEP, gep_inst, instPtr)
     {
         //cout << get_tabs() << gep_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, gep_inst->ToString(), indent);
         
         // dst = *(src + off)
-        if (gep_inst->src.reg->global) // if global use ldr rx, =y
-            asm_insts.push_back(AsmCode(AsmInst::LDR,
-                {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
-                    Param(Param::Addr, GET_GLOBAL_VAR_NAME(gep_inst->src.reg->reg_id))},
-                indent));
-        else // local
+        if (gep_inst->src.reg->is_from_gep) // src是从gep来的，直接是元素指针
             asm_insts.push_back(AsmCode(AsmInst::MOV,
             {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
                 Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id))},
             indent));
+        else // src是从alloca来的，没有被分配寄存器，需要分配一下寄存器(直接用dst)，再把指针load进来
+        {
+            asm_insts.push_back(AsmCode(AsmInst::LDR,
+                {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
+                    Param(Param::Addr, GET_PTR_NAME(funcPtr, gep_inst->src.reg))},
+                indent));
+            asm_insts.push_back(AsmCode(AsmInst::LDR,
+                {   Param(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)),
+                    Param(Param::Str, R_REGISTER_IN_BRACKETS(GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id)))},
+                indent)); // derefrence
+        }
 
+        // 加上偏移量
         int32_t size_shift_bits = 2;
-
         if (gep_inst->off.ctv) // offset is ctv
             AddAsmCodeAddSub(
                 asm_insts,
@@ -652,14 +746,23 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
     }
     Case (LLIR_CALL, call_inst, instPtr)
     {
-        //cout << get_tabs() << call_inst->ToString() << endl;
+        // cout << get_tabs() << call_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, call_inst->ToString(), indent);
     
         // [dst = ] func(arg1, arg2, ...)
-        // save regs
-        asm_insts.push_back(AsmCode(AsmInst::PUSH, {Param(Param::Str, REGS_TO_STACK)}, indent));
+        // 保存现场，只保存活跃的寄存器，不包括返回值所占用的寄存器
+        vector<REGs> used_regs;
+        for (REGs i = r0; i <= r12; i = (REGs)(i + 1))
+        {
+            // 跳过返回值的reg
+            if (call_inst->func_info->return_type != TypeVoid && GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id) == i)
+                continue;
+            if (instPtr->availRegs.find(i) == instPtr->availRegs.end())
+                used_regs.push_back(i);
+        }
+        AddAsmCodePushRegisters(asm_insts, used_regs, indent);
 
-        // move args
+        // 移动参数
             // TODO: more than 4 regs
         for (size_t i = 0, siz = call_inst->args.size(); i < std::min(siz, (size_t)4); ++i)
         {
@@ -677,25 +780,22 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                     indent));
         }
         
-        // func call
+        // 函数调用
         asm_insts.push_back(AsmCode(AsmInst::BL, 
             {Param(Param::Str, call_inst->func_info->func_name.c_str())},
             indent));
 
-        // recover regs
-        asm_insts.push_back(AsmCode(AsmInst::POP, {Param(Param::Str, REGS_TO_STACK)}, indent));
-
-        // save return value
+        // 移动返回值
         if (call_inst->func_info->return_type != TypeVoid)
         {
-            // save to global
-                // TODO
-            // save to local
             asm_insts.push_back(AsmCode(AsmInst::MOV, 
             {   Param(GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id)),
                 Param(r0)},
             indent));
         }
+
+        // 恢复现场
+        AddAsmCodePopRegisters(asm_insts, used_regs, indent);
     }
     Case (LLIR_ICMP, icmp_inst, instPtr)
     {
@@ -819,61 +919,17 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
     }*/
 }
 
-void GenerateAssembly(const string &asmfile, const CompUnit &ir)
+vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir)
 {
+    vector<AsmCode> dot_data, underscore_start;
+    dot_data.push_back(AsmCode(AsmInst::DOT_DATA));
+    underscore_start.push_back(AsmCode(AsmInst::DOT_TEXT));
+    underscore_start.push_back(AsmCode(AsmInst::DOT_GLOBAL, {Param(Param::Str, "_start")}));
+    underscore_start.push_back(AsmCode(AsmInst::EMPTY, "_start"));
 
-    ofstream ofs(asmfile);
-
-    vector<AsmCode> asm_insts;
-
-    asm_insts.push_back(AsmCode(AsmInst::DOT_DATA));
-
-    // global vars
-    for (auto &&varPair : ir.global_scope->local_table->var_table)
-    {
-        auto &&varName = varPair.first;
-        auto &&varPtr = varPair.second;
-        vector<Param> params;
-        string comment;
-        if (!varPtr->type.is_array) // not array
-        {
-            if (varPtr->type.is_const)
-                continue;
-            if (varPtr->type.decl_type == TypeInt) {
-                params.push_back(Param(Param::Str, std::to_string(varPtr->int_scalar).c_str()));
-                comment = "int "; }
-            comment += varName + ";";
-            asm_insts.push_back(AsmCode(AsmInst::DOT_WORD, GET_GLOBAL_VAR_NAME(varPtr->var_idx), params, comment, 1));
-        }
-        else // array
-        {
-            if (varPtr->type.is_const) // const array
-            {
-                if (varPtr->type.decl_type == TypeInt)
-                {
-                    for (auto &&elem : varPtr->int_list)
-                        params.push_back(Param(Param::Str, std::to_string(elem).c_str()));
-                    comment = "int ";
-                }
-                comment += varName + "[];";
-                asm_insts.push_back(AsmCode(AsmInst::DOT_WORD, GET_GLOBAL_VAR_NAME(varPtr->var_idx), params, comment, 1));
-            }   
-            else // non const array
-            {
-                if (varPtr->type.decl_type == TypeInt) {
-                    params.push_back(Param(Param::Str, std::to_string(varPtr->type.elements_number()).c_str()));
-                    comment = "int "; }
-                comment += varName + "[];";
-                asm_insts.push_back(AsmCode(AsmInst::DOT_SPACE, GET_GLOBAL_VAR_NAME(varPtr->var_idx), params, comment, 1));
-            }
-        }
-        // TODO: float
-    }
-
-    // local arrays
+    // 局部变量 (alloca)
     for (auto &&funcPtr : ir.functions)
     {
-        int indent = 0;
         for (auto &&bbPtr : funcPtr->all_blocks)
         {
             if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
@@ -882,22 +938,115 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
             {
                 Case (LLIR_ALLOCA, alloc_inst, instPtr)
                 {
-                    //cout << get_tabs() << alloc_inst->ToString() << endl;
-
-                    // dst = malloc(something);
                     auto &&varPtr = alloc_inst->var;
-                    vector<Param> params;
-                    params.push_back(Param(Param::Str, std::to_string(varPtr->type.elements_number() * 4).c_str()));
-                    asm_insts.push_back(AsmCode(AsmInst::DOT_SPACE, GET_LOCAL_VAR_NAME(funcPtr->func_info.func_name, varPtr->var_idx), params, 1));
+                    if (!varPtr->type.is_array) // 标量
+                    {
+                        if (varPtr->type.is_const) // 常量标量，跳过
+                            continue;
+                        // 变量标量，直接声明
+                        dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_VAR_NAME(funcPtr, varPtr->var_idx), {Param(Param::Str, "0")}, "", 1));
+                    }
+                    else // 数组，在data区存指针
+                    {
+                        dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx), {Param(Param::Str, "0")}, "", 1));
+                        // 在栈上给数组分配空间，并赋值
+                        AddAsmCodeComment(underscore_start, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
+                        // 计算指针的地址
+                        int allocation_bytes = varPtr->type.elements_number() * 4;
+                        AddAsmCodeAddSub(underscore_start, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
+                        underscore_start.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                        // 储存指针的地址
+                        underscore_start.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
+                        underscore_start.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                    }
                 }
             }
         }
     }
 
-    asm_insts.push_back(AsmCode(AsmInst::DOT_TEXT));
+    // 全局变量
+    int bytes_allocated_for_global_vars = 0;
+    for (auto &&varPair : ir.global_scope->local_table->var_table)
+    {
+        auto &&varName = varPair.first;
+        auto &&varPtr = varPair.second;
+        string comment;
+        if (!varPtr->type.is_array) // 标量
+        {
+            if (varPtr->type.is_const) // 常量标量，跳过
+                continue;
+            if (varPtr->type.decl_type == TypeInt) { // 变量标量，直接定义
+                // 全局变量初始化被移到主函数里了
+                // params.push_back(Param(Param::Str, std::to_string(varPtr->int_scalar).c_str()));
+                comment = "int "; }
+            else {
+                comment = "float ";
+            }
+            comment += varName + ";";
+            dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_GLOBAL_VAR_NAME(varPtr->var_idx), {Param(Param::Str, "0")}, comment, 1));
+        }
+        else // 数组，在data区存指针
+        {
+            if (varPtr->type.decl_type == TypeInt) {
+                /*for (auto &&elem : varPtr->int_list)
+                    params.push_back(Param(Param::Str, std::to_string(elem).c_str()));*/
+                comment = "int *";
+            }
+            else {
+                comment = "float *";
+            }
+            comment += varName + ";";
+            dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_GLOBAL_PTR_NAME(varPtr->var_idx), {Param(Param::Str, "0")}, comment, 1));
+            // 在栈上给数组分配空间，并赋值
+            AddAsmCodeComment(underscore_start, "allocating stack memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
+            // 计算指针的地址
+            int allocation_bytes = varPtr->type.elements_number() * 4;
+            bytes_allocated_for_global_vars += allocation_bytes;
+            AddAsmCodeAddSub(underscore_start, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
+            underscore_start.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+            // 储存指针的地址
+            underscore_start.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_GLOBAL_PTR_NAME(varPtr->var_idx))}, 1));
+            underscore_start.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+        }
+    }
 
-    asm_insts.push_back(AsmCode(AsmInst::DOT_GLOBAL, {Param(Param::Str, "main")}));
+    if (bytes_allocated_for_global_vars)
+    {
+        // 打印给全局数组分配的空间，并对齐到8字节
+        AddAsmCodeComment(underscore_start, "bytes allocated for global arrays on stack: " + std::to_string(bytes_allocated_for_global_vars), 1);
+        if (bytes_allocated_for_global_vars % 8 != 0) {
+            AddAsmCodeComment(underscore_start, "which is not aligned to 8 bytes, fixing...", 1);
+            underscore_start.push_back(AsmCode(AsmInst::SUB, {Param(sp), Param(sp), Param(4)}, 1));
+            bytes_allocated_for_global_vars += 4;}
 
+        // 给全局数组memset
+        AddAsmCodeComment(underscore_start, "calling memset for global arrays", 1);
+        underscore_start.push_back(AsmCode(AsmInst::MOV, {Param(r0), Param(sp)}, 1));
+        AddAsmCodeMoveIntToRegister(underscore_start, r1, 0, 1);
+        AddAsmCodeMoveIntToRegister(underscore_start, r2, bytes_allocated_for_global_vars, 1);
+        AddAsmCodePushRegisters(underscore_start, {lr}, 1);
+        underscore_start.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memset")}, 1));
+        AddAsmCodePopRegisters(underscore_start, {lr}, 1);
+    }
+
+    // 全局常量数组赋值
+    // TODO: 看起来已经被传播了，先不赋值了
+
+    // return
+    for (auto &&elem : underscore_start)
+        dot_data.push_back(elem);
+    dot_data.push_back(AsmCode(AsmInst::B, {Param(Param::Str, "main")}, 1));
+    return dot_data;
+}
+
+void GenerateAssembly(const string &asmfile, const CompUnit &ir)
+{
+
+    ofstream ofs(asmfile);
+
+    vector<AsmCode> asm_insts(InitDotDataAndUnderscoreStart(ir));
+
+    // all functions
     for (auto &&funcPtr : ir.functions)
     {
         int indent = 0;
@@ -905,7 +1054,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
 
         // if this function called other functions, push the lr register
         if (!funcPtr->called_funcs.empty())
-            asm_insts.push_back(AsmCode(AsmInst::PUSH, {Param(Param::Str, "{lr}")}, 1));
+            AddAsmCodePushRegisters(asm_insts, {lr}, 1);
         
         for (auto &&bbPtr : funcPtr->all_blocks)
         {
