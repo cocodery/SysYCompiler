@@ -1213,6 +1213,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
             AddAsmCodeComment(asm_insts, "calling memcpy for saving local vars", 1);
             AddAsmCodePushRegisters(asm_insts, LOCAL_VARS_SAVE_MEMCPY_REGISTERS, 1);
             asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(r0), Param(sp)}, 1));
+            asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r0), Param(4 * 4)}, 1));
             asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(r1), Param(Param::Addr, GET_LOCAL_VARS_NAME(funcPtr))}, 1));
             AddAsmCodeMoveIntToRegister(asm_insts, r2, local_vars_alloc_bytes, 1);
             asm_insts.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memcpy")}, 1));
@@ -1312,6 +1313,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
             AddAsmCodePushRegisters(asm_insts, LOCAL_VARS_LOAD_MEMCPY_REGISTERS, 1);
             asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(r0), Param(Param::Addr, GET_LOCAL_VARS_NAME(funcPtr))}, 1));
             asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(r1), Param(sp)}, 1));
+            asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r1), Param(2 * 4)}, 1));
             AddAsmCodeMoveIntToRegister(asm_insts, r2, local_vars_alloc_bytes, 1);
             asm_insts.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memcpy")}, 1));
             AddAsmCodePopRegisters(asm_insts, LOCAL_VARS_LOAD_MEMCPY_REGISTERS, 1);
@@ -1323,7 +1325,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         // return instructions
         asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_end", "", indent));
         if (!funcPtr->func_info.called_funcs.empty())
-            AddAsmCodePopRegisters(asm_insts, {pc}, indent);
+            AddAsmCodePopRegisters(asm_insts, {pc}, 1);
         else
             asm_insts.push_back(AsmCode(AsmInst::BX,
                 {Param(lr)}, 1));
