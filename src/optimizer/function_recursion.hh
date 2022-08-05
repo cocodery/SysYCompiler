@@ -9,12 +9,13 @@ public:
     map<FunctionInfo *, Function *> info_to_function;
     set<FunctionInfo *> vis;
 public:
-    FunctionRecursion(const vector<Function *> &functions)
+    FunctionRecursion(const vector<Function *> &functions) 
     {
-        for (auto &&function : functions)
-            if (function->func_info.is_used)
-                info_to_function.insert(make_pair(&function->func_info, function));
+        for (auto &&function : functions) {
+            if (function->func_info.is_used) {
+                function->func_info.is_recursive = IsRecursive(&function->func_info, &function->func_info);
+            }
+        }
     }
-    void analyzeFuncRecursion();
     bool IsRecursive(FunctionInfo *, FunctionInfo *);
 };

@@ -72,7 +72,6 @@ public:
     int32_t var_idx;
     Scope *main_scope;
     vector<BasicBlock *> all_blocks;
-    set<FunctionInfo *> called_funcs;
     typedef pair<int32_t, int32_t> RANGE;
 
     // codegen

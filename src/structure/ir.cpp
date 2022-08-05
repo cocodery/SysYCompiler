@@ -265,8 +265,8 @@ void Scope::printScope() {
 
 void Function::printCallInfo() {
     llir << get_tabs() << "; " <<  func_info.func_name << " call function : ";
-    if (called_funcs.size()) {
-        for (auto &&func_info : called_funcs) {
+    if (func_info.called_funcs.size()) {
+        for (auto &&func_info : func_info.called_funcs) {
             llir << func_info->func_name << " ";
         }
     } else {

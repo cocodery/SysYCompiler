@@ -549,7 +549,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                         Param(GET_ALLOCATION_RESULT(funcPtr, ret_inst->ret_value.reg->reg_id))},
                     indent));
         }
-        if (!funcPtr->called_funcs.empty())
+        if (!funcPtr->func_info.called_funcs.empty())
             AddAsmCodePopRegisters(asm_insts, {pc}, indent);
         else
             asm_insts.push_back(AsmCode(AsmInst::BX,
@@ -1141,7 +1141,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
                 asm_insts.push_back(elem);
 
         // if this function called other functions, push the lr register
-        if (!funcPtr->called_funcs.empty())
+        if (!funcPtr->func_info.called_funcs.empty())
             AddAsmCodePushRegisters(asm_insts, {lr}, 1);
 
         for (auto &&bbPtr : funcPtr->all_blocks)

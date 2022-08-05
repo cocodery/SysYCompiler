@@ -1124,7 +1124,7 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
     }
     FunctionInfo *func_info = ir.getFunctionInfo(func_name);
     func_info->is_used = true;
-    cur_func->called_funcs.insert(func_info);
+    cur_func->func_info.called_funcs.insert(func_info);
     int32_t rsize = args.size();
     int32_t fsize = func_info->func_args.size();
     if (rsize != fsize) {

@@ -41,5 +41,4 @@ void PassManager::lvn() {
 
 void PassManager::funcRecursion() {
     FunctionRecursion obj(functions);
-    obj.analyzeFuncRecursion();
 }
