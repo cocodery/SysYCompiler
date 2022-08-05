@@ -469,10 +469,10 @@ void AddAsmCodeRem(vector<AsmCode> &asm_insts, Inst *instPtr, REGs r, const Para
         auto &&imm = src2.val.i;
         // 该情况需要借用寄存器
         DECLEAR_BORROW_PUSH(instPtr, REM_REGISTER)
-        asm_insts.push_back(AsmCode(AsmInst::MOV, {
+        AddAsmCodeMoveIntToRegister(asm_insts,
             IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
             REM_REGISTER,
-            instPtr), src2}, indent));
+            instPtr), imm, indent);
         asm_insts.push_back(AsmCode(AsmInst::SDIV, {Param(r), src1,
             IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
             REM_REGISTER,
