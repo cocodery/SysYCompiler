@@ -159,7 +159,7 @@ public:
         BLE, BEQ, BNE, B, BGT,
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
         MOVEQ, MOVNE, SDIV, MVN, RSB,
-        MSUB
+        DOT_LTORG
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -168,7 +168,7 @@ public:
         "ble", "beq", "bne", "b", "bgt",
         "bge", "movlt", "movge", "movle", "movgt",
         "moveq", "movne", "sdiv", "mvn", "rsb",
-        "msub"
+        ".ltorg"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -461,7 +461,8 @@ void AddAsmCodeRem(vector<AsmCode> &asm_insts, Inst *instPtr, REGs r, const Para
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
     {
         asm_insts.push_back(AsmCode(AsmInst::SDIV, {Param(r), src1, src2}, indent));
-        asm_insts.push_back(AsmCode(AsmInst::MSUB, {Param(r), Param(r), src2, src1}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::MUL, {Param(r), Param(r), src2}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::SUB, {Param(r), src1, Param(r)}, indent));
     }
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
@@ -471,16 +472,16 @@ void AddAsmCodeRem(vector<AsmCode> &asm_insts, Inst *instPtr, REGs r, const Para
         asm_insts.push_back(AsmCode(AsmInst::MOV, {
             IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
             REM_REGISTER,
-            instPtr), src1}, indent));
-        AddAsmCodeMoveIntToRegister(asm_insts, r, imm, indent);
-        asm_insts.push_back(AsmCode(AsmInst::SDIV, {Param(r), src1, Param(r)}, indent));
-        AddAsmCodeMoveIntToRegister(asm_insts, src1.val.r, imm, indent);
-        asm_insts.push_back(AsmCode(AsmInst::MUL, {src1, Param(r), src1}, indent));
-        asm_insts.push_back(AsmCode(AsmInst::MOV, {r,
+            instPtr), src2}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::SDIV, {Param(r), src1,
             IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
             REM_REGISTER,
             instPtr)}, indent));
-        asm_insts.push_back(AsmCode(AsmInst::SUB, {Param(r), Param(r), src1}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::MUL, {Param(r), Param(r), 
+            IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+            REM_REGISTER,
+            instPtr)}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::SUB, {Param(r), src1, Param(r)}, indent));
         DECLEAR_BORROW_POP(REM_REGISTER)
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
@@ -1341,6 +1342,9 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         else
             asm_insts.push_back(AsmCode(AsmInst::BX,
                 {Param(lr)}, 1));
+        
+        // insert ltorg
+        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 1024")}, indent));
     }
 
 
