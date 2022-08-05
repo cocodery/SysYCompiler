@@ -831,10 +831,11 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         // 移动返回值
         if (call_inst->func_info->return_type != TypeVoid)
         {
-            asm_insts.push_back(AsmCode(AsmInst::MOV, 
-            {   Param(GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id)),
-                Param(r0)},
-            indent));
+            if (r0 != GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id))
+                asm_insts.push_back(AsmCode(AsmInst::MOV, 
+                {   Param(GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id)),
+                    Param(r0)},
+                indent));
         }
 
         // 恢复现场
