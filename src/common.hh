@@ -33,6 +33,7 @@
 #define STORE_REGISTER (r0)
 #define STORE_REGISTER_SECOND (r1)
 #define CMP_REGISTER (r0)
+#define REM_REGISTER (r0)
 #define GEP_REGISTER (r0)
 #define CONST_ARRAY_INIT_REGISTERS {r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12}
 #define LOCAL_VARS_SAVE_MEMCPY_REGISTERS {r0, r1, r2, r3}

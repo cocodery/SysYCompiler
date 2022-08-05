@@ -158,7 +158,8 @@ public:
         PUSH, POP, BL, CMP, BLT,
         BLE, BEQ, BNE, B, BGT,
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
-        MOVEQ, MOVNE, SDIV, MVN, RSB
+        MOVEQ, MOVNE, SDIV, MVN, RSB,
+        MSUB
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -166,7 +167,8 @@ public:
         "push", "pop", "bl", "cmp", "blt",
         "ble", "beq", "bne", "b", "bgt",
         "bge", "movlt", "movge", "movle", "movgt",
-        "moveq", "movne", "sdiv", "mvn", "rsb"
+        "moveq", "movne", "sdiv", "mvn", "rsb",
+        "msub"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -454,32 +456,42 @@ void AddAsmCodeDiv(vector<AsmCode> &asm_insts, REGs r, const Param &src1, const 
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i / src2.val.i, indent);
 }
 
-void AddAsmCodeRem(vector<AsmCode> &asm_insts, REGs r, const Param &src1, const Param &src2, int indent)
+void AddAsmCodeRem(vector<AsmCode> &asm_insts, Inst *instPtr, REGs r, const Param &src1, const Param &src2, int indent)
 {
-    /*if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
-        asm_insts.push_back(AsmCode(AsmInst::MUL,
-            {   Param(r),
-                src1,
-                src2},
-            indent));
+    if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
+    {
+        asm_insts.push_back(AsmCode(AsmInst::SDIV, {Param(r), src1, src2}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::MSUB, {Param(r), Param(r), src2, src1}, indent));
+    }
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
-        AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
-        asm_insts.push_back(AsmCode(AsmInst::MUL,
-            {   Param(r),
-                Param(r),
-                src1},
-            indent));
+        auto &&imm = src2.val.i;
+        // 该情况需要借用寄存器
+        DECLEAR_BORROW_PUSH(instPtr, REM_REGISTER)
+        asm_insts.push_back(AsmCode(AsmInst::MOV, {
+            IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+            REM_REGISTER,
+            instPtr), src1}, indent));
+        AddAsmCodeMoveIntToRegister(asm_insts, r, imm, indent);
+        asm_insts.push_back(AsmCode(AsmInst::SDIV, {Param(r), src1, Param(r)}, indent));
+        AddAsmCodeMoveIntToRegister(asm_insts, src1.val.r, imm, indent);
+        asm_insts.push_back(AsmCode(AsmInst::MUL, {src1, Param(r), src1}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::MOV, {r,
+            IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
+            REM_REGISTER,
+            instPtr)}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::SUB, {Param(r), Param(r), src1}, indent));
+        DECLEAR_BORROW_POP(REM_REGISTER)
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
     {
-        AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
-        asm_insts.push_back(AsmCode(AsmInst::MUL,
-            {   Param(r),
-                Param(r),
-                src2},
-            indent));
-    }*/ if (0) ;
+        auto &&imm = src1.val.i;
+        AddAsmCodeMoveIntToRegister(asm_insts, r, imm, indent);
+        asm_insts.push_back(AsmCode(AsmInst::SDIV, {Param(r), Param(r), src2}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::MUL, {src2, Param(r), src2}, indent));
+        AddAsmCodeMoveIntToRegister(asm_insts, r, imm, indent);
+        asm_insts.push_back(AsmCode(AsmInst::SUB, {Param(r), Param(r), src2}, indent));
+    }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i % src2.val.i, indent);
 }
@@ -727,7 +739,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             AddAsmCodeDiv(asm_insts, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
             break;
         case BinOp::REM:
-            AddAsmCodeRem(asm_insts, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
+            AddAsmCodeRem(asm_insts, instPtr, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
             break;
         default:
             break;
