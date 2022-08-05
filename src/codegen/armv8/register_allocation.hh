@@ -120,7 +120,13 @@ void AllocateRegistersForAllFunctions(const CompUnit &ir)
 {
     printf("\n-----Allocate Registers Start----\n");
     for (auto &&funcPtr : ir.functions)
+    {
+        // skip unused functions
+        if (!funcPtr->func_info.is_used)
+            continue;
+
         AllocateRegistersForFunction(*funcPtr);
+    }
     printf("\n-----Allocate Registers End----\n");
 }
 

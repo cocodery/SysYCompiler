@@ -78,6 +78,12 @@ int DoubleToInt(double d)
 #define GET_BB_NAME(_FUNC_PTR, _BB_IDX) \
     ((_FUNC_PTR->func_info.func_name+"_block_"+std::to_string(_BB_IDX)).c_str())
 
+#define GET_FUNC_RETURN_NAME(_FUNC_PTR) \
+    ((_FUNC_PTR->func_info.func_name+"_return").c_str())
+
+#define GET_LOCAL_VARS_NAME(_FUNC_PTR) \
+    (("local_vars_"+_FUNC_PTR->func_info.func_name).c_str())
+
 class Param
 {
 public:
@@ -152,7 +158,7 @@ public:
         PUSH, POP, BL, CMP, BLT,
         BLE, BEQ, BNE, B, BGT,
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
-        MOVEQ, MOVNE, SDIV
+        MOVEQ, MOVNE, SDIV, MVN, RSB
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -160,7 +166,7 @@ public:
         "push", "pop", "bl", "cmp", "blt",
         "ble", "beq", "bne", "b", "bgt",
         "bge", "movlt", "movge", "movle", "movgt",
-        "moveq", "movne", "sdiv"
+        "moveq", "movne", "sdiv", "mvn", "rsb"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -331,7 +337,15 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
             indent));
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
-        if (abs(src2.val.i) <= 256) // src2 is small enough
+        if (src2.val.i == 0)
+        {
+            if (src1.val.r == r) return; // 事实上，由于ssa的性质，bin r0,r0,#imm永远不会出现在ir中
+            else asm_insts.push_back(AsmCode(AsmInst::MOV,
+                {   Param(r),
+                    src1},
+                indent));
+        }
+        else if (abs(src2.val.i) <= 256) // src2 is small enough
             asm_insts.push_back(AsmCode(_i_typ,
                 {   Param(r),
                     src1,
@@ -349,12 +363,26 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg, should be sub only
     {
-        AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
-        asm_insts.push_back(AsmCode(_i_typ,
-            {   Param(r),
-                Param(r),
-                src2},
-            indent));
+        if (src1.val.i == 0 && src2.val.r == r)
+            asm_insts.push_back(AsmCode(AsmInst::MVN,
+                {   Param(r),
+                    src2},
+                indent));
+        else if (abs(src1.val.i) <= 256) // src1 is small enough
+            asm_insts.push_back(AsmCode(AsmInst::RSB,
+                {   Param(r),
+                    src2,
+                    src1},
+                indent));
+        else // src1 is too big to be packed into a single instruction
+        {
+            AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
+            asm_insts.push_back(AsmCode(AsmInst::SUB,
+                {   Param(r),
+                    Param(r),
+                    src2},
+                indent));
+        }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
     {
@@ -536,6 +564,8 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         AddAsmCodeComment(asm_insts, ret_inst->ToString(), indent);
 
         // return src
+
+        // if has return value, move it to r0
         if (ret_inst->has_retvalue)
         {
             if (ret_inst->ret_value.ctv) // ctvalue
@@ -544,17 +574,14 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 else // float
                     AddAsmCodeMoveIntToRegister(asm_insts, r0, DoubleToInt(ret_inst->ret_value.ctv->float_value), indent);
             else // virtreg
-                asm_insts.push_back(AsmCode(AsmInst::MOV,
-                    {   Param(r0),
-                        Param(GET_ALLOCATION_RESULT(funcPtr, ret_inst->ret_value.reg->reg_id))},
-                    indent));
+                if (r0 != GET_ALLOCATION_RESULT(funcPtr, ret_inst->ret_value.reg->reg_id))
+                    asm_insts.push_back(AsmCode(AsmInst::MOV,
+                        {   Param(r0),
+                            Param(GET_ALLOCATION_RESULT(funcPtr, ret_inst->ret_value.reg->reg_id))},
+                        indent));
         }
-        if (!funcPtr->func_info.called_funcs.empty())
-            AddAsmCodePopRegisters(asm_insts, {pc}, indent);
-        else
-            asm_insts.push_back(AsmCode(AsmInst::BX,
-                {Param(lr)},
-                indent));
+
+        asm_insts.push_back(AsmCode(AsmInst::B, {Param(Param::Str, GET_FUNC_RETURN_NAME(funcPtr))}, indent));
     }
     Case (LLIR_STORE, store_inst, instPtr)
     {
@@ -943,6 +970,10 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
     // 局部变量 (alloca)
     for (auto &&funcPtr : ir.functions)
     {
+        // skip unused functions
+        if (!funcPtr->func_info.is_used)
+            continue;
+        dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_VARS_NAME(funcPtr), "", 0));
         for (auto &&bbPtr : funcPtr->all_blocks)
         {
             if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
@@ -962,15 +993,18 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
                     else // 数组，在data区存指针
                     {
                         dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx), {Param(Param::Str, "0")}, "", 1));
-                        // 在栈上给数组分配空间，并赋值
-                        AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
-                        // 计算指针的地址
-                        int allocation_bytes = varPtr->type.elements_number() * 4;
-                        AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
-                        data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
-                        // 储存指针的地址
-                        data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
-                        data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                        if (!funcPtr->func_info.is_recursive) // 如果是非递归函数，把它的数组当成不需要初始化的全局数组
+                        {
+                            // 在栈上给数组分配空间，并赋值
+                            AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
+                            // 计算指针的地址
+                            int allocation_bytes = varPtr->type.elements_number() * 4;
+                            AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
+                            data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                            // 储存指针的地址
+                            data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
+                            data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                        }
                     }
                 }
             }
@@ -1045,6 +1079,7 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
         AddAsmCodePopRegisters(data_underscore_init, {lr}, 1);
     }
     }
+
     // 全局const数组
     {
     int bytes_allocated_for_global_const_arrays = 0;
@@ -1132,18 +1167,98 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
     // all functions
     for (auto &&funcPtr : ir.functions)
     {
+        // skip unused functions
+        if (!funcPtr->func_info.is_used)
+            continue;
+
         int indent = 0;
+        // function start
         asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name, "", indent));
-        
-        // if current function is main, insert data init insts
-        if (funcPtr->func_info.func_name == "main")
+
+        // insert global ptr alloc before start of main (DO NOT touch r0-r3)
+        if (funcPtr->func_info.func_name == "main" && !data_init.empty())
+        {
+            asm_insts.push_back(AsmCode(AsmInst::EMPTY, "global_alloc", "", indent));
             for (auto &&elem : data_init)
                 asm_insts.push_back(elem);
+        }
 
-        // if this function called other functions, push the lr register
+        // if this function called other functions, push the lr register (DO NOT touch r0-r3)
         if (!funcPtr->func_info.called_funcs.empty())
+        {
+            asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_push_lr", "", indent));
             AddAsmCodePushRegisters(asm_insts, {lr}, 1);
+        }
 
+        // insert save local var & ptr for recursive funtions (DO NOT touch r0-r3)
+        int local_vars_alloc_bytes = 0;
+        if (funcPtr->func_info.is_recursive)
+        {
+            asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_save", "", indent));
+            for (auto &&bbPtr : funcPtr->all_blocks)
+            {
+                if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
+                    continue;
+                for (auto &&instPtr : bbPtr->basic_block)
+                    Case (LLIR_ALLOCA, alloc_inst, instPtr)
+                        local_vars_alloc_bytes += 4;
+            }
+            if (local_vars_alloc_bytes % 8 != 0)
+                local_vars_alloc_bytes += 4;
+            // 移动堆栈指针，给局部变量创造空间
+            AddAsmCodeAddSub(asm_insts, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(local_vars_alloc_bytes), 1);
+            asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+            // 调用memcpy
+            AddAsmCodeComment(asm_insts, "calling memcpy for saving local vars", 1);
+            AddAsmCodePushRegisters(asm_insts, LOCAL_VARS_SAVE_MEMCPY_REGISTERS, 1);
+            asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(r0), Param(sp)}, 1));
+            asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(r1), Param(Param::Addr, GET_LOCAL_VARS_NAME(funcPtr))}, 1));
+            AddAsmCodeMoveIntToRegister(asm_insts, r2, local_vars_alloc_bytes, 1);
+            asm_insts.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memcpy")}, 1));
+            AddAsmCodePopRegisters(asm_insts, LOCAL_VARS_SAVE_MEMCPY_REGISTERS, 1);
+        }
+
+        // insert local ptr alloc for recursive functions (DO NOT touch r0-r3)
+        int bytes_allocated_for_local_arrays = 0;
+        if (funcPtr->func_info.is_recursive)
+        {
+            asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_alloc", "", indent));
+            for (auto &&bbPtr : funcPtr->all_blocks)
+            {
+                if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
+                    continue;
+                for (auto &&instPtr : bbPtr->basic_block)
+                {
+                    Case (LLIR_ALLOCA, alloc_inst, instPtr)
+                    {
+                        auto &&varPtr = alloc_inst->var;
+                        if (!varPtr->type.is_array) // 跳过标量
+                            continue;
+                        // 在栈上给数组分配空间，并赋值
+                        AddAsmCodeComment(asm_insts, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
+                        // 计算指针的地址
+                        int allocation_bytes = varPtr->type.elements_number() * 4;
+                        bytes_allocated_for_local_arrays += allocation_bytes;
+                        AddAsmCodeAddSub(asm_insts, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
+                        asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                        // 储存指针的地址
+                        asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
+                        asm_insts.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                    }
+                }
+            }
+            if (bytes_allocated_for_local_arrays)
+            {
+                // 打印给全局非const数组分配的空间，并对齐到8字节
+                AddAsmCodeComment(asm_insts, "bytes allocated for local arrays on stack: " + std::to_string(bytes_allocated_for_local_arrays), 1);
+                if (bytes_allocated_for_local_arrays % 8 != 0) {
+                    AddAsmCodeComment(asm_insts, "which is not aligned to 8 bytes, fixing...", 1);
+                    asm_insts.push_back(AsmCode(AsmInst::SUB, {Param(sp), Param(sp), Param(4)}, 1));
+                    bytes_allocated_for_local_arrays += 4;}
+            }
+        }
+
+        // basic blocks
         for (auto &&bbPtr : funcPtr->all_blocks)
         {
             if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
@@ -1158,6 +1273,59 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
                 --indent;
             }
         }
+
+        // function return
+        asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_return", "", indent));
+
+        // insert local ptr dealloc for recursive functions (DO NOT touch r0)
+        if (funcPtr->func_info.is_recursive)
+        {
+            asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_dealloc", "", indent));
+            for (auto &&bbPtr : funcPtr->all_blocks)
+            {
+                if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
+                    continue;
+                for (auto &&instPtr : bbPtr->basic_block)
+                {
+                    Case (LLIR_ALLOCA, alloc_inst, instPtr)
+                    {
+                        auto &&varPtr = alloc_inst->var;
+                        if (!varPtr->type.is_array) // 跳过标量
+                            continue;
+                        // 在栈上给数组分配空间，并赋值
+                        AddAsmCodeComment(asm_insts, "deallocating stack memory for " + funcPtr->func_info.func_name, 1);
+                        // 计算指针的地址
+                        AddAsmCodeAddSub(asm_insts, AsmInst::ADD, DELLOC_REGISTER, Param(sp), Param(bytes_allocated_for_local_arrays), 1);
+                        asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(DELLOC_REGISTER)}, 1));
+                    }
+                }
+            }
+        }
+
+        // insert load local var & ptr for recursive funtions (DO NOT touch r0)
+        if (funcPtr->func_info.is_recursive)
+        {
+            asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_load", "", indent));
+            // 调用memcpy
+            AddAsmCodeComment(asm_insts, "calling memcpy for loading local vars", 1);
+            AddAsmCodePushRegisters(asm_insts, LOCAL_VARS_LOAD_MEMCPY_REGISTERS, 1);
+            asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(r0), Param(Param::Addr, GET_LOCAL_VARS_NAME(funcPtr))}, 1));
+            asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(r1), Param(sp)}, 1));
+            AddAsmCodeMoveIntToRegister(asm_insts, r2, local_vars_alloc_bytes, 1);
+            asm_insts.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memcpy")}, 1));
+            AddAsmCodePopRegisters(asm_insts, LOCAL_VARS_LOAD_MEMCPY_REGISTERS, 1);
+            // 移动堆栈指针，消除给局部变量创造的空间
+            AddAsmCodeAddSub(asm_insts, AsmInst::ADD, DELLOC_REGISTER, Param(sp), Param(local_vars_alloc_bytes), 1);
+            asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(DELLOC_REGISTER)}, 1));
+        }
+
+        // return instructions
+        asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_end", "", indent));
+        if (!funcPtr->func_info.called_funcs.empty())
+            AddAsmCodePopRegisters(asm_insts, {pc}, indent);
+        else
+            asm_insts.push_back(AsmCode(AsmInst::BX,
+                {Param(lr)}, 1));
     }
 
 

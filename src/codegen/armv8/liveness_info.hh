@@ -212,6 +212,10 @@ void GenerateLiveInfo(const CompUnit &ir)
     printf("\n-----GenerateLiveInfo Start----\n");
     for (auto &&functionPtr : ir.functions)
     {
+        // skip unused functions
+        if (!functionPtr->func_info.is_used)
+            continue;
+
         printf("In Function \"%s\":\n", functionPtr->func_info.func_name.c_str());
         
         printf(" * Generate LiveUse & LiveDef\n");

@@ -9,10 +9,15 @@
 6. mov整数的方式或许可以优化 (灵活的操作数2):
 ```
 https://developer.arm.com/documentation/dui0068/b/ARM-Instruction-Reference/ARM-general-data-processing-instructions/Flexible-second-operand?lang=en
+```
 7. param中的str长度(128)
 8. mod
-9. 传参踩踏
-10. ltorg
+9. ltorg
+10. borrow逻辑：得找没有被当前语句使用的寄存器才行
+11. 以下内容可根据参数个数和返回值的情况进行优化
+```c
+#define LOCAL_VARS_SAVE_MEMCPY_REGISTERS {r0, r1, r2, lr}
+#define LOCAL_VARS_LOAD_MEMCPY_REGISTERS {r0, lr}
 ```
 - IR
 1. LLIR_RET指令：对于如下代码段
