@@ -595,6 +595,9 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
 
         asm_insts.push_back(AsmCode(AsmInst::B, {Param(Param::Str, GET_FUNC_RETURN_NAME(funcPtr))}, indent));
+        
+        // insert ltorg
+        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 128")}, indent));
     }
     Case (LLIR_STORE, store_inst, instPtr)
     {
@@ -895,7 +898,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
                     indent));
         }
-        
+
         // insert ltorg
         asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 128")}, indent));
     }
@@ -1187,6 +1190,9 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         // skip unused functions
         if (!funcPtr->func_info.is_used)
             continue;
+
+        // insert ltorg
+        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 128")}, 1));
 
         int indent = 0;
         // function start
