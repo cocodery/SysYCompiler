@@ -895,6 +895,9 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_false))},
                     indent));
         }
+        
+        // insert ltorg
+        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 128")}, indent));
     }
     Case (LLIR_ZEXT, zext_inst, instPtr)
     {
@@ -1342,9 +1345,6 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         else
             asm_insts.push_back(AsmCode(AsmInst::BX,
                 {Param(lr)}, 1));
-        
-        // insert ltorg
-        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 1024")}, indent));
     }
 
 
