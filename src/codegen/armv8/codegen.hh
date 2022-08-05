@@ -836,9 +836,9 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             indent));
         }
         
-        // 函数调用
+        // 函数调用 
         asm_insts.push_back(AsmCode(AsmInst::BL, 
-            {Param(Param::Str, call_inst->func_info->func_name.c_str())},
+            {Param(Param::Str, INT_IO_HACK(call_inst->func_info))},
             indent));
 
         // 移动返回值
