@@ -41,6 +41,9 @@ int DoubleToInt(double d)
 
 #define GET_ALLOCATION_RESULT(_FUNC_PTR, _VIRTREG_ID) (_FUNC_PTR->AllocationResult.at(_VIRTREG_ID))
 
+#define CONDITION_REGISTER_NOT_ALLOCATED(_FUNC_PTR, _REG_IDX) \
+    (_FUNC_PTR->AllocationResult.find(_REG_IDX) == _FUNC_PTR->AllocationResult.end())
+
 #define R_REGISTER_IN_BRACKETS(x) ((string("[r") + std::to_string(x) + "]").c_str())
 
 #define R_REGISTER_IN_BRACES(x) ((string("{r") + std::to_string(x) + "}").c_str())
@@ -702,6 +705,10 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
     }
     Case (LLIR_BIN, bin_inst, instPtr)
     {
+        // 跳过目的寄存器没有分配的语句（这种情况是只二元运算的结果没有被使用）
+        if(CONDITION_REGISTER_NOT_ALLOCATED(funcPtr, bin_inst->dst.reg->reg_id))
+            return;
+
         //cout << get_tabs() << bin_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, bin_inst->ToString(), indent);
 
@@ -799,7 +806,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         for (REGs i = r0; i <= r12; i = (REGs)(i + 1))
         {
             // 跳过返回值的reg
-            if (call_inst->func_info->return_type != TypeVoid && GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id) == i)
+            if (call_inst->func_info->return_type != TypeVoid && !CONDITION_REGISTER_NOT_ALLOCATED(funcPtr, call_inst->dst.reg->reg_id) && GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id) == i)
                 continue;
             if (instPtr->availRegs.find(i) == instPtr->availRegs.end())
                 used_regs.push_back(i);
@@ -845,7 +852,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             indent));
 
         // 移动返回值
-        if (call_inst->func_info->return_type != TypeVoid)
+        if (call_inst->func_info->return_type != TypeVoid && !CONDITION_REGISTER_NOT_ALLOCATED(funcPtr, call_inst->dst.reg->reg_id))
         {
             if (r0 != GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id))
                 asm_insts.push_back(AsmCode(AsmInst::MOV, 
@@ -923,8 +930,6 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 AsmInst::ConvertAsmBranchTypeToMoveInst(REVERSED_BRANCH_TYPE(b_type)));
 
         // dst = (int) src
-        /*IF_IS_REG_THEN_PUSH_BACK(src_regids, zext_inst->src.reg);
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(zext_inst->dst.reg);*/
     }
     Case (LLIR_XOR, xor_inst, instPtr)
     {
@@ -934,8 +939,6 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         // 给逻辑比较或逻辑运算结果取反，相当于给branch_type取反（每相邻的两个是相反的）
         b_type = REVERSED_BRANCH_TYPE(b_type);
         // dst = ~ src
-        /*IF_IS_REG_THEN_PUSH_BACK(src_regids, xor_inst->src.reg);
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(xor_inst->dst.reg);*/
     }
     /*
     Case (LLIR_FBIN, fbin_inst, instPtr)
