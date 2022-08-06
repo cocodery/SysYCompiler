@@ -162,7 +162,7 @@ public:
         BLE, BEQ, BNE, B, BGT,
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
         MOVEQ, MOVNE, SDIV, MVN, RSB,
-        DOT_LTORG
+        DOT_LTORG, EORNE
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -171,7 +171,7 @@ public:
         "ble", "beq", "bne", "b", "bgt",
         "bge", "movlt", "movge", "movle", "movgt",
         "moveq", "movne", "sdiv", "mvn", "rsb",
-        ".ltorg"
+        ".ltorg", "eorne"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -329,6 +329,15 @@ void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int 
                 {Param(r), Param((uint16_t)(i >> 16))},
                 indent));
     }
+}
+
+void AddAsmCodeSwapRegisters(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, int indent)
+{
+    if (reg1 == reg2) return;
+    asm_insts.push_back(AsmCode(AsmInst::CMP, {Param(reg1), Param(reg2)}, indent)); //if (x0 == x1) do not swap
+    asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
+    asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg2), Param(reg1), Param(reg2)}, indent)); //eor x1, x0, x1
+    asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
 }
 
 void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r, const Param &src1, const Param &src2, int indent)
@@ -600,7 +609,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         asm_insts.push_back(AsmCode(AsmInst::B, {Param(Param::Str, GET_FUNC_RETURN_NAME(funcPtr))}, indent));
         
         // insert ltorg
-        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 128")}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 1024")}, indent));
     }
     Case (LLIR_STORE, store_inst, instPtr)
     {
@@ -815,7 +824,8 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
 
         // 移动参数
             // TODO: more than 4 regs
-        vector<REGs> moved;
+        vector<REGs> registers{r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12};
+        vector<REGs> should_be{r0,r1,r2,r3};
         for (size_t i = 0, siz = call_inst->args.size(); i < std::min(siz, (size_t)4); ++i)
         {
             auto &&arg = call_inst->args[i];
@@ -830,20 +840,22 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 // 不需要移动
                 if (REGs(i) == GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id))
                     continue;
-                asm_insts.push_back(AsmCode(AsmInst::MOV, 
-                {   Param(REGs(i + 4)),
-                    Param(GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id))},
-                    indent));
-                moved.push_back(REGs(i));
+                // 需要移动
+                should_be[i] = GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id);
             }
         }
-        // 解决踩踏的暂时方案
-        for (auto &&mvd : moved)
+        // 移动寄存器
+        for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)4); i < siz; ++i)
         {
-            asm_insts.push_back(AsmCode(AsmInst::MOV, 
-            {   Param(REGs(mvd)),
-                Param(REGs(mvd + 4))},
-            indent));
+            while (registers[i] != should_be[i])
+            {
+                int idx = i;
+                while (registers[idx] != should_be[i] && idx <= 13) // 找到should_be[i]的位置
+                    ++idx;
+                assert(idx != 13 && "codegen: error in function call generation inst when trying to move args!");
+                AddAsmCodeSwapRegisters(asm_insts, REGs(idx), REGs(i), indent);
+                std::swap(registers[idx], registers[i]);
+            }
         }
         
         // 函数调用 
@@ -913,7 +925,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
 
         // insert ltorg
-        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 128")}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 1024")}, indent));
     }
     Case (LLIR_ZEXT, zext_inst, instPtr)
     {
@@ -1201,7 +1213,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
             continue;
 
         // insert ltorg
-        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 128")}, 1));
+        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 1024")}, 1));
 
         int indent = 0;
         // function start
