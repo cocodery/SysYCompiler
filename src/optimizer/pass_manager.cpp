@@ -22,16 +22,23 @@ void PassManager::compDomInfo() {
 void PassManager::mem2reg() {
     // dbg("run Mem2Reg pass");
     for (auto &&function : functions) {
+        if (!function->func_info.is_used)
+            continue;
         Mem2Reg mem2reg = Mem2Reg(function);
         mem2reg.runMem2Reg();
     }
 }
 
 void PassManager::lvn() {
+    // dbg("run local-variable-number pass");
     for (auto &&function : functions) {
-        for (auto &&bb : function->all_blocks) {
-            LVN lvn;
-            lvn.ValueNumber(&bb->basic_block);
-        }
+        if (!function->func_info.is_used)
+            continue;
+        LVN lvn = LVN(function);
+        lvn.runLVN();
     }
+}
+
+void PassManager::funcRecursion() {
+    FunctionRecursion obj(functions);
 }
