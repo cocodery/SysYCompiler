@@ -20,6 +20,7 @@ https://developer.arm.com/documentation/dui0068/b/ARM-Instruction-Reference/ARM-
 #define LOCAL_VARS_LOAD_MEMCPY_REGISTERS {r0, lr}
 ```
 12. call时候的寄存器压栈：有些寄存器里存的变量已经在LiveInterval的末期，不用压栈
+13. call时候移动参数：有时候没有冲突，不用交换
 - IR
 1. LLIR_RET指令：对于如下代码段
 ```c

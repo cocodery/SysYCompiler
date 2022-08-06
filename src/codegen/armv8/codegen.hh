@@ -824,16 +824,17 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
 
         // 移动参数
             // TODO: more than 4 regs
-        vector<REGs> registers{r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12};
-        vector<REGs> should_be{r0,r1,r2,r3};
+        vector<REGs> registers{r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12}; // 每个“位置”上现在是哪个寄存器
+        vector<REGs> should_be{r0,r1,r2,r3}; // 每个“位置”上应该是哪个寄存器
+        vector<bool> skip_because_is_ctv{false, false, false, false}; // 当前“位置”是常数，跳过检查
+        vector<int32_t> ctv_to_move_in{0,0,0,0};
         for (size_t i = 0, siz = call_inst->args.size(); i < std::min(siz, (size_t)4); ++i)
         {
             auto &&arg = call_inst->args[i];
             if (arg.ctv) // arg is const val
             {
-                if (arg.ctv->type == TypeInt) // int
-                    AddAsmCodeMoveIntToRegister(asm_insts, REGs(i), arg.ctv->int_value, indent);
-                // TODO: float
+                skip_because_is_ctv[i] = true;
+                ctv_to_move_in[i] = (arg.ctv->type == TypeInt) ? arg.ctv->int_value : DoubleToInt(arg.ctv->float_value);
             }
             else // arg is virtreg
             {
@@ -844,19 +845,23 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 should_be[i] = GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id);
             }
         }
-        // 移动寄存器
+        // 移动（交换）寄存器
         for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)4); i < siz; ++i)
         {
-            while (registers[i] != should_be[i])
+            while (!skip_because_is_ctv[i] && registers[i] != should_be[i])
             {
-                int idx = i;
+                int idx = 0;
                 while (registers[idx] != should_be[i] && idx <= 13) // 找到should_be[i]的位置
                     ++idx;
                 assert(idx != 13 && "codegen: error in function call generation inst when trying to move args!");
-                AddAsmCodeSwapRegisters(asm_insts, REGs(idx), REGs(i), indent);
+                AddAsmCodeSwapRegisters(asm_insts, REGs(i), REGs(idx), indent);
                 std::swap(registers[idx], registers[i]);
             }
         }
+        // 移动常数，应该在交换寄存器之后进行
+        for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)4); i < siz; ++i)
+            if (skip_because_is_ctv[i])
+                AddAsmCodeMoveIntToRegister(asm_insts, REGs(i), ctv_to_move_in[i], indent);
         
         // 函数调用 
         asm_insts.push_back(AsmCode(AsmInst::BL, 
