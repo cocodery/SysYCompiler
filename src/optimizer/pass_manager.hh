@@ -4,6 +4,7 @@
 #include "../structure/ir.hh"
 #include "mem2reg.hh"
 #include "lvn.hh"
+#include "function_recursion.hh"
 
 class PassManager {
 public:
@@ -14,13 +15,17 @@ public:
     void excute_pass() {
         compDomInfo();
 
+        //mem2reg();
+
         lvn();
 
-        mem2reg();
+        funcRecursion();
     }
     void compDomInfo();
 
+    void mem2reg();
+
     void lvn();
 
-    void mem2reg();
+    void funcRecursion();
 };

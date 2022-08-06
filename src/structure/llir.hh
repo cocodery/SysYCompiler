@@ -26,8 +26,31 @@ public:
     VirtReg *ToVirtReg() {
         return (reg == nullptr) ? nullptr : reg;
     }
-    bool operator == (SRC l) {
-        return (*ctv == *l.ctv && *reg == *l.reg);
+    bool operator == (SRC src) {
+        if (ctv && src.ToCTValue()) {
+            return *ctv == *src.ToCTValue();
+        } else if (reg && src.ToVirtReg()) {
+            return *reg == *src.ToVirtReg();
+        } else if (!ctv && !src.ToCTValue() && !reg && !src.ToVirtReg()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    bool operator < (const SRC &other) const {
+        // null < ctv < reg
+
+        // at least one operand is null
+        if (!ctv && !reg) // self is null
+            return other.ctv || other.reg; // smaller if other is non-null
+        if (!other.ctv && !other.reg) // other is null
+            return false; // always equal or larger
+
+        // both operands are either ctv or reg
+        if (ctv) // self is ctv
+            return other.ctv ? (*ctv < *other.ctv) : true;
+        else // self is reg
+            return other.reg ? (reg->reg_id < other.reg->reg_id) : false;
     }
 };
 
@@ -108,6 +131,11 @@ public:
 public:
     LLIR_LOAD(SRC _dst, SRC _src) : dst(_dst), src(_src) { }
     string ToString();
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&src_reg = src.ToVirtReg(); src_reg != nullptr && *old_reg == *src_reg) {
+            src = new_var;
+        }
+    }
 };
 
 class LLIR_STORE: public Inst {
@@ -120,6 +148,11 @@ public:
     void replaceSRC(VirtReg *old_reg, SRC new_var) {
         if (auto &&src_reg = src.ToVirtReg(); src_reg != nullptr && *old_reg == *src_reg) {
             src = new_var;
+        }
+    }
+    void replaceDst(VirtReg *old_reg, SRC new_var) {
+        if (auto &&dst_reg = dst.ToVirtReg(); dst_reg != nullptr && *old_reg == *dst_reg) {
+            dst = new_var;
         }
     }
 };

@@ -37,6 +37,9 @@ public:
     VarType move_down();
     string printVarTypeForAlc();
     string printVarTypeForArg();
+    bool operator == (const VarType &rhs) const {
+        return (decl_type == rhs.decl_type) && (is_array == rhs.is_array);
+    }
 };
 
 class Variable {
@@ -65,8 +68,10 @@ public:
 class FunctionInfo {
 public:
     bool is_used;
+    bool is_recursive;
     string func_name;
     DeclType return_type;
+    set<FunctionInfo *> called_funcs;
     vector<pair<string, VarType>> func_args;
 public:
     FunctionInfo();

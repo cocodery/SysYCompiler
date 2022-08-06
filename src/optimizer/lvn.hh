@@ -2,83 +2,47 @@
 
 #include <iostream>
 #include <vector>
-#include <variant>
-#include <string>
-#include <tuple>
+#include <map>
 
+#include "../../common.hh"
 #include "../structure/ir.hh"
 #include "../structure/symtable.hh"
 #include "../structure/llir.hh"
-#include "../structure/baseclass.hh"
-#include "../structure/value.hh"
 
 using std::ostream;
 using std::vector;
-using std::string;
 using std::map;
-using std::tuple;
-using std::get;
-using std::make_tuple;
+
+enum NodeOp {  
+    Add, Sub, Mul, Div, Rem, 
+    fAdd, fSub, fMul, fDiv, 
+    iCmp, fCmp , Gep
+};
 
 class lvnNode {
 public:
-    SRC dst;
-    int src1;
-    int src2;
-    BinOp op;
+    NodeOp op;
+    SRC src1;
+    SRC src2;
 public:
-    lvnNode() {
-        dst = SRC();
-        src1 = -1;
-        src2 = -1;
-    }
-    lvnNode(SRC dst, int src1, BinOp op, int src2) {
-        this->dst = dst;
-        this->src1 = src1;
-        this->src2 = src2;
-        this->op = op;
-    }
-    lvnNode(SRC dst) {
-        cout << "construct node" << endl;
-        this->dst = dst;
-        this->src1 = -1;
-        this->src2 = -1;
-        cout << ">> current node: " << this->dst.ToString() << " " <<this->src1 << " " <<this->src2 << endl;
-    }
-    lvnNode(SRC dst, int src1) {
-        this->dst = dst;
-        this->src1 = src1;
-        this->src2 = -1;
-    }
+    lvnNode(NodeOp _op, SRC _src1, SRC _src2) : op(_op), src1(_src1), src2(_src2) { }
 
-    // bool is_computation_equal(int src1, int src2, string op) {
-    //     return (this->src1 == src1 && this->src2 == src2 && this->op == op);
-    // }
-
-    bool operator == (lvnNode l) {
-        return (dst == l.dst && src1 == l.src1 && src2 == l.src2 && op == l.op);
-    }
-
-    bool operator == (tuple<int, int, BinOp> l) {
-        return (src1 == get<0>(l) && src2 == get<1>(l) &&  op == get<2>(l));
+    bool operator == (lvnNode node) {
+        return op == node.op && src1 == node.src1 && src2 == node.src2;
     }
 };
 
 class LVN{
 public:
-    int idx;
-    // unordered_multimap<string, tuple<int, int, string>> lvn_map;
-    vector<lvnNode> lvn_list;
+    Function *function;
+    map<int32_t, int32_t> bbIdxMapIdx;
+    vector<map<SRC, lvnNode *>> lvnMapNodes;
 public:
-    void ValueNumber(vector<Inst *> *bb);
-    bool FindDst(lvnNode dst);
-    int ProcessInst(vector<Inst *> *bb, Inst *inst, BinOp op, SRC dst, SRC src1, SRC src2);
-    void ProcessInst(vector<Inst *> *bb, string op, string dst, string src);
-    void Remove(string dst, vector<Inst *> *bb);
-    pair<int, SRC> FindTuple(tuple<int, int, BinOp> t);
-    void ProcessBB(vector<Inst *> *bb, SRC dst, SRC instead, Inst *i);
-    int GetIndex(SRC dst);
-    void display();
+    LVN(Function *func) : function(func) {
+        bbIdxMapIdx.clear();
+        lvnMapNodes.clear();
+    }
+    void runLVN();
+    void valueNumber(BasicBlock *block);
+    SRC checkInMap(BasicBlock *block, lvnNode *node);
 };
-
-

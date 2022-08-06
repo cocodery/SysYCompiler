@@ -12,6 +12,8 @@ public:
 
 class Inst: public Info {
 public:
+    CLAIM_AVAIL_REGS
+public:
     virtual ~Inst() { }
 };
 
@@ -21,6 +23,9 @@ public:
     VarType type;
     bool global;
     bool assign;
+
+    // codegen
+    bool is_from_gep = false;
 public:
     VirtReg(int32_t _idx, VarType _type = VarType(TypeVoid), bool _glb = false, bool _assign = true) 
         : reg_id(_idx), type(_type), global(_glb), assign(_assign) { }
@@ -30,7 +35,7 @@ public:
         else ss << "%r" << reg_id;
         return ss.str();
     }
-    bool operator == (VirtReg &rhs) const {
-        return (reg_id == rhs.reg_id) && (global == rhs.global);
+    bool operator == (const VirtReg &rhs) const {
+        return (reg_id == rhs.reg_id) && (global == rhs.global) && (type == rhs.type);
     }
 };
