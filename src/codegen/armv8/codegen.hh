@@ -609,7 +609,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         asm_insts.push_back(AsmCode(AsmInst::B, {Param(Param::Str, GET_FUNC_RETURN_NAME(funcPtr))}, indent));
         
         // insert ltorg
-        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 1024")}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", indent));
     }
     Case (LLIR_STORE, store_inst, instPtr)
     {
@@ -930,7 +930,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
 
         // insert ltorg
-        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 1024")}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", indent));
     }
     Case (LLIR_ZEXT, zext_inst, instPtr)
     {
@@ -1217,9 +1217,6 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         if (!funcPtr->func_info.is_used)
             continue;
 
-        // insert ltorg
-        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, {Param(Param::Str, ".space 1024")}, 1));
-
         int indent = 0;
         // function start
         asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name, "", indent));
@@ -1230,6 +1227,16 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
             asm_insts.push_back(AsmCode(AsmInst::EMPTY, "global_alloc", "", indent));
             for (auto &&elem : data_init)
                 asm_insts.push_back(elem);
+                asm_insts.push_back(AsmCode(
+                    AsmInst::B,
+                    {Param(Param::Str, "global_alloc_ltorg")},
+                    1));
+                asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", 1));
+                asm_insts.push_back(AsmCode(
+                    AsmInst::EMPTY,
+                    "global_alloc_ltorg",
+                    "",
+                    indent));
         }
 
         // if this function called other functions, push the lr register (DO NOT touch r0-r3)
@@ -1316,10 +1323,49 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
             asm_insts.push_back(AsmCode(AsmInst::EMPTY,
                 GET_BB_NAME(funcPtr, bbPtr->bb_idx), "",
                 indent));
+            int first_ldr_idx;
+            bool first_ldr_found = false;
+            int dist_from_first_ldr_idx = 0;
+            int ltorg_idx = 0;
             for (auto &&instPtr : bbPtr->basic_block)
             {
                 ++indent;
+                size_t siz_before, siz_after;
+                siz_before = asm_insts.size();
                 AddAsmCodeFromLLIR(asm_insts, funcPtr, instPtr, indent);
+                siz_after = asm_insts.size();
+                int new_insts_cnt = siz_after - siz_before;
+                for (int i = siz_before; i < siz_after; ++i)
+                {
+                    if (!first_ldr_found && asm_insts[i].inst.i_typ == AsmInst::LDR)
+                    {
+                        first_ldr_found = true;
+                        first_ldr_idx = i;
+                        dist_from_first_ldr_idx = 0;
+                        break;
+                    }
+                }
+                if (first_ldr_found)
+                {
+                    dist_from_first_ldr_idx = siz_after - first_ldr_idx;
+                
+                    // insert ltorg, and reset counter
+                    if (dist_from_first_ldr_idx > 500)
+                    {
+                        asm_insts.push_back(AsmCode(
+                            AsmInst::B,
+                            {Param(Param::Str, (string(GET_BB_NAME(funcPtr, bbPtr->bb_idx)) + "_ltorg_" + std::to_string(++ltorg_idx)).c_str())},
+                            indent));
+                        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", indent));
+                        asm_insts.push_back(AsmCode(
+                            AsmInst::EMPTY,
+                            string(GET_BB_NAME(funcPtr, bbPtr->bb_idx)) + "_ltorg_" + std::to_string(ltorg_idx),
+                            "",
+                            indent - 1));
+                        first_ldr_found = false;
+                        dist_from_first_ldr_idx = 0;
+                    }
+                }
                 --indent;
             }
         }
@@ -1377,6 +1423,9 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         else
             asm_insts.push_back(AsmCode(AsmInst::BX,
                 {Param(lr)}, 1));
+
+        // insert ltorg
+        asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", 1));
     }
 
 
