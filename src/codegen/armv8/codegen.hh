@@ -896,6 +896,12 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
         else // conditional branch
         {
+            if (br_inst->cond.ctv) // branch condition is constant
+            {
+                if (br_inst->cond.ctv->int_value == 0)
+                    b_type = AlwaysFalse;
+                else b_type = AlwaysTrue;
+            }
             if (b_type != AlwaysFalse)
                 asm_insts.push_back(AsmCode(AsmInst::ConvertAsmBranchTypeToBranchInst(b_type), 
                 {   Param(Param::Str, GET_BB_NAME(funcPtr, br_inst->tar_true))},
