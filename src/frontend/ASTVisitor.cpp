@@ -139,9 +139,6 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
         vector<pair<int32_t, SRC>> initTable;
         vector<int32_t> unInitTable;
         parse_variable_init(node, var, var.array_dims, 0, initTable, unInitTable);
-        for (auto &&idx : unInitTable) {
-            dbg(idx);
-        }
         int32_t init_size = initTable.size();
         VirtReg *ptr1 = new VirtReg(var_idx++, var);
         LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, addr, SRC(new CTValue(TypeInt, 0, 0)), var);
@@ -1149,20 +1146,24 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
                 reg = zext_dst;
                 _type = VarType(TypeInt);
             }
-            VirtReg *dst = new VirtReg(var_idx++, _type);
+            SRC ret;
             if (_type.decl_type == TypeInt) {
+                VirtReg *dst = new VirtReg(var_idx++, _type);
                 LLIR_BIN *bin_inst = new LLIR_BIN(SUB, dst, SRC(new CTValue(_type.decl_type, 0, 0)), SRC(reg));
                 cur_basicblock->basic_block.push_back(bin_inst);
+                ret = SRC(dst);
             } else if (_type.decl_type == TypeFloat) {
                 SRC zero_ctv = SRC(new CTValue(TypeInt, 0, 0));
                 SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
                 LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, new CTValue(TypeInt, 0, 0));
                 cur_basicblock->basic_block.push_back(itf_inst);
+                VirtReg *dst = new VirtReg(var_idx++, _type);
                 LLIR_FBIN *bin_inst = new LLIR_FBIN(SUB, dst, zero_float, SRC(reg));
                 cur_basicblock->basic_block.push_back(bin_inst);
+                ret = SRC(dst);
             }
             // dbg("exit visitUnary3 with VirtReg SUB");
-            return SRC(dst);
+            return ret;
         } else if (op == "+") {
             // dbg("exit visitUnary3 with VirtReg ADD");
             return SRC(reg);
