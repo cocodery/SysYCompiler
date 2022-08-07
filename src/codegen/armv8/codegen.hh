@@ -25,6 +25,15 @@ int IntToFloat(int i)
     return *(int*)(&f);
 }
 
+const char *FunctionRename(FunctionInfo *func)
+{
+    if (func->func_name == "imemset" || func->func_name == "fmemset")
+        return "memset";
+    else if (func->func_name == "my_getint")
+        return "getint";
+    else return func->func_name.c_str();
+}
+
 #define CTV_TO_WORD(_CTV_PTR) ((_CTV_PTR->type == TypeFloat) ? DoubleToWord(_CTV_PTR->float_value) : _CTV_PTR->int_value)
 
 #define GET_GLOBAL_PTR_NAME(_VAR_IDX) ((string(GLOB_PTR_PREFIX) + std::to_string(_VAR_IDX)).c_str())
@@ -969,7 +978,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         
         // 函数调用 
         asm_insts.push_back(AsmCode(AsmInst::BL, 
-            {Param(Param::Str, INT_IO_HACK(call_inst->func_info))},
+            {Param(Param::Str, FunctionRename(call_inst->func_info))},
             indent));
 
         // 移动返回值
