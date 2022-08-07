@@ -23,3 +23,5 @@ src/frontend/.antlr/
 
 #compiler2022
 compiler2022/*
+
+!sylib.ll
