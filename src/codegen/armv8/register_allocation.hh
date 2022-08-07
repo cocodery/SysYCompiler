@@ -17,8 +17,7 @@ void AllocateRegistersForFunction(Function &func)
     printf("In Function \"%s\":\n", func.func_info.func_name.c_str());
     
     CLAIM_AVAIL_REGS
-    //set<REGs> availRegs{r0,  r1};
-    std::list<int32_t> activeIntervals;
+    list<int32_t> activeIntervals;
     
     // 给参数0到3分配寄存器
     printf(" - pre allocation\n");
