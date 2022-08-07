@@ -50,7 +50,8 @@ public:
     
     void parse_const_init(SysYParser::ListConstInitValContext *node, const vector<int32_t> &array_dims, vector<int32_t>& ilist, vector<double>& flist);
 
-    void parse_variable_init(SysYParser::ListInitvalContext *node, VarType type, vector<int32_t> arr_dim, SRC addr, int32_t off);
+    void parse_variable_init(SysYParser::ListInitvalContext *node, VarType type, 
+        vector<int32_t> arr_dim, int32_t off, vector<pair<int32_t, SRC>> &initTable, vector<int32_t> &unInitTable);
 
     void generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair var_pair);
 
