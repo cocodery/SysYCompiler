@@ -19,18 +19,20 @@ void AllocateRegistersForFunction(Function &func)
     CLAIM_AVAIL_REGS
     list<int32_t> activeIntervals;
     
-    // 给参数0到3分配寄存器
+    // 给参数0到31分配寄存器
     printf(" - pre allocation\n");
-    for (int i = 0; i <= 3; ++i)
+    for (int i = 0; i <= 31; ++i)
     {
         // 不是参数或者这个参数没有被使用，跳过分配
-        if (i >= func.func_info.func_args.size() || 
-        func.LiveInterval.find(i) == func.LiveInterval.end())
+        if (i >= func.func_info.func_args.size())
+            break;
+        if (func.LiveInterval.find(i) == func.LiveInterval.end())
             continue;
-        func.AllocationResult.insert(make_pair(i, (REGs)i));
-        availRegs.erase((REGs)i);
+        REGs allocated_register = (i > 3) ? REGs(i + 16) : REGs(i);
+        func.AllocationResult.insert(make_pair(i, allocated_register));
+        availRegs.erase(allocated_register);
         activeIntervals.push_back(i);
-        printf(FOUR_SPACES "var: %d, reg %d\n", i, i);
+        printf(FOUR_SPACES "var: %d, reg %d\n", i, allocated_register);
     }
     printf(" ----\n");
 
@@ -39,7 +41,7 @@ void AllocateRegistersForFunction(Function &func)
         auto &&varIndex = interval.first;
         auto &&varRange = interval.second;
 
-        // 该变量已分配，跳过（r0-r3传参寄存器）
+        // 该变量已分配，跳过（r0-r3, s4-s31传参寄存器）
         if (func.AllocationResult.find(varIndex) != func.AllocationResult.end())
             continue;
 

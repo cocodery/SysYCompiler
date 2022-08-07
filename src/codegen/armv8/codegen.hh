@@ -58,6 +58,10 @@ const char *FunctionRename(FunctionInfo *func)
 
 #define GET_ALLOCATION_RESULT(_FUNC_PTR, _VIRTREG_ID) (_FUNC_PTR->AllocationResult.at(_VIRTREG_ID))
 
+#define CALL_INST_GET_ARGS_REGISTER_IDX(_ARG_ID) ((_ARG_ID > 3) ? i + 9 : i)
+
+#define GET_ARGS_REGISTER(_ARG_ID) ((_ARG_ID > 3) ? REGs(i + 16) : REGs(i))
+
 #define CONDITION_REGISTER_NOT_ALLOCATED(_FUNC_PTR, _REG_IDX) \
     (_FUNC_PTR->AllocationResult.find(_REG_IDX) == _FUNC_PTR->AllocationResult.end())
 
@@ -181,7 +185,7 @@ public:
         MOVEQ, MOVNE, SDIV, MVN, RSB,
         DOT_LTORG, EORNE, VADD, VSUB, VMUL,
         VDIV, VMOV, VCMP, VCVT_ITOF, VCVT_FTOI,
-        FMSTAT
+        FMSTAT, VPUSH, VPOP
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -192,7 +196,7 @@ public:
         "moveq", "movne", "sdiv", "mvn", "rsb",
         ".ltorg", "eorne", "vadd.f32", "vsub.f32", "vmul.f32",
         "vdiv.f32", "vmov", "vcmp.f32", "vcvt.f32.s32", "vcvt.s32.f32",
-        "fmstat"
+        "fmstat", "vpush", "vpop"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -293,14 +297,32 @@ public:
     }
 };
 
-string GetRegList(const vector<REGs> &regs)
+string GetRRegList(const vector<REGs> &regs)
 {
     string reglist("{");
     for (auto &&reg : regs)
     {
+        if (reg >= s0) continue; // skip s registers
         Param p(reg);
         reglist += p.ToString() + ", ";
     }
+    if (reglist == "{") return "";
+    reglist.pop_back();
+    reglist.pop_back();
+    reglist += "}";
+    return reglist;
+}
+
+string GetSRegList(const vector<REGs> &regs)
+{
+    string reglist("{");
+    for (auto &&reg : regs)
+    {
+        if (reg < s0) continue; // skip r registers
+        Param p(reg);
+        reglist += p.ToString() + ", ";
+    }
+    if (reglist == "{") return "";
     reglist.pop_back();
     reglist.pop_back();
     reglist += "}";
@@ -311,7 +333,11 @@ void AddAsmCodePushRegisters(vector<AsmCode> &asm_insts, const vector<REGs> &reg
 {
     auto &&cnt = regs.size();
     if (cnt == 0) return;
-    asm_insts.push_back(AsmCode(AsmInst::PUSH, {Param(Param::Str, GetRegList(regs).c_str())}, indent));
+    string r_reg_list = GetRRegList(regs), s_reg_list = GetSRegList(regs);
+    if (!r_reg_list.empty())
+        asm_insts.push_back(AsmCode(AsmInst::PUSH, {Param(Param::Str, r_reg_list.c_str())}, indent));
+    if (!s_reg_list.empty())
+        asm_insts.push_back(AsmCode(AsmInst::VPUSH, {Param(Param::Str, s_reg_list.c_str())}, indent));
     if (cnt % 2 != 0)
         asm_insts.push_back(AsmCode(AsmInst::SUB, {Param(sp), Param(sp), Param(4)}, indent));
 }
@@ -322,7 +348,11 @@ void AddAsmCodePopRegisters(vector<AsmCode> &asm_insts, const vector<REGs> &regs
     if (cnt == 0) return;
     if (cnt % 2 != 0)
         asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(sp), Param(sp), Param(4)}, indent));
-    asm_insts.push_back(AsmCode(AsmInst::POP, {Param(Param::Str, GetRegList(regs).c_str())}, indent));
+    string r_reg_list = GetRRegList(regs), s_reg_list = GetSRegList(regs);
+    if (!s_reg_list.empty())
+        asm_insts.push_back(AsmCode(AsmInst::VPOP, {Param(Param::Str, s_reg_list.c_str())}, indent));
+    if (!r_reg_list.empty())
+        asm_insts.push_back(AsmCode(AsmInst::POP, {Param(Param::Str, r_reg_list.c_str())}, indent));
 }
 
 void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int indent, AsmInst::InstType conditional_move = AsmInst::MOV)
@@ -925,56 +955,65 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         // [dst = ] func(arg1, arg2, ...)
         // 保存现场，只保存活跃的寄存器，不包括返回值所占用的寄存器
         vector<REGs> used_regs;
-        for (REGs i = r0; i <= r12; i = (REGs)(i + 1))
+        for (REGs i = r0; i <= s31; i = (REGs)(i + 1))
         {
+            // 跳过特殊寄存器
+            if (i > r12 && i < s4)
+                continue;
             // 跳过返回值的reg
             if (call_inst->func_info->return_type != TypeVoid && !CONDITION_REGISTER_NOT_ALLOCATED(funcPtr, call_inst->dst.reg->reg_id) && GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id) == i)
                 continue;
+            // 如果该寄存器在当前指令不是空闲的，就push
             if (instPtr->availRegs.find(i) == instPtr->availRegs.end())
                 used_regs.push_back(i);
         }
         AddAsmCodePushRegisters(asm_insts, used_regs, indent);
 
         // 移动参数
-            // TODO: more than 4 regs
-        vector<REGs> registers{r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12}; // 每个“位置”上现在是哪个寄存器
-        vector<REGs> should_be{r0,r1,r2,r3}; // 每个“位置”上应该是哪个寄存器
-        vector<bool> skip_because_is_ctv{false, false, false, false}; // 当前“位置”是常数，跳过检查
-        vector<int32_t> ctv_to_move_in{0,0,0,0};
-        for (size_t i = 0, siz = call_inst->args.size(); i < std::min(siz, (size_t)4); ++i)
+            // TODO: more than 32 regs
+        vector<REGs> registers AVAIL_REGS_INIT_LIST; // 每个“位置”上现在是哪个寄存器
+        vector<REGs> should_be(registers); // 每个“位置”上应该是哪个寄存器
+        vector<bool> skip_because_is_ctv(registers.size(), false); // 当前“位置”是常数，跳过检查
+        vector<int32_t> ctv_to_move_in(registers.size(), 0); // 要移动进去的常数
+        for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)32); i < siz; ++i)
         {
             auto &&arg = call_inst->args[i];
             if (arg.ctv) // arg is const val
             {
-                skip_because_is_ctv[i] = true;
-                ctv_to_move_in[i] = CTV_TO_WORD(arg.ctv);
+                skip_because_is_ctv[CALL_INST_GET_ARGS_REGISTER_IDX(i)] = true;
+                ctv_to_move_in[CALL_INST_GET_ARGS_REGISTER_IDX(i)] = CTV_TO_WORD(arg.ctv);
             }
             else // arg is virtreg
             {
                 // 不需要移动
-                if (REGs(i) == GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id))
+                if (GET_ARGS_REGISTER(i) == GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id))
                     continue;
                 // 需要移动
-                should_be[i] = GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id);
+                should_be[CALL_INST_GET_ARGS_REGISTER_IDX(i)] = GET_ALLOCATION_RESULT(funcPtr, arg.reg->reg_id);
             }
         }
         // 移动（交换）寄存器
-        for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)4); i < siz; ++i)
+        for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)32); i < siz; ++i)
         {
-            while (!skip_because_is_ctv[i] && registers[i] != should_be[i])
+            while (!skip_because_is_ctv[CALL_INST_GET_ARGS_REGISTER_IDX(i)]
+            && registers[CALL_INST_GET_ARGS_REGISTER_IDX(i)] != should_be[CALL_INST_GET_ARGS_REGISTER_IDX(i)])
             {
                 int idx = 0;
-                while (registers[idx] != should_be[i] && idx <= 13) // 找到should_be[i]的位置
+                while (registers[idx] != should_be[CALL_INST_GET_ARGS_REGISTER_IDX(i)] && idx <= 41) // 找到should_be[i]的位置
                     ++idx;
-                assert(idx != 13 && "codegen: error in function call generation inst when trying to move args!");
-                AddAsmCodeSwapRegisters(asm_insts, REGs(i), REGs(idx), indent);
-                std::swap(registers[idx], registers[i]);
+                assert(idx != 41 && "codegen: error in function call generation inst when trying to move args!");
+                AddAsmCodeSwapRegisters(asm_insts, GET_ARGS_REGISTER(i), REGs(idx), indent);
+                std::swap(registers[idx], registers[CALL_INST_GET_ARGS_REGISTER_IDX(i)]);
             }
         }
         // 移动常数，应该在交换寄存器之后进行
-        for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)4); i < siz; ++i)
-            if (skip_because_is_ctv[i])
-                AddAsmCodeMoveIntToRegister(asm_insts, REGs(i), ctv_to_move_in[i], indent);
+        for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)32); i < siz; ++i)
+            if (skip_because_is_ctv[CALL_INST_GET_ARGS_REGISTER_IDX(i)])
+                AddAsmCodeMoveIntToRegister(
+                    asm_insts,
+                    GET_ARGS_REGISTER(i),
+                    ctv_to_move_in[CALL_INST_GET_ARGS_REGISTER_IDX(i)],
+                    indent);
         
         // 函数调用 
         asm_insts.push_back(AsmCode(AsmInst::BL, 
