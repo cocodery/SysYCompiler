@@ -181,14 +181,6 @@ void ProcessInst(vector <int32_t> &src_regids,
         //IF_IS_REG_THEN_PUSH_BACK(src_regids, xor_inst->src.reg);
         //dst_regid = IF_GLOBAL_RETURN_NEG_ID(xor_inst->dst.reg);
     }
-    Case (LLIR_BC, bc_inst, instPtr)
-    {
-        //cout << get_tabs() << bc_inst->ToString() << endl; 
-
-        // dst = (char)src
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, bc_inst->src.reg);
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(bc_inst->dst.reg);
-    }
     Case (LLIR_SITOFP, itf_inst, instPtr)
     {
         //cout << get_tabs() << itf_inst->ToString() << endl;
