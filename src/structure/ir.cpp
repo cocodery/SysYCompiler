@@ -421,17 +421,17 @@ CompUnit::CompUnit() {
 // Global  Function Init Part
     functions.empty();
 // Library Funtions Init Part
-    string func_name[13] = { "getint"   , "getch"    , "getfloat", "getarray",
+    string func_name[14] = { "getint"   , "getch"    , "getfloat", "getarray",
                              "getfarray", "putint"   , "putch"   , "putfloat", 
                              "putarray" , "putfarray", 
                              "_sysy_starttime", "_sysy_stoptime",
-                             "llvm.memset.p0i8.i32" };
-    DeclType ret_type[13] = {  TypeInt, TypeInt, TypeFloat, TypeInt, 
+                             "imemset", "fmemset" };
+    DeclType ret_type[14] = {  TypeInt, TypeInt, TypeFloat, TypeInt, 
                                TypeInt, TypeVoid, TypeVoid, TypeVoid,
                                TypeVoid, TypeVoid,
                                TypeVoid, TypeVoid,
-                               TypeVoid };
-    for (int32_t i = 0; i < 13; ++i) {
+                               TypeVoid, TypeVoid };
+    for (int32_t i = 0; i < 14; ++i) {
         lib_functions[i] = new LibFunction;
         lib_functions[i]->libfunc_info.is_used = false;
         lib_functions[i]->libfunc_info.func_name = func_name[i];
@@ -467,12 +467,16 @@ CompUnit::CompUnit() {
     lib_functions[10]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
     // sysy_stoptime
     lib_functions[11]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
-    // memset
-    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true, true, TypeByte)));
+    // imemset
+    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true, true, TypeInt)));
     lib_functions[12]->libfunc_info.func_args[0].second.array_dims.push_back(-1);
-    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeByte)));
     lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
-    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeBool)));
+    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
+    // fmemset
+    lib_functions[13]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true, true, TypeFloat)));
+    lib_functions[13]->libfunc_info.func_args[0].second.array_dims.push_back(-1);
+    lib_functions[13]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
+    lib_functions[13]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
 }
 
 FunctionInfo *CompUnit::getFunctionInfo(string func_name) {

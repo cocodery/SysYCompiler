@@ -143,6 +143,28 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
         VirtReg *ptr1 = new VirtReg(var_idx++, var);
         LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, addr, SRC(new CTValue(TypeInt, 0, 0)), var);
         cur_basicblock->basic_block.push_back(gep_inst1);
+        int32_t number = var.elements_number();
+        if (initTable.size() < number) {
+            vector<SRC> args;
+            VirtReg *start_addr = new VirtReg(var_idx++, VarType(false, true, false, var.decl_type));
+            LLIR_GEP *gep_addr_inst = new LLIR_GEP(start_addr, ptr1, SRC(new CTValue(TypeInt, 0, 0)), VarType(var.decl_type));
+            cur_basicblock->basic_block.push_back(gep_addr_inst);
+            FunctionInfo *func_info = nullptr;
+            if (var.decl_type == TypeInt) {
+                func_info = ir.getFunctionInfo("imemset");
+            } else if (var.decl_type == TypeFloat) {
+                func_info = ir.getFunctionInfo("fmemset");
+            } else {
+                assert(true && "UnExcepted Type for memset");
+            }
+            func_info->is_used = true;
+            cur_func->func_info.called_funcs.insert(func_info);
+            args.push_back(start_addr);
+            args.push_back(new CTValue(TypeInt, 0, 0));
+            args.push_back(new CTValue(TypeInt, number * 4, number * 4));
+            LLIR_CALL *call_inst = new LLIR_CALL(SRC(), args, func_info);
+            cur_basicblock->basic_block.push_back(call_inst);
+        }
         for (auto &&pair : initTable) {
             int32_t off = pair.first;
             SRC value = pair.second;
