@@ -171,7 +171,8 @@ public:
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
         MOVEQ, MOVNE, SDIV, MVN, RSB,
         DOT_LTORG, EORNE, VADD, VSUB, VMUL,
-        VDIV, VMOV, VCMP, VCVT_ITOF, VCVT_FTOI
+        VDIV, VMOV, VCMP, VCVT_ITOF, VCVT_FTOI,
+        FMSTAT
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -181,7 +182,8 @@ public:
         "bge", "movlt", "movge", "movle", "movgt",
         "moveq", "movne", "sdiv", "mvn", "rsb",
         ".ltorg", "eorne", "vadd.f32", "vsub.f32", "vmul.f32",
-        "vdiv.f32", "vmov", "vcmp.f32", "vcvt.f32.s32", "vcvt.s32.f32"
+        "vdiv.f32", "vmov", "vcmp.f32", "vcvt.f32.s32", "vcvt.s32.f32",
+        "fmstat"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -1105,6 +1107,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         // dst = src1 < src2
         // 在下面调用的函数中已经保存分支类型
         AddAsmCodeFloatCmp(asm_insts, fcmp_inst->op, src1, src2, indent);
+        asm_insts.push_back(AsmCode(AsmInst::FMSTAT, "", "", indent));
     }
     Case (LLIR_SITOFP, itf_inst, instPtr)
     {
@@ -1142,7 +1145,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             asm_insts.push_back(AsmCode(AsmInst::VMOV, {GET_ALLOCATION_RESULT(funcPtr, fti_inst->dst.reg->reg_id), Param(FLOAT_BINOP_REGISTER_1)}, indent));
         }
         else // ctv
-            AddAsmCodeMoveIntToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, fti_inst->dst.reg->reg_id), DoubleToWord(fti_inst->src.ctv->float_value), indent);
+            AddAsmCodeMoveIntToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, fti_inst->dst.reg->reg_id), (int)fti_inst->src.ctv->float_value, indent);
 
         // dst = (int) src
     }
