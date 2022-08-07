@@ -103,7 +103,7 @@ class CompUnit: public Info {
 public:
     Scope *global_scope;
     vector<Function *> functions;
-    LibFunction *lib_functions[13];
+    LibFunction *lib_functions[14];
 public:
     CompUnit();
     FunctionInfo *getFunctionInfo(string func_name);

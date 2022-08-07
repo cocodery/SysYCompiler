@@ -65,7 +65,8 @@ void ASTVisitor::parse_const_init(SysYParser::ListConstInitValContext *node, con
     return;
 }
 
-void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarType _type, vector<int32_t> arr_dim, SRC addr, int32_t off) {
+void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarType _type, 
+vector<int32_t> arr_dim, int32_t off, vector<pair<int32_t, SRC>> &initTable, vector<int32_t> &unInitTable) {
     int32_t total_size = 1;
     for (int i = 0; i < arr_dim.size(); ++i) {
         total_size = total_size * arr_dim[i];
@@ -73,14 +74,8 @@ void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarTy
     vector<int32_t> child_array_dims = arr_dim; // 子结点的维度
     child_array_dims.erase(child_array_dims.begin());
     int32_t cnt = 0;
-    VirtReg *ptr1 = new VirtReg(var_idx++, _type);
-    LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, addr, SRC(new CTValue(TypeInt, 0, 0)), _type);
-    cur_basicblock->basic_block.push_back(gep_inst1);
     for (auto child : node->initVal()) {
         if (auto scalar_node = dynamic_cast<SysYParser::ScalarInitValContext *>(child); scalar_node != nullptr) {
-            VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, ptr1->type.decl_type));
-            LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
-            cur_basicblock->basic_block.push_back(gep_inst2);
             SRC value = scalar_node->exp()->accept(this);
             // dbg(value.ToString(), DeclTypeToStr(value.getType()), _type.decl_type);
             if (value.getType() != _type.decl_type) {
@@ -95,79 +90,27 @@ void ASTVisitor::parse_variable_init(SysYParser::ListInitvalContext *node, VarTy
                     value = value_cast;
                 }
             }
-            LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
-            cur_basicblock->basic_block.push_back(store_inst);
+            initTable.push_back({off, value});
             ++off;
             ++cnt;
         } else {
             auto list_node = dynamic_cast<SysYParser::ListInitvalContext *>(child);
-            parse_variable_init(list_node, _type, child_array_dims, addr, off);
+            parse_variable_init(list_node, _type, child_array_dims, off, initTable, unInitTable);
             off += total_size / arr_dim[0];
             cnt += total_size / arr_dim[0];
         }
     }
-    SRC zero_ctv = SRC(new CTValue(TypeInt, 0, 0));
-    if (_type.decl_type == TypeFloat){
-        SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
-        LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, zero_ctv);
-        cur_basicblock->basic_block.push_back(itf_inst);
-        zero_ctv = zero_float;
-    }
     while (cnt < total_size) {
-        VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, ptr1->type.decl_type));
-        LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
-        cur_basicblock->basic_block.push_back(gep_inst2);
-        LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), zero_ctv);
-        cur_basicblock->basic_block.push_back(store_inst);
-        ++off;
         ++cnt;
+        unInitTable.push_back(off++);
     }
     return;
 }
 
 void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair var_pair) {
+    assert(ctx != nullptr);
     string var_name = var_pair.first;
     VarType var = var_pair.second->type;
-    if (ctx == nullptr) { // for uninit var def
-        // auto value = cur_scope->resolve(var_name, &cur_func->func_info);
-        // VirtReg *value_reg = value.ToVirtReg();
-        // if (value_reg->type.is_array == false) { // local scalar uninit variable, initilize with `0`
-        //     LLIR_STORE* store_inst = new LLIR_STORE(value, SRC(new CTValue(value_reg->type.decl_type, 0, 0)));
-        //     cur_basicblock->basic_block.push_back(store_inst);
-        // } else { // local list uninit variable, initilize with vector `0`
-        //     VirtReg *ptr1 = new VirtReg(var_idx++, var);
-        //     LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, value, SRC(new CTValue(TypeInt, 0, 0)), var);
-        //     cur_basicblock->basic_block.push_back(gep_inst1);
-        //     DeclType type = var.decl_type;
-        //     int32_t number = var.elements_number();
-        //     /*
-        //     for (int idx = 0; idx < number; ++idx) {
-        //         VirtReg *ptr2 = new VirtReg(var_idx++, VarType(type));
-        //         LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, idx, idx)), VarType(type));
-        //         cur_basicblock->basic_block.push_back(gep_inst2);
-        //         SRC value = SRC(new CTValue(type, 0, 0));
-        //         LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
-        //         cur_basicblock->basic_block.push_back(store_inst);
-        //     }
-        //     */
-        //     VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, type));
-        //     LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, 0, 0)), VarType(type));
-        //     cur_basicblock->basic_block.push_back(gep_inst2);
-        //     VirtReg *ptr_i8 = new VirtReg(var_idx++, VarType(false, true, false, TypeByte));
-        //     LLIR_BC *bc_inst = new LLIR_BC(SRC(ptr_i8), SRC(ptr2));
-        //     cur_basicblock->basic_block.push_back(bc_inst);
-        //     FunctionInfo *func_info = ir.getFunctionInfo("llvm.memset.p0i8.i32");
-        //     func_info->is_used = true;
-        //     vector<SRC> args;
-        //     args.push_back(ptr_i8);
-        //     args.push_back(SRC(new CTValue(TypeByte, 0, 0)));
-        //     args.push_back(SRC(new CTValue(TypeInt, number * 4, number * 4)));
-        //     args.push_back(SRC(new CTValue(TypeBool, 0, 0)));
-        //     LLIR_CALL *call_inst = new LLIR_CALL(SRC(), args, func_info);
-        //     cur_basicblock->basic_block.push_back(call_inst);
-        // } 
-        return;
-    }
     auto init_node = ctx->initVal();
     if (var.is_array == false) {
         auto scalar_init = dynamic_cast<SysYParser::ScalarInitValContext *>(init_node);
@@ -192,8 +135,45 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
         cur_basicblock->basic_block.push_back(store_inst);
     } else {
         auto node = dynamic_cast<SysYParser::ListInitvalContext *>(init_node);
-        auto reg = cur_scope->resolve(var_name, &cur_func->func_info);
-        parse_variable_init(node, var, var.array_dims, reg, 0);
+        auto addr = cur_scope->resolve(var_name, &cur_func->func_info);
+        vector<pair<int32_t, SRC>> initTable;
+        vector<int32_t> unInitTable;
+        parse_variable_init(node, var, var.array_dims, 0, initTable, unInitTable);
+        int32_t init_size = initTable.size();
+        VirtReg *ptr1 = new VirtReg(var_idx++, var);
+        LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, addr, SRC(new CTValue(TypeInt, 0, 0)), var);
+        cur_basicblock->basic_block.push_back(gep_inst1);
+        int32_t number = var.elements_number();
+        if (initTable.size() < number) {
+            vector<SRC> args;
+            VirtReg *start_addr = new VirtReg(var_idx++, VarType(false, true, false, var.decl_type));
+            LLIR_GEP *gep_addr_inst = new LLIR_GEP(start_addr, ptr1, SRC(new CTValue(TypeInt, 0, 0)), VarType(var.decl_type));
+            cur_basicblock->basic_block.push_back(gep_addr_inst);
+            FunctionInfo *func_info = nullptr;
+            if (var.decl_type == TypeInt) {
+                func_info = ir.getFunctionInfo("imemset");
+            } else if (var.decl_type == TypeFloat) {
+                func_info = ir.getFunctionInfo("fmemset");
+            } else {
+                assert(true && "UnExcepted Type for memset");
+            }
+            func_info->is_used = true;
+            cur_func->func_info.called_funcs.insert(func_info);
+            args.push_back(start_addr);
+            args.push_back(new CTValue(TypeInt, 0, 0));
+            args.push_back(new CTValue(TypeInt, number * 4, number * 4));
+            LLIR_CALL *call_inst = new LLIR_CALL(SRC(), args, func_info);
+            cur_basicblock->basic_block.push_back(call_inst);
+        }
+        for (auto &&pair : initTable) {
+            int32_t off = pair.first;
+            SRC value = pair.second;
+            VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, ptr1->type.decl_type));
+            LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
+            cur_basicblock->basic_block.push_back(gep_inst2);
+            LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
+            cur_basicblock->basic_block.push_back(store_inst);
+        }
     }
 }
 
@@ -388,14 +368,8 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
             cur_basicblock->basic_block.push_back(alloc_inst);
         }
     }
-    if (&cur_func->func_info != nullptr) {
-        // dbg("un init var def call generate_varinit_ir");
-        generate_varinit_ir(nullptr, var_pair);
-    } else {
-        // global uninit variable don't need to initlize
-        // they are assigned by `0`
-        // glb_var_init.push_back(make_pair(nullptr, var_pair));
-    }
+    // we don't need init un-init-var
+    // if it is global, it has been init with `0`
     // dbg("exit UninitVarDef");
     return nullptr;
 }
@@ -1194,20 +1168,24 @@ antlrcpp::Any ASTVisitor::visitUnary3(SysYParser::Unary3Context *ctx) {
                 reg = zext_dst;
                 _type = VarType(TypeInt);
             }
-            VirtReg *dst = new VirtReg(var_idx++, _type);
+            SRC ret;
             if (_type.decl_type == TypeInt) {
+                VirtReg *dst = new VirtReg(var_idx++, _type);
                 LLIR_BIN *bin_inst = new LLIR_BIN(SUB, dst, SRC(new CTValue(_type.decl_type, 0, 0)), SRC(reg));
                 cur_basicblock->basic_block.push_back(bin_inst);
+                ret = SRC(dst);
             } else if (_type.decl_type == TypeFloat) {
                 SRC zero_ctv = SRC(new CTValue(TypeInt, 0, 0));
                 SRC zero_float = SRC(new VirtReg(var_idx++, TypeFloat));
                 LLIR_SITOFP *itf_inst = new LLIR_SITOFP(zero_float, new CTValue(TypeInt, 0, 0));
                 cur_basicblock->basic_block.push_back(itf_inst);
+                VirtReg *dst = new VirtReg(var_idx++, _type);
                 LLIR_FBIN *bin_inst = new LLIR_FBIN(SUB, dst, zero_float, SRC(reg));
                 cur_basicblock->basic_block.push_back(bin_inst);
+                ret = SRC(dst);
             }
             // dbg("exit visitUnary3 with VirtReg SUB");
-            return SRC(dst);
+            return ret;
         } else if (op == "+") {
             // dbg("exit visitUnary3 with VirtReg ADD");
             return SRC(reg);
