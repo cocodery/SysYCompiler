@@ -19,6 +19,7 @@ public:
             if (r < s0) return r;
             else return SPILL;
         }
+        return SPILL;
     }
     REGs GetSecondUnusedRRegister() const {
         bool skipped_first = false;
@@ -30,6 +31,7 @@ public:
             if (r < s0) return r;
             else return SPILL;
         }
+        return SPILL;
     }
     virtual ~Inst() { }
 };
