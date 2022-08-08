@@ -1502,8 +1502,8 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
                 int actual_pushed_bytes = 0;
                 for (auto &&it = varPtr->int_list.rbegin();it != varPtr->int_list.rend();)
                 {
-                    for (REGs i = r11;
-                        i >= r0 && it != varPtr->int_list.rend();
+                    for (REGs i = r12;
+                        i >= r1 && it != varPtr->int_list.rend();
                         i = (REGs)(i - 1), ++it, pushed_bytes += 4)
                         AddAsmCodeMoveIntToRegister(data_underscore_init, i, *it, 1);
                             AddAsmCodePushRegisters(data_underscore_init, CONST_ARRAY_INIT_REGISTERS, 1);
@@ -1519,8 +1519,8 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
                 int actual_pushed_bytes = 0;
                 for (auto &&it = varPtr->float_list.rbegin();it != varPtr->float_list.rend();)
                 {
-                    for (REGs i = r11;
-                        i >= r0 && it != varPtr->float_list.rend();
+                    for (REGs i = r12;
+                        i >= r1 && it != varPtr->float_list.rend();
                         i = (REGs)(i - 1), ++it, pushed_bytes += 4)
                         AddAsmCodeMoveIntToRegister(data_underscore_init, i, DoubleToWord(*it), 1);
                             AddAsmCodePushRegisters(data_underscore_init, CONST_ARRAY_INIT_REGISTERS, 1);
