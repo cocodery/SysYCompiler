@@ -64,9 +64,9 @@ const char *FunctionRename(FunctionInfo *func)
     ((_FUNC_PTR->AllocationResult.find(_VIRTREG_ID) == _FUNC_PTR->AllocationResult.end()) ? \
      NOALLOC : _FUNC_PTR->AllocationResult.at(_VIRTREG_ID))
 
-#define CALL_INST_GET_ARGS_REGISTER_IDX(_ARG_ID) ((_ARG_ID > 3) ? i + 9 : i)
+#define CALL_INST_GET_ARGS_REGISTER_IDX(_ARG_ID) ((_ARG_ID > 3) ? _ARG_ID + 9 : _ARG_ID)
 
-#define GET_ARGS_REGISTER(_ARG_ID) ((_ARG_ID > 3) ? REGs(i + 16) : REGs(i))
+#define GET_ARGS_REGISTER(_ARG_ID) ((_ARG_ID > 3) ? REGs(_ARG_ID + 16) : REGs(_ARG_ID))
 
 #define CONDITION_REGISTER_NOT_ALLOCATED(_FUNC_PTR, _REG_IDX) \
     (_FUNC_PTR->AllocationResult.find(_REG_IDX) == _FUNC_PTR->AllocationResult.end())
@@ -1135,7 +1135,8 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 while (registers[idx] != should_be[CALL_INST_GET_ARGS_REGISTER_IDX(i)] && idx <= 41) // 找到should_be[i]的位置
                     ++idx;
                 assert(idx != 41 && "codegen: error in function call generation inst when trying to move args!");
-                AddAsmCodeSwapRegisters(asm_insts, GET_ARGS_REGISTER(i), REGs(idx), indent);
+                                                    // 当前处理的位置       // 在idx位置的原来是哪个寄存器
+                AddAsmCodeSwapRegisters(asm_insts, GET_ARGS_REGISTER(i), REGs((idx > 12) ? idx + 7 : idx), indent);
                 std::swap(registers[idx], registers[CALL_INST_GET_ARGS_REGISTER_IDX(i)]);
             }
         }
