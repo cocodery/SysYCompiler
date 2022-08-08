@@ -25,6 +25,10 @@ int IntToFloat(int i)
     return *(int*)(&f);
 }
 
+bool IsRReg(REGs r) {return r < s0;}
+
+bool IsSReg(REGs r) {return r >= s0;}
+
 const char *FunctionRename(FunctionInfo *func)
 {
     if (func->func_name == "imemset" || func->func_name == "fmemset")
@@ -185,7 +189,7 @@ public:
         MOVEQ, MOVNE, SDIV, MVN, RSB,
         DOT_LTORG, EORNE, VADD, VSUB, VMUL,
         VDIV, VMOV, VCMP, VCVT_ITOF, VCVT_FTOI,
-        FMSTAT, VPUSH, VPOP
+        FMSTAT, VPUSH, VPOP, VLDR, VSTR
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -196,7 +200,7 @@ public:
         "moveq", "movne", "sdiv", "mvn", "rsb",
         ".ltorg", "eorne", "vadd.f32", "vsub.f32", "vmul.f32",
         "vdiv.f32", "vmov", "vcmp.f32", "vcvt.f32.s32", "vcvt.s32.f32",
-        "fmstat", "vpush", "vpop"
+        "fmstat", "vpush", "vpop", "vldr", "vstr"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -357,6 +361,13 @@ void AddAsmCodePopRegisters(vector<AsmCode> &asm_insts, const vector<REGs> &regs
 
 void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int indent, AsmInst::InstType conditional_move = AsmInst::MOV)
 {
+    if (IsSReg(r))
+    {
+        asm_insts.push_back(AsmCode(AsmInst::VLDR,
+            {Param(r), Param(Param::Addr, std::to_string(i).c_str())},
+            indent));
+        return;
+    }
     // conditional move will only move '1' or '0' into the register,
     // so it'll always fall this 'if'.
     if (i >= -257 && i <= 256)
@@ -385,10 +396,19 @@ void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int 
 void AddAsmCodeSwapRegisters(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, int indent)
 {
     if (reg1 == reg2) return;
-    asm_insts.push_back(AsmCode(AsmInst::CMP, {Param(reg1), Param(reg2)}, indent)); //if (x0 == x1) do not swap
-    asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
-    asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg2), Param(reg1), Param(reg2)}, indent)); //eor x1, x0, x1
-    asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
+    if (IsRReg(reg1) && IsRReg(reg2))
+    {
+        asm_insts.push_back(AsmCode(AsmInst::CMP, {Param(reg1), Param(reg2)}, indent)); //if (x0 == x1) do not swap
+        asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
+        asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg2), Param(reg1), Param(reg2)}, indent)); //eor x1, x0, x1
+        asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
+    }
+    else
+    {
+        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(TEMP_S_REGISTER_1), Param(reg1)}));
+        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(reg1), Param(reg2)}));
+        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(reg2), Param(TEMP_S_REGISTER_1)}));
+    }
 }
 
 void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r, const Param &src1, const Param &src2, int indent)
@@ -1394,7 +1414,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
 {
 
     ofstream ofs(asmfile);
-    ofs << ".cpu cortex-a72\n.arch armv8-a\n.fpu vfpv3-d16\n.arch_extension crc\n";
+    ofs << ".cpu cortex-a72\n.arch armv8-a\n.fpu neon-fp-armv8\n.arch_extension crc\n";
 
     vector<AsmCode> data_init;
     vector<AsmCode> asm_insts(InitDotDataAndUnderscoreStart(ir, data_init));
@@ -1528,7 +1548,8 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
                 int new_insts_cnt = siz_after - siz_before;
                 for (int i = siz_before; i < siz_after; ++i)
                 {
-                    if (!first_ldr_found && asm_insts[i].inst.i_typ == AsmInst::LDR)
+                    if (!first_ldr_found && 
+                    (asm_insts[i].inst.i_typ == AsmInst::LDR || asm_insts[i].inst.i_typ == AsmInst::VLDR))
                     {
                         first_ldr_found = true;
                         first_ldr_idx = i;

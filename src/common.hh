@@ -57,6 +57,7 @@ enum REGs { r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12,  sp,
 // 浮点二元运算的寄存器
 #define FLOAT_BINOP_REGISTER_1 (s0)
 #define FLOAT_BINOP_REGISTER_2 (s1)
+#define TEMP_S_REGISTER_1 (s2)
 // #define FLOAT_BINOP_REGISTER_3 (s2) //做cmp运算时保存现场用
 
 #include <cstdlib>
