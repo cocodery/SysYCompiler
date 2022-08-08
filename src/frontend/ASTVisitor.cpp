@@ -274,7 +274,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
         // dbg(const_var.array_dims);
     }
     Variable *const_variable = nullptr;
-    if (const_var.is_array) {
+    if (const_var.is_array || const_var.decl_type == TypeFloat) {
         int32_t idx = (&cur_func->func_info != nullptr) ? var_idx++ : glb_var_idx++;
         const_variable = new Variable(idx);
     }

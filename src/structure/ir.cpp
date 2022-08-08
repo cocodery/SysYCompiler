@@ -528,7 +528,7 @@ void CompUnit::DebugGlobalTable() {
     llir << "; Global Variable" << endl;
     VariableTable *global_table = global_scope->local_table;
     for (auto pair: global_table->var_table) {
-        if (pair.second->type.is_const && !pair.second->type.is_array) continue;
+        if (pair.second->type.is_const && !pair.second->type.is_array && pair.second->type.decl_type != TypeFloat) continue;
         Variable *var = pair.second;
         llir << "    " << "@_" << var->var_idx << " = ";
         // var->var_idx = glb_var_idx;
@@ -542,9 +542,15 @@ void CompUnit::DebugGlobalTable() {
                         llir << ", i32 " << var->int_list[i];
                     }
                 } else {
-                    llir << "float " << var->int_list[0];
+                    std::stringstream ss;
+                    uint64_t uint64_value = reinterpret_cast<uint64_t&>(var->float_list[0]);
+                    ss << "float " << "0x" << std::hex << uint64_value;
+                    llir << ss.str();
                     for (int i = 1; i < var->int_list.size(); ++i) {
-                        llir << ", float " << var->int_list[i];
+                        ss.clear();
+                        uint64_t uint64_value = reinterpret_cast<uint64_t&>(var->float_list[i]);
+                        ss << "float " << "0x" << std::hex << uint64_value;
+                        llir << ss.str();
                     }
                 }
                 llir << "]";
@@ -552,7 +558,10 @@ void CompUnit::DebugGlobalTable() {
                 if (var->type.decl_type == TypeInt) {
                     llir << var->int_scalar;
                 } else {
-                    llir << var->float_scalar;
+                    std::stringstream ss;
+                    uint64_t uint64_value = reinterpret_cast<uint64_t&>(var->float_scalar);
+                    ss << "0x" << std::hex << uint64_value;
+                    llir << ss.str();
                 }
             }
         }
