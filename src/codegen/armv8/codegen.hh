@@ -1497,34 +1497,34 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
                 continue; // 跳过非常量数组
             AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
             if (varPtr->type.decl_type == TypeInt) {
-                // 倒序push, 一次12个
+                // 倒序push, 一次16个
                 int pushed_bytes = 0;
                 int actual_pushed_bytes = 0;
                 for (auto &&it = varPtr->int_list.rbegin();it != varPtr->int_list.rend();)
                 {
-                    for (REGs i = r12;
-                        i >= r1 && it != varPtr->int_list.rend();
+                    for (REGs i = s15;
+                        i >= s0 && it != varPtr->int_list.rend();
                         i = (REGs)(i - 1), ++it, pushed_bytes += 4)
                         AddAsmCodeMoveIntToRegister(data_underscore_init, i, *it, 1);
                             AddAsmCodePushRegisters(data_underscore_init, CONST_ARRAY_INIT_REGISTERS, 1);
-                            actual_pushed_bytes += 4*12;
+                            actual_pushed_bytes += 4*16;
                 }
                 data_underscore_init.push_back(AsmCode(AsmInst::ADD, {Param(sp), Param(sp), Param(actual_pushed_bytes - pushed_bytes)}, 1));
                 bytes_allocated_for_global_const_arrays += pushed_bytes;
                 comment = "const int *";
             }
             else {
-                // 倒序push, 一次12个
+                // 倒序push, 一次16个
                 int pushed_bytes = 0;
                 int actual_pushed_bytes = 0;
                 for (auto &&it = varPtr->float_list.rbegin();it != varPtr->float_list.rend();)
                 {
-                    for (REGs i = r12;
-                        i >= r1 && it != varPtr->float_list.rend();
+                    for (REGs i = s15;
+                        i >= s0 && it != varPtr->float_list.rend();
                         i = (REGs)(i - 1), ++it, pushed_bytes += 4)
                         AddAsmCodeMoveIntToRegister(data_underscore_init, i, DoubleToWord(*it), 1);
                             AddAsmCodePushRegisters(data_underscore_init, CONST_ARRAY_INIT_REGISTERS, 1);
-                            actual_pushed_bytes += 4*12;
+                            actual_pushed_bytes += 4*16;
                 }
                 data_underscore_init.push_back(AsmCode(AsmInst::ADD, {Param(sp), Param(sp), Param(actual_pushed_bytes - pushed_bytes)}, 1));
                 bytes_allocated_for_global_const_arrays += pushed_bytes;
