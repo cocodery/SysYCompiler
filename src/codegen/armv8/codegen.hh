@@ -1043,7 +1043,31 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         {
             int32_t size_shift_bits = 2;
             if (gep_inst->off.ctv) // offset is ctv
-                AddAsmCodeAddSub(asm_insts, AsmInst::ADD, addr_reg, addr_reg, Param(gep_inst->off.ctv->int_value << size_shift_bits), indent);
+            {
+                if ((gep_inst->off.ctv->int_value << size_shift_bits) <= 256) // 偏移量<256，直接加
+                {
+                    AddAsmCodeAddSub(asm_insts, AsmInst::ADD, addr_reg, addr_reg, Param(gep_inst->off.ctv->int_value << size_shift_bits), indent);
+                    if (borrow_addr) AddAsmCodePopRegisters(asm_insts, {addr_reg}, indent);
+                    return;
+                }
+                // 偏移量大于256
+                // 给off借用一个r_reg
+                REGs unused_reg = addr_got_first ? instPtr->GetSecondUnusedRRegister() : instPtr->GetFirstUnusedRRegister();
+                if (unused_reg != SPILL) // 有空闲的r寄存器，用空闲的
+                    offs_reg = unused_reg;  
+                else // 借用其他r寄存器，需要压栈
+                {
+                    borrow_offs = true;
+                    // 不能跟src和addr分配的寄存器冲突
+                    if (GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id) == r0
+                        ||addr_reg == r0)
+                        offs_reg = r2;
+                    else offs_reg = r0;
+                    AddAsmCodePushRegisters(asm_insts, {offs_reg}, indent);
+                }
+                AddAsmCodeMoveIntToRegister(asm_insts, offs_reg, gep_inst->off.ctv->int_value << size_shift_bits, indent);
+                AddAsmCodeAddSub(asm_insts, AsmInst::ADD, addr_reg, addr_reg, offs_reg, indent);
+            }
             else // offset is reg
             {
                 // 先看看off_reg是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
@@ -1066,7 +1090,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                     AddAsmCodeMoveRegisterToRegister(asm_insts, offs_reg, GET_ALLOCATION_RESULT(funcPtr, gep_inst->off.reg->reg_id), indent);
                 }
                 else
-                    offs_reg = GET_ALLOCATION_RESULT(funcPtr, gep_inst->off.reg->reg_id);                
+                    offs_reg = GET_ALLOCATION_RESULT(funcPtr, gep_inst->off.reg->reg_id);               
                 asm_insts.push_back(AsmCode(AsmInst::ADD,
                 {   addr_reg,
                     addr_reg,
