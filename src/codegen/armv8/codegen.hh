@@ -405,9 +405,9 @@ void AddAsmCodeSwapRegisters(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, i
     }
     else
     {
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(TEMP_S_REGISTER_1), Param(reg1)}));
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(reg1), Param(reg2)}));
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(reg2), Param(TEMP_S_REGISTER_1)}));
+        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(TEMP_S_REGISTER_1), Param(reg1)}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(reg1), Param(reg2)}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(reg2), Param(TEMP_S_REGISTER_1)}, indent));
     }
 }
 
@@ -746,6 +746,29 @@ void AddAsmCodeFloatCmp(vector<AsmCode> &asm_insts, RelOp op, const Param &src1,
     }
 }
 
+void AddAsmCodeMoveRegisterToRegister(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, int indent)
+{
+    if (reg1 == reg2) return;
+    if (IsRReg(reg1) && IsRReg(reg2))
+        asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(reg1), Param(reg2)}, indent));
+    else
+        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(reg1), Param(reg2)}, indent));
+}
+
+void AddAsmCodeLoadFromVarName(vector<AsmCode> &asm_insts, REGs r, const char *varname, int indent)
+{
+    if (IsRReg(r))
+        asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(r), Param(Param::Addr, varname)}, indent));
+    else
+        asm_insts.push_back(AsmCode(AsmInst::VLDR, {Param(r), Param(Param::Addr, varname)}, indent));
+}
+
+void AddAsmCodeDeref(vector<AsmCode> &asm_insts, REGs r, int indent)
+{
+    assert(IsRReg(r) && "codegen: trying to deref from s-reg!");
+    asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(r), Param(Param::Str, R_REGISTER_IN_BRACKETS(r))}, indent));
+}
+
 void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *instPtr, int indent)
 {
     auto &&funcname = funcPtr->func_info.func_name;
@@ -848,32 +871,40 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
         
     }
-    Case (LLIR_LOAD, load_inst, instPtr)
+    /**/Case (LLIR_LOAD, load_inst, instPtr)
     {
         //cout << get_tabs() << load_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, load_inst->ToString(), indent);
         
+        REGs dst_reg;
+        bool borrow = false;
+        // 先看看dst_reg是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
+        if (IsSReg(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)))
+        {
+            // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
+            if (instPtr->GetFirstUnusedRRegister() != SPILL) // 有空闲的r寄存器，用空闲的
+                dst_reg = instPtr->GetFirstUnusedRRegister();
+            else // 借用其他r寄存器，需要压栈
+            {
+                borrow = true;
+                // 不能跟src分配的寄存器冲突
+                if (GET_ALLOCATION_RESULT(funcPtr, load_inst->src.reg->reg_id) == r0)
+                    dst_reg = r1;
+                else dst_reg = r0;
+                AddAsmCodePushRegisters(asm_insts, {dst_reg}, indent);
+            }
+        }
+        else
+            dst_reg = GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id);
         // dst = *src
         // alloc来的数组首指针不会直接load，肯定要经过gep转换为数组元素指针
         if (load_inst->src.reg->is_from_gep || load_inst->src.reg->type.is_args && load_inst->src.reg->type.is_array) // src是从gep来的，是数组元素指针，src有分配寄存器
-        {
-            asm_insts.push_back(AsmCode(AsmInst::MOV,
-            {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
-                Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->src.reg->reg_id))},
-            indent));
-        }
+            AddAsmCodeMoveRegisterToRegister(asm_insts, dst_reg, GET_ALLOCATION_RESULT(funcPtr, load_inst->src.reg->reg_id), indent);
         else // src是从alloca来的变量（非数组），没有被分配寄存器，需要分配一下寄存器，这里可直接借用dst
-        {
-            asm_insts.push_back(AsmCode(AsmInst::LDR,
-                {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
-                    Param(Param::Addr, GET_VAR_NAME(funcPtr, load_inst->src.reg))},
-                indent));
-        }
+            AddAsmCodeLoadFromVarName(asm_insts, dst_reg, GET_VAR_NAME(funcPtr, load_inst->src.reg), indent);
         // 解除引用
-        asm_insts.push_back(AsmCode(AsmInst::LDR,
-            {   Param(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)),
-                Param(Param::Str, R_REGISTER_IN_BRACKETS(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)))},
-            indent));
+        AddAsmCodeDeref(asm_insts, dst_reg, indent);
+        if (borrow) AddAsmCodePopRegisters(asm_insts, {dst_reg}, indent);
     }
     Case (LLIR_BIN, bin_inst, instPtr)
     {
@@ -967,7 +998,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 Param(Param::Str, (string("lsl #") + std::to_string(size_shift_bits)).c_str())},
             indent));
     }
-    Case (LLIR_CALL, call_inst, instPtr)
+    /**/Case (LLIR_CALL, call_inst, instPtr)
     {
         // cout << get_tabs() << call_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, call_inst->ToString(), indent);
@@ -1042,13 +1073,8 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
 
         // 移动返回值
         if (call_inst->func_info->return_type != TypeVoid && !CONDITION_REGISTER_NOT_ALLOCATED(funcPtr, call_inst->dst.reg->reg_id))
-        {
             if (r0 != GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id))
-                asm_insts.push_back(AsmCode(AsmInst::MOV, 
-                {   Param(GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id)),
-                    Param(r0)},
-                indent));
-        }
+                AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, call_inst->dst.reg->reg_id), r0, indent);
 
         // 恢复现场
         AddAsmCodePopRegisters(asm_insts, used_regs, indent);
