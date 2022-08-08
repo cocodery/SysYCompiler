@@ -27,7 +27,7 @@ int IntToFloat(int i)
 
 bool IsRReg(REGs r) {return r < s0;}
 
-bool IsSReg(REGs r) {return r >= s0;}
+bool IsSReg(REGs r) {return r >= s0 && r <= s31;}
 
 const char *FunctionRename(FunctionInfo *func)
 {
@@ -60,7 +60,9 @@ const char *FunctionRename(FunctionInfo *func)
         GET_GLOBAL_VAR_NAME(_REG_PTR->reg_id) :\
         GET_LOCAL_VAR_NAME(_FUNC_PTR, _REG_PTR->reg_id))
 
-#define GET_ALLOCATION_RESULT(_FUNC_PTR, _VIRTREG_ID) (_FUNC_PTR->AllocationResult.at(_VIRTREG_ID))
+#define GET_ALLOCATION_RESULT(_FUNC_PTR, _VIRTREG_ID) \
+    ((_FUNC_PTR->AllocationResult.find(_VIRTREG_ID) == _FUNC_PTR->AllocationResult.end()) ? \
+     NOALLOC : _FUNC_PTR->AllocationResult.at(_VIRTREG_ID))
 
 #define CALL_INST_GET_ARGS_REGISTER_IDX(_ARG_ID) ((_ARG_ID > 3) ? i + 9 : i)
 
@@ -289,8 +291,8 @@ public:
         {
             ss << ' ' << params.front().ToString();
             for (auto it = ++params.begin(); it != params.end(); ++it)
-                if (inst.i_typ == AsmInst::STR ||
-                (inst.i_typ == AsmInst::LDR && it->p_typ == Param::Reg))
+                if (inst.i_typ == AsmInst::STR || inst.i_typ == AsmInst::VSTR ||
+                ((inst.i_typ == AsmInst::LDR || inst.i_typ == AsmInst::VLDR) && it->p_typ == Param::Reg))
                     ss << ", [" << it->ToString() << ']';
                 else
                     ss << ", " << it->ToString();
@@ -748,6 +750,7 @@ void AddAsmCodeFloatCmp(vector<AsmCode> &asm_insts, RelOp op, const Param &src1,
 
 void AddAsmCodeMoveRegisterToRegister(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, int indent)
 {
+    assert(reg1 != SPILL && reg2 != SPILL);
     if (reg1 == reg2) return;
     if (IsRReg(reg1) && IsRReg(reg2))
         asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(reg1), Param(reg2)}, indent));
@@ -757,22 +760,35 @@ void AddAsmCodeMoveRegisterToRegister(vector<AsmCode> &asm_insts, REGs reg1, REG
 
 void AddAsmCodeLoadFromVarName(vector<AsmCode> &asm_insts, REGs r, const char *varname, int indent)
 {
+    assert(r != SPILL);
     if (IsRReg(r))
         asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(r), Param(Param::Addr, varname)}, indent));
     else
         asm_insts.push_back(AsmCode(AsmInst::VLDR, {Param(r), Param(Param::Addr, varname)}, indent));
 }
 
-void AddAsmCodeDeref(vector<AsmCode> &asm_insts, REGs r, int indent)
+void AddAsmCodeStoreToRegisterPointer(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, int indent)
 {
-    assert(IsRReg(r) && "codegen: trying to deref from s-reg!");
-    asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(r), Param(Param::Str, R_REGISTER_IN_BRACKETS(r))}, indent));
+    assert(reg1 != SPILL && IsRReg(reg2));
+    if (IsRReg(reg1))
+        asm_insts.push_back(AsmCode(AsmInst::STR, {Param(reg1), Param(reg2)}, indent));
+    else
+        asm_insts.push_back(AsmCode(AsmInst::VSTR, {Param(reg1), Param(reg2)}, indent));
+}
+
+void AddAsmCodeLoadFromPointer(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, int indent)
+{
+    assert(reg1 != SPILL && IsRReg(reg2));
+    if (IsRReg(reg1))
+        asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(reg1), Param(reg2)}, indent));
+    else
+        asm_insts.push_back(AsmCode(AsmInst::VLDR, {Param(reg1), Param(reg2)}, indent));
 }
 
 void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *instPtr, int indent)
 {
     auto &&funcname = funcPtr->func_info.func_name;
-    Case (LLIR_RET, ret_inst, instPtr)
+    /**/Case (LLIR_RET, ret_inst, instPtr)
     {
         //cout << get_tabs() << ret_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, ret_inst->ToString(), indent);
@@ -786,10 +802,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 AddAsmCodeMoveIntToRegister(asm_insts, r0, CTV_TO_WORD(ret_inst->ret_value.ctv), indent);
             else // virtreg
                 if (r0 != GET_ALLOCATION_RESULT(funcPtr, ret_inst->ret_value.reg->reg_id))
-                    asm_insts.push_back(AsmCode(AsmInst::MOV,
-                        {   Param(r0),
-                            Param(GET_ALLOCATION_RESULT(funcPtr, ret_inst->ret_value.reg->reg_id))},
-                        indent));
+                    AddAsmCodeMoveRegisterToRegister(asm_insts, r0, GET_ALLOCATION_RESULT(funcPtr, ret_inst->ret_value.reg->reg_id), indent);
         }
 
         asm_insts.push_back(AsmCode(AsmInst::B, {Param(Param::Str, GET_FUNC_RETURN_NAME(funcPtr))}, indent));
@@ -797,114 +810,152 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         // insert ltorg
         asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", indent));
     }
-    Case (LLIR_STORE, store_inst, instPtr)
+    /**/Case (LLIR_STORE, store_inst, instPtr)
     {
         //cout << get_tabs() << store_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, store_inst->ToString(), indent);
 
         // *dst = src ; str src [dst]
         // 解决SRC问题
+        REGs src_reg, addr_reg;
+        bool src_got_first = false, borrow_addr = false;
+
         if (store_inst->src.ctv) // 如果src是常量，它就没有被分配虚拟寄存器，需要借用
         {
-            // 该情况需要给src借用寄存器
-            DECLEAR_BORROW_PUSH(instPtr, STORE_REGISTER)
-            AddAsmCodeMoveIntToRegister(asm_insts,
-                IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                STORE_REGISTER,
-                instPtr), CTV_TO_WORD(store_inst->src.ctv), indent);
-            if (store_inst->dst.reg->is_from_gep || store_inst->dst.reg->type.is_args && store_inst->dst.reg->type.is_array) // dst是从gep来的，是数组元素指针，dst有分配寄存器
+            // 解决src_reg，这里肯定要借用一个r_reg或者s_reg
+            if (instPtr->GetFirstUnusedRRegister() != SPILL) // 有空闲的r寄存器，用空闲的r寄存器
             {
-                asm_insts.push_back(AsmCode(AsmInst::STR,
-                {   Param(IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                        STORE_REGISTER,
-                        instPtr)),
-                    Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->dst.reg->reg_id))},
-                indent));
+                src_got_first = true;
+                src_reg = instPtr->GetFirstUnusedRRegister();
+            }
+            else // 借用s2，不需要压栈
+                src_reg = TEMP_S_REGISTER_1;
+            AddAsmCodeMoveIntToRegister(asm_insts, src_reg, CTV_TO_WORD(store_inst->src.ctv), indent);
+
+            // dst是从gep来的，是数组元素指针，dst有分配寄存器，但是如果是s_reg的话需要先mov进r_reg
+            if (store_inst->dst.reg->is_from_gep || store_inst->dst.reg->type.is_args && store_inst->dst.reg->type.is_array)
+            {
+                // 先看看dst_reg是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
+                if (IsSReg(GET_ALLOCATION_RESULT(funcPtr, store_inst->dst.reg->reg_id)))
+                {
+                    // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
+                    REGs unused_reg = src_got_first ? instPtr->GetSecondUnusedRRegister() : instPtr->GetFirstUnusedRRegister();
+                    if (unused_reg != SPILL) // 有空闲的r寄存器，用空闲的
+                        addr_reg = unused_reg;
+                    else // 借用其他r寄存器，需要压栈
+                    {
+                        borrow_addr = true;
+                        // 不能跟src分配的寄存器冲突
+                        if (src_reg == r0)
+                            addr_reg = r1;
+                        else addr_reg = r0;
+                        AddAsmCodePushRegisters(asm_insts, {addr_reg}, indent);
+                    }
+                    AddAsmCodeMoveRegisterToRegister(asm_insts, addr_reg, GET_ALLOCATION_RESULT(funcPtr, store_inst->dst.reg->reg_id), indent);
+                }
+                else
+                    addr_reg = GET_ALLOCATION_RESULT(funcPtr, store_inst->dst.reg->reg_id);
             }
             else // dst是从alloca来的变量（非数组），没有被分配寄存器，需要借用其他寄存器解除引用
             {
-                DECLEAR_BORROW_SECOND_PUSH(instPtr, STORE_REGISTER_SECOND)
-                asm_insts.push_back(AsmCode(AsmInst::LDR,
-                    {   Param(IF_BORROW_SECOND_USE_X_OR_USE_LAST_AVAIL_REG(borrow_second,
-                            STORE_REGISTER_SECOND,
-                            instPtr)),
-                        Param(Param::Addr, GET_VAR_NAME(funcPtr, store_inst->dst.reg))},
-                    indent));
-                asm_insts.push_back(AsmCode(AsmInst::STR,
-                    {   Param(IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                            STORE_REGISTER,
-                            instPtr)),
-                        Param(IF_BORROW_SECOND_USE_X_OR_USE_LAST_AVAIL_REG(borrow_second,
-                            STORE_REGISTER_SECOND,
-                            instPtr))},
-                    indent));
-                DECLEAR_BORROW_SECOND_POP(STORE_REGISTER_SECOND)
+                // 给dst借用一个r_reg
+                REGs unused_reg = src_got_first ? instPtr->GetSecondUnusedRRegister() : instPtr->GetFirstUnusedRRegister();
+                if (unused_reg != SPILL) // 有空闲的r寄存器，用空闲的
+                    addr_reg = unused_reg;
+                else // 借用其他r寄存器，需要压栈
+                {
+                    borrow_addr = true;
+                    // 不能跟src分配的寄存器冲突
+                    if (src_reg == r0)
+                        addr_reg = r1;
+                    else addr_reg = r0;
+                    AddAsmCodePushRegisters(asm_insts, {addr_reg}, indent);
+                }
+                AddAsmCodeLoadFromVarName(asm_insts, addr_reg, GET_VAR_NAME(funcPtr, store_inst->dst.reg), indent);
             }
-            DECLEAR_BORROW_POP(STORE_REGISTER)
         }
         else // src是虚拟寄存器
         {
-            if (store_inst->dst.reg->is_from_gep || store_inst->dst.reg->type.is_args && store_inst->dst.reg->type.is_array) // dst是从gep来的，是数组元素指针，dst有分配寄存器
+            src_reg = GET_ALLOCATION_RESULT(funcPtr, store_inst->src.reg->reg_id);
+
+            // dst是从gep来的，是数组元素指针，dst有分配寄存器
+            if (store_inst->dst.reg->is_from_gep || store_inst->dst.reg->type.is_args && store_inst->dst.reg->type.is_array)
             {
-                asm_insts.push_back(AsmCode(AsmInst::STR,
-                    {   Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->src.reg->reg_id)),
-                        Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->dst.reg->reg_id))},
-                    indent));
+                // 先看看dst_reg是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
+                if (IsSReg(GET_ALLOCATION_RESULT(funcPtr, store_inst->dst.reg->reg_id)))
+                {
+                    // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
+                    if (instPtr->GetFirstUnusedRRegister() != SPILL) // 有空闲的r寄存器，用空闲的
+                        addr_reg = instPtr->GetFirstUnusedRRegister();
+                    else // 借用其他r寄存器，需要压栈
+                    {
+                        borrow_addr = true;
+                        // 不能跟src分配的寄存器冲突
+                        if (src_reg == r0)
+                            addr_reg = r1;
+                        else addr_reg = r0;
+                        AddAsmCodePushRegisters(asm_insts, {addr_reg}, indent);
+                    }
+                    AddAsmCodeMoveRegisterToRegister(asm_insts, addr_reg, GET_ALLOCATION_RESULT(funcPtr, store_inst->dst.reg->reg_id), indent);
+                }
+                else
+                    addr_reg = GET_ALLOCATION_RESULT(funcPtr, store_inst->dst.reg->reg_id);
             }
             else // dst是从alloca来的变量（非数组），没有被分配寄存器，需要借用其他寄存器解除引用
             {
-                DECLEAR_BORROW_PUSH(instPtr, STORE_REGISTER)
-                asm_insts.push_back(AsmCode(AsmInst::LDR,
-                    {   Param(IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                            STORE_REGISTER,
-                            instPtr)),
-                        Param(Param::Addr, GET_VAR_NAME(funcPtr, store_inst->dst.reg))},
-                    indent));
-                asm_insts.push_back(AsmCode(AsmInst::STR,
-                    {   Param(GET_ALLOCATION_RESULT(funcPtr, store_inst->src.reg->reg_id)),
-                        Param(IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                            STORE_REGISTER,
-                            instPtr))},
-                    indent));
-                DECLEAR_BORROW_POP(STORE_REGISTER)
+                // 给dst借用一个r_reg
+                if (instPtr->GetFirstUnusedRRegister() != SPILL) // 有空闲的r寄存器，用空闲的
+                    addr_reg = instPtr->GetFirstUnusedRRegister();
+                else // 借用其他r寄存器，需要压栈
+                {
+                    borrow_addr = true;
+                    // 不能跟src分配的寄存器冲突
+                    if (src_reg == r0)
+                        addr_reg = r1;
+                    else addr_reg = r0;
+                    AddAsmCodePushRegisters(asm_insts, {addr_reg}, indent);
+                }
+                AddAsmCodeLoadFromVarName(asm_insts, addr_reg, GET_VAR_NAME(funcPtr, store_inst->dst.reg), indent);
             }
         }
-        
+        AddAsmCodeStoreToRegisterPointer(asm_insts, src_reg, addr_reg, indent);
+        if (borrow_addr) AddAsmCodePopRegisters(asm_insts, {addr_reg}, indent);
     }
     /**/Case (LLIR_LOAD, load_inst, instPtr)
     {
         //cout << get_tabs() << load_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, load_inst->ToString(), indent);
         
-        REGs dst_reg;
+        REGs addr_reg;
         bool borrow = false;
         // 先看看dst_reg是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
         if (IsSReg(GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id)))
         {
             // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
             if (instPtr->GetFirstUnusedRRegister() != SPILL) // 有空闲的r寄存器，用空闲的
-                dst_reg = instPtr->GetFirstUnusedRRegister();
+                addr_reg = instPtr->GetFirstUnusedRRegister();
             else // 借用其他r寄存器，需要压栈
             {
                 borrow = true;
                 // 不能跟src分配的寄存器冲突
                 if (GET_ALLOCATION_RESULT(funcPtr, load_inst->src.reg->reg_id) == r0)
-                    dst_reg = r1;
-                else dst_reg = r0;
-                AddAsmCodePushRegisters(asm_insts, {dst_reg}, indent);
+                    addr_reg = r1;
+                else addr_reg = r0;
+                AddAsmCodePushRegisters(asm_insts, {addr_reg}, indent);
             }
         }
         else
-            dst_reg = GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id);
+            addr_reg = GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id);
         // dst = *src
         // alloc来的数组首指针不会直接load，肯定要经过gep转换为数组元素指针
-        if (load_inst->src.reg->is_from_gep || load_inst->src.reg->type.is_args && load_inst->src.reg->type.is_array) // src是从gep来的，是数组元素指针，src有分配寄存器
-            AddAsmCodeMoveRegisterToRegister(asm_insts, dst_reg, GET_ALLOCATION_RESULT(funcPtr, load_inst->src.reg->reg_id), indent);
-        else // src是从alloca来的变量（非数组），没有被分配寄存器，需要分配一下寄存器，这里可直接借用dst
-            AddAsmCodeLoadFromVarName(asm_insts, dst_reg, GET_VAR_NAME(funcPtr, load_inst->src.reg), indent);
+        // src是从gep来的，是数组元素指针，src有分配寄存器
+        if (load_inst->src.reg->is_from_gep || load_inst->src.reg->type.is_args && load_inst->src.reg->type.is_array)
+            AddAsmCodeMoveRegisterToRegister(asm_insts, addr_reg, GET_ALLOCATION_RESULT(funcPtr, load_inst->src.reg->reg_id), indent);
+        else // src是从alloca来的变量（非数组），没有被分配寄存器
+            AddAsmCodeLoadFromVarName(asm_insts, addr_reg, GET_VAR_NAME(funcPtr, load_inst->src.reg), indent);
         // 解除引用
-        AddAsmCodeDeref(asm_insts, dst_reg, indent);
-        if (borrow) AddAsmCodePopRegisters(asm_insts, {dst_reg}, indent);
+        AddAsmCodeLoadFromPointer(asm_insts, GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id), addr_reg, indent);
+        if (borrow) AddAsmCodePopRegisters(asm_insts, {addr_reg}, indent);
     }
     Case (LLIR_BIN, bin_inst, instPtr)
     {
