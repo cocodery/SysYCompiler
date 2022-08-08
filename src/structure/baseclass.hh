@@ -14,6 +14,12 @@ class Inst: public Info {
 public:
     CLAIM_AVAIL_REGS
 public:
+    REGs GetFirstUnusedRRegister() const {
+        for (auto &&r : availRegs) {
+            if (r < s0) return r;
+            else return SPILL;
+        }
+    }
     virtual ~Inst() { }
 };
 
