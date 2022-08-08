@@ -42,6 +42,7 @@
 //涉及到函数开头或结尾分配空间的寄存器，不能使用r0-r3，因为这些寄存器被用来传递参数
 #define PRELLOC_REGISTER (r12)
 #define DELLOC_REGISTER (r12)
+#define GLOBAL_ALLOC_LR_TEMP (r11)
 
 enum REGs { r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12,  sp,  lr,  pc,
             s0,  s1,  s2,  s3,  s4,  s5,  s6,  s7,  s8,  s9, s10, s11, s12, s13, s14, s15,

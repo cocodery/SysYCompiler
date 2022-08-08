@@ -1437,10 +1437,23 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
             }
             comment += varName + ";";
             dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_GLOBAL_PTR_NAME(varPtr->var_idx), {Param(Param::Str, "0")}, comment, 1));
-            // 在栈上给数组分配空间，并赋值
-            AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
-            // 计算指针的地址
+            // 在栈上或使用malloc给数组分配空间，并赋值
+            AddAsmCodeComment(data_underscore_init, "allocating memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
             int allocation_bytes = varPtr->type.elements_number() * 4;
+            if (allocation_bytes > 4 * 1024 * 1024) // call malloc for arrays bigger than 4MB
+            {
+                // 给全局非const数组malloc + memset
+                AddAsmCodeComment(data_underscore_init, "calling malloc & memset for big array", 1);
+                AddAsmCodeMoveIntToRegister(data_underscore_init, r0, allocation_bytes, 1);
+                data_underscore_init.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "malloc")}, 1));
+                data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_GLOBAL_PTR_NAME(varPtr->var_idx))}, 1));
+                data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(r0), Param(PRELLOC_REGISTER)}, 1));
+                AddAsmCodeMoveIntToRegister(data_underscore_init, r1, 0, 1);
+                AddAsmCodeMoveIntToRegister(data_underscore_init, r2, allocation_bytes, 1);
+                data_underscore_init.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memset")}, 1));
+                continue;
+            }
+            // 计算指针的地址
             bytes_allocated_for_global_non_const_arrays += allocation_bytes;
             AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
             data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
@@ -1464,9 +1477,7 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
         data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(r0), Param(sp)}, 1));
         AddAsmCodeMoveIntToRegister(data_underscore_init, r1, 0, 1);
         AddAsmCodeMoveIntToRegister(data_underscore_init, r2, bytes_allocated_for_global_non_const_arrays, 1);
-        AddAsmCodePushRegisters(data_underscore_init, {lr}, 1);
         data_underscore_init.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memset")}, 1));
-        AddAsmCodePopRegisters(data_underscore_init, {lr}, 1);
     }
     }
 
@@ -1569,22 +1580,17 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         if (funcPtr->func_info.func_name == "main" && !data_init.empty())
         {
             asm_insts.push_back(AsmCode(AsmInst::EMPTY, "global_alloc", "", indent));
+            AddAsmCodeMoveRegisterToRegister(asm_insts, GLOBAL_ALLOC_LR_TEMP, lr, 1);
             for (auto &&elem : data_init)
                 asm_insts.push_back(elem);
-                asm_insts.push_back(AsmCode(
-                    AsmInst::B,
-                    {Param(Param::Str, "global_alloc_ltorg")},
-                    1));
-                asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", 1));
-                asm_insts.push_back(AsmCode(
-                    AsmInst::EMPTY,
-                    "global_alloc_ltorg",
-                    "",
-                    indent));
+            AddAsmCodeMoveRegisterToRegister(asm_insts, lr, GLOBAL_ALLOC_LR_TEMP, 1);
+            asm_insts.push_back(AsmCode(AsmInst::B, {Param(Param::Str, "global_alloc_ltorg")}, 1));
+            asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", 1));
+            asm_insts.push_back(AsmCode(AsmInst::EMPTY, "global_alloc_ltorg", "", indent));
         }
 
         // if this function called other functions, push the lr register (DO NOT touch r0-r3)
-        if (!funcPtr->func_info.called_funcs.empty())
+        if (!funcPtr->func_info.called_funcs.empty() || funcPtr->func_info.func_name == "main" && !data_init.empty())
         {
             asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_push_lr", "", indent));
             AddAsmCodePushRegisters(asm_insts, {lr}, 1);
@@ -1763,7 +1769,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
 
         // return instructions
         asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_end", "", indent));
-        if (!funcPtr->func_info.called_funcs.empty())
+        if (!funcPtr->func_info.called_funcs.empty() || funcPtr->func_info.func_name == "main" && !data_init.empty())
             AddAsmCodePopRegisters(asm_insts, {pc}, 1);
         else
             asm_insts.push_back(AsmCode(AsmInst::BX,
