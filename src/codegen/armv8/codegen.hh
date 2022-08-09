@@ -1239,10 +1239,18 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                     ctv_to_move_in[CALL_INST_GET_ARGS_REGISTER_IDX(i)],
                     indent);
         
+        // 特殊处理putfloat
+        if (call_inst->func_info->func_name == "putfloat")
+            AddAsmCodeMoveRegisterToRegister(asm_insts, s0, r0, indent);
+
         // 函数调用 
         asm_insts.push_back(AsmCode(AsmInst::BL, 
             {Param(Param::Str, FunctionRename(call_inst->func_info))},
             indent));
+        
+        // 特殊处理getfloat
+        if (call_inst->func_info->func_name == "getfloat")
+            AddAsmCodeMoveRegisterToRegister(asm_insts, r0, s0, indent);
 
         // 移动返回值
         if (call_inst->func_info->return_type != TypeVoid && !CONDITION_REGISTER_NOT_ALLOCATED(funcPtr, call_inst->dst.reg->reg_id))
