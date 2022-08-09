@@ -444,11 +444,6 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
         AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
         return;
     }
-    if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg && src1.val.i == 0)
-    {
-        AddAsmCodeMoveRegisterToRegister(asm_insts, r, src2.val.r, indent, _i_typ == AsmInst::SUB);
-        return;
-    }
     if (src1.p_typ == Param::Reg) assert(IsRReg(src1.val.r));
     if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
     assert(IsRReg(r));
