@@ -7,7 +7,7 @@
 
 using namespace antlr4::atn;
 
-//ATNDeserializationOptions ATNDeserializationOptions::defaultOptions;
+ATNDeserializationOptions ATNDeserializationOptions::defaultOptions;
 
 ATNDeserializationOptions::ATNDeserializationOptions() {
   InitializeInstanceFields();
@@ -22,7 +22,6 @@ ATNDeserializationOptions::~ATNDeserializationOptions() {
 }
 
 const ATNDeserializationOptions& ATNDeserializationOptions::getDefaultOptions() {
-  static ATNDeserializationOptions defaultOptions;
   return defaultOptions;
 }
 
