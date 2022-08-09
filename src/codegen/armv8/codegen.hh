@@ -436,8 +436,9 @@ void AddAsmCodeSwapRegisters(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, i
 
 void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r, const Param &src1, const Param &src2, int indent)
 {
-    //if (src1.p_typ == Param::Reg) assert(IsRReg(src1.val.r));
-    //if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
+    if (src1.p_typ == Param::Reg) assert(IsRReg(src1.val.r));
+    if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
+    assert(IsRReg(r));
     // assumes src2 is smaller (when possible, e.g. add)
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
         asm_insts.push_back(AsmCode(_i_typ,
@@ -504,6 +505,13 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
 {
     if (src1.p_typ == Param::Reg) assert(IsRReg(src1.val.r));
     if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
+    assert(IsRReg(r));
+    if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int && src2.val.i == 1
+     || src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg && src1.val.i == 1 && _i_typ == AsmInst::MUL)
+    {
+        AddAsmCodeMoveRegisterToRegister(asm_insts, r, (src2.p_typ == Param::Imm_int) ? src1.val.r : src2.val.r, indent);
+        return;
+    }
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
         asm_insts.push_back(AsmCode(_i_typ,
             {   Param(r),
@@ -942,7 +950,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         AddAsmCodeLoadFromPointer(asm_insts, GET_ALLOCATION_RESULT(funcPtr, load_inst->dst.reg->reg_id), addr_reg, indent);
         if (borrow) AddAsmCodePopRegisters(asm_insts, {addr_reg}, indent);
     }
-    Case (LLIR_BIN, bin_inst, instPtr)
+    /*unfinished*/Case (LLIR_BIN, bin_inst, instPtr)
     {
         // 跳过目的寄存器没有分配的语句（这种情况是只二元运算的结果没有被使用）
         if(CONDITION_REGISTER_NOT_ALLOCATED(funcPtr, bin_inst->dst.reg->reg_id))
@@ -961,34 +969,94 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             src2 = Param(bin_inst->src2.ctv->int_value);
         else
             src2 = Param(GET_ALLOCATION_RESULT(funcPtr, bin_inst->src2.reg->reg_id));
-        
-        switch(bin_inst->op)
+        if (bin_inst->op == BinOp::ADD)
         {
-        case BinOp::ADD:
             if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg)
                 std::swap(src1, src2);
             if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int && abs(src1.val.i) < abs(src2.val.i))
                 std::swap(src1, src2);
-            AddAsmCodeAddSub(asm_insts, AsmInst::ADD, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
-            break;
-        case BinOp::SUB:
+        }
+        if (bin_inst->op == BinOp::SUB)
+        {
             if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int && abs(src1.val.i) < abs(src2.val.i)) {
                 std::swap(src1, src2);
                 src1.invert();
                 src2.invert(); }
-            AddAsmCodeAddSub(asm_insts, AsmInst::SUB, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
+        }
+        
+        bool borrow_dst = false, borrow_src2 = false, dst_got_first = false;
+        REGs dst_reg, src2_reg;
+        // 先看看dst是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
+        if (IsSReg(GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id)))
+        {
+            // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
+            if (instPtr->GetFirstUnusedRRegister() != SPILL) // 有空闲的r寄存器，用空闲的
+            {
+                dst_got_first = true;
+                dst_reg = instPtr->GetFirstUnusedRRegister();
+            }
+            else // 借用其他r寄存器，需要压栈
+            {
+                borrow_dst = true;
+                dst_reg = r0;
+                // 不能跟src分配的寄存器冲突
+                while (bin_inst->src1.reg && GET_ALLOCATION_RESULT(funcPtr, bin_inst->src1.reg->reg_id) == dst_reg ||
+                       bin_inst->src2.reg && GET_ALLOCATION_RESULT(funcPtr, bin_inst->src2.reg->reg_id) == dst_reg)
+                    dst_reg = (REGs)(dst_reg + 1);
+                AddAsmCodePushRegisters(asm_insts, {dst_reg}, indent);
+            }
+        }
+        else
+            dst_reg = GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id);
+        // 先看看src2是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
+        if (src2.p_typ == Param::Reg && IsSReg(src2.val.r))
+        {
+            // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
+            REGs unused_reg = dst_got_first ? instPtr->GetSecondUnusedRRegister() : instPtr->GetFirstUnusedRRegister();
+            if (unused_reg != SPILL) // 有空闲的r寄存器，用空闲的
+                src2_reg = unused_reg;
+            else // 借用其他r寄存器，需要压栈
+            {
+                borrow_src2 = true;
+                src2_reg = r0;
+                // 不能跟src分配的寄存器冲突
+                while (bin_inst->src1.reg && GET_ALLOCATION_RESULT(funcPtr, bin_inst->src1.reg->reg_id) == src2_reg ||
+                       dst_reg == src2_reg)
+                    src2_reg = (REGs)(src2_reg + 1);
+                AddAsmCodePushRegisters(asm_insts, {src2_reg}, indent);
+            }
+            AddAsmCodeMoveRegisterToRegister(asm_insts, src2_reg, src2.val.r, indent);
+            src2.val.r = src2_reg;
+        }
+
+        switch(bin_inst->op)
+        {
+        case BinOp::ADD:
+            AddAsmCodeAddSub(asm_insts, AsmInst::ADD, dst_reg, src1, src2, indent);
+            break;
+        case BinOp::SUB:
+            AddAsmCodeAddSub(asm_insts, AsmInst::SUB, dst_reg, src1, src2, indent);
             break;
         case BinOp::MUL:
-            AddAsmCodeMulDiv(asm_insts, AsmInst::MUL, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
+            AddAsmCodeMulDiv(asm_insts, AsmInst::MUL, dst_reg, src1, src2, indent);
             break;
         case BinOp::DIV:
-            AddAsmCodeMulDiv(asm_insts, AsmInst::SDIV, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
+            AddAsmCodeMulDiv(asm_insts, AsmInst::SDIV, dst_reg, src1, src2, indent);
             break;
         case BinOp::REM:
-            AddAsmCodeRem(asm_insts, instPtr, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1, src2, indent);
+            AddAsmCodeRem(asm_insts, instPtr, dst_reg, src1, src2, indent);
             break;
         default:
             break;
+        }
+
+        if (borrow_src2)
+            AddAsmCodePopRegisters(asm_insts, {src2_reg}, indent);
+
+        if (borrow_dst)
+        {
+            AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), dst_reg, indent);
+            AddAsmCodePopRegisters(asm_insts, {dst_reg}, indent);
         }
     }
     /**/Case (LLIR_GEP, gep_inst, instPtr)
@@ -1012,10 +1080,10 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             {
                 borrow_addr = true;
                 // 不能跟src或者off分配的寄存器冲突
-                if (GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id) == r0
-                  || (gep_inst->off.reg && GET_ALLOCATION_RESULT(funcPtr, gep_inst->off.reg->reg_id)) == r0)
-                    addr_reg = r1;
-                else addr_reg = r0;
+                addr_reg = r0;
+                while (GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id) == addr_reg
+                  || (gep_inst->off.reg && GET_ALLOCATION_RESULT(funcPtr, gep_inst->off.reg->reg_id) == addr_reg))
+                    addr_reg = (REGs)(addr_reg + 1);
                 AddAsmCodePushRegisters(asm_insts, {addr_reg}, indent);
             }
         }
@@ -1059,10 +1127,10 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 {
                     borrow_offs = true;
                     // 不能跟src和addr分配的寄存器冲突
-                    if (GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id) == r0
-                        ||addr_reg == r0)
-                        offs_reg = r2;
-                    else offs_reg = r0;
+                    offs_reg = r0;
+                    while (GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id) == offs_reg
+                        ||addr_reg == offs_reg)
+                        offs_reg = (REGs)(offs_reg + 1);
                     AddAsmCodePushRegisters(asm_insts, {offs_reg}, indent);
                 }
                 AddAsmCodeMoveIntToRegister(asm_insts, offs_reg, gep_inst->off.ctv->int_value << size_shift_bits, indent);
@@ -1081,10 +1149,10 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                     {
                         borrow_offs = true;
                         // 不能跟src和addr分配的寄存器冲突
-                        if (GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id) == r0
-                          ||addr_reg == r0)
-                            offs_reg = r2;
-                        else offs_reg = r0;
+                        offs_reg = r0;
+                        while (GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id) == offs_reg
+                            ||addr_reg == offs_reg)
+                            offs_reg = (REGs)(offs_reg + 1);
                         AddAsmCodePushRegisters(asm_insts, {offs_reg}, indent);
                     }
                     AddAsmCodeMoveRegisterToRegister(asm_insts, offs_reg, GET_ALLOCATION_RESULT(funcPtr, gep_inst->off.reg->reg_id), indent);
