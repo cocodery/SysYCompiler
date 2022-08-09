@@ -16,14 +16,34 @@ void AllocateRegistersForFunction(Function &func)
     // TODO : SPILL
     printf("In Function \"%s\":\n", func.func_info.func_name.c_str());
     
-    set<REGs> availRegs{r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12};
-    //set<REGs> availRegs{r0,  r1};
-    std::list<int32_t> activeIntervals;
+    CLAIM_AVAIL_REGS
+    list<int32_t> activeIntervals;
+    
+    // 给参数0到31分配寄存器
+    printf(" - pre allocation\n");
+    for (int i = 0; i <= 31; ++i)
+    {
+        // 不是参数或者这个参数没有被使用，跳过分配
+        if (i >= func.func_info.func_args.size())
+            break;
+        if (func.LiveInterval.find(i) == func.LiveInterval.end())
+            continue;
+        REGs allocated_register = (i > 3) ? REGs(i + 16) : REGs(i);
+        func.AllocationResult.insert(make_pair(i, allocated_register));
+        availRegs.erase(allocated_register);
+        activeIntervals.push_back(i);
+        printf(FOUR_SPACES "var: %d, reg %d\n", i, allocated_register);
+    }
+    printf(" ----\n");
 
     for (auto &&interval : func.LiveInterval)
     {
         auto &&varIndex = interval.first;
         auto &&varRange = interval.second;
+
+        // 该变量已分配，跳过（r0-r3, s4-s31传参寄存器）
+        if (func.AllocationResult.find(varIndex) != func.AllocationResult.end())
+            continue;
 
         // 删除旧变量的分配
         for (auto &&activeIntervalIndexIt = activeIntervals.begin();
@@ -71,14 +91,43 @@ void AllocateRegistersForFunction(Function &func)
         }
     }
 
+    // 初始化all_insts
+    for (auto &&bbPtr : func.all_blocks)
+        for (auto &&instPtr : bbPtr->basic_block)
+            func.all_insts.push_back(instPtr);
 
+    // 给每个指令更新“在此处空闲的寄存器”信息
+    for (auto &&interval : func.LiveInterval)
+    {
+        auto &&varIndex = interval.first;
+        auto &&varRange = interval.second;
+        auto &&rangeBegin = varRange.first;
+        auto &&rangeEnd = varRange.second;
+        auto &&allocRes = func.AllocationResult.find(varIndex);
+
+        // 该变量未分配寄存器，即“溢出”
+        if (allocRes == func.AllocationResult.end())
+            continue;
+        else // 该变量被分配了寄存器，给它活跃区间内所有指令标记上“寄存器不可用”
+        {
+            auto &&allocatedRegister = allocRes->second;
+            for (auto &&i = rangeBegin; i <= rangeEnd; ++i)
+                func.all_insts[i]->availRegs.erase(allocatedRegister);
+        }
+    }
 }
 
 void AllocateRegistersForAllFunctions(const CompUnit &ir)
 {
     printf("\n-----Allocate Registers Start----\n");
     for (auto &&funcPtr : ir.functions)
+    {
+        // skip unused functions
+        if (!funcPtr->func_info.is_used)
+            continue;
+
         AllocateRegistersForFunction(*funcPtr);
+    }
     printf("\n-----Allocate Registers End----\n");
 }
 

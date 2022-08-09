@@ -1,5 +1,5 @@
 
-// Generated from SysY.g4 by ANTLR 4.7.2
+// Generated from SysY.g4 by ANTLR 4.8
 
 
 #include "SysYVisitor.h"
@@ -61,6 +61,7 @@ SysYParser::FuncDefContext* SysYParser::CompUnitContext::funcDef(size_t i) {
 size_t SysYParser::CompUnitContext::getRuleIndex() const {
   return SysYParser::RuleCompUnit;
 }
+
 
 antlrcpp::Any SysYParser::CompUnitContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -138,6 +139,7 @@ SysYParser::VarDeclContext* SysYParser::DeclContext::varDecl() {
 size_t SysYParser::DeclContext::getRuleIndex() const {
   return SysYParser::RuleDecl;
 }
+
 
 antlrcpp::Any SysYParser::DeclContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -225,6 +227,7 @@ size_t SysYParser::ConstDeclContext::getRuleIndex() const {
   return SysYParser::RuleConstDecl;
 }
 
+
 antlrcpp::Any SysYParser::ConstDeclContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitConstDecl(this);
@@ -287,6 +290,7 @@ tree::TerminalNode* SysYParser::BTypeContext::Int() {
 size_t SysYParser::BTypeContext::getRuleIndex() const {
   return SysYParser::RuleBType;
 }
+
 
 antlrcpp::Any SysYParser::BTypeContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -369,6 +373,7 @@ tree::TerminalNode* SysYParser::ConstDefContext::Rbrkt(size_t i) {
 size_t SysYParser::ConstDefContext::getRuleIndex() const {
   return SysYParser::RuleConstDef;
 }
+
 
 antlrcpp::Any SysYParser::ConstDefContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -461,6 +466,7 @@ tree::TerminalNode* SysYParser::ListConstInitValContext::Comma(size_t i) {
 
 SysYParser::ListConstInitValContext::ListConstInitValContext(ConstInitValContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::ListConstInitValContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitListConstInitVal(this);
@@ -474,6 +480,7 @@ SysYParser::ConstExpContext* SysYParser::ScalarConstInitValContext::constExp() {
 }
 
 SysYParser::ScalarConstInitValContext::ScalarConstInitValContext(ConstInitValContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::ScalarConstInitValContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -594,6 +601,7 @@ size_t SysYParser::VarDeclContext::getRuleIndex() const {
   return SysYParser::RuleVarDecl;
 }
 
+
 antlrcpp::Any SysYParser::VarDeclContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitVarDecl(this);
@@ -687,6 +695,7 @@ tree::TerminalNode* SysYParser::UninitVarDefContext::Rbrkt(size_t i) {
 
 SysYParser::UninitVarDefContext::UninitVarDefContext(VarDefContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::UninitVarDefContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitUninitVarDef(this);
@@ -728,6 +737,7 @@ tree::TerminalNode* SysYParser::InitVarDefContext::Rbrkt(size_t i) {
 }
 
 SysYParser::InitVarDefContext::InitVarDefContext(VarDefContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::InitVarDefContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -830,6 +840,7 @@ SysYParser::ExpContext* SysYParser::ScalarInitValContext::exp() {
 
 SysYParser::ScalarInitValContext::ScalarInitValContext(InitValContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::ScalarInitValContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitScalarInitVal(this);
@@ -863,6 +874,7 @@ tree::TerminalNode* SysYParser::ListInitvalContext::Comma(size_t i) {
 }
 
 SysYParser::ListInitvalContext::ListInitvalContext(InitValContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::ListInitvalContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -983,6 +995,7 @@ size_t SysYParser::FuncDefContext::getRuleIndex() const {
   return SysYParser::RuleFuncDef;
 }
 
+
 antlrcpp::Any SysYParser::FuncDefContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitFuncDef(this);
@@ -1050,6 +1063,7 @@ size_t SysYParser::FuncTypeContext::getRuleIndex() const {
   return SysYParser::RuleFuncType;
 }
 
+
 antlrcpp::Any SysYParser::FuncTypeContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitFuncType(this);
@@ -1116,6 +1130,7 @@ tree::TerminalNode* SysYParser::FuncFParamsContext::Comma(size_t i) {
 size_t SysYParser::FuncFParamsContext::getRuleIndex() const {
   return SysYParser::RuleFuncFParams;
 }
+
 
 antlrcpp::Any SysYParser::FuncFParamsContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1202,6 +1217,7 @@ size_t SysYParser::FuncFParamContext::getRuleIndex() const {
   return SysYParser::RuleFuncFParam;
 }
 
+
 antlrcpp::Any SysYParser::FuncFParamContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitFuncFParam(this);
@@ -1285,6 +1301,7 @@ size_t SysYParser::BlockContext::getRuleIndex() const {
   return SysYParser::RuleBlock;
 }
 
+
 antlrcpp::Any SysYParser::BlockContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitBlock(this);
@@ -1364,6 +1381,7 @@ SysYParser::StmtContext* SysYParser::BlockItemContext::stmt() {
 size_t SysYParser::BlockItemContext::getRuleIndex() const {
   return SysYParser::RuleBlockItem;
 }
+
 
 antlrcpp::Any SysYParser::BlockItemContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1495,6 +1513,7 @@ tree::TerminalNode* SysYParser::ForStmtContext::Comma(size_t i) {
 
 SysYParser::ForStmtContext::ForStmtContext(StmtContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::ForStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitForStmt(this);
@@ -1524,6 +1543,7 @@ SysYParser::StmtContext* SysYParser::WhileStmtContext::stmt() {
 }
 
 SysYParser::WhileStmtContext::WhileStmtContext(StmtContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::WhileStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1563,6 +1583,7 @@ tree::TerminalNode* SysYParser::IfStmtContext::Else() {
 
 SysYParser::IfStmtContext::IfStmtContext(StmtContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::IfStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitIfStmt(this);
@@ -1576,6 +1597,7 @@ SysYParser::BlockContext* SysYParser::BlockStmtContext::block() {
 }
 
 SysYParser::BlockStmtContext::BlockStmtContext(StmtContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::BlockStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1598,6 +1620,7 @@ tree::TerminalNode* SysYParser::AssignmentContext::Semicolon() {
 }
 
 SysYParser::AssignmentContext::AssignmentContext(StmtContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::AssignmentContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1633,6 +1656,7 @@ tree::TerminalNode* SysYParser::DowhileStmtContext::Rparen() {
 
 SysYParser::DowhileStmtContext::DowhileStmtContext(StmtContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::DowhileStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitDowhileStmt(this);
@@ -1651,6 +1675,7 @@ tree::TerminalNode* SysYParser::BreakStmtContext::Semicolon() {
 
 SysYParser::BreakStmtContext::BreakStmtContext(StmtContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::BreakStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitBreakStmt(this);
@@ -1668,6 +1693,7 @@ SysYParser::ExpContext* SysYParser::ExpStmtContext::exp() {
 }
 
 SysYParser::ExpStmtContext::ExpStmtContext(StmtContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::ExpStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1691,6 +1717,7 @@ SysYParser::ExpContext* SysYParser::ReturnStmtContext::exp() {
 
 SysYParser::ReturnStmtContext::ReturnStmtContext(StmtContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::ReturnStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitReturnStmt(this);
@@ -1708,6 +1735,7 @@ tree::TerminalNode* SysYParser::ContinueStmtContext::Semicolon() {
 }
 
 SysYParser::ContinueStmtContext::ContinueStmtContext(StmtContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::ContinueStmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -1978,6 +2006,7 @@ size_t SysYParser::ExpContext::getRuleIndex() const {
   return SysYParser::RuleExp;
 }
 
+
 antlrcpp::Any SysYParser::ExpContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitExp(this);
@@ -2021,6 +2050,7 @@ SysYParser::LOrExpContext* SysYParser::CondContext::lOrExp() {
 size_t SysYParser::CondContext::getRuleIndex() const {
   return SysYParser::RuleCond;
 }
+
 
 antlrcpp::Any SysYParser::CondContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2089,6 +2119,7 @@ tree::TerminalNode* SysYParser::LValContext::Rbrkt(size_t i) {
 size_t SysYParser::LValContext::getRuleIndex() const {
   return SysYParser::RuleLVal;
 }
+
 
 antlrcpp::Any SysYParser::LValContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2159,6 +2190,7 @@ SysYParser::LValContext* SysYParser::PrimaryExp2Context::lVal() {
 
 SysYParser::PrimaryExp2Context::PrimaryExp2Context(PrimaryExpContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::PrimaryExp2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitPrimaryExp2(this);
@@ -2181,6 +2213,7 @@ tree::TerminalNode* SysYParser::PrimaryExp1Context::Rparen() {
 
 SysYParser::PrimaryExp1Context::PrimaryExp1Context(PrimaryExpContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::PrimaryExp1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitPrimaryExp1(this);
@@ -2194,6 +2227,7 @@ SysYParser::NumberContext* SysYParser::PrimaryExp3Context::number() {
 }
 
 SysYParser::PrimaryExp3Context::PrimaryExp3Context(PrimaryExpContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::PrimaryExp3Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2278,6 +2312,7 @@ tree::TerminalNode* SysYParser::Number1Context::IntLiteral() {
 
 SysYParser::Number1Context::Number1Context(NumberContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::Number1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitNumber1(this);
@@ -2291,6 +2326,7 @@ tree::TerminalNode* SysYParser::Number2Context::FloatLiteral() {
 }
 
 SysYParser::Number2Context::Number2Context(NumberContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::Number2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2362,6 +2398,7 @@ SysYParser::PrimaryExpContext* SysYParser::Unary1Context::primaryExp() {
 
 SysYParser::Unary1Context::Unary1Context(UnaryExpContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::Unary1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitUnary1(this);
@@ -2388,6 +2425,7 @@ SysYParser::FuncRParamsContext* SysYParser::Unary2Context::funcRParams() {
 
 SysYParser::Unary2Context::Unary2Context(UnaryExpContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::Unary2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitUnary2(this);
@@ -2405,6 +2443,7 @@ SysYParser::UnaryExpContext* SysYParser::Unary3Context::unaryExp() {
 }
 
 SysYParser::Unary3Context::Unary3Context(UnaryExpContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::Unary3Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2504,6 +2543,7 @@ size_t SysYParser::UnaryOpContext::getRuleIndex() const {
   return SysYParser::RuleUnaryOp;
 }
 
+
 antlrcpp::Any SysYParser::UnaryOpContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitUnaryOp(this);
@@ -2571,6 +2611,7 @@ size_t SysYParser::FuncRParamsContext::getRuleIndex() const {
   return SysYParser::RuleFuncRParams;
 }
 
+
 antlrcpp::Any SysYParser::FuncRParamsContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitFuncRParams(this);
@@ -2627,6 +2668,7 @@ SysYParser::ExpContext* SysYParser::FuncRParamContext::exp() {
 size_t SysYParser::FuncRParamContext::getRuleIndex() const {
   return SysYParser::RuleFuncRParam;
 }
+
 
 antlrcpp::Any SysYParser::FuncRParamContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2696,6 +2738,7 @@ tree::TerminalNode* SysYParser::Mul2Context::Modulo() {
 
 SysYParser::Mul2Context::Mul2Context(MulExpContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::Mul2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitMul2(this);
@@ -2709,6 +2752,7 @@ SysYParser::UnaryExpContext* SysYParser::Mul1Context::unaryExp() {
 }
 
 SysYParser::Mul1Context::Mul1Context(MulExpContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::Mul1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2822,6 +2866,7 @@ tree::TerminalNode* SysYParser::Add2Context::Minus() {
 
 SysYParser::Add2Context::Add2Context(AddExpContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::Add2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitAdd2(this);
@@ -2835,6 +2880,7 @@ SysYParser::MulExpContext* SysYParser::Add1Context::mulExp() {
 }
 
 SysYParser::Add1Context::Add1Context(AddExpContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::Add1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -2955,6 +3001,7 @@ tree::TerminalNode* SysYParser::Rel2Context::GE() {
 
 SysYParser::Rel2Context::Rel2Context(RelExpContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::Rel2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitRel2(this);
@@ -2968,6 +3015,7 @@ SysYParser::AddExpContext* SysYParser::Rel1Context::addExp() {
 }
 
 SysYParser::Rel1Context::Rel1Context(RelExpContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::Rel1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -3070,6 +3118,7 @@ SysYParser::RelExpContext* SysYParser::Eq1Context::relExp() {
 
 SysYParser::Eq1Context::Eq1Context(EqExpContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::Eq1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitEq1(this);
@@ -3095,6 +3144,7 @@ tree::TerminalNode* SysYParser::Eq2Context::NEQ() {
 }
 
 SysYParser::Eq2Context::Eq2Context(EqExpContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::Eq2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -3203,6 +3253,7 @@ SysYParser::EqExpContext* SysYParser::LAnd2Context::eqExp() {
 
 SysYParser::LAnd2Context::LAnd2Context(LAndExpContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::LAnd2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitLAnd2(this);
@@ -3216,6 +3267,7 @@ SysYParser::EqExpContext* SysYParser::LAnd1Context::eqExp() {
 }
 
 SysYParser::LAnd1Context::LAnd1Context(LAndExpContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::LAnd1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -3307,6 +3359,7 @@ SysYParser::LAndExpContext* SysYParser::LOr1Context::lAndExp() {
 
 SysYParser::LOr1Context::LOr1Context(LOrExpContext *ctx) { copyFrom(ctx); }
 
+
 antlrcpp::Any SysYParser::LOr1Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
     return parserVisitor->visitLOr1(this);
@@ -3328,6 +3381,7 @@ SysYParser::LAndExpContext* SysYParser::LOr2Context::lAndExp() {
 }
 
 SysYParser::LOr2Context::LOr2Context(LOrExpContext *ctx) { copyFrom(ctx); }
+
 
 antlrcpp::Any SysYParser::LOr2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))
@@ -3410,6 +3464,7 @@ SysYParser::AddExpContext* SysYParser::ConstExpContext::addExp() {
 size_t SysYParser::ConstExpContext::getRuleIndex() const {
   return SysYParser::RuleConstExp;
 }
+
 
 antlrcpp::Any SysYParser::ConstExpContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SysYVisitor*>(visitor))

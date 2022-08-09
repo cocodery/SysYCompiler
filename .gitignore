@@ -18,8 +18,11 @@ src/frontend/.antlr/
 *.DS_Store
 
 # codegen
+*.s
+*.o
 *.asm
 *.ll
+exec
 
 #compiler2022
 compiler2022/*

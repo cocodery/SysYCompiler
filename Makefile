@@ -36,12 +36,12 @@ build:
 
 .PHONY: run
 run:
-	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o ../main.asm -l ../main.ll ../main.sy ; cd ..
+	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o ../main.s -l ../main.ll ../main.sy ; cd ..
 	@llvm-link sylib.ll main.ll -S -o run.ll
 
 .PHONY: test
 test:
-	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o ../main.asm -l ../main.ll ../$(CASE); cd ..
+	@cd $(BUILD_DIR); ./$(TOPNAME) -S -o ../main.s -l ../main.ll ../$(CASE); cd ..
 	@llvm-link sylib.ll main.ll -S -o run.ll
 
 .ONESHELL:

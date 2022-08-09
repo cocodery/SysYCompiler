@@ -269,8 +269,8 @@ void Scope::printScope() {
 
 void Function::printCallInfo() {
     llir << get_tabs() << "; " <<  func_info.func_name << " call function : ";
-    if (called_funcs.size()) {
-        for (auto &&func_info : called_funcs) {
+    if (func_info.called_funcs.size()) {
+        for (auto &&func_info : func_info.called_funcs) {
             llir << func_info->func_name << " ";
         }
     } else {
@@ -425,17 +425,17 @@ CompUnit::CompUnit() {
 // Global  Function Init Part
     functions.empty();
 // Library Funtions Init Part
-    string func_name[13] = { "getint"   , "getch"    , "getfloat", "getarray",
+    string func_name[14] = { "getint"   , "getch"    , "getfloat", "getarray",
                              "getfarray", "putint"   , "putch"   , "putfloat", 
                              "putarray" , "putfarray", 
                              "_sysy_starttime", "_sysy_stoptime",
-                             "llvm.memset.p0i8.i32" };
-    DeclType ret_type[13] = {  TypeInt, TypeInt, TypeFloat, TypeInt, 
+                             "imemset", "fmemset" };
+    DeclType ret_type[14] = {  TypeInt, TypeInt, TypeFloat, TypeInt, 
                                TypeInt, TypeVoid, TypeVoid, TypeVoid,
                                TypeVoid, TypeVoid,
                                TypeVoid, TypeVoid,
-                               TypeVoid };
-    for (int32_t i = 0; i < 13; ++i) {
+                               TypeVoid, TypeVoid };
+    for (int32_t i = 0; i < 14; ++i) {
         lib_functions[i] = new LibFunction;
         lib_functions[i]->libfunc_info.is_used = false;
         lib_functions[i]->libfunc_info.func_name = func_name[i];
@@ -471,12 +471,16 @@ CompUnit::CompUnit() {
     lib_functions[10]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
     // sysy_stoptime
     lib_functions[11]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
-    // memset
-    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true, true, TypeByte)));
+    // imemset
+    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true, true, TypeInt)));
     lib_functions[12]->libfunc_info.func_args[0].second.array_dims.push_back(-1);
-    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeByte)));
     lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
-    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeBool)));
+    lib_functions[12]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
+    // fmemset
+    lib_functions[13]->libfunc_info.func_args.push_back(make_pair("", VarType(false, true, true, TypeFloat)));
+    lib_functions[13]->libfunc_info.func_args[0].second.array_dims.push_back(-1);
+    lib_functions[13]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
+    lib_functions[13]->libfunc_info.func_args.push_back(make_pair("", VarType(false, false, true, TypeInt)));
 }
 
 FunctionInfo *CompUnit::getFunctionInfo(string func_name) {
@@ -528,7 +532,7 @@ void CompUnit::DebugGlobalTable() {
     llir << "; Global Variable" << endl;
     VariableTable *global_table = global_scope->local_table;
     for (auto pair: global_table->var_table) {
-        if (pair.second->type.is_const && !pair.second->type.is_array) continue;
+        if (pair.second->type.is_const && !pair.second->type.is_array && pair.second->type.decl_type != TypeFloat) continue;
         Variable *var = pair.second;
         llir << "    " << "@_" << var->var_idx << " = ";
         // var->var_idx = glb_var_idx;
@@ -542,9 +546,15 @@ void CompUnit::DebugGlobalTable() {
                         llir << ", i32 " << var->int_list[i];
                     }
                 } else {
-                    llir << "float " << var->int_list[0];
+                    std::stringstream ss;
+                    uint64_t uint64_value = reinterpret_cast<uint64_t&>(var->float_list[0]);
+                    ss << "float " << "0x" << std::hex << uint64_value;
+                    llir << ss.str();
                     for (int i = 1; i < var->int_list.size(); ++i) {
-                        llir << ", float " << var->int_list[i];
+                        ss.clear();
+                        uint64_t uint64_value = reinterpret_cast<uint64_t&>(var->float_list[i]);
+                        ss << "float " << "0x" << std::hex << uint64_value;
+                        llir << ss.str();
                     }
                 }
                 llir << "]";
@@ -552,7 +562,10 @@ void CompUnit::DebugGlobalTable() {
                 if (var->type.decl_type == TypeInt) {
                     llir << var->int_scalar;
                 } else {
-                    llir << var->float_scalar;
+                    std::stringstream ss;
+                    uint64_t uint64_value = reinterpret_cast<uint64_t&>(var->float_scalar);
+                    ss << "0x" << std::hex << uint64_value;
+                    llir << ss.str();
                 }
             }
         }

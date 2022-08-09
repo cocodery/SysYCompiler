@@ -68,8 +68,10 @@ public:
 class FunctionInfo {
 public:
     bool is_used;
+    bool is_recursive;
     string func_name;
     DeclType return_type;
+    set<FunctionInfo *> called_funcs;
     vector<pair<string, VarType>> func_args;
 public:
     FunctionInfo();

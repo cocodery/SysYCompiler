@@ -72,12 +72,12 @@ public:
     int32_t var_idx;
     Scope *main_scope;
     vector<BasicBlock *> all_blocks;
-    set<FunctionInfo *> called_funcs;
     typedef pair<int32_t, int32_t> RANGE;
 
     // codegen
     map<int32_t, RANGE> LiveInterval; // 整个function中每个变量的LiveInterval
     map<int32_t, REGs> AllocationResult; // 每个变量的分配情况
+    vector<Inst *> all_insts;
 public:
     void printCallInfo();
     void buildCFG();
@@ -103,7 +103,7 @@ class CompUnit: public Info {
 public:
     Scope *global_scope;
     vector<Function *> functions;
-    LibFunction *lib_functions[13];
+    LibFunction *lib_functions[14];
 public:
     CompUnit();
     FunctionInfo *getFunctionInfo(string func_name);

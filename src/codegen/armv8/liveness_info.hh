@@ -67,8 +67,9 @@ void ProcessInst(vector <int32_t> &src_regids,
         //cout << get_tabs() << br_inst->ToString() << endl;
 
         // if (src) goto label1;
-        if (br_inst->has_cond)
-            IF_IS_REG_THEN_PUSH_BACK(src_regids, br_inst->cond.reg);
+        // br和cmp指令总是连着，不需要分配寄存器传递结果
+        //if (br_inst->has_cond)
+        //    IF_IS_REG_THEN_PUSH_BACK(src_regids, br_inst->cond.reg);
     }
     Case (LLIR_BIN, bin_inst, instPtr)
     {
@@ -93,14 +94,18 @@ void ProcessInst(vector <int32_t> &src_regids,
         //cout << get_tabs() << alloc_inst->ToString() << endl;
 
         // dst = malloc(something);
-        dst_regid = alloc_inst->reg.reg->reg_id;
+        // alloca指令是给寄存器赋值一个指针，供load/store用，但由于指针已经是标号，从alloc来的指针不必分配寄存器
+        //dst_regid = alloc_inst->reg.reg->reg_id;
     }
     Case (LLIR_LOAD, load_inst, instPtr)
     {
         //cout << get_tabs() << load_inst->ToString() << endl;
         
         // dst = *src
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, load_inst->src.reg);
+        // load的src是指针类型，所有指针类型都是标号，不必分配寄存器
+        // 但是，从gep来的指针类型需要分配寄存器
+        if (load_inst->src.reg->is_from_gep || load_inst->src.reg->type.is_args && load_inst->src.reg->type.is_array)
+            IF_IS_REG_THEN_PUSH_BACK(src_regids, load_inst->src.reg);
         dst_regid = IF_GLOBAL_RETURN_NEG_ID(load_inst->dst.reg);
     }
     Case (LLIR_STORE, store_inst, instPtr)
@@ -109,7 +114,10 @@ void ProcessInst(vector <int32_t> &src_regids,
 
         // *dst = src
         IF_IS_REG_THEN_PUSH_BACK(src_regids, store_inst->src.reg);
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, store_inst->dst.reg);
+        // store的dst是指针类型，所有从alloca来的指针类型都是标号，不必分配寄存器
+        // 但是，从gep来的指针类型需要分配寄存器
+        if (store_inst->dst.reg->is_from_gep || store_inst->dst.reg->type.is_args && store_inst->dst.reg->type.is_array)
+            IF_IS_REG_THEN_PUSH_BACK(src_regids, store_inst->dst.reg);
     }
     Case (LLIR_ICMP, icmp_inst, instPtr)
     {
@@ -120,7 +128,8 @@ void ProcessInst(vector <int32_t> &src_regids,
             src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(icmp_inst->src1.reg));
         if (icmp_inst->src2.reg)
             src_regids.push_back(IF_GLOBAL_RETURN_NEG_ID(icmp_inst->src2.reg));
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(icmp_inst->dst.reg);
+        // 不给icmp的结果分配寄存器
+        //dst_regid = IF_GLOBAL_RETURN_NEG_ID(icmp_inst->dst.reg);
     }
     Case (LLIR_FCMP, fcmp_inst, instPtr)
     {
@@ -129,7 +138,8 @@ void ProcessInst(vector <int32_t> &src_regids,
         // dst = src1 < src2
         IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src1.reg);
         IF_IS_REG_THEN_PUSH_BACK(src_regids, fcmp_inst->src2.reg);
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(fcmp_inst->dst.reg);
+        // TODO：不给fcmp的结果分配寄存器
+        //dst_regid = IF_GLOBAL_RETURN_NEG_ID(fcmp_inst->dst.reg);
     }
     Case (LLIR_CALL, call_inst, instPtr)
     {
@@ -146,33 +156,30 @@ void ProcessInst(vector <int32_t> &src_regids,
         //cout << get_tabs() << zext_inst->ToString() << endl;
     
         // dst = (int) src
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, zext_inst->src.reg);
+        // zext的作用是把逻辑值扩展为整形，全是从cmp来的，没有用到寄存器传递
+        //IF_IS_REG_THEN_PUSH_BACK(src_regids, zext_inst->src.reg);
         dst_regid = IF_GLOBAL_RETURN_NEG_ID(zext_inst->dst.reg);
     }
     Case (LLIR_GEP, gep_inst, instPtr)
     {
         //cout << get_tabs() << gep_inst->ToString() << endl;
         
-        // dst = *(src + off)
+        // *dst = *(src + off)
         IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->off.reg);
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->src.reg);
+        // alloca来的不需要分配寄存器，gep来的需要分配寄存器
+        if (gep_inst->src.reg->is_from_gep || gep_inst->src.reg->type.is_args && gep_inst->src.reg->type.is_array)
+            IF_IS_REG_THEN_PUSH_BACK(src_regids, gep_inst->src.reg);
         dst_regid = IF_GLOBAL_RETURN_NEG_ID(gep_inst->dst.reg);
+        gep_inst->dst.reg->is_from_gep = true;
     }
     Case (LLIR_XOR, xor_inst, instPtr)
     {
         //cout << get_tabs() << xor_inst->ToString() << endl;
         
         // dst = ~ src
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, xor_inst->src.reg);
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(xor_inst->dst.reg);
-    }
-    Case (LLIR_BC, bc_inst, instPtr)
-    {
-        //cout << get_tabs() << bc_inst->ToString() << endl; 
-
-        // dst = (char)src
-        IF_IS_REG_THEN_PUSH_BACK(src_regids, bc_inst->src.reg);
-        dst_regid = IF_GLOBAL_RETURN_NEG_ID(bc_inst->dst.reg);
+        // xor的唯一作用是给逻辑结果取反，不需要寄存器传递
+        //IF_IS_REG_THEN_PUSH_BACK(src_regids, xor_inst->src.reg);
+        //dst_regid = IF_GLOBAL_RETURN_NEG_ID(xor_inst->dst.reg);
     }
     Case (LLIR_SITOFP, itf_inst, instPtr)
     {
@@ -197,6 +204,10 @@ void GenerateLiveInfo(const CompUnit &ir)
     printf("\n-----GenerateLiveInfo Start----\n");
     for (auto &&functionPtr : ir.functions)
     {
+        // skip unused functions
+        if (!functionPtr->func_info.is_used)
+            continue;
+
         printf("In Function \"%s\":\n", functionPtr->func_info.func_name.c_str());
         
         printf(" * Generate LiveUse & LiveDef\n");
