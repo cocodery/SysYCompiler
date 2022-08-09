@@ -191,7 +191,8 @@ public:
         MOVEQ, MOVNE, SDIV, MVN, RSB,
         DOT_LTORG, EORNE, VADD, VSUB, VMUL,
         VDIV, VMOV, VCMP, VCVT_ITOF, VCVT_FTOI,
-        FMSTAT, VPUSH, VPOP, VLDR, VSTR
+        FMSTAT, VPUSH, VPOP, VLDR, VSTR,
+        VMVN
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -202,7 +203,8 @@ public:
         "moveq", "movne", "sdiv", "mvn", "rsb",
         ".ltorg", "eorne", "vadd.f32", "vsub.f32", "vmul.f32",
         "vdiv.f32", "vmov", "vcmp.f32", "vcvt.f32.s32", "vcvt.s32.f32",
-        "fmstat", "vpush", "vpop", "vldr", "vstr"
+        "fmstat", "vpush", "vpop", "vldr", "vstr",
+        "vmvn"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -406,14 +408,14 @@ void AddAsmCodeMoveIntToRegister(vector<AsmCode> &asm_insts, REGs r, int i, int 
     }
 }
 
-void AddAsmCodeMoveRegisterToRegister(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, int indent)
+void AddAsmCodeMoveRegisterToRegister(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, int indent, bool negative = false)
 {
     assert(reg1 != SPILL && reg2 != SPILL);
     if (reg1 == reg2) return;
     if (IsRReg(reg1) && IsRReg(reg2))
-        asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(reg1), Param(reg2)}, indent));
+        asm_insts.push_back(AsmCode(negative ? AsmInst::MVN : AsmInst::MOV, {Param(reg1), Param(reg2)}, indent));
     else
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(reg1), Param(reg2)}, indent));
+        asm_insts.push_back(AsmCode(negative ? AsmInst::VMVN : AsmInst::VMOV, {Param(reg1), Param(reg2)}, indent));
 }
 
 void AddAsmCodeSwapRegisters(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, int indent)
@@ -436,6 +438,17 @@ void AddAsmCodeSwapRegisters(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, i
 
 void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r, const Param &src1, const Param &src2, int indent)
 {
+    // 事实上，由于ssa的性质，bin r0,r0,#imm永远不会出现在ir中
+    if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int && src2.val.i == 0)
+    {
+        AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
+        return;
+    }
+    if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg && src1.val.i == 0)
+    {
+        AddAsmCodeMoveRegisterToRegister(asm_insts, r, src2.val.r, indent, _i_typ == AsmInst::SUB);
+        return;
+    }
     if (src1.p_typ == Param::Reg) assert(IsRReg(src1.val.r));
     if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
     assert(IsRReg(r));
@@ -448,12 +461,7 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
             indent));
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
-        if (src2.val.i == 0)
-        {
-            if (src1.val.r == r) return; // 事实上，由于ssa的性质，bin r0,r0,#imm永远不会出现在ir中
-            AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
-        }
-        else if (abs(src2.val.i) <= 256) // src2 is small enough
+        if (abs(src2.val.i) <= 256) // src2 is small enough
             asm_insts.push_back(AsmCode(_i_typ,
                 {   Param(r),
                     src1,
@@ -471,12 +479,7 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg, should be sub only
     {
-        if (src1.val.i == 0 && src2.val.r == r)
-            asm_insts.push_back(AsmCode(AsmInst::MVN,
-                {   Param(r),
-                    src2},
-                indent));
-        else if (abs(src1.val.i) <= 256) // src1 is small enough
+        if (abs(src1.val.i) <= 256) // src1 is small enough
             asm_insts.push_back(AsmCode(AsmInst::RSB,
                 {   Param(r),
                     src2,
@@ -503,15 +506,15 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
 
 void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r, const Param &src1, const Param &src2, int indent)
 {
-    if (src1.p_typ == Param::Reg) assert(IsRReg(src1.val.r));
-    if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
-    assert(IsRReg(r));
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int && src2.val.i == 1
      || src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg && src1.val.i == 1 && _i_typ == AsmInst::MUL)
     {
         AddAsmCodeMoveRegisterToRegister(asm_insts, r, (src2.p_typ == Param::Imm_int) ? src1.val.r : src2.val.r, indent);
         return;
     }
+    if (src1.p_typ == Param::Reg) assert(IsRReg(src1.val.r));
+    if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
+    assert(IsRReg(r));
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
         asm_insts.push_back(AsmCode(_i_typ,
             {   Param(r),
