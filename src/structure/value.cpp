@@ -3,7 +3,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreturn-type"
 
-CTValue::CTValue(DeclType t, int32_t iv, float fv): type(t), int_value(iv), float_value(fv) { }
+CTValue::CTValue(DeclType t, int32_t iv, double fv): type(t), int_value(iv), float_value(fv) { }
 
 string CTValue::ToString() {
     std::stringstream ss;
