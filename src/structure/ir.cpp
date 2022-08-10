@@ -52,7 +52,6 @@ void BasicBlock::debugBlock() {
     }
 }
 
-
 void BasicBlock::printBlock() {
     if (valuable) {
         llir << get_tabs(tab_num - 1) << "Block" << bb_idx << ":" << endl;
@@ -109,6 +108,10 @@ void BasicBlock::printBlock() {
         }
         llir << "; " << std::to_string(firstInstIndex + (instIdx++)) << endl;
     }
+}
+
+void BasicBlock::replaceInst(Inst *inst1, Inst *inst2) {
+    std::replace(basic_block.begin(), basic_block.end(), inst1, inst2);
 }
 
 void BasicBlock::initDom(vector<BasicBlock *> all_blocks) {
@@ -411,6 +414,15 @@ void Function::replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var) {
     for (auto &&block : all_blocks) {
         block->replaceSRC(old_reg, new_var);
     }
+}
+
+BasicBlock *Function::getSpecificIdxBb(int32_t bb_idx) {
+    for (auto &&block : all_blocks) {
+        if (block->bb_idx == bb_idx) {
+            return block;
+        }
+    }
+    assert(bb_idx && "UnKnown Block");
 }
 
 void LibFunction::printFunction() {

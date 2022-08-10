@@ -46,6 +46,7 @@ public:
     Inst *lastInst();
     void debugBlock();
     void printBlock();
+    void replaceInst(Inst *inst1, Inst *inst2);
     void initDom(vector<BasicBlock *> all_blocks);
     set<BasicBlock *> predsDomInter();
     void replaceSRC(VirtReg *old_reg, SRC new_var);
@@ -85,6 +86,7 @@ public:
     void buildIDom();
     void initBBDF();
     void replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var);
+    BasicBlock *getSpecificIdxBb(int32_t bb_idx);
 
     // codegen
     // 生成LiveInterval
