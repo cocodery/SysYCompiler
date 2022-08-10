@@ -61,16 +61,16 @@ all:
 		timeout 500s ./$(BUILD_DIR)/$(TOPNAME) -S -o $${ASM} -l $${LL} $${file}  >> $${LOG}
 		RETURN_VALUE=$$? 
 		if [ $$RETURN_VALUE = 124 ]; then
-			echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Timeout\033[0m"
+			echo -e "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Timeout\033[0m"
 			continue
 		else if [ $$RETURN_VALUE != 0 ]; then
-			echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Error\033[0m"
+			echo -e "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Error\033[0m"
 			continue
 			fi
 		fi
 		llvm-link sylib.ll $${LL} -S -o $${LL} >> $${LOG} 2>&1
 		if [ $$? != 0 ]; then
-			echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mAssemble Error\033[0m"
+			echo -e "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mAssemble Error\033[0m"
 		else
 			if [ -f "$${IN}" ]; then
 				timeout 10s lli $${LL} <$${IN} 2>>$${LOG} >$${RES}
@@ -79,14 +79,14 @@ all:
 			fi
 			RETURN_VALUE=$$?
 			FINAL=`tail -c 1 $${RES}`
-			[ $${FINAL} ] && echo "\n$${RETURN_VALUE}" >> $${RES} || echo "$${RETURN_VALUE}" >> $${RES}
+			[ $${FINAL} ] && echo -e "\n$${RETURN_VALUE}" >> $${RES} || echo -e "$${RETURN_VALUE}" >> $${RES}
 
 			diff -Z $${RES} $${OUT} >/dev/null 2>&1
 			if [ $$? != 0 ]; then
-				echo "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mWrong Answer\033[0m"
+				echo -e "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mWrong Answer\033[0m"
 			else
 				success=$$((success + 1))
-				echo "\033[1;32mPASS:\033[0m $${FILE}"
+				echo -e "\033[1;32mPASS:\033[0m $${FILE}"
 			fi
 		fi
 	done
