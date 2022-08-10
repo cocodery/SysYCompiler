@@ -10,10 +10,10 @@ LoadStoreReordering::LoadStoreReordering(Function *function)
         vector<Inst *> other_insts;
         for (auto &&instPtr : bbPtr->basic_block) {
             Case (LLIR_STORE, store_inst, instPtr) {
-                if (store_inst->src.reg) {
+                if (store_inst->src.reg)
                     store_insts_to_relocate.insert(make_pair(store_inst->src.reg->reg_id, instPtr));
-                    continue;
-                }
+                else other_insts.push_back(instPtr);
+                continue;
             }
             else other_insts.push_back(instPtr);
         }
