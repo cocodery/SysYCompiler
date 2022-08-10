@@ -4,6 +4,7 @@
 #include "../structure/ir.hh"
 #include "mem2reg.hh"
 #include "lvn.hh"
+#include "reg2mem.hh"
 #include "function_recursion.hh"
 
 class PassManager {
@@ -13,19 +14,23 @@ public:
 public:
     PassManager(Scope *glb_scope, vector<Function *> funcs) : global_scope(glb_scope), functions(funcs) { }
     void excute_pass() {
-        compDomInfo();
+        for (auto &&function : functions) {
+            if (function->func_info.is_used) {
+                function->buildDom();
+                function->buildIDom();
+                function->initBBDF();
 
-        //mem2reg();
+                Mem2Reg mem2reg = Mem2Reg(function);
+                mem2reg.runMem2Reg();
 
-        lvn();
+                LVN lvn = LVN(function);
+                lvn.runLVN();
 
-        funcRecursion();
+                Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
+                reg2mem.runReg2Mem();
+
+                FunctionRecursion obj(functions);
+            }
+        }
     }
-    void compDomInfo();
-
-    void mem2reg();
-
-    void lvn();
-
-    void funcRecursion();
 };
