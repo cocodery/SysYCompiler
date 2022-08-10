@@ -3,6 +3,7 @@
 #include "../common.hh"
 #include "../structure/ir.hh"
 #include "mem2reg.hh"
+#include "constant_propagation.hh"
 #include "lvn.hh"
 #include "reg2mem.hh"
 #include "function_recursion.hh"
@@ -22,6 +23,9 @@ public:
 
                 Mem2Reg mem2reg = Mem2Reg(function);
                 mem2reg.runMem2Reg();
+
+                ConstantProg constantprog = ConstantProg(function);
+                constantprog.runConstantProg();
 
                 LVN lvn = LVN(function);
                 lvn.runLVN();
