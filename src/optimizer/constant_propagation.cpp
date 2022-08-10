@@ -61,13 +61,13 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                 int32_t svalue2 = src2.ctv->int_value;
                 SRC dst_value;
                 if (icmp_inst->op == LTH) {
-                    dst_value = SRC(new CTValue(TypeInt, svalue1 < svalue2, svalue1 < svalue2));
+                    dst_value = SRC(new CTValue(TypeBool, svalue1 < svalue2, svalue1 < svalue2));
                 } else if (icmp_inst->op == LEQ) {
-                    dst_value = SRC(new CTValue(TypeInt, svalue1 <= svalue2, svalue1 <= svalue2));
+                    dst_value = SRC(new CTValue(TypeBool, svalue1 <= svalue2, svalue1 <= svalue2));
                 } else if (icmp_inst->op == EQU) {
-                    dst_value = SRC(new CTValue(TypeInt, svalue1 == svalue2, svalue1 == svalue2));
+                    dst_value = SRC(new CTValue(TypeBool, svalue1 == svalue2, svalue1 == svalue2));
                 } else if (icmp_inst->op == NEQ) {
-                    dst_value = SRC(new CTValue(TypeInt, svalue1 != svalue2, svalue1 != svalue2));
+                    dst_value = SRC(new CTValue(TypeBool, svalue1 != svalue2, svalue1 != svalue2));
                 } 
                 function->replaceSRCs(block, icmp_inst->dst.reg, dst_value);
                 iter = block->basic_block.erase(iter) - 1;
@@ -81,13 +81,13 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                 double fvalue2 = src2.ctv->float_value;
                 SRC dst_value;
                 if (fcmp_inst->op == LTH) {
-                    dst_value = SRC(new CTValue(TypeInt, fvalue1 < fvalue2, fvalue1 < fvalue2));
+                    dst_value = SRC(new CTValue(TypeBool, fvalue1 < fvalue2, fvalue1 < fvalue2));
                 } else if (fcmp_inst->op == LEQ) {
-                    dst_value = SRC(new CTValue(TypeInt, fvalue1 <= fvalue2, fvalue1 <= fvalue2));
+                    dst_value = SRC(new CTValue(TypeBool, fvalue1 <= fvalue2, fvalue1 <= fvalue2));
                 } else if (fcmp_inst->op == EQU) {
-                    dst_value = SRC(new CTValue(TypeInt, fvalue1 == fvalue2, fvalue1 == fvalue2));
+                    dst_value = SRC(new CTValue(TypeBool, fvalue1 == fvalue2, fvalue1 == fvalue2));
                 } else if (fcmp_inst->op == NEQ) {
-                    dst_value = SRC(new CTValue(TypeInt, fvalue1 != fvalue2, fvalue1 != fvalue2));
+                    dst_value = SRC(new CTValue(TypeBool, fvalue1 != fvalue2, fvalue1 != fvalue2));
                 } 
                 function->replaceSRCs(block, fcmp_inst->dst.reg, dst_value);
                 iter = block->basic_block.erase(iter) - 1;

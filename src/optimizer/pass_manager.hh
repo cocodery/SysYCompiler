@@ -28,7 +28,7 @@ public:
                 constantprog.runConstantProg();
 
                 LVN lvn = LVN(function);
-                lvn.runLVN();
+                //lvn.runLVN();
 
                 Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                 reg2mem.runReg2Mem();
