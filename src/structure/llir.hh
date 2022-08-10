@@ -117,10 +117,11 @@ public:
 
 class LLIR_ALLOCA: public Inst {
 public:
+    int32_t locatebb_idx;
     SRC reg;
     Variable *var;
 public:
-    LLIR_ALLOCA(SRC _reg, Variable *_var) : reg(_reg), var(_var) { }
+    LLIR_ALLOCA(int32_t idx, SRC _reg, Variable *_var) : locatebb_idx(idx), reg(_reg), var(_var) { }
     string ToString();
 };
 
@@ -214,11 +215,12 @@ public:
 
 class LLIR_PHI: public Inst {
 public:
+    int32_t locatebb_idx;
     SRC dst;
     vector<pair<SRC, int32_t>> srcs;
 public:
     // ToDo:
-    LLIR_PHI(SRC _dst) : dst(_dst) { };
+    LLIR_PHI(int32_t idx, SRC _dst) : locatebb_idx(idx), dst(_dst) { };
     void insertValue(SRC src, int32_t index) {
         for (auto &&pair : srcs) {
             if (pair.second == index) {

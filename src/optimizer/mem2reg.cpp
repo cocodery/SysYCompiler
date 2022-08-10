@@ -115,7 +115,6 @@ void Mem2Reg::runMem2Reg() {
     // insert phi inst
     auto &&var_idx = function->var_idx;
     queue<BasicBlock *> W;
-    map<LLIR_PHI *, int32_t> phi2AllocaMap;
     for (auto &&alloca_inst : allocaInsts) {
         int32_t index = allocaLoopup[alloca_inst];
         DeclType type = alloca_inst->reg.getType();
@@ -131,7 +130,7 @@ void Mem2Reg::runMem2Reg() {
             for (auto &&df : block->DomFrontier) {
                 if (!df->dirty) { // avoid repeat phi-inst be generated
                     df->dirty = true;
-                    LLIR_PHI *phi_inst = new LLIR_PHI(SRC(new VirtReg(var_idx++, type)));
+                    LLIR_PHI *phi_inst = new LLIR_PHI(df->bb_idx, SRC(new VirtReg(var_idx++, type)));
                     df->basic_block.insert(df->basic_block.begin(), phi_inst); // insert phi to bb-front
                     phi2AllocaMap[phi_inst] = index; // phi-srcs from defBlocks[index]
                     if (!inDefBlocks(index, df)) {

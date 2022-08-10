@@ -13,11 +13,13 @@ public:
     vector<set<BasicBlock *>> defBlocks;
     vector<LLIR_ALLOCA *> allocaInsts;
     map<LLIR_ALLOCA*, int32_t> allocaLoopup;
+    map<LLIR_PHI *, int32_t> phi2AllocaMap;
 public:
     Mem2Reg(Function *func) : function(func) {
         defBlocks.clear();
         allocaInsts.clear();
         allocaLoopup.clear();
+        phi2AllocaMap.clear();
     }
     set<pair<int32_t, bool>> initDelVarSet();
     void removeUsedVar(set<pair<int32_t, bool>> &del_variable);

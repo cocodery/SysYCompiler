@@ -207,7 +207,7 @@ void ASTVisitor::init_func_args(FunctionInfo *func_info) {
             variable->type = pair.second;
             cur_vartable->var_table.push_back(make_pair(pair.first, variable));
             VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
-            LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(reg, variable);
+            LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(cur_basicblock->bb_idx, reg, variable);
             cur_basicblock->basic_block.push_back(alloc_inst);
             LLIR_STORE *store_inst = new LLIR_STORE(reg, new VirtReg(arg_idx, func_info->func_args[arg_idx].second.decl_type));
             cur_basicblock->basic_block.push_back(store_inst);
@@ -308,7 +308,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     // 生成 LLIR
     if (&cur_func->func_info != nullptr && const_var.is_array == true) {
         VirtReg *reg = new VirtReg(const_variable->var_idx, const_variable->type);
-        LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), const_variable);
+        LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(cur_basicblock->bb_idx, SRC(reg), const_variable);
         if (loop_mode == true) {
             alloca_insts.push_back(alloc_inst);
         } else {
@@ -364,7 +364,7 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
     cur_vartable->var_table.push_back(var_pair);
     if (&cur_func->func_info != nullptr) {
         VirtReg *reg = new VirtReg(variable->var_idx, variable->type);
-        LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
+        LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(cur_basicblock->bb_idx, SRC(reg), variable);
         if (loop_mode == true) {
             alloca_insts.push_back(alloc_inst);
         } else {
@@ -401,7 +401,7 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     cur_vartable->var_table.push_back(var_pair);
     if (&cur_func->func_info != nullptr) {
         VirtReg *reg = new VirtReg(variable->var_idx, variable->type);
-        LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(SRC(reg), variable);
+        LLIR_ALLOCA *alloc_inst = new LLIR_ALLOCA(cur_basicblock->bb_idx, SRC(reg), variable);
         if (loop_mode == true) {
             alloca_insts.push_back(alloc_inst);
         } else {
