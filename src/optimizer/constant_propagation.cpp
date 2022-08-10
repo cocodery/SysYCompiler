@@ -94,7 +94,38 @@ void ConstantProg::processInBlock(BasicBlock *block) {
             }
         } 
         Case (LLIR_PHI, phi_inst, inst) {
-
+            auto &&srcs = phi_inst->srcs;
+            bool is_propagation = true;
+            for (auto &&src : srcs) {
+                if (src.first.ToCTValue() == nullptr) {
+                    is_propagation = false;
+                    break;
+                }
+            }
+            if (is_propagation) {
+                bool propagation = true;
+                DeclType decl_type = phi_inst->dst.getType();
+                int32_t ivalue = srcs[0].first.ctv->int_value;
+                double fvalue = srcs[0].first.ctv->float_value;
+                if (decl_type == TypeInt) {
+                    for (auto &&src : srcs) {
+                        if (src.first.ctv->int_value != ivalue) {
+                            propagation = false;
+                        }
+                    }
+                } else {
+                    for (auto &&src : srcs) {
+                        if (src.first.ctv->float_value != fvalue) {
+                            propagation = false;
+                        }
+                    }
+                }
+                if (propagation) {
+                    SRC dst_value = SRC(new CTValue(decl_type, ivalue, fvalue));
+                    function->replaceSRCs(block, phi_inst->dst.reg, dst_value);
+                    iter = block->basic_block.erase(iter) - 1;
+                }
+            }
         }
     }
 }
