@@ -77,6 +77,11 @@ public:
 public:
     LLIR_BR(bool _hs, SRC _cond,int32_t _t, int32_t _f) : has_cond(_hs), cond(_cond), tar_true(_t), tar_false(_f) { }
     string ToString();
+    void replaceSRC(VirtReg *old_reg, SRC new_var) {
+        if (auto &&cond_reg = cond.ToVirtReg(); cond_reg != nullptr && *old_reg == *cond_reg) {
+            cond = new_var;
+        }
+    }
 };
 
 class LLIR_BIN: public Inst {

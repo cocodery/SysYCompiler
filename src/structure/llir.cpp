@@ -228,10 +228,10 @@ string LLIR_FPTOSI::ToString() {
 // LLVM-IR Xor
 string LLIR_XOR::ToString() {
     std::stringstream ss;
-    VirtReg *dst_reg = dst.ToVirtReg(), *src_reg = src.ToVirtReg();
-    assert(dst_reg != nullptr && src_reg != nullptr);
+    VirtReg *dst_reg = dst.ToVirtReg();
+    assert(dst_reg != nullptr);
     ss << dst_reg->ToString() << " = xor i1 ";
-    ss << src_reg->ToString() << ", true";
+    ss << src.ToString() << ", true";
     return ss.str();
 }
 
