@@ -29,8 +29,8 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                     dst_value = SRC(new CTValue(TypeInt, svalue1 % svalue2, svalue1 % svalue2));
                 }
                 function->replaceSRCs(block, bin_inst->dst.reg, dst_value);
-                iter = block->basic_block.erase(iter) - 1;
-            }
+                iter = block->basic_block.erase(iter);
+            } 
         } 
         Case (LLIR_FBIN, fbin_inst, inst) {
             SRC src1 = fbin_inst->src1;
@@ -50,7 +50,7 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                     dst_value = SRC(new CTValue(TypeFloat, fvalue1 / fvalue2, fvalue1 / fvalue2));
                 }
                 function->replaceSRCs(block, fbin_inst->dst.reg, dst_value);
-                iter = block->basic_block.erase(iter) - 1;
+                iter = block->basic_block.erase(iter);
             }
         }
         Case (LLIR_ICMP, icmp_inst, inst) {
@@ -70,7 +70,7 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                     dst_value = SRC(new CTValue(TypeBool, svalue1 != svalue2, svalue1 != svalue2));
                 } 
                 function->replaceSRCs(block, icmp_inst->dst.reg, dst_value);
-                iter = block->basic_block.erase(iter) - 1;
+                iter = block->basic_block.erase(iter);
             }
         } 
         Case (LLIR_FCMP, fcmp_inst, inst) {
@@ -90,7 +90,7 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                     dst_value = SRC(new CTValue(TypeBool, fvalue1 != fvalue2, fvalue1 != fvalue2));
                 } 
                 function->replaceSRCs(block, fcmp_inst->dst.reg, dst_value);
-                iter = block->basic_block.erase(iter) - 1;
+                iter = block->basic_block.erase(iter);
             }
         } 
         Case (LLIR_PHI, phi_inst, inst) {
@@ -123,8 +123,26 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                 if (propagation) {
                     SRC dst_value = SRC(new CTValue(decl_type, ivalue, fvalue));
                     function->replaceSRCs(block, phi_inst->dst.reg, dst_value);
-                    iter = block->basic_block.erase(iter) - 1;
+                    iter = block->basic_block.erase(iter);
                 }
+            }
+        }
+        Case (LLIR_XOR, xor_inst, inst) {
+            SRC src = xor_inst->src;
+            if (src.ToCTValue()) {
+                int32_t svalue1 = src.ctv->int_value;
+                SRC dst_value= SRC(new CTValue(TypeBool, svalue1 ^ 1, svalue1 ^ 1));
+                function->replaceSRCs(block, xor_inst->dst.reg, dst_value);
+                iter = block->basic_block.erase(iter);
+            }
+        }
+        Case (LLIR_ZEXT, zext_inst, inst) {
+            SRC src = zext_inst->src;
+            if (src.ToCTValue()) {
+                int32_t svalue1 = src.ctv->int_value;
+                SRC dst_value= SRC(new CTValue(TypeInt, svalue1, svalue1));
+                function->replaceSRCs(block, zext_inst->dst.reg, dst_value);
+                iter = block->basic_block.erase(iter);
             }
         }
     }
