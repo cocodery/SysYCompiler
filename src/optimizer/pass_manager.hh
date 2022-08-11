@@ -5,6 +5,7 @@
 #include "mem2reg.hh"
 #include "constant_propagation.hh"
 #include "lvn.hh"
+#include "dead_code_elim.hh"
 #include "reg2mem.hh"
 #include "function_recursion.hh"
 #include "load_store_reordering.hh"
@@ -29,7 +30,10 @@ public:
                 constantprog.runConstantProg();
 
                 LVN lvn = LVN(function);
-                //lvn.runLVN();
+                lvn.runLVN();
+
+                Dce dce = Dce(function);
+                dce.runDeadCodeElim();
 
                 Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                 reg2mem.runReg2Mem();
