@@ -914,6 +914,10 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
     }
     /**/Case (LLIR_LOAD, load_inst, instPtr)
     {
+        // 跳过目的寄存器没有分配的语句（这种情况是load的结果没有被使用）
+        if(CONDITION_REGISTER_NOT_ALLOCATED(funcPtr, load_inst->dst.reg->reg_id))
+            return;
+
         //cout << get_tabs() << load_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, load_inst->ToString(), indent);
         

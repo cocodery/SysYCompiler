@@ -201,7 +201,7 @@ void ProcessInst(vector <int32_t> &src_regids,
 
 void GenerateLiveInfo(const CompUnit &ir)
 {
-    printf("\n-----GenerateLiveInfo Start----\n");
+    //printf("\n-----GenerateLiveInfo Start----\n");
     for (auto &&functionPtr : ir.functions)
     {
         // skip unused functions
@@ -210,13 +210,13 @@ void GenerateLiveInfo(const CompUnit &ir)
 
         printf("In Function \"%s\":\n", functionPtr->func_info.func_name.c_str());
         
-        printf(" * Generate LiveUse & LiveDef\n");
+        //printf(" * Generate LiveUse & LiveDef\n");
         for (auto &&bbPtr : functionPtr->all_blocks)
         {
             if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
                 continue;
 
-            printf(FOUR_SPACES"In BB %d:\n", bbPtr->bb_idx);
+            //printf(FOUR_SPACES"In BB %d:\n", bbPtr->bb_idx);
 
             /*if (!bbPtr->valuable)
             {
@@ -243,16 +243,16 @@ void GenerateLiveInfo(const CompUnit &ir)
                     bbPtr->LiveDef.insert(dst_regid);
             }
         
-            printf(EIGHT_SPACES "LiveUse:");
+            /*printf(EIGHT_SPACES "LiveUse:");
             for (auto &&id : bbPtr->LiveUse)
                 printf(" %d", id);
             printf("\n" EIGHT_SPACES "LiveDef:");
             for (auto &&id : bbPtr->LiveDef)
                 printf(" %d", id);
-            printf("\n");
+            printf("\n");*/
         }
     
-        printf(" * Generate LiveIn & LiveOut\n");       
+        //printf(" * Generate LiveIn & LiveOut\n");       
         bool liveOutChanged;
         do
         {
@@ -296,14 +296,14 @@ void GenerateLiveInfo(const CompUnit &ir)
             if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
                 continue;
 
-            printf(FOUR_SPACES"In BB %d:\n", bbPtr->bb_idx);
+            /*printf(FOUR_SPACES"In BB %d:\n", bbPtr->bb_idx);
             printf(EIGHT_SPACES "LiveIn:");
             for (auto &&id : bbPtr->LiveIn)
                 printf(" %d", id);
             printf("\n" EIGHT_SPACES "LiveOut:");
             for (auto &&id : bbPtr->LiveOut)
                 printf(" %d", id);
-            printf("\n");
+            printf("\n");*/
         }
 
         printf(" * Generate LiveInterval\n");
