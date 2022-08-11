@@ -69,6 +69,7 @@ class FunctionInfo {
 public:
     bool is_used;
     bool is_recursive;
+    bool side_effect;
     string func_name;
     DeclType return_type;
     set<FunctionInfo *> called_funcs;
