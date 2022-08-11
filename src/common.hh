@@ -69,7 +69,7 @@ enum REGs { r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12,  sp,
 #include <set>
 #include <map>
 #include <list>
-#include <unordered_map>
+#include <deque>
 
 using std::string;
 using std::vector;
@@ -77,7 +77,7 @@ using std::queue;
 using std::set;
 using std::map;
 using std::list;
-using std::unordered_map;
+using std::deque;
 
 extern int32_t tab_num;
 string get_tabs();
