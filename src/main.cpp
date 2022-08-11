@@ -93,10 +93,10 @@ int main(int argc, char *argv[]) {
 
     // ----- CodeGen -----
 
-    GenerateLiveInfo(ir);
-    AllocateRegistersForAllFunctions(ir);
+    // GenerateLiveInfo(ir);
+    // AllocateRegistersForAllFunctions(ir);
     
-    GenerateAssembly(output, ir);
+    // GenerateAssembly(output, ir);
 
     // -------------------
 
