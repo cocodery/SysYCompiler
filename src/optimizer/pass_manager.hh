@@ -26,14 +26,11 @@ public:
                 Mem2Reg mem2reg = Mem2Reg(function);
                 mem2reg.runMem2Reg();
 
-                ConstantProg constantprog = ConstantProg(function);
-                constantprog.runConstantProg();
-
                 LVN lvn = LVN(function);
                 lvn.runLVN();
 
-                Dce dce = Dce(function);
-                dce.runDeadCodeElim();
+                ConstantProg constantprog = ConstantProg(function);
+                constantprog.runConstantProg();
 
                 Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                 reg2mem.runReg2Mem();
