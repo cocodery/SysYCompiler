@@ -756,10 +756,7 @@ antlrcpp::Any ASTVisitor::visitIfStmt(SysYParser::IfStmtContext *ctx) {
         cur_basicblock = new BasicBlock(bb_idx++);
         br_if2else_end->tar_true = cur_basicblock->bb_idx;
         br_else2else_end->tar_true = cur_basicblock->bb_idx;
-    }
-    for (auto land_inst : land_insts) {
-        land_inst->tar_false = cur_basicblock->bb_idx;
-    }    
+    } 
     lor_insts  = last_lor_insts;
     land_insts = last_land_insts;
     // dbg("exit visitIfStmt");
