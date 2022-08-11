@@ -7,6 +7,7 @@
 #include "lvn.hh"
 #include "reg2mem.hh"
 #include "function_recursion.hh"
+#include "load_store_reordering.hh"
 
 class PassManager {
 public:
@@ -33,7 +34,9 @@ public:
                 Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                 reg2mem.runReg2Mem();
 
-                FunctionRecursion obj(functions);
+                FunctionRecursion function_recurtion(function);
+
+                LoadStoreReordering load_store_reordering(function);
             }
         }
     }

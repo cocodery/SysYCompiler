@@ -1438,37 +1438,32 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
         if (!funcPtr->func_info.is_used)
             continue;
         dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_VARS_NAME(funcPtr), "", 0));
-        for (auto &&bbPtr : funcPtr->all_blocks)
+        for (auto &&instPtr : funcPtr->all_blocks[1]->basic_block)
         {
-            if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
-                continue;
-            for (auto &&instPtr : bbPtr->basic_block)
+            Case (LLIR_ALLOCA, alloc_inst, instPtr)
             {
-                Case (LLIR_ALLOCA, alloc_inst, instPtr)
+                auto &&varPtr = alloc_inst->var;
+                if (!varPtr->type.is_array) // 标量
                 {
-                    auto &&varPtr = alloc_inst->var;
-                    if (!varPtr->type.is_array) // 标量
+                    if (varPtr->type.is_const) // 常量标量，跳过
+                        continue;
+                    // 变量标量，直接声明
+                    dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_VAR_NAME(funcPtr, varPtr->var_idx), {Param(Param::Str, "0")}, "", 1));
+                }
+                else // 数组，在data区存指针
+                {
+                    dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx), {Param(Param::Str, "0")}, "", 1));
+                    if (!funcPtr->func_info.is_recursive) // 如果是非递归函数，把它的数组当成不需要初始化的全局数组
                     {
-                        if (varPtr->type.is_const) // 常量标量，跳过
-                            continue;
-                        // 变量标量，直接声明
-                        dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_VAR_NAME(funcPtr, varPtr->var_idx), {Param(Param::Str, "0")}, "", 1));
-                    }
-                    else // 数组，在data区存指针
-                    {
-                        dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx), {Param(Param::Str, "0")}, "", 1));
-                        if (!funcPtr->func_info.is_recursive) // 如果是非递归函数，把它的数组当成不需要初始化的全局数组
-                        {
-                            // 在栈上给数组分配空间，并赋值
-                            AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
-                            // 计算指针的地址
-                            int allocation_bytes = varPtr->type.elements_number() * 4;
-                            AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
-                            data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
-                            // 储存指针的地址
-                            data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
-                            data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
-                        }
+                        // 在栈上给数组分配空间，并赋值
+                        AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
+                        // 计算指针的地址
+                        int allocation_bytes = varPtr->type.elements_number() * 4;
+                        AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
+                        data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                        // 储存指针的地址
+                        data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
+                        data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
                     }
                 }
             }
@@ -1675,14 +1670,9 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         if (funcPtr->func_info.is_recursive)
         {
             asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_save", "", indent));
-            for (auto &&bbPtr : funcPtr->all_blocks)
-            {
-                if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
-                    continue;
-                for (auto &&instPtr : bbPtr->basic_block)
-                    Case (LLIR_ALLOCA, alloc_inst, instPtr)
-                        local_vars_alloc_bytes += 4;
-            }
+            for (auto &&instPtr : funcPtr->all_blocks[1]->basic_block)
+                Case (LLIR_ALLOCA, alloc_inst, instPtr)
+                    local_vars_alloc_bytes += 4;
             if (local_vars_alloc_bytes % 8 != 0)
                 local_vars_alloc_bytes += 4;
             // 移动堆栈指针，给局部变量创造空间
@@ -1704,28 +1694,23 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         if (funcPtr->func_info.is_recursive)
         {
             asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_alloc", "", indent));
-            for (auto &&bbPtr : funcPtr->all_blocks)
+            for (auto &&instPtr : funcPtr->all_blocks[1]->basic_block)
             {
-                if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
-                    continue;
-                for (auto &&instPtr : bbPtr->basic_block)
+                Case (LLIR_ALLOCA, alloc_inst, instPtr)
                 {
-                    Case (LLIR_ALLOCA, alloc_inst, instPtr)
-                    {
-                        auto &&varPtr = alloc_inst->var;
-                        if (!varPtr->type.is_array) // 跳过标量
-                            continue;
-                        // 在栈上给数组分配空间，并赋值
-                        AddAsmCodeComment(asm_insts, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
-                        // 计算指针的地址
-                        int allocation_bytes = varPtr->type.elements_number() * 4;
-                        bytes_allocated_for_local_arrays += allocation_bytes;
-                        AddAsmCodeAddSub(asm_insts, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
-                        asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
-                        // 储存指针的地址
-                        asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
-                        asm_insts.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
-                    }
+                    auto &&varPtr = alloc_inst->var;
+                    if (!varPtr->type.is_array) // 跳过标量
+                        continue;
+                    // 在栈上给数组分配空间，并赋值
+                    AddAsmCodeComment(asm_insts, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
+                    // 计算指针的地址
+                    int allocation_bytes = varPtr->type.elements_number() * 4;
+                    bytes_allocated_for_local_arrays += allocation_bytes;
+                    AddAsmCodeAddSub(asm_insts, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
+                    asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                    // 储存指针的地址
+                    asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
+                    asm_insts.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
                 }
             }
             if (bytes_allocated_for_local_arrays)
@@ -1802,23 +1787,18 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         if (funcPtr->func_info.is_recursive)
         {
             asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_dealloc", "", indent));
-            for (auto &&bbPtr : funcPtr->all_blocks)
+            for (auto &&instPtr : funcPtr->all_blocks[1]->basic_block)
             {
-                if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
-                    continue;
-                for (auto &&instPtr : bbPtr->basic_block)
+                Case (LLIR_ALLOCA, alloc_inst, instPtr)
                 {
-                    Case (LLIR_ALLOCA, alloc_inst, instPtr)
-                    {
-                        auto &&varPtr = alloc_inst->var;
-                        if (!varPtr->type.is_array) // 跳过标量
-                            continue;
-                        // 在栈上给数组分配空间，并赋值
-                        AddAsmCodeComment(asm_insts, "deallocating stack memory for " + funcPtr->func_info.func_name, 1);
-                        // 计算指针的地址
-                        AddAsmCodeAddSub(asm_insts, AsmInst::ADD, DELLOC_REGISTER, Param(sp), Param(bytes_allocated_for_local_arrays), 1);
-                        asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(DELLOC_REGISTER)}, 1));
-                    }
+                    auto &&varPtr = alloc_inst->var;
+                    if (!varPtr->type.is_array) // 跳过标量
+                        continue;
+                    // 在栈上给数组分配空间，并赋值
+                    AddAsmCodeComment(asm_insts, "deallocating stack memory for " + funcPtr->func_info.func_name, 1);
+                    // 计算指针的地址
+                    AddAsmCodeAddSub(asm_insts, AsmInst::ADD, DELLOC_REGISTER, Param(sp), Param(bytes_allocated_for_local_arrays), 1);
+                    asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(DELLOC_REGISTER)}, 1));
                 }
             }
         }
