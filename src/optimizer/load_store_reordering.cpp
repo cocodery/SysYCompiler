@@ -77,7 +77,7 @@ LoadStoreReordering::LoadStoreReordering(Function *function)
         for (auto &&it = store_insts_to_relocate.begin(); it != store_insts_to_relocate.end(); ++it)
             for (auto &&itt = it->second.rbegin(); itt != it->second.rend(); ++itt)
                 rebuilt_bb.push_front(*itt);
-        bbPtr->basic_block = vector<Inst *>(rebuilt_bb.begin(), rebuilt_bb.end());
+        bbPtr->basic_block.assign(rebuilt_bb.begin(), rebuilt_bb.end());
         
     }
 }

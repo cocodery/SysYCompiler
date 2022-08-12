@@ -35,24 +35,27 @@ set<pair<int32_t, bool>> Mem2Reg::initDelVarSet() {
 void Mem2Reg::removeUsedVar(set<pair<int32_t, bool>> &del_variable) {
     auto && all_blocks = function->all_blocks;
     for (auto &&block : all_blocks) {
-        for (auto &&iter = block->basic_block.begin(); iter != block->basic_block.end(); ++iter) {
+        list<Inst *> bb_list(block->basic_block.begin(), block->basic_block.end());
+        for (auto &&iter = bb_list.begin(); iter != bb_list.end();) {
             auto &&inst = *iter;
             Case (LLIR_ALLOCA, alloca_inst, inst) {
                 VirtReg *alloca_dst = alloca_inst->reg.ToVirtReg();
                 assert(alloca_dst != nullptr);
                 if (del_variable.find({alloca_dst->reg_id, alloca_dst->global}) != del_variable.end()) {
-                    iter = block->basic_block.erase(iter) - 1;
+                    iter = bb_list.erase(iter);
+                    continue;
                 }
             } else Case (LLIR_STORE, store_inst, inst) {
                 VirtReg *store_dst = store_inst->dst.ToVirtReg();
                 assert(store_dst != nullptr);
                 if (del_variable.find({store_dst->reg_id, store_dst->global}) != del_variable.end()) {
-                    iter = block->basic_block.erase(iter) - 1;
+                    iter = bb_list.erase(iter);
+                    continue;
                 }
-            } else {
-                continue;
             }
+            ++iter;
         }
+        block->basic_block.assign(bb_list.begin(), bb_list.end());
     }
 }
 
@@ -169,11 +172,13 @@ void Mem2Reg::runMem2Reg() {
             continue;
         }
         data->block->dirty = true;
-        for (auto &&inst_iter = data_bb.begin(); inst_iter != data_bb.end(); ++inst_iter) {
+        list<Inst *> bb_list(data_bb.begin(), data_bb.end());
+        for (auto &&inst_iter = bb_list.begin(); inst_iter != bb_list.end();) {
             auto inst = *inst_iter;
             Case (LLIR_ALLOCA, alloca_inst, inst) {
                 if (allocaLoopup.find(alloca_inst) != allocaLoopup.end()) {
-                    inst_iter = data_bb.erase(inst_iter) - 1;
+                    inst_iter = bb_list.erase(inst_iter);
+                    continue;
                 }
             } else Case (LLIR_LOAD, load_inst, inst) {
                 auto &&load_src = load_inst->src.ToVirtReg();
@@ -182,7 +187,8 @@ void Mem2Reg::runMem2Reg() {
                 if (alloca_inst != nullptr) {
                     int allocaIndex = allocaLoopup[alloca_inst];
                     function->replaceSRCs(data->block, load_inst->dst.reg, cur_values[allocaIndex]);
-                    inst_iter = data_bb.erase(inst_iter) - 1;
+                    inst_iter = bb_list.erase(inst_iter);
+                    continue;
                 }
             } else Case (LLIR_STORE, store_inst, inst) {
                 auto &&store_dst = store_inst->dst.ToVirtReg();
@@ -191,13 +197,16 @@ void Mem2Reg::runMem2Reg() {
                 if (alloca_inst != nullptr) {
                     int allocaIndex = allocaLoopup[alloca_inst];
                     cur_values[allocaIndex] = store_inst->src;
-                    inst_iter = data_bb.erase(inst_iter) - 1;
+                    inst_iter = bb_list.erase(inst_iter);
+                    continue;
                 }
             } else Case (LLIR_PHI, phi_inst, inst) {
                 int allocaIndex = phi2AllocaMap[phi_inst];
                 cur_values[allocaIndex] = phi_inst->dst;
             } 
+            ++inst_iter;
         }
+        data_bb.assign(bb_list.begin(), bb_list.end());
 
         for (auto &&pair : data->block->succs) {
             renameDataStack.push(new RenameData(pair.second, data->block, cur_values));
