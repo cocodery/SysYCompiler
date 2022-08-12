@@ -106,17 +106,15 @@ vector<int32_t> arr_dim, int32_t off, vector<pair<int32_t, SRC>> &initTable) {
     return;
 }
 
-void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair var_pair) {
+void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, SRC addr, Variable *variable) {
     assert(ctx != nullptr);
-    string var_name = var_pair.first;
-    VarType var = var_pair.second->type;
+    VarType var = variable->type;
     auto init_node = ctx->initVal();
     if (var.is_array == false) {
         auto scalar_init = dynamic_cast<SysYParser::ScalarInitValContext *>(init_node);
-        SRC reg = cur_scope->resolve(var_name, &cur_func->func_info);
         SRC src = scalar_init->exp()->accept(this);
-        if (src.getType() != reg.getType()) {
-            VirtReg *reg_cast = new VirtReg(var_idx++, reg.getType());
+        if (src.getType() != addr.getType()) {
+            VirtReg *reg_cast = new VirtReg(var_idx++, addr.getType());
             if (reg_cast->type.decl_type == TypeInt) {
                 LLIR_FPTOSI *fti_inst = new LLIR_FPTOSI(SRC(reg_cast), src);
                 cur_basicblock->basic_block.push_back(fti_inst);
@@ -126,15 +124,14 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair
                 cur_basicblock->basic_block.push_back(itf_inst);
                 src = SRC(reg_cast);
             } else {
-                // dbg(DeclTypeToStr(reg->type.decl_type) + ", UnExpected Function Return Type");
+                // dbg(DeclTypeToStr(addr->type.decl_type) + ", UnExpected Function Return Type");
                 exit(EXIT_FAILURE);
             }
         }
-        LLIR_STORE* store_inst = new LLIR_STORE(reg, src);
+        LLIR_STORE* store_inst = new LLIR_STORE(addr, src);
         cur_basicblock->basic_block.push_back(store_inst);
     } else {
         auto node = dynamic_cast<SysYParser::ListInitvalContext *>(init_node);
-        auto addr = cur_scope->resolve(var_name, &cur_func->func_info);
         vector<pair<int32_t, SRC>> initTable;
         parse_variable_init(node, var, var.array_dims, 0, initTable);
         int32_t init_size = initTable.size();
@@ -392,24 +389,29 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     variable->type = var;
     VarPair var_pair = make_pair(var_name, variable);
     cur_vartable->var_table.push_back(var_pair);
+    LLIR_ALLOCA *alloca_inst = nullptr;
+    SRC addr = SRC();
     if (&cur_func->func_info != nullptr) {
-        VirtReg *reg = new VirtReg(variable->var_idx, variable->type);
-        LLIR_ALLOCA *alloca_inst = new LLIR_ALLOCA(cur_basicblock->bb_idx, SRC(reg), variable);
+        SRC reg = SRC(new VirtReg(variable->var_idx, variable->type));
+        addr = reg;
+        alloca_inst = new LLIR_ALLOCA(cur_basicblock->bb_idx, reg, variable);
         if (loop_mode == true) {
             alloca_insts.push_back(alloca_inst);
         } else {
             cur_basicblock->basic_block.push_back(alloca_inst);
         }
+    } else {
+        addr = cur_scope->resolve(var_name, &cur_func->func_info);
     }
     // parse `InitVarDef`
     // init global variable before excuting main function
     // init local variable we it first exsit
     // we make sure that all variable don't init at Variable->init_value, but get value via access memory
-    // 不管是标量还是向量, 初始化时都会用到首地址 SRC(reg)
+    // 不管是标量还是向量, 初始化时都会用到首地址 addr
     if (&cur_func->func_info != nullptr) {
-        generate_varinit_ir(ctx, var_pair);
+        generate_varinit_ir(ctx, addr, variable);
     } else {
-        glb_var_init.push_back(make_tuple(ctx, var_pair));
+        glb_var_init.push_back(make_tuple(ctx, addr, variable));
     }
     // dbg("exit InitVarDef");
     return nullptr;
@@ -539,7 +541,7 @@ antlrcpp::Any ASTVisitor::visitBlock(SysYParser::BlockContext *ctx) {
     // 初始化全局变量
     if (cur_func->func_info.func_name == "main" && glb_var_init.size() != 0) {
         for (auto elm : glb_var_init) {
-            generate_varinit_ir(get<0>(elm), get<1>(elm));
+            generate_varinit_ir(get<0>(elm), get<1>(elm), get<2>(elm));
         }
         glb_var_init.clear();
     }

@@ -19,6 +19,7 @@ using std::string;
 using std::tuple;
 using std::pair;
 using std::make_pair;
+using std::make_tuple;
 using std::get;
 using std::cout;
 using std::endl;
@@ -36,7 +37,7 @@ private:
     bool loop_mode;
     vector<LLIR_ALLOCA *> alloca_insts;
     CompUnit &ir;
-    vector<tuple<SysYParser::InitVarDefContext *, VarPair>> glb_var_init;
+    vector<tuple<SysYParser::InitVarDefContext *, SRC, Variable *>> glb_var_init;
     vector<Info *> *cur_scope_elements;
     Scope          *cur_scope;
     VariableTable  *cur_vartable;
@@ -58,7 +59,7 @@ public:
     void parse_variable_init(SysYParser::ListInitvalContext *node, VarType type, 
         vector<int32_t> arr_dim, int32_t off, vector<pair<int32_t, SRC>> &initTable);
 
-    void generate_varinit_ir(SysYParser::InitVarDefContext *ctx, VarPair var_pair);
+    void generate_varinit_ir(SysYParser::InitVarDefContext *ctx, SRC addr, Variable *variable);
 
     void local_const_list_init(SRC reg, Variable *variable);
 
