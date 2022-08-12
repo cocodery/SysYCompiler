@@ -444,6 +444,7 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
         AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
         return;
     }
+    if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
     assert(IsRReg(r));
     // assumes src2 is smaller (when possible, e.g. add)
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
@@ -472,17 +473,11 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg, should be sub only
     {
-        Param p2;
-        if (IsSReg(src2.val.r))
-        {
-            p2 = Param(r);
-            AddAsmCodeMoveRegisterToRegister(asm_insts, r, src2.val.r, indent);
-        }
-        else p2 = src2;
+        assert(_i_typ == AsmInst::SUB);
         for (int i = 0, mask = 0xff; i < 3; ++i, mask <<= 8)
         {
             int chr = src1.val.i & mask;
-            if (chr) asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(chr)}, indent));
+            if (chr) asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), src2, Param(chr)}, indent));
         }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
@@ -502,32 +497,27 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
         AddAsmCodeMoveRegisterToRegister(asm_insts, r, (src2.p_typ == Param::Imm_int) ? src1.val.r : src2.val.r, indent);
         return;
     }
-    if (src1.p_typ == Param::Reg) assert(IsRReg(src1.val.r));
     if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
     assert(IsRReg(r));
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
-        asm_insts.push_back(AsmCode(_i_typ,
-            {   Param(r),
-                src1,
-                src2},
-            indent));
+    {
+        if (IsSReg(src1.val.r))
+        {
+            AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
+            asm_insts.push_back(AsmCode(_i_typ, {Param(r), Param(r), src2}, indent));
+        }
+        else asm_insts.push_back(AsmCode(_i_typ, {Param(r), src1, src2}, indent));
+    }
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
+        assert(IsRReg(src1.val.r));
         AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
-        asm_insts.push_back(AsmCode(_i_typ,
-            {   Param(r),
-                src1,
-                Param(r)},
-            indent));
+        asm_insts.push_back(AsmCode(_i_typ, {Param(r), src1, Param(r)}, indent));
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
     {
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
-        asm_insts.push_back(AsmCode(_i_typ,
-            {   Param(r),
-                Param(r),
-                src2},
-            indent));
+        asm_insts.push_back(AsmCode(_i_typ, {Param(r), Param(r), src2}, indent));
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
     {
@@ -966,20 +956,10 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             src2 = Param(bin_inst->src2.ctv->int_value);
         else
             src2 = Param(GET_ALLOCATION_RESULT(funcPtr, bin_inst->src2.reg->reg_id));
-        if (bin_inst->op == BinOp::ADD)
-        {
-            if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg)
-                std::swap(src1, src2);
-            if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int && abs(src1.val.i) < abs(src2.val.i))
-                std::swap(src1, src2);
-        }
-        if (bin_inst->op == BinOp::SUB)
-        {
-            if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int && abs(src1.val.i) < abs(src2.val.i)) {
-                std::swap(src1, src2);
-                src1.invert();
-                src2.invert(); }
-        }
+        if (bin_inst->op == BinOp::ADD && src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg)
+            std::swap(src1, src2);
+        if (bin_inst->op == BinOp::MUL && src1.p_typ == Param::Reg && IsSReg(src1.val.r) && src2.p_typ == Param::Imm_int)
+            std::swap(src1, src2);
         
         bool borrow_dst = false, borrow_src2 = false, dst_got_first = false;
         REGs dst_reg, src2_reg;
@@ -1024,6 +1004,25 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             }
             AddAsmCodeMoveRegisterToRegister(asm_insts, src2_reg, src2.val.r, indent);
             src2.val.r = src2_reg;
+        }
+        // 除法src1为s_reg且src2为imm时的特殊处理
+        else if (bin_inst->op == BinOp::DIV && src1.p_typ == Param::Reg && IsSReg(src1.val.r) && src2.p_typ == Param::Imm_int)
+        {
+            // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
+            REGs unused_reg = dst_got_first ? instPtr->GetSecondUnusedRRegister() : instPtr->GetFirstUnusedRRegister();
+            if (unused_reg != SPILL) // 有空闲的r寄存器，用空闲的
+                src2_reg = unused_reg;
+            else // 借用其他r寄存器，需要压栈
+            {
+                borrow_src2 = true;
+                src2_reg = r0;
+                // 不能跟src分配的寄存器冲突
+                while (dst_reg == src2_reg)
+                    src2_reg = (REGs)(src2_reg + 1);
+                AddAsmCodePushRegisters(asm_insts, {src2_reg}, indent);
+            }
+            AddAsmCodeMoveRegisterToRegister(asm_insts, src2_reg, src1.val.r, indent);
+            src1.val.r = src2_reg;
         }
 
         switch(bin_inst->op)
