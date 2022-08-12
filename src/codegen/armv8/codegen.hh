@@ -444,50 +444,45 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
         AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
         return;
     }
-    if (src1.p_typ == Param::Reg) assert(IsRReg(src1.val.r));
-    if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
     assert(IsRReg(r));
     // assumes src2 is smaller (when possible, e.g. add)
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
-        asm_insts.push_back(AsmCode(_i_typ,
-            {   Param(r),
-                src1,
-                src2},
-            indent));
+    {
+        if (IsSReg(src1.val.r))
+        {
+            AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
+            asm_insts.push_back(AsmCode(_i_typ, {Param(r), Param(r), src2}, indent));
+        }
+        else asm_insts.push_back(AsmCode(_i_typ, {Param(r), src1, src2}, indent));
+    }
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
-        if (abs(src2.val.i) <= 256) // src2 is small enough
-            asm_insts.push_back(AsmCode(_i_typ,
-                {   Param(r),
-                    src1,
-                    src2},
-                indent));
-        else // src2 is too big to be packed into a single instruction, convert sub to add
+        Param p1;
+        if (IsSReg(src1.val.r))
         {
-            AddAsmCodeMoveIntToRegister(asm_insts, r, ((_i_typ == AsmInst::ADD) ? src2.val.i : -src2.val.i), indent);
-            asm_insts.push_back(AsmCode(AsmInst::ADD,
-                {   Param(r),
-                    Param(r),
-                    src1},
-                indent));
+            p1 = Param(r);
+            AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
+        }
+        else p1 = src1;
+        for (int i = 0, mask = 0xff; i < 3; ++i, mask <<= 8)
+        {
+            int chr = src2.val.i & mask;
+            if (chr) asm_insts.push_back(AsmCode(_i_typ, {Param(r), p1, Param(chr)}, indent));
         }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg, should be sub only
     {
-        if (abs(src1.val.i) <= 256) // src1 is small enough
-            asm_insts.push_back(AsmCode(AsmInst::RSB,
-                {   Param(r),
-                    src2,
-                    src1},
-                indent));
-        else // src1 is too big to be packed into a single instruction
+        Param p2;
+        if (IsSReg(src2.val.r))
         {
-            AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
-            asm_insts.push_back(AsmCode(AsmInst::SUB,
-                {   Param(r),
-                    Param(r),
-                    src2},
-                indent));
+            p2 = Param(r);
+            AddAsmCodeMoveRegisterToRegister(asm_insts, r, src2.val.r, indent);
+        }
+        else p2 = src2;
+        for (int i = 0, mask = 0xff; i < 3; ++i, mask <<= 8)
+        {
+            int chr = src1.val.i & mask;
+            if (chr) asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(chr)}, indent));
         }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
