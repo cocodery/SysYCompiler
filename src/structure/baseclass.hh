@@ -14,24 +14,26 @@ class Inst: public Info {
 public:
     CLAIM_AVAIL_REGS
 public:
-    REGs GetFirstUnusedRRegister() const {
+    REGs GetNthUnusedRRegister(int n) const {
+        int skipped_cnt = 0;
         for (auto &&r : availRegs) {
-            if (r < s0) return r;
-            else return SPILL;
-        }
-        return SPILL;
-    }
-    REGs GetSecondUnusedRRegister() const {
-        bool skipped_first = false;
-        for (auto &&r : availRegs) {
-            if (!skipped_first) {
-                skipped_first = true;
+            if (!skipped_cnt < n - 1) {
+                ++skipped_cnt;
                 continue;
             }
             if (r < s0) return r;
             else return SPILL;
         }
         return SPILL;
+    }
+    REGs GetFirstUnusedRRegister() const {
+        return GetNthUnusedRRegister(1);
+    }
+    REGs GetSecondUnusedRRegister() const {
+        return GetNthUnusedRRegister(2);
+    }
+    REGs GetThirdUnusedRRegister() const {
+        return GetNthUnusedRRegister(3);
     }
     virtual ~Inst() { }
 };

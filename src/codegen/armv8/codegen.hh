@@ -453,12 +453,6 @@ void AddAsmCodeSwapRegisters(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, i
 
 void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r, const Param &src1, const Param &src2, int indent)
 {
-    // 事实上，由于ssa的性质，bin r0,r0,#imm永远不会出现在ir中
-    if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int && src2.val.i == 0)
-    {
-        AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
-        return;
-    }
     if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
     assert(IsRReg(r));
     // assumes src2 is smaller (when possible, e.g. add)
@@ -515,12 +509,6 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
 
 void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs r, const Param &src1, const Param &src2, int indent)
 {
-    if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int && src2.val.i == 1
-     || src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg && src1.val.i == 1 && _i_typ == AsmInst::MUL)
-    {
-        AddAsmCodeMoveRegisterToRegister(asm_insts, r, (src2.p_typ == Param::Imm_int) ? src1.val.r : src2.val.r, indent);
-        return;
-    }
     if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
     assert(IsRReg(r));
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
@@ -551,8 +539,10 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     }
 }
 
-void AddAsmCodeRem(vector<AsmCode> &asm_insts, Inst *instPtr, REGs r, const Param &src1, const Param &src2, int indent)
+void AddAsmCodeRem(vector<AsmCode> &asm_insts, REGs r, const Param &src1, const Param &src2, int indent)
 {
+    if (src2.p_typ == Param::Reg) assert(IsRReg(src2.val.r));
+    assert(IsRReg(r));
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
     {
         asm_insts.push_back(AsmCode(AsmInst::SDIV, {Param(r), src1, src2}, indent));
@@ -561,23 +551,7 @@ void AddAsmCodeRem(vector<AsmCode> &asm_insts, Inst *instPtr, REGs r, const Para
     }
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
-        auto &&imm = src2.val.i;
-        // 该情况需要借用寄存器
-        DECLEAR_BORROW_PUSH(instPtr, REM_REGISTER)
-        AddAsmCodeMoveIntToRegister(asm_insts,
-            IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-            REM_REGISTER,
-            instPtr), imm, indent);
-        asm_insts.push_back(AsmCode(AsmInst::SDIV, {Param(r), src1,
-            IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-            REM_REGISTER,
-            instPtr)}, indent));
-        asm_insts.push_back(AsmCode(AsmInst::MUL, {Param(r), Param(r), 
-            IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-            REM_REGISTER,
-            instPtr)}, indent));
-        asm_insts.push_back(AsmCode(AsmInst::SUB, {Param(r), src1, Param(r)}, indent));
-        DECLEAR_BORROW_POP(REM_REGISTER)
+        assert(0 && "codegen: rem can't operate as reg%%imm");
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
     {
@@ -956,9 +930,21 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             std::swap(src1, src2);
         if (bin_inst->op == BinOp::MUL && src1.p_typ == Param::Reg && IsSReg(src1.val.r) && src2.p_typ == Param::Imm_int)
             std::swap(src1, src2);
-        
-        bool borrow_dst = false, borrow_src2 = false, dst_got_first = false;
-        REGs dst_reg, src2_reg;
+
+        if ((bin_inst->op == BinOp::ADD || bin_inst->op == BinOp::SUB) && src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int && src2.val.i == 0)
+        {
+            AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), src1.val.r, indent);
+            return;
+        }
+        if ((bin_inst->op == BinOp::MUL || bin_inst->op == BinOp::DIV) && src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int && src2.val.i == 1
+        || bin_inst->op == BinOp::MUL && src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg && src1.val.i == 1 && bin_inst->op == BinOp::MUL)
+        {
+            AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id), (src2.p_typ == Param::Imm_int) ? src1.val.r : src2.val.r, indent);
+            return;
+        }
+
+        bool borrow_dst = false, borrow_src2 = false, borrow_src3 = false, dst_got_first = false, src2_got_second = false;
+        REGs dst_reg, src2_reg, src3_reg;
         // 先看看dst是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
         if (IsSReg(GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id)))
         {
@@ -981,13 +967,17 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
         else
             dst_reg = GET_ALLOCATION_RESULT(funcPtr, bin_inst->dst.reg->reg_id);
+        
         // 先看看src2是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
         if (src2.p_typ == Param::Reg && IsSReg(src2.val.r))
         {
             // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
             REGs unused_reg = dst_got_first ? instPtr->GetSecondUnusedRRegister() : instPtr->GetFirstUnusedRRegister();
             if (unused_reg != SPILL) // 有空闲的r寄存器，用空闲的
+            {
+                src2_got_second = dst_got_first;
                 src2_reg = unused_reg;
+            }
             else // 借用其他r寄存器，需要压栈
             {
                 borrow_src2 = true;
@@ -1001,13 +991,16 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             AddAsmCodeMoveRegisterToRegister(asm_insts, src2_reg, src2.val.r, indent);
             src2.val.r = src2_reg;
         }
-        // 除法src1为s_reg且src2为imm时的特殊处理
-        else if (bin_inst->op == BinOp::DIV && src1.p_typ == Param::Reg && IsSReg(src1.val.r) && src2.p_typ == Param::Imm_int)
+        // 除法和模src1为s_reg且src2为imm时，为src1借用寄存器
+        else if ((bin_inst->op == BinOp::DIV || bin_inst->op == BinOp::REM) && src1.p_typ == Param::Reg && IsSReg(src1.val.r) && src2.p_typ == Param::Imm_int)
         {
             // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
             REGs unused_reg = dst_got_first ? instPtr->GetSecondUnusedRRegister() : instPtr->GetFirstUnusedRRegister();
             if (unused_reg != SPILL) // 有空闲的r寄存器，用空闲的
+            {
+                src2_got_second = dst_got_first;
                 src2_reg = unused_reg;
+            }
             else // 借用其他r寄存器，需要压栈
             {
                 borrow_src2 = true;
@@ -1021,6 +1014,26 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             src1.val.r = src2_reg;
         }
 
+        // 如果是取模运算，还要给src2借用寄存器
+        if (bin_inst->op == BinOp::REM && src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int)
+        {
+            REGs unused_reg = dst_got_first ? instPtr->GetSecondUnusedRRegister() :
+                (src2_got_second ? instPtr->GetThirdUnusedRRegister() : instPtr->GetSecondUnusedRRegister());
+            if (unused_reg != SPILL)
+                src3_reg = unused_reg;
+            else
+            {
+                borrow_src3 = true;
+                src3_reg = r0;
+                while (dst_reg == src3_reg || src2_reg == src3_reg)
+                    src3_reg = (REGs)(src3_reg + 1);
+                AddAsmCodePushRegisters(asm_insts, {src3_reg}, indent);
+            }
+            AddAsmCodeMoveIntToRegister(asm_insts, src3_reg, src2.val.i, indent);
+            src2.p_typ = Param::Reg;
+            src2.val.r = src3_reg;
+        }
+        
         switch(bin_inst->op)
         {
         case BinOp::ADD:
@@ -1036,11 +1049,14 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             AddAsmCodeMulDiv(asm_insts, AsmInst::SDIV, dst_reg, src1, src2, indent);
             break;
         case BinOp::REM:
-            AddAsmCodeRem(asm_insts, instPtr, dst_reg, src1, src2, indent);
+            AddAsmCodeRem(asm_insts, dst_reg, src1, src2, indent);
             break;
         default:
             break;
         }
+
+        if (borrow_src3)
+            AddAsmCodePopRegisters(asm_insts, {src3_reg}, indent);
 
         if (borrow_src2)
             AddAsmCodePopRegisters(asm_insts, {src2_reg}, indent);
