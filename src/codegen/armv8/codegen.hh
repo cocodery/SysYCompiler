@@ -1098,6 +1098,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 if ((gep_inst->off.ctv->int_value << size_shift_bits) <= 256) // 偏移量<256，直接加
                 {
                     AddAsmCodeAddSub(asm_insts, AsmInst::ADD, addr_reg, addr_reg, Param(gep_inst->off.ctv->int_value << size_shift_bits), indent);
+                    AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id), addr_reg, indent);
                     if (borrow_addr) AddAsmCodePopRegisters(asm_insts, {addr_reg}, indent);
                     return;
                 }
