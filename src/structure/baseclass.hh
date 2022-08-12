@@ -17,7 +17,7 @@ public:
     REGs GetNthUnusedRRegister(int n) const {
         int skipped_cnt = 0;
         for (auto &&r : availRegs) {
-            if (!skipped_cnt < n - 1) {
+            if (skipped_cnt < n - 1) {
                 ++skipped_cnt;
                 continue;
             }
