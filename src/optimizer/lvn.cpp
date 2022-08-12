@@ -17,7 +17,8 @@ void LVN::runLVN() {
 
 void LVN::valueNumber(BasicBlock *block) {
     int32_t mapIndex = bbIdxMapIdx[block->bb_idx];
-    for (auto &&iter = block->basic_block.begin(); iter != block->basic_block.end(); ++iter) {
+    list<Inst *> bb_list(block->basic_block.begin(), block->basic_block.end());
+    for (auto &&iter = bb_list.begin(); iter != bb_list.end();) {
         auto &&inst = *iter;
         Case (LLIR_BIN, bin_inst, inst) {
             NodeOp op = NodeOp(bin_inst->op);
@@ -28,7 +29,8 @@ void LVN::valueNumber(BasicBlock *block) {
             } else {
                 assert(bin_inst->dst.ToVirtReg());
                 function->replaceSRCs(block, bin_inst->dst.ToVirtReg(), new_value);
-                iter = block->basic_block.erase(iter) - 1;
+                iter = bb_list.erase(iter);
+                continue;
             }
         } else Case (LLIR_FBIN, fbin_inst, inst) {
             NodeOp op = NodeOp(fbin_inst->op + 5);
@@ -39,7 +41,8 @@ void LVN::valueNumber(BasicBlock *block) {
             } else {
                 assert(fbin_inst->dst.ToVirtReg());
                 function->replaceSRCs(block, fbin_inst->dst.ToVirtReg(), new_value);
-                iter = block->basic_block.erase(iter) - 1;
+                iter = bb_list.erase(iter);
+                continue;
             }
         } else Case (LLIR_ICMP, icmp_inst, inst) {
             NodeOp op = iCmp;
@@ -50,7 +53,8 @@ void LVN::valueNumber(BasicBlock *block) {
             } else {
                 assert(icmp_inst->dst.ToVirtReg());
                 function->replaceSRCs(block, icmp_inst->dst.ToVirtReg(), new_value);
-                iter = block->basic_block.erase(iter) - 1;
+                iter = bb_list.erase(iter);
+                continue;
             }
         } else Case (LLIR_FCMP, fcmp_inst, inst) {
             NodeOp op = fCmp;
@@ -61,7 +65,8 @@ void LVN::valueNumber(BasicBlock *block) {
             } else {
                 assert(fcmp_inst->dst.ToVirtReg());
                 function->replaceSRCs(block, fcmp_inst->dst.ToVirtReg(), new_value);
-                iter = block->basic_block.erase(iter) - 1;
+                iter = bb_list.erase(iter);
+                continue;
             }
         } else Case (LLIR_GEP, gep_inst, inst) {
             NodeOp op = Gep;
@@ -72,10 +77,13 @@ void LVN::valueNumber(BasicBlock *block) {
             } else {
                 assert(gep_inst->dst.ToVirtReg());
                 function->replaceSRCs(block, gep_inst->dst.ToVirtReg(), new_value);
-                iter = block->basic_block.erase(iter) - 1;
+                iter = bb_list.erase(iter);
+                continue;
             }
         }
+        ++iter;
     }
+    block->basic_block.assign(bb_list.begin(), bb_list.end());
 }
 
 SRC LVN::checkInMap(BasicBlock *block, lvnNode *node) {
