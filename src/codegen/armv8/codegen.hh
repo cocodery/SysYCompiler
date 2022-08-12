@@ -13,6 +13,18 @@ using std::stringstream;
 static enum AsmBranchType{LT, GE, LE, GT, EQ, NE, AlwaysTrue, AlwaysFalse} b_type;
 #define REVERSED_BRANCH_TYPE(_BT) ((AsmBranchType)(((char)_BT & 0xfe) | (~(char)_BT & 1)))
 
+bool IsOperand2(int i)
+{
+    int mask = 0xff;
+    for (unsigned d = 0; d <= 30; d += 2)
+    {
+        mask = (mask >> d)|(mask << (32 - d));
+        if ((i & mask) == i)
+            return true;
+    }
+    return false;
+}
+
 int DoubleToWord(double d)
 {
     float f = d;
@@ -575,6 +587,7 @@ void AddAsmCodeComment(vector<AsmCode> &asm_insts, const string& comment, int in
 
 void AddAsmCodeCmp(vector<AsmCode> &asm_insts, Inst *instPtr, RelOp op, const Param &src1, const Param &src2, int indent)
 {
+    bool reverse = false;
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
         asm_insts.push_back(AsmCode(AsmInst::CMP,
             {   src1,
@@ -582,43 +595,14 @@ void AddAsmCodeCmp(vector<AsmCode> &asm_insts, Inst *instPtr, RelOp op, const Pa
             indent));
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
-        if (abs(src2.val.i) <= 256) // src2 is small enough
-            asm_insts.push_back(AsmCode(AsmInst::CMP,
-                {   src1,
-                    src2},
-                indent));
-        else // src2 is too big to be packed into a single instruction, move src2 to an empty register
-        {
-            // 该情况需要借用寄存器
-            DECLEAR_BORROW_PUSH(instPtr, CMP_REGISTER)
-            AddAsmCodeMoveIntToRegister(asm_insts,
-                IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                CMP_REGISTER,
-                instPtr), src2.val.i, indent);
-            asm_insts.push_back(AsmCode(AsmInst::CMP,
-                {   src1,
-                    IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                    CMP_REGISTER,
-                    instPtr)},
-                indent));
-            DECLEAR_BORROW_POP(CMP_REGISTER)
-        }
+        assert(IsOperand2(src2.val.i));
+        asm_insts.push_back(AsmCode(AsmInst::CMP, {src1, src2}, indent));
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
     {
-            // 该情况需要借用寄存器
-            DECLEAR_BORROW_PUSH(instPtr, CMP_REGISTER)
-            AddAsmCodeMoveIntToRegister(asm_insts,
-                IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                CMP_REGISTER,
-                instPtr), src1.val.i, indent);
-            asm_insts.push_back(AsmCode(AsmInst::CMP,
-                {   IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(borrow,
-                    CMP_REGISTER,
-                    instPtr),
-                    src2},
-                indent));
-            DECLEAR_BORROW_POP(CMP_REGISTER)
+        assert(IsOperand2(src1.val.i));
+        asm_insts.push_back(AsmCode(AsmInst::CMP, {src2, src1}, indent));
+        bool reverse = true;
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
     {
@@ -637,6 +621,7 @@ void AddAsmCodeCmp(vector<AsmCode> &asm_insts, Inst *instPtr, RelOp op, const Pa
     case RelOp::EQU: b_type = EQ; break;
     case RelOp::NEQ: b_type = NE; break;
     }
+    if (reverse) b_type = REVERSED_BRANCH_TYPE(b_type);
 }
 
 void AddAsmCodeFloatBin(vector<AsmCode> &asm_insts, BinOp _bin_typ, REGs r, const Param &src1, const Param &src2, int indent)
@@ -1272,10 +1257,63 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             src2 = Param(icmp_inst->src2.ctv->int_value);
         else
             src2 = Param(GET_ALLOCATION_RESULT(funcPtr, icmp_inst->src2.reg->reg_id));
+        
+        bool borrow_src1 = false, borrow_src2 = false, src1_got_first = false;
+        REGs src1_reg, src2_reg;
+        // 先看看src1是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
+        if (src1.p_typ == Param::Reg && IsSReg(src1.val.r) || src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg && !IsOperand2(src1.val.i))
+        {
+            // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
+            if (instPtr->GetFirstUnusedRRegister() != SPILL) // 有空闲的r寄存器，用空闲的
+            {
+                src1_got_first = true;
+                src1_reg = instPtr->GetFirstUnusedRRegister();
+            }
+            else // 借用其他r寄存器，需要压栈
+            {
+                borrow_src1 = true;
+                src1_reg = r0;
+                // 不能跟src2分配的寄存器冲突
+                while (icmp_inst->src2.reg && GET_ALLOCATION_RESULT(funcPtr, icmp_inst->src2.reg->reg_id) == src1_reg)
+                    src1_reg = (REGs)(src1_reg + 1);
+                AddAsmCodePushRegisters(asm_insts, {src1_reg}, indent);
+            }
+
+            // 由于不同的原因借用寄存器，对其初始化的操作也不同
+            if (src1.p_typ == Param::Reg && IsSReg(src1.val.r))
+                AddAsmCodeMoveRegisterToRegister(asm_insts, src1_reg, src1.val.r, indent);
+            else AddAsmCodeMoveIntToRegister(asm_insts, src1_reg, src1.val.i, indent);
+            src1.p_typ = Param::Reg;
+            src1.val.r = src1_reg;
+        }
+        // 先看看src2是否是r_reg，如果是的话直接拿来用，如果不是的话需要借用
+        if (src2.p_typ == Param::Reg && IsSReg(src2.val.r) || src2.p_typ == Param::Imm_int && src1.p_typ == Param::Reg && !IsOperand2(src2.val.i))
+        {
+            // 如果需要借用r_reg，先看看在这个指令的位置有没有空闲的r_reg
+            REGs unused_reg = src1_got_first ? instPtr->GetSecondUnusedRRegister() : instPtr->GetFirstUnusedRRegister();
+            if (unused_reg != SPILL) // 有空闲的r寄存器，用空闲的
+                src2_reg = unused_reg;
+            else // 借用其他r寄存器，需要压栈
+            {
+                borrow_src2 = true;
+                src2_reg = r0;
+                // 不能跟src分配的寄存器冲突
+                while (src1.p_typ == Param::Reg && src1.val.r == src2_reg)
+                    src2_reg = (REGs)(src2_reg + 1);
+                AddAsmCodePushRegisters(asm_insts, {src2_reg}, indent);
+            }
+            if (src2.p_typ == Param::Reg && IsSReg(src2.val.r))
+                AddAsmCodeMoveRegisterToRegister(asm_insts, src2_reg, src2.val.r, indent);
+            else AddAsmCodeMoveIntToRegister(asm_insts, src2_reg, src2.val.i, indent);
+            src2.p_typ = Param::Reg;
+            src2.val.r = src2_reg;
+        }
         // dst = src1 < src2
         // treat as sub, but without swapping
         // 在下面调用的函数中已经保存分支类型
         AddAsmCodeCmp(asm_insts, instPtr, icmp_inst->op, src1, src2, indent);
+        if (borrow_src2) AddAsmCodePopRegisters(asm_insts, {src2_reg}, indent);
+        if (borrow_src1) AddAsmCodePopRegisters(asm_insts, {src1_reg}, indent);
     }
     Case (LLIR_BR, br_inst, instPtr)
     {
