@@ -1750,14 +1750,17 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
             // 移动堆栈指针，给局部变量创造空间
             AddAsmCodeAddSub(asm_insts, AsmInst::SUB, sp, Param(sp), Param(local_vars_alloc_bytes), 1);
             // 调用memcpy
-            AddAsmCodeComment(asm_insts, "calling memcpy for saving local vars", 1);
-            AddAsmCodePushRegisters(asm_insts, LOCAL_VARS_SAVE_MEMCPY_REGISTERS, 1);
-            asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(r0), Param(sp)}, 1));
-            asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r0), Param(4 * 4)}, 1));
-            asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(r1), Param(Param::Addr, GET_LOCAL_VARS_NAME(funcPtr))}, 1));
-            AddAsmCodeMoveIntToRegister(asm_insts, r2, local_vars_alloc_bytes, 1);
-            asm_insts.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memcpy")}, 1));
-            AddAsmCodePopRegisters(asm_insts, LOCAL_VARS_SAVE_MEMCPY_REGISTERS, 1);
+            if (local_vars_alloc_bytes)
+            {
+                AddAsmCodeComment(asm_insts, "calling memcpy for saving local vars", 1);
+                AddAsmCodePushRegisters(asm_insts, LOCAL_VARS_SAVE_MEMCPY_REGISTERS, 1);
+                asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(r0), Param(sp)}, 1));
+                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r0), Param(4 * 4)}, 1));
+                asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(r1), Param(Param::Addr, GET_LOCAL_VARS_NAME(funcPtr))}, 1));
+                AddAsmCodeMoveIntToRegister(asm_insts, r2, local_vars_alloc_bytes, 1);
+                asm_insts.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memcpy")}, 1));
+                AddAsmCodePopRegisters(asm_insts, LOCAL_VARS_SAVE_MEMCPY_REGISTERS, 1);
+            }
         }
 
         // insert local ptr alloc for recursive functions (DO NOT touch r0-r3)
@@ -1883,7 +1886,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         }
 
         // insert load local var & ptr for recursive funtions (DO NOT touch r0)
-        if (funcPtr->func_info.is_recursive)
+        if (funcPtr->func_info.is_recursive && local_vars_alloc_bytes)
         {
             asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_load", "", indent));
             // 调用memcpy
