@@ -483,16 +483,25 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
         for (int i = 0, mask = 0xff; i < 3; ++i, mask <<= 8)
         {
             int chr = src2.val.i & mask;
-            if (chr) asm_insts.push_back(AsmCode(_i_typ, {Param(r), p1, Param(chr)}, indent));
+            if (chr)
+            {
+                asm_insts.push_back(AsmCode(_i_typ, {Param(r), p1, Param(chr)}, indent));
+                p1 = Param(r);
+            }
         }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg, should be sub only
     {
         assert(_i_typ == AsmInst::SUB);
+        Param p2 = src2;
         for (int i = 0, mask = 0xff; i < 3; ++i, mask <<= 8)
         {
             int chr = src1.val.i & mask;
-            if (chr) asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), src2, Param(chr)}, indent));
+            if (chr)
+            {
+                asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(chr)}, indent));
+                p2 = Param(r);
+            }
         }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
