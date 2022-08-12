@@ -36,7 +36,13 @@ void AllocateRegistersForFunction(Function &func)
     }
     printf(" ----\n");
 
-    for (auto &&interval : func.LiveInterval)
+    vector<pair<int, Function::RANGE>> sorted_liveinterval(func.LiveInterval.begin(), func.LiveInterval.end());
+    sort(sorted_liveinterval.begin(), sorted_liveinterval.end(), 
+        [](const pair<int, Function::RANGE> &a, const pair<int, Function::RANGE> &b) -> bool { 
+            return a.second.first < b.second.first;
+        });
+
+    for (auto &&interval : sorted_liveinterval)
     {
         auto &&varIndex = interval.first;
         auto &&varRange = interval.second;
