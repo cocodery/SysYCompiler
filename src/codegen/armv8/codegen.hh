@@ -337,14 +337,18 @@ vector<string> GetSRegLists(const vector<REGs> &regs)
     vector<string> res;
     int idx = 0, siz = regs.size();
     if (siz == 0) return res;
-    while(idx < siz)
+    while (idx < siz)
+        if (regs[idx++] >= s0) break;
+    while (idx < siz)
     {
         string reglist("{");
         int cnt = 0;
+        int previous = 0;
         for (;cnt < 16 && idx < siz; ++idx)
         {
-            if (regs[idx] < s0) continue; // skip r registers
+            if (previous && regs[idx] != previous + 1) break;
             Param p(regs[idx]);
+            previous = regs[idx];
             reglist += p.ToString() + ", ";
             ++cnt;
         }
