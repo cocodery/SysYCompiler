@@ -79,7 +79,7 @@ all:
 			fi
 			RETURN_VALUE=$$?
 			FINAL=`tail -c 1 $${RES}`
-			[ $${FINAL} ] && echo -e "\n$${RETURN_VALUE}" >> $${RES} || echo -e "$${RETURN_VALUE}" >> $${RES}
+			[ $${FINAL} ] && echo -e "\n$${RETURN_VALUE}" >> $${RES} || echo "$${RETURN_VALUE}" >> $${RES}
 
 			diff -Z $${RES} $${OUT} >/dev/null 2>&1
 			if [ $$? != 0 ]; then
