@@ -22,6 +22,7 @@ https://developer.arm.com/documentation/dui0068/b/ARM-Instruction-Reference/ARM-
 12. call时候的寄存器压栈：有些寄存器里存的变量已经在LiveInterval的末期，不用压栈
 13. call时候移动参数：有时候没有冲突，不用交换
 14. 改变了AddSub的逻辑，现在dst和src大多数情况下可以相同
+15. Operand2可以优化，比如-(-1)可以优化成+1
 - IR
 1. LLIR_RET指令：对于如下代码段
 ```c
