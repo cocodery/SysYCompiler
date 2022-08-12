@@ -15,10 +15,9 @@ static enum AsmBranchType{LT, GE, LE, GT, EQ, NE, AlwaysTrue, AlwaysFalse} b_typ
 
 bool IsOperand2(int i)
 {
-    int mask = 0xff;
     for (unsigned d = 0; d <= 30; d += 2)
     {
-        mask = (mask >> d)|(mask << (32 - d));
+        int mask = (0xff >> d)|(0xff << (32 - d));
         if ((i & mask) == i)
             return true;
     }
