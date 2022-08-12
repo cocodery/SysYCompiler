@@ -335,10 +335,10 @@ string GetRRegList(const vector<REGs> &regs)
 vector<string> GetSRegLists(const vector<REGs> &regs)
 {
     vector<string> res;
-    int idx = 0, siz = regs.size();
+    int idx = -1, siz = regs.size();
     if (siz == 0) return res;
     while (idx < siz)
-        if (regs[idx++] >= s0) break;
+        if (regs[++idx] >= s0) break;
     while (idx < siz)
     {
         string reglist("{");
