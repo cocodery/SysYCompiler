@@ -32,7 +32,55 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                 function->replaceSRCs(block, bin_inst->dst.reg, dst_value);
                 iter = bb_list.erase(iter);
                 continue;
-            } 
+            } else if (src1.ToCTValue()) {
+                int32_t svalue1 = src1.ctv->int_value;
+                SRC dst_value;
+                bool opt = false;
+                if (bin_inst->op == ADD && svalue1 == 0) {
+                    dst_value = bin_inst->src2;
+                    opt = true;
+                } else if (bin_inst->op == MUL) {
+                    if (svalue1 == 0) {
+                        dst_value = SRC(new CTValue(TypeInt, 0, 0));
+                        opt = true;
+                    } else if (svalue1 == 1) {
+                        dst_value = bin_inst->src2;
+                        opt = true;
+                    }
+                } 
+                if (opt) {
+                    function->replaceSRCs(block, bin_inst->dst.reg, dst_value);
+                    iter = bb_list.erase(iter);
+                    continue;
+                }
+            } else if (src2.ToCTValue()) {
+                int32_t svalue2 = src2.ctv->int_value;
+                SRC dst_value;
+                bool opt = false;
+                if (bin_inst->op == ADD && svalue2 == 0) {
+                    dst_value = bin_inst->src1;
+                    opt = true;
+                } else if (bin_inst->op == SUB && svalue2 == 0) {
+                    dst_value = bin_inst->src1;
+                    opt = true;
+                } else if (bin_inst->op == MUL) {
+                    if (svalue2 == 0) {
+                        dst_value = SRC(new CTValue(TypeInt, 0, 0));
+                        opt = true;
+                    } else if (svalue2 == 1) {
+                        dst_value = bin_inst->src1;
+                        opt = true;
+                    }
+                } else if (bin_inst->op == DIV && svalue2 == 1) {
+                    dst_value = bin_inst->src1;
+                    opt = true;
+                }
+                if (opt) {
+                    function->replaceSRCs(block, bin_inst->dst.reg, dst_value);
+                    iter = bb_list.erase(iter);
+                    continue;
+                }
+            }
         } 
         Case (LLIR_FBIN, fbin_inst, inst) {
             SRC src1 = fbin_inst->src1;
@@ -54,6 +102,54 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                 function->replaceSRCs(block, fbin_inst->dst.reg, dst_value);
                 iter = bb_list.erase(iter);
                 continue;
+            } else if (src1.ToCTValue()) {
+                double fvalue1 = src1.ctv->float_value;
+                SRC dst_value;
+                bool opt = false;
+                if (fbin_inst->op == ADD && fvalue1 == 0) {
+                    dst_value = fbin_inst->src2;
+                    opt = true;
+                } else if (fbin_inst->op == MUL) {
+                    if (fvalue1 == 0) {
+                        dst_value = SRC(new CTValue(TypeInt, 0, 0));
+                        opt = true;
+                    } else if (fvalue1 == 1) {
+                        dst_value = fbin_inst->src2;
+                        opt = true;
+                    }
+                } 
+                if (opt) {
+                    function->replaceSRCs(block, fbin_inst->dst.reg, dst_value);
+                    iter = bb_list.erase(iter);
+                    continue;
+                }
+            } else if (src2.ToCTValue()) {
+                double fvalue2 = src2.ctv->float_value;
+                SRC dst_value;
+                bool opt = false;
+                if (fbin_inst->op == ADD && fvalue2 == 0) {
+                    dst_value = fbin_inst->src1;
+                    opt = true;
+                } else if (fbin_inst->op == SUB && fvalue2 == 0) {
+                    dst_value = fbin_inst->src1;
+                    opt = true;
+                } else if (fbin_inst->op == MUL) {
+                    if (fvalue2 == 0) {
+                        dst_value = SRC(new CTValue(TypeInt, 0, 0));
+                        opt = true;
+                    } else if (fvalue2 == 1) {
+                        dst_value = fbin_inst->src1;
+                        opt = true;
+                    }
+                } else if (fbin_inst->op == DIV && fvalue2 == 1) {
+                    dst_value = fbin_inst->src1;
+                    opt = true;
+                }
+                if (opt) {
+                    function->replaceSRCs(block, fbin_inst->dst.reg, dst_value);
+                    iter = bb_list.erase(iter);
+                    continue;
+                }
             }
         }
         Case (LLIR_ICMP, icmp_inst, inst) {
