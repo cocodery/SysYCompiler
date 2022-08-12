@@ -1862,27 +1862,13 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_return", "", indent));
 
         // insert local ptr dealloc for recursive functions (DO NOT touch r0)
-        if (funcPtr->func_info.is_recursive)
+        if (funcPtr->func_info.is_recursive && bytes_allocated_for_local_arrays)
         {
             asm_insts.push_back(AsmCode(AsmInst::EMPTY, funcPtr->func_info.func_name + "_dealloc", "", indent));
-            for (auto &&bbPtr : funcPtr->all_blocks)
-            {
-                if (bbPtr->bb_idx == 0 || bbPtr->bb_idx == -1)
-                    continue;
-                for (auto &&instPtr : bbPtr->basic_block)
-                {
-                    Case (LLIR_ALLOCA, alloc_inst, instPtr)
-                    {
-                        auto &&varPtr = alloc_inst->var;
-                        if (!varPtr->type.is_array) // 跳过标量
-                            continue;
-                        // 在栈上给数组分配空间，并赋值
-                        AddAsmCodeComment(asm_insts, "deallocating stack memory for " + funcPtr->func_info.func_name, 1);
-                        // 计算指针的地址
-                        AddAsmCodeAddSub(asm_insts, AsmInst::ADD, sp, Param(sp), Param(bytes_allocated_for_local_arrays), 1);
-                    }
-                }
-            }
+            // 在栈上给数组分配空间，并赋值
+            AddAsmCodeComment(asm_insts, "deallocating stack memory for " + funcPtr->func_info.func_name, 1);
+            // 计算指针的地址
+            AddAsmCodeAddSub(asm_insts, AsmInst::ADD, sp, Param(sp), Param(bytes_allocated_for_local_arrays), 1);
         }
 
         // insert load local var & ptr for recursive funtions (DO NOT touch r0)
