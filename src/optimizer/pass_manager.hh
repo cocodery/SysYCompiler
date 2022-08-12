@@ -2,12 +2,12 @@
 
 #include "../common.hh"
 #include "../structure/ir.hh"
+#include "function_inline.hh"
 #include "mem2reg.hh"
 #include "constant_propagation.hh"
 #include "lvn.hh"
 #include "dead_code_elim.hh"
 #include "reg2mem.hh"
-#include "function_recursion.hh"
 #include "load_store_reordering.hh"
 
 class PassManager {
@@ -23,6 +23,8 @@ public:
                 function->buildIDom();
                 function->initBBDF();
 
+                FuncInline funcinline = FuncInline(function);
+
                 Mem2Reg mem2reg = Mem2Reg(function);
                 mem2reg.runMem2Reg();
 
@@ -32,13 +34,11 @@ public:
                 ConstantProg constantprog = ConstantProg(function);
                 constantprog.runConstantProg();
 
-                Dce dce = Dce(function);
-                dce.runDeadCodeElim();
+                // Dce dce = Dce(function);
+                // dce.runDeadCodeElim();
 
                 Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                 reg2mem.runReg2Mem();
-
-                FunctionRecursion function_recurtion(function);
 
                 LoadStoreReordering load_store_reordering(function);
             }

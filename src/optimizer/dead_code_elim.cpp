@@ -32,14 +32,13 @@ void Dce::buildUsefulRegSet() {
                     insertToSet(fbin_inst->src1.reg);
                     insertToSet(fbin_inst->src2.reg);
                 }
-            } else Case (LLIR_ALLOCA, alloca_inst, inst) {
-                
             } else Case (LLIR_LOAD, load_inst, inst) {
                 if (checkInSet(load_inst->dst.reg)) {
                     insertToSet(load_inst->src.reg);
                 }
             } else Case (LLIR_STORE, store_inst, inst) {
                 insertToSet(store_inst->src.reg);
+                insertToSet(store_inst->dst.reg);
             } else Case (LLIR_ICMP, icmp_inst, inst) {
                 if (checkInSet(icmp_inst->dst.reg)) {
                     insertToSet(icmp_inst->src1.reg);
@@ -52,7 +51,8 @@ void Dce::buildUsefulRegSet() {
                 }
             } else Case (LLIR_CALL, call_inst, inst) {
                 auto &&func_info = call_inst->func_info;
-                if (checkInSet(call_inst->dst.reg)) {
+                if (checkInSet(call_inst->dst.reg) || func_info->side_effect) {
+                    insertToSet(call_inst->dst.reg);
                     for (auto &&arg : call_inst->args) {
                         insertToSet(arg.reg);
                     }
@@ -133,7 +133,8 @@ void Dce::removeUselessInst() {
                     continue;
                 }
             } else Case (LLIR_CALL, call_inst, inst) {
-                if (!checkInSet(call_inst->dst.reg)) {
+                auto &&func_info = call_inst->func_info;
+                if (!checkInSet(call_inst->dst.reg) && !func_info->side_effect) {
                     iter = bb_list.erase(iter);
                     continue;
                 }
@@ -181,5 +182,5 @@ void Dce::removeUselessInst() {
 
 void Dce::runDeadCodeElim() {
     buildUsefulRegSet();
-    removeUselessInst();
+    // removeUselessInst();
 }

@@ -456,6 +456,7 @@ CompUnit::CompUnit() {
     for (int32_t i = 0; i < 14; ++i) {
         lib_functions[i] = new LibFunction;
         lib_functions[i]->libfunc_info.is_used = false;
+        lib_functions[i]->libfunc_info.side_effect = true;
         lib_functions[i]->libfunc_info.func_name = func_name[i];
         lib_functions[i]->libfunc_info.return_type = ret_type[i];
     }
