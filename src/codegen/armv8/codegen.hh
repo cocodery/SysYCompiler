@@ -474,7 +474,7 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
             AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
         }
         else p1 = src1;
-        for (int i = 0, mask = 0xff; i < 3; ++i, mask <<= 8)
+        for (int i = 0, mask = 0xff; i < 4; ++i, mask <<= 8)
         {
             int chr = src2.val.i & mask;
             if (chr)
@@ -488,7 +488,7 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     {
         assert(_i_typ == AsmInst::SUB);
         Param p2 = src2;
-        for (int i = 0, mask = 0xff; i < 3; ++i, mask <<= 8)
+        for (int i = 0, mask = 0xff; i < 4; ++i, mask <<= 8)
         {
             int chr = src1.val.i & mask;
             if (chr)
