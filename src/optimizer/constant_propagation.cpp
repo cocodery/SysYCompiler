@@ -251,5 +251,5 @@ void ConstantProg::processInBlock(BasicBlock *block) {
         }
         ++iter;
     }
-    block->basic_block = vector<Inst *>(bb_list.begin(), bb_list.end());
+    block->basic_block.assign(bb_list.begin(), bb_list.end());
 }
