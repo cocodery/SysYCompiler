@@ -602,7 +602,7 @@ void AddAsmCodeCmp(vector<AsmCode> &asm_insts, Inst *instPtr, RelOp op, const Pa
     {
         assert(IsOperand2(src1.val.i));
         asm_insts.push_back(AsmCode(AsmInst::CMP, {src2, src1}, indent));
-        bool reverse = true;
+        reverse = true;
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
     {
