@@ -1527,8 +1527,7 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
                             AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
                             // 计算指针的地址
                             int allocation_bytes = varPtr->type.elements_number() * 4;
-                            AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
-                            data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                            AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, sp, Param(sp), Param(allocation_bytes), 1);
                             // 储存指针的地址
                             data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
                             data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
@@ -1593,8 +1592,7 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
             }
             // 计算指针的地址
             bytes_allocated_for_global_non_const_arrays += allocation_bytes;
-            AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
-            data_underscore_init.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+            AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, sp, Param(sp), Param(allocation_bytes), 1);
             // 储存指针的地址
             data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_GLOBAL_PTR_NAME(varPtr->var_idx))}, 1));
             data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
@@ -1750,8 +1748,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
             if (local_vars_alloc_bytes % 8 != 0)
                 local_vars_alloc_bytes += 4;
             // 移动堆栈指针，给局部变量创造空间
-            AddAsmCodeAddSub(asm_insts, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(local_vars_alloc_bytes), 1);
-            asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+            AddAsmCodeAddSub(asm_insts, AsmInst::SUB, sp, Param(sp), Param(local_vars_alloc_bytes), 1);
             // 调用memcpy
             AddAsmCodeComment(asm_insts, "calling memcpy for saving local vars", 1);
             AddAsmCodePushRegisters(asm_insts, LOCAL_VARS_SAVE_MEMCPY_REGISTERS, 1);
@@ -1784,8 +1781,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
                         // 计算指针的地址
                         int allocation_bytes = varPtr->type.elements_number() * 4;
                         bytes_allocated_for_local_arrays += allocation_bytes;
-                        AddAsmCodeAddSub(asm_insts, AsmInst::SUB, PRELLOC_REGISTER, Param(sp), Param(allocation_bytes), 1);
-                        asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
+                        AddAsmCodeAddSub(asm_insts, AsmInst::SUB, sp, Param(sp), Param(allocation_bytes), 1);
                         // 储存指针的地址
                         asm_insts.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
                         asm_insts.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
@@ -1880,8 +1876,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
                         // 在栈上给数组分配空间，并赋值
                         AddAsmCodeComment(asm_insts, "deallocating stack memory for " + funcPtr->func_info.func_name, 1);
                         // 计算指针的地址
-                        AddAsmCodeAddSub(asm_insts, AsmInst::ADD, DELLOC_REGISTER, Param(sp), Param(bytes_allocated_for_local_arrays), 1);
-                        asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(DELLOC_REGISTER)}, 1));
+                        AddAsmCodeAddSub(asm_insts, AsmInst::ADD, sp, Param(sp), Param(bytes_allocated_for_local_arrays), 1);
                     }
                 }
             }
@@ -1901,8 +1896,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
             asm_insts.push_back(AsmCode(AsmInst::BL, {Param(Param::Str, "memcpy")}, 1));
             AddAsmCodePopRegisters(asm_insts, LOCAL_VARS_LOAD_MEMCPY_REGISTERS, 1);
             // 移动堆栈指针，消除给局部变量创造的空间
-            AddAsmCodeAddSub(asm_insts, AsmInst::ADD, DELLOC_REGISTER, Param(sp), Param(local_vars_alloc_bytes), 1);
-            asm_insts.push_back(AsmCode(AsmInst::MOV, {Param(sp), Param(DELLOC_REGISTER)}, 1));
+            AddAsmCodeAddSub(asm_insts, AsmInst::ADD, sp, Param(sp), Param(local_vars_alloc_bytes), 1);
         }
 
         // return instructions
