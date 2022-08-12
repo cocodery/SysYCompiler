@@ -616,12 +616,11 @@ void AddAsmCodeCmp(vector<AsmCode> &asm_insts, Inst *instPtr, RelOp op, const Pa
     }
     switch (op)
     {
-    case RelOp::LTH: b_type = LT; break;
-    case RelOp::LEQ: b_type = LE; break;
+    case RelOp::LTH: b_type = reverse ? GT : LT; break;
+    case RelOp::LEQ: b_type = reverse ? GE : LE; break;
     case RelOp::EQU: b_type = EQ; break;
     case RelOp::NEQ: b_type = NE; break;
     }
-    if (reverse) b_type = REVERSED_BRANCH_TYPE(b_type);
 }
 
 void AddAsmCodeFloatBin(vector<AsmCode> &asm_insts, BinOp _bin_typ, REGs r, const Param &src1, const Param &src2, int indent)
