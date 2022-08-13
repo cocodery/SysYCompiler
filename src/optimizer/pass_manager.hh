@@ -41,8 +41,8 @@ public:
                 MemAccessOpt mao = MemAccessOpt(function);
                 mao.runMemAccessOpt();
 
-                // Dce dce = Dce(function);
-                // dce.runDeadCodeElim();
+                Dce dce = Dce(function);
+                dce.runDeadCodeElim();
 
                 Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                 reg2mem.runReg2Mem();
