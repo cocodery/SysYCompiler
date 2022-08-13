@@ -40,7 +40,7 @@ public:
             remove_phi = !completed;
             completed &= sameTargetBranch(f);
             completed &= onlyOndeUnconditionalBranch(f);
-            completed &= reduceConditionalBrach(f);
+            // completed &= reduceConditionalBrach(f);
 
             if (completed) {
                 break;
