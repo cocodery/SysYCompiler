@@ -26,8 +26,8 @@ public:
 
                 FuncInline funcinline = FuncInline(function);
 
-                BranchOptimization branch_opt = BranchOptimization(functions);
-                // branch_opt.run();
+                BranchOptimization branch_opt = BranchOptimization(function);
+                branch_opt.run();
 
                 Mem2Reg mem2reg = Mem2Reg(function);
                 mem2reg.runMem2Reg();
