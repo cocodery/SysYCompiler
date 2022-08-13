@@ -2,22 +2,39 @@
 
 void Dce::insertToSet(VirtReg *reg) {
     if (reg != nullptr) {
-        usefulRegSet.insert(reg);
+        usefulRegSet.insert({reg->reg_id, reg->global});
     }
 }
 
 bool Dce::checkInSet(VirtReg *reg) {
-    return (usefulRegSet.find(reg) != usefulRegSet.end());
+    return (usefulRegSet.find({reg->reg_id, reg->global}) != usefulRegSet.end());
 }
 
-void Dce::buildUsefulRegSet() {
-    auto &&exitbb = function->getSpecificIdxBb(-1);
-    dceAccessQueue.push_back(exitbb);
-    while (!dceAccessQueue.empty()) {
-        auto &&block = dceAccessQueue.front();
-        dceAccessQueue.erase(dceAccessQueue.begin());
-        for (auto &&iter = block->basic_block.rbegin(); iter != block->basic_block.rend(); ++iter) {
-            auto &&inst = *iter;
+void Dce::dfsReverseOrder(list<BasicBlock *> list, BasicBlock *block) {
+    if (block->dirty) return;
+    block->dirty = true;
+    list.push_back(block);
+    for (auto &&succ : block->succs) {
+        auto &&succbb = succ.second;
+        if (succbb->bb_idx < block->bb_idx || !succbb->dirty) {
+            if (succbb->bb_idx < block->bb_idx) {
+                succbb->dirty = false;
+            }
+            dfsReverseOrder(list, succbb);
+        }
+    }
+    block->dirty = false;
+    if (block->bb_idx == -1) {
+        reverseOrder.push_back(list);
+        return;
+    }
+}
+
+void Dce::buildUsefulRegSet(list<BasicBlock *> path) {
+    for (auto &&iter = path.rbegin(); iter != path.rend(); ++iter) {
+        auto &&block = *iter;
+        for (auto &&it = block->basic_block.rbegin(); it != block->basic_block.rend(); ++it) {
+            auto &&inst = *it;
             Case (LLIR_RET, ret_inst, inst) {
                 insertToSet(ret_inst->ret_value.reg);
             } else Case (LLIR_BR, br_inst, inst) {
@@ -89,9 +106,6 @@ void Dce::buildUsefulRegSet() {
                     }
                 }
             }
-        }
-        for (auto &&pred : block->preds) {
-            dceAccessQueue.push_back(pred.second);
         }
     }
 }
@@ -181,6 +195,14 @@ void Dce::removeUselessInst() {
 }
 
 void Dce::runDeadCodeElim() {
-    buildUsefulRegSet();
+    for (auto &&block : function->all_blocks) {
+        block->dirty = false;
+    }
+    dfsReverseOrder(list<BasicBlock *>(), function->all_blocks[0]);
+
+    for (auto &&path : reverseOrder) {
+        buildUsefulRegSet(path);
+    }
+    
     // removeUselessInst();
 }

@@ -7,8 +7,10 @@ class Dce {
 public:
     Function *function;
 
-    set<VirtReg *> usefulRegSet;
+    set<pair<int32_t, bool>> usefulRegSet;
     vector<BasicBlock *> dceAccessQueue;
+
+    vector<list<BasicBlock *>> reverseOrder;
 public:
     Dce(Function *func) : function(func) { 
         usefulRegSet.clear();
@@ -16,7 +18,8 @@ public:
     }
     void insertToSet(VirtReg *reg);
     bool checkInSet(VirtReg *reg);
-    void buildUsefulRegSet();
+    void dfsReverseOrder(list<BasicBlock *> list, BasicBlock *block);
+    void buildUsefulRegSet(list<BasicBlock *> path);
     void removeUselessInst();
     void runDeadCodeElim();
 };
