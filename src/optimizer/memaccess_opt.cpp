@@ -5,12 +5,13 @@ void MemAccessOpt::runMemAccessOpt() {
     int32_t idx = 0;
     for (auto &&block : all_blocks) {
         bbIdx2MapIdx.insert({block->bb_idx, idx++});
-        Addr2Value.push_back(map<pair<int32_t, bool>, SRC>());
+        addr2Value.push_back(map<pair<int32_t, bool>, SRC>());
     }
 
     for (auto &&block : all_blocks) {
-        auto &&localMap = Addr2Value[bbIdx2MapIdx[block->bb_idx]];
         auto &&bb_list = list<Inst *>(block->basic_block.begin(), block->basic_block.end());
+        int32_t index = bbIdx2MapIdx[block->bb_idx];
+        auto &&localMap = addr2Value[index];
         for (auto &&iter = bb_list.begin(); iter != bb_list.end(); ) {
             auto &&inst = *iter;
             Case (LLIR_STORE, store_inst, inst) {
