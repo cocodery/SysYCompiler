@@ -4,6 +4,7 @@
 #include "../structure/ir.hh"
 #include "function_inline.hh"
 #include "mem2reg.hh"
+#include "memaccess_opt.hh"
 #include "constant_propagation.hh"
 #include "lvn.hh"
 #include "dead_code_elim.hh"
@@ -30,6 +31,9 @@ public:
 
                 LVN lvn = LVN(function);
                 lvn.runLVN();
+
+                MemAccessOpt mao = MemAccessOpt(function);
+                mao.runMemAccessOpt();
 
                 ConstantProg constantprog = ConstantProg(function);
                 constantprog.runConstantProg();
