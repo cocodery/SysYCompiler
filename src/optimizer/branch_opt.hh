@@ -20,18 +20,16 @@ using std::tuple;
 
 class BranchOptimization {
 public:
-    vector<Function *> functions;
+    Function * function;
 
 public:
-    BranchOptimization(vector<Function *> functions): functions(functions) { };
+    BranchOptimization(Function * func): function(func) { };
     void run() {
         cout << "----- Optimization Running: Branch Optimization -----" << endl;
-        for (auto i: functions) {
-            // 如果可能，需要判断函数是否为库函数
-            // if (i->func_info.)
-            cout << ("---> in function: " + i->func_info.func_name) << endl;
-            runBranchOptimization(&(*i));
-        }
+        // 如果可能，需要判断函数是否为库函数
+        // if (i->func_info.)
+        cout << ("---> in function: " + function->func_info.func_name) << endl;
+        runBranchOptimization(function);
     }
 
     bool runBranchOptimization(Function *f) {
