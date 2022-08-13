@@ -32,11 +32,14 @@ public:
                 LVN lvn1 = LVN(function);
                 lvn1.runLVN();
 
+                ConstantProg constantprog1 = ConstantProg(function);
+                constantprog1.runConstantProp();
+
                 MemAccessOpt mao = MemAccessOpt(function);
                 mao.runMemAccessOpt();
 
-                ConstantProg constantprog = ConstantProg(function);
-                constantprog.runConstantProp();
+                ConstantProg constantprog2 = ConstantProg(function);
+                constantprog2.runConstantProp();
 
                 // Dce dce = Dce(function);
                 // dce.runDeadCodeElim();
