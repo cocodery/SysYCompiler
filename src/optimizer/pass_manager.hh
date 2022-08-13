@@ -7,6 +7,7 @@
 #include "memaccess_opt.hh"
 #include "constant_propagation.hh"
 #include "lvn.hh"
+#include "inst_combine.hh"
 #include "dead_code_elim.hh"
 #include "reg2mem.hh"
 #include "load_store_reordering.hh"
@@ -37,6 +38,9 @@ public:
 
                 MemAccessOpt mao = MemAccessOpt(function);
                 mao.runMemAccessOpt();
+
+                InstCombine instcomb = InstCombine(function);
+                instcomb.runInstCombine();
 
                 ConstantProg constantprog2 = ConstantProg(function);
                 constantprog2.runConstantProp();
