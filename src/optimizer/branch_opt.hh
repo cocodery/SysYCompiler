@@ -42,7 +42,7 @@ public:
             remove_phi = !completed;
             completed &= sameTargetBranch(f);
             completed &= onlyOndeUnconditionalBranch(f);
-            // completed &= reduceConditionalBrach(f);
+            completed &= reduceConditionalBrach(f);
 
             if (completed) {
                 break;
@@ -81,6 +81,9 @@ public:
         }
         for (auto scope_iter = scope->elements->begin(); scope_iter != scope->elements->end(); ++scope_iter) {
             // cout << " # ";
+            if (*scope_iter == nullptr) {
+                continue;
+            }
             if (Scope *scope_node = dynamic_cast<Scope *>(*scope_iter); scope_node != nullptr) {
                 // cout << "----> scope: " << scope_node->sp_idx << endl;
                 blockFinder(scope_node, all_blocks, bb_idx, pred_idx, succ_idx);
@@ -279,6 +282,14 @@ public:
             }
         }
         return;
+    }
+
+    bool isUsedInLoop(Function *f, int32_t bb_idx) {
+        cout << ">> Is used in loop: " << bb_idx << endl;
+        bool completed = true;
+        if (bb_idx <= 0) { return completed; }
+        
+        return false;
     }
 
     bool reduceConditionalBrach(Function *f) {
