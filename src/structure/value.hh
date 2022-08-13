@@ -27,11 +27,3 @@ public:
             return type < other.type;
     }
 };
-
-CTValue operator + (CTValue lhs, CTValue rhs);
-CTValue operator - (CTValue lhs, CTValue rhs);
-CTValue operator * (CTValue lhs, CTValue rhs);
-CTValue operator / (CTValue lhs, CTValue rhs);
-CTValue operator % (CTValue lhs, CTValue rhs);
-CTValue operator - (CTValue rhs);
-CTValue operator ! (CTValue rhs);

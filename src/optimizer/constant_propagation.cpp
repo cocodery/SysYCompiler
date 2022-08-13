@@ -1,6 +1,6 @@
 #include "constant_propagation.hh"
 
-void ConstantProg::runConstantProg() {
+void ConstantProg::runConstantProp() {
     auto &&all_blocks = function->all_blocks;
     for (auto &&block : all_blocks) {
         processInBlock(block);
@@ -111,7 +111,7 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                     opt = true;
                 } else if (fbin_inst->op == MUL) {
                     if (fvalue1 == 0) {
-                        dst_value = SRC(new CTValue(TypeInt, 0, 0));
+                        dst_value = SRC(new CTValue(TypeFloat, 0, 0));
                         opt = true;
                     } else if (fvalue1 == 1) {
                         dst_value = fbin_inst->src2;
@@ -135,7 +135,7 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                     opt = true;
                 } else if (fbin_inst->op == MUL) {
                     if (fvalue2 == 0) {
-                        dst_value = SRC(new CTValue(TypeInt, 0, 0));
+                        dst_value = SRC(new CTValue(TypeFloat, 0, 0));
                         opt = true;
                     } else if (fvalue2 == 1) {
                         dst_value = fbin_inst->src1;
@@ -212,14 +212,18 @@ void ConstantProg::processInBlock(BasicBlock *block) {
                     for (auto &&src : srcs) {
                         if (src.first.ctv->int_value != ivalue) {
                             propagation = false;
+                            break;
                         }
                     }
-                } else {
+                } else if (decl_type == TypeFloat) {
                     for (auto &&src : srcs) {
                         if (src.first.ctv->float_value != fvalue) {
                             propagation = false;
+                            break;
                         }
                     }
+                } else {
+                    propagation = false;
                 }
                 if (propagation) {
                     SRC dst_value = SRC(new CTValue(decl_type, ivalue, fvalue));
