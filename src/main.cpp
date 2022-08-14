@@ -84,23 +84,32 @@ int main(int argc, char *argv[]) {
             function->buildCFG();
         }
     }
-    ir.GenerateLLIR("../main0.ll");
+
+    auto unoptimized_ir(ir);
+    unoptimized_ir.GenerateLLIR("../main0.ll");
+    GenerateLiveInfo(unoptimized_ir);
+    AllocateRegistersForAllFunctions(unoptimized_ir);
+    GenerateAssembly(output, unoptimized_ir);
 
     // cout << "Start Optimization" << endl;
 
     PassManager pass_manager(ir.global_scope, ir.functions);
     pass_manager.excute_pass();
+    ir.GenerateLLIR(irfile);
 
     // ----- CodeGen -----
 
-    // GenerateLiveInfo(ir);
-    // AllocateRegistersForAllFunctions(ir);
-    
-    // GenerateAssembly(output, ir);
+    ifstream unoptimized("../main0.ll", ios::binary), optimized(irfile, ios::binary);
+    optimized.seekg(0, ios::end);
+    unoptimized.seekg(0, ios::end);
+    if (optimized.tellg() < unoptimized.tellg())
+    {
+        GenerateLiveInfo(ir);
+        AllocateRegistersForAllFunctions(ir);
+        GenerateAssembly(output, ir);
+    }
 
     // -------------------
-
-    ir.GenerateLLIR(irfile);
 
     // cout << "Compilation Complete" << endl;
 
