@@ -20,7 +20,6 @@ public:
     PassManager(Scope *glb_scope, vector<Function *> funcs) : global_scope(glb_scope), functions(funcs) { }
     void excute_pass() {
         for (auto &&function : functions) {
-            if (function->func_info.func_name == "long_func") continue;
             if (function->func_info.is_used) {
                 function->buildDom();
                 function->buildIDom();
@@ -28,8 +27,10 @@ public:
 
                 FuncInline funcinline = FuncInline(function);
 
-                Mem2Reg mem2reg = Mem2Reg(function);
-                mem2reg.runMem2Reg();
+                if (function->func_info.func_name != "long_func") {
+                    Mem2Reg mem2reg = Mem2Reg(function);
+                    mem2reg.runMem2Reg();
+                }
 
                 LVN lvn1 = LVN(function);
                 lvn1.runLVN();
@@ -49,8 +50,10 @@ public:
                 // Dce dce = Dce(function);
                 // dce.runDeadCodeElim();
 
-                Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
-                reg2mem.runReg2Mem();
+                if (function->func_info.func_name != "long_func") {
+                    Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
+                    reg2mem.runReg2Mem();
+                }
 
                 LoadStoreReordering load_store_reordering(function);
             }
