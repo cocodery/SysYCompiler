@@ -27,8 +27,8 @@ public:
 
                 FuncInline funcinline = FuncInline(function);
 
+                Mem2Reg mem2reg = Mem2Reg(function);
                 if (function->func_info.func_name != "long_func") {
-                    Mem2Reg mem2reg = Mem2Reg(function);
                     mem2reg.runMem2Reg();
                 }
 
