@@ -291,7 +291,7 @@ void Function::printCallInfo() {
 void Function::buildCFG() {
     // insert entry and exit basicblock
     BasicBlock *entrybb = new BasicBlock(0 , true);
-    BasicBlock *exitbb  = new BasicBlock(65535, true);
+    BasicBlock *exitbb  = new BasicBlock(-1, true);
     // first bb's preds is entrybb
     entrybb->succs.insert({(*all_blocks.begin())->bb_idx, *all_blocks.begin()});
     (*all_blocks.begin())->preds.insert({entrybb->bb_idx, entrybb});
