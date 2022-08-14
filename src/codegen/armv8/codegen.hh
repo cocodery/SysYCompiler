@@ -27,6 +27,30 @@ bool IsOperand2(int to_check)
     return false;
 }
 
+vector<int32_t> SplitInt(int32_t to_split)
+{
+    const int n = 16, w = 4;
+    const uint32_t u_mask[] = {
+        0x000000ff, 0xc000003f, 0xf000000f, 0xfc000003,
+        0xff000000, 0x3fc00000, 0x0ff00000, 0x03fc0000,
+        0x00ff0000, 0x003fc000, 0x000ff000, 0x0003fc00,
+        0x0000ff00, 0x00003fc0, 0x00000ff0, 0x000003fc};
+    const int32_t *mask = (const int32_t *)u_mask;
+    for (int i = 0; i < n; ++i)
+        if ((to_split & mask[i]) == to_split)
+            return {to_split & mask[i]};
+    for (int i = 0; i < n - w; ++i)
+        for (int j = i + w; j < std::min(i + n - w + 1, n); ++j)
+            if ((to_split & (mask[i] | mask[j])) == to_split)
+                return {to_split & mask[i], to_split & mask[j]};
+    for (int i = 0; i < n - 2 * w; ++i)
+        for (int j = i + w; j < std::min(i + n - 2 * w + 1, n - w); ++j)
+            for (int k = j + w; k < std::min(i + n - w + 1, n); ++k)
+                if ((to_split & (mask[i] | mask[j] | mask[k])) == to_split)
+                    return {to_split & mask[i], to_split & mask[j], to_split & mask[k]};
+    return {to_split & mask[0], to_split & mask[w], to_split & mask[2 * w], to_split & mask[3 * w]};
+}
+
 int DoubleToWord(double d)
 {
     float f = d;
