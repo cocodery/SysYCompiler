@@ -13,14 +13,17 @@ using std::stringstream;
 static enum AsmBranchType{LT, GE, LE, GT, EQ, NE, AlwaysTrue, AlwaysFalse} b_type;
 #define REVERSED_BRANCH_TYPE(_BT) ((AsmBranchType)(((char)_BT & 0xfe) | (~(char)_BT & 1)))
 
-bool IsOperand2(int i)
+bool IsOperand2(int to_check)
 {
-    for (unsigned d = 0; d <= 30; d += 2)
-    {
-        int mask = (0xff >> d)|(0xff << (32 - d));
-        if ((i & mask) == i)
+    const uint32_t mask[16] = {
+        0x000000ff, 0x000003fc, 0x00000ff0, 0x00003fc0, 0x0000ff00,
+        0x0003fc00, 0x000ff000, 0x003fc000, 0x00ff0000, 0x03fc0000,
+        0x0ff00000, 0x3fc00000, 0xff000000, 0xfc000003, 0xf000000f,
+        0xc000003f
+    };
+    for (int i = 0; i < 16; ++i)
+        if ((to_check & mask[i]) == to_check)
             return true;
-    }
     return false;
 }
 
