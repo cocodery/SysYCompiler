@@ -13,14 +13,16 @@ using std::stringstream;
 static enum AsmBranchType{LT, GE, LE, GT, EQ, NE, AlwaysTrue, AlwaysFalse} b_type;
 #define REVERSED_BRANCH_TYPE(_BT) ((AsmBranchType)(((char)_BT & 0xfe) | (~(char)_BT & 1)))
 
-bool IsOperand2(int to_check)
+const uint32_t operand2_mask_unsigned[] = {
+    0x000000ff, 0xc000003f, 0xf000000f, 0xfc000003,
+    0xff000000, 0x3fc00000, 0x0ff00000, 0x03fc0000,
+    0x00ff0000, 0x003fc000, 0x000ff000, 0x0003fc00,
+    0x0000ff00, 0x00003fc0, 0x00000ff0, 0x000003fc};
+
+bool IsOperand2(int32_t to_check)
 {
-    const uint32_t mask[16] = {
-        0x000000ff, 0x000003fc, 0x00000ff0, 0x00003fc0, 0x0000ff00,
-        0x0003fc00, 0x000ff000, 0x003fc000, 0x00ff0000, 0x03fc0000,
-        0x0ff00000, 0x3fc00000, 0xff000000, 0xfc000003, 0xf000000f,
-        0xc000003f
-    };
+    const int n = 16;
+    const int32_t *mask = (const int32_t *)operand2_mask_unsigned;
     for (int i = 0; i < 16; ++i)
         if ((to_check & mask[i]) == to_check)
             return true;
@@ -30,15 +32,10 @@ bool IsOperand2(int to_check)
 vector<int32_t> SplitInt(int32_t to_split)
 {
     const int n = 16, w = 4;
-    const uint32_t u_mask[] = {
-        0x000000ff, 0xc000003f, 0xf000000f, 0xfc000003,
-        0xff000000, 0x3fc00000, 0x0ff00000, 0x03fc0000,
-        0x00ff0000, 0x003fc000, 0x000ff000, 0x0003fc00,
-        0x0000ff00, 0x00003fc0, 0x00000ff0, 0x000003fc};
-    const int32_t *mask = (const int32_t *)u_mask;
+    const int32_t *mask = (const int32_t *)operand2_mask_unsigned;
     for (int i = 0; i < n; ++i)
         if ((to_split & mask[i]) == to_split)
-            return {to_split & mask[i]};
+            return {to_split};
     for (int i = 0; i < n - w; ++i)
         for (int j = i + w; j < std::min(i + n - w + 1, n); ++j)
             if ((to_split & (mask[i] | mask[j])) == to_split)
@@ -227,7 +224,7 @@ public:
         BLE, BEQ, BNE, B, BGT,
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
         MOVEQ, MOVNE, SDIV, MVN, RSB,
-        DOT_LTORG, EORNE, VADD, VSUB, VMUL,
+        DOT_LTORG, EOR, VADD, VSUB, VMUL,
         VDIV, VMOV, VCMP, VCVT_ITOF, VCVT_FTOI,
         FMSTAT, VPUSH, VPOP, VLDR, VSTR,
         VMVN
@@ -239,7 +236,7 @@ public:
         "ble", "beq", "bne", "b", "bgt",
         "bge", "movlt", "movge", "movle", "movgt",
         "moveq", "movne", "sdiv", "mvn", "rsb",
-        ".ltorg", "eorne", "vadd.f32", "vsub.f32", "vmul.f32",
+        ".ltorg", "eor", "vadd.f32", "vsub.f32", "vmul.f32",
         "vdiv.f32", "vmov", "vcmp.f32", "vcvt.f32.s32", "vcvt.s32.f32",
         "fmstat", "vpush", "vpop", "vldr", "vstr",
         "vmvn"
@@ -465,10 +462,9 @@ void AddAsmCodeSwapRegisters(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, i
     if (reg1 == reg2) return;
     if (IsRReg(reg1) && IsRReg(reg2))
     {
-        asm_insts.push_back(AsmCode(AsmInst::CMP, {Param(reg1), Param(reg2)}, indent)); //if (x0 == x1) do not swap
-        asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
-        asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg2), Param(reg1), Param(reg2)}, indent)); //eor x1, x0, x1
-        asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
+        asm_insts.push_back(AsmCode(AsmInst::EOR, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
+        asm_insts.push_back(AsmCode(AsmInst::EOR, {Param(reg2), Param(reg1), Param(reg2)}, indent)); //eor x1, x0, x1
+        asm_insts.push_back(AsmCode(AsmInst::EOR, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
     }
     else
     {
