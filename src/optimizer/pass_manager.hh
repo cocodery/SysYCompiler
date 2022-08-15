@@ -44,6 +44,8 @@ public:
                 Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                 reg2mem.runReg2Mem();
 
+                branch_opt.run();
+
                 LoadStoreReordering load_store_reordering(function);
             }
         }
