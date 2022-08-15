@@ -494,35 +494,31 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     }
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
-        Param p1;
+        Param p1 = src1;
         if (IsSReg(src1.val.r))
         {
             p1 = Param(r);
             AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
         }
-        else p1 = src1;
-        for (int i = 0, mask = 0xff; i < 4; ++i, mask <<= 8)
+        auto pos = SplitInt(src2.val.i), neg = SplitInt(-src2.val.i);
+        auto _neg_i_typ = (_i_typ == AsmInst::ADD) ? AsmInst::SUB : AsmInst::ADD;
+        auto &&bytes = (neg.size() < pos.size()) ? neg : pos;
+        auto &&binop = (neg.size() < pos.size()) ? _neg_i_typ : _i_typ;
+        for (auto &&byte : bytes)
         {
-            int chr = src2.val.i & mask;
-            if (chr)
-            {
-                asm_insts.push_back(AsmCode(_i_typ, {Param(r), p1, Param(chr)}, indent));
-                p1 = Param(r);
-            }
+            asm_insts.push_back(AsmCode(binop, {Param(r), p1, Param(byte)}, indent));
+            p1 = Param(r);
         }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg, should be sub only
     {
         assert(_i_typ == AsmInst::SUB);
         Param p2 = src2;
-        for (int i = 0, mask = 0xff; i < 4; ++i, mask <<= 8)
+        auto bytes = SplitInt(src1.val.i);
+        for (auto &&byte : bytes)
         {
-            int chr = src1.val.i & mask;
-            if (chr)
-            {
-                asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(chr)}, indent));
-                p2 = Param(r);
-            }
+            asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(byte)}, indent));
+            p2 = Param(r);
         }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
