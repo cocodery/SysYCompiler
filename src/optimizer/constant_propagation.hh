@@ -8,6 +8,6 @@ public:
     Function *function;
 public:
     ConstantProg(Function *func) : function(func) { }
-    void runConstantProg();
+    void runConstantProp();
     void processInBlock(BasicBlock *blcok);
 };

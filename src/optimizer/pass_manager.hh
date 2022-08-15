@@ -4,8 +4,10 @@
 #include "../structure/ir.hh"
 #include "function_inline.hh"
 #include "mem2reg.hh"
+#include "memaccess_opt.hh"
 #include "constant_propagation.hh"
 #include "lvn.hh"
+#include "inst_combine.hh"
 #include "dead_code_elim.hh"
 #include "reg2mem.hh"
 #include "load_store_reordering.hh"
@@ -30,19 +32,32 @@ public:
                 branch_opt.run();
 
                 Mem2Reg mem2reg = Mem2Reg(function);
-                mem2reg.runMem2Reg();
+                if (function->func_info.func_name != "long_func") {
+                    mem2reg.runMem2Reg();
+                }
 
-                LVN lvn = LVN(function);
-                lvn.runLVN();
+                LVN lvn1 = LVN(function);
+                lvn1.runLVN();
 
-                ConstantProg constantprog = ConstantProg(function);
-                constantprog.runConstantProg();
+                ConstantProg constantprog1 = ConstantProg(function);
+                constantprog1.runConstantProp();
+
+                MemAccessOpt mao = MemAccessOpt(function);
+                mao.runMemAccessOpt();
+
+                InstCombine instcomb = InstCombine(function);
+                instcomb.runInstCombine();
+
+                ConstantProg constantprog2 = ConstantProg(function);
+                constantprog2.runConstantProp();
 
                 // Dce dce = Dce(function);
                 // dce.runDeadCodeElim();
 
-                Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
-                reg2mem.runReg2Mem();
+                if (function->func_info.func_name != "long_func") {
+                    Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
+                    reg2mem.runReg2Mem();
+                }
 
                 LoadStoreReordering load_store_reordering(function);
             }

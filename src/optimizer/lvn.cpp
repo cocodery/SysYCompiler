@@ -90,7 +90,7 @@ SRC LVN::checkInMap(BasicBlock *block, lvnNode *node) {
     int32_t mapIdx = bbIdxMapIdx[block->bb_idx];
     for (auto &&pair : lvnMapNodes[mapIdx]) {
         auto &&lvn_node = pair.second;
-        if (lvn_node->op == node->op && lvn_node->src1 == node->src1 && lvn_node->src2 == node->src2) {
+        if (*node == *lvn_node) {
             return pair.first;
         }
     }
