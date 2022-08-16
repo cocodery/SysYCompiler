@@ -28,7 +28,7 @@ public:
         cout << "----- Optimization Running: Branch Optimization -----" << endl;
         // 如果可能，需要判断函数是否为库函数
         // if (i->func_info.)
-        cout << ("---> in function: " + function->func_info.func_name) << endl;
+        cout << ("\033[1m\033[45;33m---> in function: " + function->func_info.func_name + " \033[0m") << endl;
         runBranchOptimization(function);
     }
 
@@ -269,25 +269,11 @@ public:
             }
             for (auto iter = scope->elements->begin(); iter != scope->elements->end(); ++iter) {
                 if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
-                    blockFinder(scope_node, bb_idx);
+                    blockFinder(scope_node, bb_idx, true);
                 } else {
                     BasicBlock *bb_node = dynamic_cast<BasicBlock *>(*iter);
                     if (bb_node->bb_idx == bb_idx) {
                         cout << "        @@-> erase basic block: " << bb_idx << endl;
-                        
-                        
-                        auto succ_node = bb_node->succs.begin()->second;
-                        
-                        int32_t succ_idx = bb_node->succs.begin()->first;
-                        
-                            
-                            
-                            succ_node->preds.erase(bb_idx);
-                            succ_node->preds.insert(make_pair(0, nullptr));
-                        
-
-                        bb_node->preds.erase(bb_idx);
-                        bb_node->succs.erase(bb_idx);
 
                         bb_node->valuable = false;
                         scope->elements->erase(iter);
@@ -314,6 +300,7 @@ public:
                         cout << "    ->>> continue: inst has condition" << endl;
                         continue;
                     } else {
+                        
                         if (i->preds.size()==1 && i->succs.size()==1) {
                             // if this bb has only one preds & one succ, delete it.
                             int32_t pred_idx = i->preds.begin()->first;
@@ -334,20 +321,62 @@ public:
                                 continue;
                             }
                             
-                            
+                            cout << "    $inst: " << br_inst->ToString() << endl;
                             cout << "    ######> remove basic block: " << i->bb_idx << endl;
                             
                             blockFinder(f->main_scope, i->bb_idx);
-                            auto cur_iter = find(f->all_blocks.begin(), f->all_blocks.end(), i);
-                            // (*cur_iter)->valuable = false;
-                            // (*cur_iter)->preds.erase(i->bb_idx);
-                            // (*cur_iter)->succs.erase(i->bb_idx);
 
+                            auto cur_iter = find(f->all_blocks.begin(), f->all_blocks.end(), i);
                             auto iter = f->all_blocks.erase(cur_iter)-1;
                             if (iter == f->all_blocks.end()) {
                                 cout << "        @@11-> continue: erase block in blocks failed" << endl;
                                 continue;
                             }
+                        }
+                    }
+                } else {
+                    // 把一些可以合并的基本块合并掉
+                    if (i->preds.size()==1 && i->succs.size()==1) {
+                        int32_t pred_idx = i->preds.begin()->first;
+                        int32_t succ_idx = i->succs.begin()->first;
+                        if (pred_idx == succ_idx) {
+                            cout << "    ->>> continue: preds == succs" << endl;
+                            continue;
+                        } else if (pred_idx == 0 && succ_idx == -1) {
+                            cout << "    ->>> continue: only one basicblock" << endl;
+                            continue;
+                        } else if (pred_idx == 0) {
+                            cout << "    ->>> continue: preds == 0 (cannot opt the entry block)" << endl;
+                            continue;
+                        }
+                        if (BasicBlock* succ_bb = f->getSpecificIdxBb(succ_idx); succ_bb->preds.size() == 1) {
+                            cout << "    \033[1m\033[45;33min basic block " + std::to_string(i->bb_idx) + ": " + br_inst->ToString() + "\033[0m" << endl;
+                            cout << "    \033[1m\033[45;33m->>> case: more than one inst. \033[0m" << endl;
+                            BasicBlock* pred_bb = f->getSpecificIdxBb(pred_idx);
+                            pred_bb->succs.erase(i->bb_idx);
+                            pred_bb->succs.insert(make_pair(succ_idx, succ_bb));
+                            auto inst = pred_bb->basic_block.back();
+                            Case(LLIR_BR, br_inst, inst) {
+                                if (br_inst->has_cond) {
+                                    if (br_inst->tar_true == i->bb_idx) {
+                                        br_inst->tar_true = succ_idx;
+                                    } else if (br_inst->tar_false == i->bb_idx) {
+                                        br_inst->tar_false = succ_idx;
+                                    }
+                                } else {
+                                    br_inst->tar_true = succ_idx;
+                                }
+                            }
+                            vector<Inst *> tmp_inst;
+                            tmp_inst.assign(i->basic_block.begin(), i->basic_block.end()-1);
+                            succ_bb->basic_block.insert(succ_bb->basic_block.begin(), tmp_inst.begin(), tmp_inst.end());
+                            succ_bb->preds.erase(i->bb_idx);
+                            succ_bb->preds.insert(make_pair(pred_idx, pred_bb));
+                            blockFinder(f->main_scope, i->bb_idx, true);
+                            
+                            auto cur_iter = find(f->all_blocks.begin(), f->all_blocks.end(), i);
+                            auto iter = f->all_blocks.erase(cur_iter)-1;
+                            
                         }
                     }
                 }
@@ -379,22 +408,19 @@ public:
         cout << ">> Erase useless basic block: " << bb_idx << endl;
         bool completed = true;
         if (bb_idx <= 0) { return completed; }
-        for (auto i : f->all_blocks) {
-            if (i->bb_idx == bb_idx) {
-                for (auto j: i->preds) {
-                    j.second->succs.erase(bb_idx);
-                }
-                for (auto j : i->succs) {
-                    j.second->preds.erase(bb_idx);
-                }
-                auto iter = f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i));
-                if (iter == f->all_blocks.end()) {
-                    cout << "        @@-> continue: erase block in blocks failed" << endl;
-                    continue;
-                }
-                f->all_blocks.erase(iter);
-            }
+        BasicBlock *i = f->getSpecificIdxBb(bb_idx);
+        for (auto j: i->preds) {
+            j.second->succs.erase(bb_idx);
         }
+        for (auto j : i->succs) {
+            j.second->preds.erase(bb_idx);
+        }
+        auto iter = f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i));
+        if (iter == f->all_blocks.end()) {
+            cout << "        @@-> continue: erase block in blocks failed" << endl;
+            return completed;
+        }
+        f->all_blocks.erase(iter);
         return completed;
     }
 
@@ -435,7 +461,7 @@ public:
             if (Scope *scope_node = dynamic_cast<Scope *>(*scope_iter); scope_node != nullptr) {
                 // cout << "----> scope: " << scope_node->sp_idx << endl;
                 if (scope_node->elements->empty()) {
-                    cout << ">> Remove empty scope: " << scope->sp_idx << endl;
+                    cout << ">> Remove empty scope: " << scope_node->sp_idx << endl;
                     scope_iter = scope->elements->erase(scope_iter) - 1;
                     continue;
                 } else {
@@ -447,32 +473,25 @@ public:
     }
 
 
-    // 没卵用，直接判断前驱中有没有大于当前基本快编号的就行了
     bool isUsedInLoop(Function *f, int32_t bb_idx) {
-        
-        bool completed = true;
-        if (bb_idx <= 0) { return completed; }
-        if (f->all_blocks.empty()) { return completed; }
-        if (f == nullptr) { return completed; }
-        // dbg(f->all_blocks.size());
-        auto blocks = f->all_blocks;
-        for (auto i: blocks) {
-            if (i->bb_idx > bb_idx) {
-                Case (LLIR_BR, br_inst, i->basic_block.back()) {
-                    if (br_inst->tar_false == bb_idx || br_inst->tar_true == bb_idx) {
-                        return true;
-                    }
+        BasicBlock * cur_bb = f->getSpecificIdxBb(bb_idx);
+        if (cur_bb == nullptr) {
+            return false;
+        } else {
+            for (auto &&i : cur_bb->preds) {
+                if (i.first > cur_bb->bb_idx) {
+                    return true;
                 }
             }
+            return false;
         }
-        return false;
     }
 
     bool reduceConditionalBrach(Function *f) {
         cout << endl << ">> reduce Conditional branch: " << endl;
         bool completed = true;
         if (f->all_blocks.empty()) { return completed; }
-        for (auto i: f->all_blocks) {
+        for (auto &&i: f->all_blocks) {
             if (i == nullptr) { return completed; }
             cout << "    -> in basic block: " << i->bb_idx << endl;
             if (i->bb_idx <= 0) { 
@@ -496,10 +515,7 @@ public:
                         cout << "TRUE!!!!!!!!!" << endl;
                         br_inst->tar_false = -1;
                         br_inst->has_cond = false;
-                        // 当前基本块的前驱有很多, 后继只有tar_true和tar_false。
-                        // 在修改时，应将后续基本块中tar_false全删除
-                        // 当前跳转语句应该修改成 br %tar_true
-                        // 应在tar_false的前驱和后继中删除所有有关tar_false的前驱后继信息
+                        
                         // erase useless block完成 删除无用基本块 + 修改前驱后继
                         if (!isUsedInLoop(f, f_tar)) {
                             eraseUselessBB(f, f_tar);
@@ -520,6 +536,7 @@ public:
         }
         return completed;
     }
+    
 
     bool removePredBasicBlock(BasicBlock *pred, BasicBlock *succ, Function *f) {
         cout << "  >>>> removePredBasicBlock: " << endl;
