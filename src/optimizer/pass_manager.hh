@@ -7,7 +7,6 @@
 #include "memaccess_opt.hh"
 #include "constant_propagation.hh"
 #include "gvn_gcm.hh"
-#include "lvn.hh"
 #include "inst_combine.hh"
 #include "dead_code_elim.hh"
 #include "reg2mem.hh"
@@ -33,9 +32,6 @@ public:
                     if (function->func_info.func_name != "long_func") {
                         mem2reg.runMem2Reg();
                     }
-
-                    // LVN lvn1 = LVN(function);
-                    // lvn1.runLVN();
 
                     GvnGcm gvn_gcm1 = GvnGcm(function);
                     gvn_gcm1.runGvnGcm();
