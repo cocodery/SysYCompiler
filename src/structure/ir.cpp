@@ -538,9 +538,9 @@ void CompUnit::DebugUserFuncs() {
     llir << "; User Functions" << endl;
     for (auto &&function : functions) {
         if (function->func_info.is_used) {
-            llir << get_tabs();
-            llir << function->func_info.printFunctionInfo() << endl;
+            llir << get_tabs() << function->func_info.printFunctionInfo() << endl;
             function->printCallInfo();
+            llir << get_tabs() << "; side-effect : " << function->func_info.side_effect << endl;
             function->main_scope->printScope();
             llir << get_tabs() << "}" << endl;
         }

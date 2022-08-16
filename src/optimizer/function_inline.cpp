@@ -26,6 +26,11 @@ bool FuncInline::sideEffect() {
     if (function->func_info.func_name == "main") {
         return true;
     }
+    for (auto &&func_info : function->func_info.called_funcs) {
+        if (func_info->side_effect == true) {
+            return true;
+        }
+    }
     int32_t args_num = function->func_info.func_args.size();
     set<VirtReg *> globalOrArgPtr;
     auto &&all_blocks = function->all_blocks;

@@ -27,11 +27,11 @@ public:
         return (reg == nullptr) ? nullptr : reg;
     }
     bool operator == (SRC src) {
-        if (ctv && src.ToCTValue()) {
-            return *ctv == *src.ToCTValue();
-        } else if (reg && src.ToVirtReg()) {
-            return *reg == *src.ToVirtReg();
-        } else if (!ctv && !src.ToCTValue() && !reg && !src.ToVirtReg()) {
+        if (ctv && src.ctv) {
+            return *ctv == *src.ctv;
+        } else if (reg && src.reg) {
+            return *reg == *src.reg;
+        } else if (!ctv && !src.ctv && !reg && !src.reg) {
             return true;
         } else {
             return false;
