@@ -13,15 +13,39 @@ using std::stringstream;
 static enum AsmBranchType{LT, GE, LE, GT, EQ, NE, AlwaysTrue, AlwaysFalse} b_type;
 #define REVERSED_BRANCH_TYPE(_BT) ((AsmBranchType)(((char)_BT & 0xfe) | (~(char)_BT & 1)))
 
-bool IsOperand2(int i)
+const uint32_t operand2_mask_unsigned[] = {
+    0x000000ff, 0xc000003f, 0xf000000f, 0xfc000003,
+    0xff000000, 0x3fc00000, 0x0ff00000, 0x03fc0000,
+    0x00ff0000, 0x003fc000, 0x000ff000, 0x0003fc00,
+    0x0000ff00, 0x00003fc0, 0x00000ff0, 0x000003fc};
+
+bool IsOperand2(int32_t to_check)
 {
-    for (unsigned d = 0; d <= 30; d += 2)
-    {
-        int mask = (0xff >> d)|(0xff << (32 - d));
-        if ((i & mask) == i)
+    const int n = 16;
+    const int32_t *mask = (const int32_t *)operand2_mask_unsigned;
+    for (int i = 0; i < 16; ++i)
+        if ((to_check & mask[i]) == to_check)
             return true;
-    }
     return false;
+}
+
+vector<int32_t> SplitInt(int32_t to_split)
+{
+    const int n = 16, w = 4;
+    const int32_t *mask = (const int32_t *)operand2_mask_unsigned;
+    for (int i = 0; i < n; ++i)
+        if ((to_split & mask[i]) == to_split)
+            return {to_split};
+    for (int i = 0; i < n - w; ++i)
+        for (int j = i + w; j < std::min(i + n - w + 1, n); ++j)
+            if ((to_split & (mask[i] | mask[j])) == to_split)
+                return {to_split & mask[i], to_split & mask[j]};
+    for (int i = 0; i < n - 2 * w; ++i)
+        for (int j = i + w; j < std::min(i + n - 2 * w + 1, n - w); ++j)
+            for (int k = j + w; k < std::min(i + n - w + 1, n); ++k)
+                if ((to_split & (mask[i] | mask[j] | mask[k])) == to_split)
+                    return {to_split & mask[i], to_split & mask[j], to_split & mask[k]};
+    return {to_split & mask[0], to_split & mask[w], to_split & mask[2 * w], to_split & mask[3 * w]};
 }
 
 int DoubleToWord(double d)
@@ -200,7 +224,7 @@ public:
         BLE, BEQ, BNE, B, BGT,
         BGE, MOVLT, MOVGE, MOVLE, MOVGT,
         MOVEQ, MOVNE, SDIV, MVN, RSB,
-        DOT_LTORG, EORNE, VADD, VSUB, VMUL,
+        DOT_LTORG, EOR, VADD, VSUB, VMUL,
         VDIV, VMOV, VCMP, VCVT_ITOF, VCVT_FTOI,
         FMSTAT, VPUSH, VPOP, VLDR, VSTR,
         VMVN
@@ -212,7 +236,7 @@ public:
         "ble", "beq", "bne", "b", "bgt",
         "bge", "movlt", "movge", "movle", "movgt",
         "moveq", "movne", "sdiv", "mvn", "rsb",
-        ".ltorg", "eorne", "vadd.f32", "vsub.f32", "vmul.f32",
+        ".ltorg", "eor", "vadd.f32", "vsub.f32", "vmul.f32",
         "vdiv.f32", "vmov", "vcmp.f32", "vcvt.f32.s32", "vcvt.s32.f32",
         "fmstat", "vpush", "vpop", "vldr", "vstr",
         "vmvn"
@@ -438,10 +462,9 @@ void AddAsmCodeSwapRegisters(vector<AsmCode> &asm_insts, REGs reg1, REGs reg2, i
     if (reg1 == reg2) return;
     if (IsRReg(reg1) && IsRReg(reg2))
     {
-        asm_insts.push_back(AsmCode(AsmInst::CMP, {Param(reg1), Param(reg2)}, indent)); //if (x0 == x1) do not swap
-        asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
-        asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg2), Param(reg1), Param(reg2)}, indent)); //eor x1, x0, x1
-        asm_insts.push_back(AsmCode(AsmInst::EORNE, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
+        asm_insts.push_back(AsmCode(AsmInst::EOR, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
+        asm_insts.push_back(AsmCode(AsmInst::EOR, {Param(reg2), Param(reg1), Param(reg2)}, indent)); //eor x1, x0, x1
+        asm_insts.push_back(AsmCode(AsmInst::EOR, {Param(reg1), Param(reg1), Param(reg2)}, indent)); //eor x0, x0, x1
     }
     else
     {
@@ -467,35 +490,31 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     }
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
-        Param p1;
+        Param p1 = src1;
         if (IsSReg(src1.val.r))
         {
             p1 = Param(r);
             AddAsmCodeMoveRegisterToRegister(asm_insts, r, src1.val.r, indent);
         }
-        else p1 = src1;
-        for (int i = 0, mask = 0xff; i < 4; ++i, mask <<= 8)
+        auto pos = SplitInt(src2.val.i), neg = SplitInt(-src2.val.i);
+        auto _neg_i_typ = (_i_typ == AsmInst::ADD) ? AsmInst::SUB : AsmInst::ADD;
+        auto &&bytes = (neg.size() < pos.size()) ? neg : pos;
+        auto &&binop = (neg.size() < pos.size()) ? _neg_i_typ : _i_typ;
+        for (auto &&byte : bytes)
         {
-            int chr = src2.val.i & mask;
-            if (chr)
-            {
-                asm_insts.push_back(AsmCode(_i_typ, {Param(r), p1, Param(chr)}, indent));
-                p1 = Param(r);
-            }
+            asm_insts.push_back(AsmCode(binop, {Param(r), p1, Param(byte)}, indent));
+            p1 = Param(r);
         }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg, should be sub only
     {
         assert(_i_typ == AsmInst::SUB);
         Param p2 = src2;
-        for (int i = 0, mask = 0xff; i < 4; ++i, mask <<= 8)
+        auto bytes = SplitInt(src1.val.i);
+        for (auto &&byte : bytes)
         {
-            int chr = src1.val.i & mask;
-            if (chr)
-            {
-                asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(chr)}, indent));
-                p2 = Param(r);
-            }
+            asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(byte)}, indent));
+            p2 = Param(r);
         }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Imm_int)// both ctv
