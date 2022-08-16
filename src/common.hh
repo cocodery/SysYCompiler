@@ -92,7 +92,7 @@ enum DeclType {
 };
 
 enum BinOp {
-    ADD, SUB, MUL, DIV, REM,
+    ADD, SUB, MUL, DIV, REM, GEP
 };
 
 enum RelOp {
