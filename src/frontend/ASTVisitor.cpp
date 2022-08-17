@@ -1010,7 +1010,7 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     LLIR_GEP *gep_inst1 = new LLIR_GEP(SRC(ptr1), variable, SRC(new CTValue(TypeInt, 0, 0)), reg->type);
     cur_basicblock->basic_block.push_back(gep_inst1);
     VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, type.is_array, false, reg->type.decl_type));
-    dbg(type.is_array);
+    // dbg(type.is_array);
     LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, offset, ptr2->type);
     cur_basicblock->basic_block.push_back(gep_inst2);
     // dbg(gep_inst2->ToString(), gep_inst2->dst.reg->type.is_array);

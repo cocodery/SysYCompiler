@@ -79,15 +79,15 @@ void GvnGcm::runGvnOnBlock(BasicBlock *block) {
                 continue;
             }
         }
-        // Case (LLIR_GEP, gep_inst, inst) {
-        //     SRC value = lookupOrAdd(block->bb_idx, gep_inst);
-        //     auto &&gep_dst = gep_inst->dst;
-        //     if (!(value == gep_dst)) {
-        //         function->replaceSRCs(block, gep_dst.reg, value);
-        //         iter = bb_list.erase(iter);
-        //         continue;
-        //     }
-        // }
+        Case (LLIR_GEP, gep_inst, inst) {
+            SRC value = lookupOrAdd(block->bb_idx, gep_inst);
+            auto &&gep_dst = gep_inst->dst;
+            if (!(value == gep_dst)) {
+                function->replaceSRCs(block, gep_dst.reg, value);
+                iter = bb_list.erase(iter);
+                continue;
+            }
+        }
         Case (LLIR_PHI, phi_inst, inst) {
             SRC value = lookupOrAdd(block->bb_idx, phi_inst);
             auto &&phi_dst = phi_inst->dst;
@@ -169,6 +169,7 @@ SRC GvnGcm::lookupOrAdd(int32_t idx, LLIR_GEP *gep_inst) {
             }
         }
     }
+    gep_inst->dst.reg->type.is_array = true;
     localValueTable.bin2src.insert({{gep_inst_op, gep_inst_srcs}, gep_inst->dst});
     return gep_inst->dst;
 }
