@@ -206,6 +206,7 @@ void ConstantProg::processInBlock(BasicBlock *block) {
             if (is_propagation) {
                 bool propagation = true;
                 DeclType decl_type = phi_inst->dst.getType();
+                
                 int32_t ivalue = srcs[0].first.ctv->int_value;
                 double fvalue = srcs[0].first.ctv->float_value;
                 if (decl_type == TypeInt) {
