@@ -6,15 +6,16 @@
 class FuncInline {
 public:
     Function *function;
+    vector<Function *> functions;
 
     set<FunctionInfo *> vis;
 public:
-    FuncInline(Function *func) : function(func) { 
-        function->func_info.is_recursive = isRecursive(&function->func_info, &function->func_info);
-        function->func_info.side_effect = sideEffect();
-    }
+    FuncInline(Function *func) : function(func) { }
 
     bool isRecursive(FunctionInfo *, FunctionInfo *);
     bool multiReturn();
     bool sideEffect();
+
+    void simpleInline();
+    void runFuncInline(vector<Function *> funcs);
 };

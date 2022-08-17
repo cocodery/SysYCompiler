@@ -55,3 +55,7 @@ bool FuncInline::sideEffect() {
     }
     return false;
 }
+
+void FuncInline::runFuncInline(vector<Function *> funcs) {
+    functions = funcs;
+}

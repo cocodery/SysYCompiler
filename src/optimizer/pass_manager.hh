@@ -20,12 +20,16 @@ public:
     PassManager(Scope *glb_scope, vector<Function *> funcs) : global_scope(glb_scope), functions(funcs) { }
     void excute_pass() {
         for (auto &&function : functions) {
+            FuncInline funcinline = FuncInline(function);
+            function->func_info.is_recursive = funcinline.isRecursive(&function->func_info, &function->func_info);
+            function->func_info.side_effect  = funcinline.sideEffect();
+        }
+
+        for (auto &&function : functions) {
             if (function->func_info.is_used) {
                 function->buildDom();
                 function->buildIDom();
                 function->initBBDF();
-
-                FuncInline funcinline = FuncInline(function);
 
                 for (int32_t idx = 0; idx < 2; ++idx) {
                     Mem2Reg mem2reg = Mem2Reg(function);
@@ -60,6 +64,9 @@ public:
                     }
 
                     LoadStoreReordering load_store_reordering(function);
+
+                    FuncInline funcinline = FuncInline(function);
+                    funcinline.runFuncInline(functions);
                 }
             }
         }
