@@ -28,6 +28,11 @@ void MemAccessOpt::runMemAccessOpt() {
                     iter = bb_list.erase(iter);
                     continue;
                 }
+            } else Case (LLIR_CALL, call_inst, inst) {
+                auto &&func_info = call_inst->func_info;
+                if (func_info->side_effect) {
+                    localMap.clear();
+                }
             }
             ++iter;
         }
