@@ -21,13 +21,24 @@ using std::tuple;
 class BranchOptimization {
 public:
     Function * function;
+    map<LLIR_PHI *, int32_t>* phi2AllocaMap;
+    bool is_phi_map_exist = false;
+    vector<int32_t> modi_bbs; 
 
 public:
-    BranchOptimization(Function * func): function(func) { };
+    BranchOptimization(Function * func): function(func) { 
+        this->modi_bbs.clear();
+    };
+    void run(map<LLIR_PHI *, int32_t>* phi2AllocaMap) {
+        this->is_phi_map_exist = true;
+        this->phi2AllocaMap = phi2AllocaMap;
+        cout << "----- Optimization Running: Branch Optimization -----" << endl;
+        cout << ("\033[1m\033[45;33m---> in function: " + function->func_info.func_name + " \033[0m") << endl;
+        runBranchOptimization(function);
+    }
+
     void run() {
         cout << "----- Optimization Running: Branch Optimization -----" << endl;
-        // 如果可能，需要判断函数是否为库函数
-        // if (i->func_info.)
         cout << ("\033[1m\033[45;33m---> in function: " + function->func_info.func_name + " \033[0m") << endl;
         runBranchOptimization(function);
     }
@@ -39,14 +50,16 @@ public:
             completed = removeUselessPhi(f);
             remove_phi = !completed;
             // completed &= onlyOndeUnconditionalBranch(f);
-            // completed &= reduceConditionalBrach(f);
+            completed &= reduceConditionalBrach(f);
             completed &= onlyOnePredSuccBranch(f);
             completed &= sameTargetBranch(f);
             completed &= removeEmptyScope(f->main_scope);
+            completed &= removeEmptyBasicBlock(f);
             if (completed) {
                 break;
             }
         }
+        cout << "----- Optimization Finished: Branch Optimization -----" << endl;
         return remove_phi;
     }
 
@@ -249,6 +262,9 @@ public:
                         pred_node->succs.insert(make_pair(succ_idx, succ_node));
                         succ_node->preds.erase(bb_idx);
                         succ_node->preds.insert(make_pair(pred_idx, pred_node));
+
+                        if (is_phi_map_exist) fixPhiInst(bb_idx, pred_idx);
+
                     }
 
                     bb_node->preds.erase(bb_idx);
@@ -263,6 +279,7 @@ public:
     }
 
     void blockFinder(Scope *scope, int32_t bb_idx, bool is_head) {
+        // dbg("in blockFinder "+std::to_string(bb_idx));
         if (is_head) {   
             if (scope == nullptr || scope->elements->empty()) {
                 return;
@@ -273,8 +290,6 @@ public:
                 } else {
                     BasicBlock *bb_node = dynamic_cast<BasicBlock *>(*iter);
                     if (bb_node->bb_idx == bb_idx) {
-                        cout << "        @@-> erase basic block: " << bb_idx << endl;
-
                         bb_node->valuable = false;
                         scope->elements->erase(iter);
                         break;
@@ -292,6 +307,7 @@ public:
         for (auto &&i: f->all_blocks) {
             
             if (i->bb_idx <= 0) { continue; }
+            
             Inst *inst = i->basic_block.back();
             Case(LLIR_BR, br_inst, inst) {
                 if (i->basic_block.size() == 1) {
@@ -312,18 +328,17 @@ public:
                                 cout << "    ->>> continue: only one basicblock" << endl;
                                 continue;
                             } else if (pred_idx == 0) {
-                                // 不能对入口基本块进行优化, 白写了
-                                /* blockFinder(f->main_scope, i->bb_idx, true);
-                                auto cur_iter = find(f->all_blocks.begin(), f->all_blocks.end(), i);
-                                auto iter = f->all_blocks.erase(cur_iter)-1;
-                                return completed; */
                                 cout << "    ->>> continue: preds == 0 (cannot opt the entry block)" << endl;
                                 continue;
+                            } else if (find(modi_bbs.begin(), modi_bbs.end(), succ_idx) != modi_bbs.end()) {
+                                cout << "    ->>> continue: succ has been modified" << endl;
+                                continue;
                             }
+
                             
                             cout << "    $inst: " << br_inst->ToString() << endl;
                             cout << "    ######> remove basic block: " << i->bb_idx << endl;
-                            
+
                             blockFinder(f->main_scope, i->bb_idx);
 
                             auto cur_iter = find(f->all_blocks.begin(), f->all_blocks.end(), i);
@@ -349,12 +364,17 @@ public:
                             cout << "    ->>> continue: preds == 0 (cannot opt the entry block)" << endl;
                             continue;
                         }
-                        if (BasicBlock* succ_bb = f->getSpecificIdxBb(succ_idx); succ_bb->preds.size() == 1) {
-                            cout << "    \033[1m\033[45;33min basic block " + std::to_string(i->bb_idx) + ": " + br_inst->ToString() + "\033[0m" << endl;
-                            cout << "    \033[1m\033[45;33m->>> case: more than one inst. \033[0m" << endl;
+                        if ( (i->preds.begin()->second->succs.size() == 1)&&(i->succs.begin()->second->preds.size() == 1)) {
+                            auto succ_bb = i->succs.begin()->second;
+
+                            cout << "    in basic block " + std::to_string(i->bb_idx) + ": " + br_inst->ToString() << endl;
+                            cout << "    ->>> case: more than one inst." << endl;
+                            
+                            modi_bbs.push_back(succ_idx);
+
                             BasicBlock* pred_bb = f->getSpecificIdxBb(pred_idx);
                             pred_bb->succs.erase(i->bb_idx);
-                            pred_bb->succs.insert(make_pair(succ_idx, succ_bb));
+                            pred_bb->succs.insert(make_pair(succ_idx, i->succs.begin()->second));
                             auto inst = pred_bb->basic_block.back();
                             Case(LLIR_BR, br_inst, inst) {
                                 if (br_inst->has_cond) {
@@ -372,6 +392,9 @@ public:
                             succ_bb->basic_block.insert(succ_bb->basic_block.begin(), tmp_inst.begin(), tmp_inst.end());
                             succ_bb->preds.erase(i->bb_idx);
                             succ_bb->preds.insert(make_pair(pred_idx, pred_bb));
+
+
+                            if (is_phi_map_exist) fixPhiInst(i->bb_idx, pred_idx);
                             blockFinder(f->main_scope, i->bb_idx, true);
                             
                             auto cur_iter = find(f->all_blocks.begin(), f->all_blocks.end(), i);
@@ -404,26 +427,6 @@ public:
         return completed;
     }
 
-    bool eraseUselessBB(Function *f, int32_t bb_idx) {
-        cout << ">> Erase useless basic block: " << bb_idx << endl;
-        bool completed = true;
-        if (bb_idx <= 0) { return completed; }
-        BasicBlock *i = f->getSpecificIdxBb(bb_idx);
-        for (auto j: i->preds) {
-            j.second->succs.erase(bb_idx);
-        }
-        for (auto j : i->succs) {
-            j.second->preds.erase(bb_idx);
-        }
-        auto iter = f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i));
-        if (iter == f->all_blocks.end()) {
-            cout << "        @@-> continue: erase block in blocks failed" << endl;
-            return completed;
-        }
-        f->all_blocks.erase(iter);
-        return completed;
-    }
-
     void eraseUselessScope(Scope *scope, int32_t bb_idx) {
         cout << ">> Erase useless scope: " << scope->sp_idx << endl;
         bool completed = true;
@@ -451,7 +454,6 @@ public:
         return;
     }
 
-
     bool removeEmptyScope(Scope *scope) {
         bool completed = true;
         if (scope == nullptr) {
@@ -472,20 +474,71 @@ public:
         return completed;
     }
 
+    bool removeEmptyBasicBlock(Function *f) {
+        for(auto &&i: f->all_blocks) {
+            if (i->bb_idx <= 0) { continue; }
+            else if (i->preds.empty()) {
+                cout << ">> Erase [empty] basic block: " << i->bb_idx << endl;
+                blockFinder(f->main_scope, i->bb_idx, true);
+                f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i));
+            }
+        }
+        return true;
+    }
 
     bool isUsedInLoop(Function *f, int32_t bb_idx) {
         BasicBlock * cur_bb = f->getSpecificIdxBb(bb_idx);
+        
         if (cur_bb == nullptr) {
-            return false;
+            return true;
+        } else if(cur_bb->preds.size()>1){ 
+            cout << std::to_string(bb_idx) << " is used in loop " << endl;
+            return true;
         } else {
             for (auto &&i : cur_bb->preds) {
                 if (i.first > cur_bb->bb_idx) {
+                    cout << std::to_string(bb_idx) << " is used in loop " << endl;
                     return true;
                 }
             }
             return false;
         }
     }
+
+    bool eraseUselessBB(Function *f, int32_t bb_idx) {
+
+        bool completed = true;
+        if (bb_idx <= 0) { return completed; }
+        BasicBlock *i = f->getSpecificIdxBb(bb_idx);
+        
+        if (i->preds.empty()) {
+            cout << ">> Erase [empty] basic block: " << bb_idx << endl;
+            f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i));
+            return completed;
+        } 
+
+        Case (LLIR_BR, br_inst, i->basic_block.back()) {
+            if (br_inst->has_cond) {
+                BasicBlock* true_bb = f->getSpecificIdxBb(br_inst->tar_true);
+                BasicBlock* false_bb = f->getSpecificIdxBb(br_inst->tar_false);
+                true_bb->preds.erase(bb_idx);
+                false_bb->preds.erase(bb_idx);
+            } else {
+                BasicBlock* true_bb = f->getSpecificIdxBb(br_inst->tar_true);
+                true_bb->preds.erase(bb_idx);
+            }
+        
+            
+        }
+        auto iter = f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i));
+        if (iter == f->all_blocks.end()) {
+            cout << "        @@-> continue: erase block in blocks failed" << endl;
+            return completed;
+        }
+        cout << ">> Erase useless basic block: " << bb_idx << endl;
+        return completed;
+    }
+
 
     bool reduceConditionalBrach(Function *f) {
         cout << endl << ">> reduce Conditional branch: " << endl;
@@ -497,12 +550,24 @@ public:
             if (i->bb_idx <= 0) { 
                 cout << "    ->>> continue: block index <= 0;" << endl;
                 continue; 
-            }
+            } 
+            // bool result = true;
+            // for (auto &&j: i->succs) {
+            //     if (find(modi_bbs.begin(), modi_bbs.end(), j.first) != modi_bbs.end()) {
+            //         result &= false;
+            //     } else {
+            //         result &= true;
+            //     }
+            // }
+            // if (!result) {
+            //     cout << "    ->>> [continue: succ has been modified]" << endl;
+            //     continue;
+            // }
             Inst *inst = i->basic_block.back();
             Case(LLIR_BR, br_inst, inst) {
                 cout << "    $inst: " << br_inst->ToString() << endl;
                 if (br_inst->has_cond) {
-                    cout << "    ->>> has cond;" << endl;
+                    cout << "    ->>> has cond: ";
                     SRC cur_cond = br_inst->cond;
                     int32_t t_tar = br_inst->tar_true;
                     int32_t f_tar = br_inst->tar_false;
@@ -512,31 +577,64 @@ public:
                     }
                     if (cur_cond.ToCTValue()->int_value!=0) {
                         // true condition
-                        cout << "TRUE!!!!!!!!!" << endl;
-                        br_inst->tar_false = -1;
+                        cout << "TRUE" << endl;
                         br_inst->has_cond = false;
-                        
+                        br_inst->tar_true = t_tar;
+                        br_inst->tar_false = -1;
+                        i->succs.erase(f_tar);
+                        BasicBlock* f_bb = f->getSpecificIdxBb(f_tar);
+                        f_bb->preds.erase(i->bb_idx);
+                        cout << "      $ after fixed: " << br_inst->ToString() << endl;
+                        // change current inst to unconditional branch inst
                         // erase useless block完成 删除无用基本块 + 修改前驱后继
-                        if (!isUsedInLoop(f, f_tar)) {
-                            eraseUselessBB(f, f_tar);
-                            eraseUselessScope(f->main_scope, f_tar);
-                        }
+                        // if (!isUsedInLoop(f, f_tar)) {
+                        //     br_inst->tar_false = -1;
+                        //     br_inst->has_cond = false;
+                        //     eraseUselessBB(f, f_tar);
+                        //     i->succs.erase(f_tar);
+                        //     blockFinder(f->main_scope, f_tar, true);
+                        // }
                     } else {
-                        cout << "FALSE!!!!!!!!!" << endl;
-                        // false condition
-                        br_inst->tar_false = -1;
+                        cout << "FALSE" << endl;
                         br_inst->has_cond = false;
-                        if (!isUsedInLoop(f, t_tar)) {
-                            eraseUselessBB(f, t_tar);
-                            eraseUselessScope(f->main_scope, t_tar);
-                        }
+                        br_inst->tar_true = f_tar;
+                        br_inst->tar_false = -1;
+                        i->succs.erase(t_tar);
+                        BasicBlock* t_bb = f->getSpecificIdxBb(t_tar);
+                        t_bb->preds.erase(i->bb_idx);
+                        cout << "      $ after fixed: " << br_inst->ToString() << endl;
+                        // false condition
+                        // if (!isUsedInLoop(f, t_tar)) {
+                        //     br_inst->tar_false = -1;
+                        //     br_inst->has_cond = false;
+                        //     eraseUselessBB(f, t_tar);
+                        //     i->succs.erase(t_tar);
+                        //     blockFinder(f->main_scope, t_tar, true);
+                        // }
                     }
+                    
                 }
             }
         }
         return completed;
     }
-    
+
+    void fixPhiInst(int32_t bb_idx, int32_t chg_idx) {   
+        if (phi2AllocaMap == nullptr) return;
+        for (auto &&i: *phi2AllocaMap) {
+            if (i.first == nullptr) return;
+            Case (LLIR_PHI, phi_inst, i.first) {
+                if (phi_inst == nullptr);
+                // dbg(phi_inst->ToString());
+                for (auto &&j: phi_inst->srcs) {
+                    
+                    if (j.second == bb_idx) {
+                        j.second = chg_idx;
+                    }
+                }
+            }
+        }
+    }
 
     bool removePredBasicBlock(BasicBlock *pred, BasicBlock *succ, Function *f) {
         cout << "  >>>> removePredBasicBlock: " << endl;
