@@ -78,6 +78,5 @@ public:
     FunctionInfo();
     FunctionInfo(string _name, DeclType _type, vector<pair<string, VarType>> _args);
     bool has_args();
-    pair<int32_t, VarType> findInFuncArgs(string var_name);
     string printFunctionInfo(bool islib = false);
 };

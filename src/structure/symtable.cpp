@@ -141,18 +141,6 @@ bool FunctionInfo::has_args() {
     return (func_args.size() != 0);
 }
 
-pair<int32_t, VarType> FunctionInfo::findInFuncArgs(string var_name) {
-    int32_t idx = 0;
-    VarType type = VarType(TypeVoid);
-    for (auto pair: func_args) {
-        if (var_name == pair.first) {
-            type = pair.second;
-        }
-        ++idx;
-    }
-    return make_pair(idx, type);
-}
-
 string FunctionInfo::printFunctionInfo(bool islib) {
     std::stringstream ss;
     if (islib) {

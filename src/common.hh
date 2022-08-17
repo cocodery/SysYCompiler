@@ -64,6 +64,7 @@ enum REGs { r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12,  sp,
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <stack>
 #include <queue>
 #include <cassert>
 #include <set>
@@ -73,6 +74,7 @@ enum REGs { r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12,  sp,
 
 using std::string;
 using std::vector;
+using std::stack;
 using std::queue;
 using std::set;
 using std::map;
@@ -90,7 +92,7 @@ enum DeclType {
 };
 
 enum BinOp {
-    ADD, SUB, MUL, DIV, REM,
+    ADD, SUB, MUL, DIV, REM, GEP
 };
 
 enum RelOp {

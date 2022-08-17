@@ -194,15 +194,16 @@ SRC Scope::resolve(string var_name, FunctionInfo *cur_func_args) {
             if (var->type.is_array == false && var->type.is_const) {
                 return SRC(new CTValue(var->type.decl_type, var->int_scalar, var->float_scalar));
             }
+            // dbg(var_name, var->type.is_array);
             return SRC(new VirtReg(var->var_idx, var->type, (cur_scope->parent == nullptr)));
         }
-        if (cur_func_args != nullptr && cur_scope->parent->parent == nullptr) { // if not in table, search in function args
-            // cout << "not find in `Scope`" << cur_scope->sp_idx << " var_table, goto function arguments" << endl;
-            auto pair = cur_func_args->findInFuncArgs(var_name);
-            if (pair.second.decl_type != TypeVoid) {
-                return SRC(new VirtReg(pair.first, pair.second, (cur_scope->parent == nullptr)));
-            }
-        }
+        // if (cur_func_args != nullptr && cur_scope->parent->parent == nullptr) { // if not in table, search in function args
+        //     // cout << "not find in `Scope`" << cur_scope->sp_idx << " var_table, goto function arguments" << endl;
+        //     auto pair = cur_func_args->findInFuncArgs(var_name); 
+        //     if (pair.second.decl_type != TypeVoid) {
+        //         return SRC(new VirtReg(pair.first, pair.second, (cur_scope->parent == nullptr)));
+        //     }
+        // }
         // cout << "not find in `Scope`" << cur_scope->sp_idx << " var_table, goto parent table" << endl;
         cur_scope = cur_scope->parent;
     }
@@ -538,9 +539,9 @@ void CompUnit::DebugUserFuncs() {
     llir << "; User Functions" << endl;
     for (auto &&function : functions) {
         if (function->func_info.is_used) {
-            llir << get_tabs();
-            llir << function->func_info.printFunctionInfo() << endl;
+            llir << get_tabs() << function->func_info.printFunctionInfo() << endl;
             function->printCallInfo();
+            llir << get_tabs() << "; side-effect : " << function->func_info.side_effect << endl;
             function->main_scope->printScope();
             llir << get_tabs() << "}" << endl;
         }

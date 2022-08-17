@@ -27,6 +27,14 @@ void MemAccessOpt::runMemAccessOpt() {
                     block->replaceSRC(load_inst->dst.reg, localMap[{load_src->reg_id, load_src->global}]);
                     iter = bb_list.erase(iter);
                     continue;
+                } else {
+                    auto &&load_dst = load_inst->dst;
+                    localMap[{load_src->reg_id, load_src->global}] = load_dst;
+                }
+            } else Case (LLIR_CALL, call_inst, inst) {
+                auto &&func_info = call_inst->func_info;
+                if (func_info->side_effect) {
+                    localMap.clear();
                 }
             }
             ++iter;

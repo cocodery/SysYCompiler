@@ -6,7 +6,7 @@
 #include "mem2reg.hh"
 #include "memaccess_opt.hh"
 #include "constant_propagation.hh"
-#include "lvn.hh"
+#include "gvn_gcm.hh"
 #include "inst_combine.hh"
 #include "dead_code_elim.hh"
 #include "reg2mem.hh"
@@ -28,52 +28,43 @@ public:
 
                 FuncInline funcinline = FuncInline(function);
 
-                BranchOptimization branch_opt = BranchOptimization(function);
-
-                for (int32_t i = 0; i < 2 ; i++){
-                    
+                for (int32_t idx = 0; idx < 3; ++idx) {
                     Mem2Reg mem2reg = Mem2Reg(function);
-
                     if (function->func_info.func_name != "long_func") {
                         mem2reg.runMem2Reg();
                     }
 
-                    LVN lvn1 = LVN(function);
-                    // lvn1.runLVN();
-
+                    GvnGcm gvn_gcm1 = GvnGcm(function);
+                    gvn_gcm1.runGvnGcm();
 
                     ConstantProg constantprog1 = ConstantProg(function);
                     constantprog1.runConstantProp();
 
-                    
                     MemAccessOpt mao = MemAccessOpt(function);
                     mao.runMemAccessOpt();
 
-                    
                     InstCombine instcomb = InstCombine(function);
                     instcomb.runInstCombine();
 
-                    
                     ConstantProg constantprog2 = ConstantProg(function);
                     constantprog2.runConstantProp();
 
-                    // Dce dce = Dce(function);
-                    // dce.runDeadCodeElim();
+                    GvnGcm gvn_gcm2 = GvnGcm(function);
+                    gvn_gcm2.runGvnGcm();
 
+                    // // Dce dce = Dce(function);
+                    // // dce.runDeadCodeElim();
 
                     if (function->func_info.func_name != "long_func") {
                         Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                         reg2mem.runReg2Mem();
                     }
-                    
-                    
+
+                    LoadStoreReordering load_store_reordering(function);
+
+                    BranchOptimization branch_opt = BranchOptimization(function);
                     branch_opt.run(&mem2reg.phi2AllocaMap);
-
                 }
-
-                
-
-                LoadStoreReordering load_store_reordering(function);
             }
         }
     }
