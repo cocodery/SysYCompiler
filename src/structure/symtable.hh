@@ -72,6 +72,7 @@ public:
     bool side_effect;
     string func_name;
     DeclType return_type;
+    int32_t call_count;
     set<FunctionInfo *> called_funcs;
     vector<pair<string, VarType>> func_args;
 public:

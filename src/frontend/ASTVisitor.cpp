@@ -157,6 +157,7 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, SRC add
             args.push_back(start_addr);
             args.push_back(new CTValue(TypeInt, 0, 0));
             args.push_back(new CTValue(TypeInt, number * 4, number * 4));
+            func_info->use_time += 1;
             LLIR_CALL *call_inst = new LLIR_CALL(SRC(), args, func_info);
             cur_basicblock->basic_block.push_back(call_inst);
         }
@@ -438,6 +439,7 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     // dbg("enter visitFuncDef " + func_name);
     FunctionInfo func_info;
     func_info.is_used = false;
+    func_info.call_count = 0;
     // get function name
     func_info.func_name = func_name; 
     // get function ret_type
@@ -1129,6 +1131,7 @@ antlrcpp::Any ASTVisitor::visitUnary2(SysYParser::Unary2Context *ctx) {
     if (func_info->return_type != TypeVoid) {
         dst = SRC(new VirtReg(var_idx++, VarType(func_info->return_type)));
     }
+    func_info->use_time += 1;
     LLIR_CALL *call_inst = new LLIR_CALL(dst, args, func_info);
     cur_basicblock->basic_block.push_back(call_inst);
     // dbg("exit visitUnary2");

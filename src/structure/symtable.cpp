@@ -71,10 +71,10 @@ string VarType::printVarTypeForArg() {
     return ss.str();
 }
 
-FunctionInfo::FunctionInfo() : return_type(TypeVoid) { }
+FunctionInfo::FunctionInfo() : return_type(TypeVoid), call_count(0) { }
 
 FunctionInfo::FunctionInfo(string _name, DeclType _type, vector<pair<string, VarType>> _args)
-    : is_used(false), func_name(_name), return_type(_type), func_args(_args) { }
+    : is_used(false), func_name(_name), return_type(_type), func_args(_args), call_count(0) { }
 
 void Variable::printVariable(string var_name) {
     if (type.is_const == true) // cout << "const ";

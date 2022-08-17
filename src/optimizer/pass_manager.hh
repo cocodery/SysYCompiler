@@ -65,11 +65,11 @@ public:
                     }
 
                     LoadStoreReordering load_store_reordering(function);
+                    BranchOptimization branch_opt = BranchOptimization(function);
+                    branch_opt.run(&mem2reg.phi2AllocaMap);
 
                     FuncInline funcinline = FuncInline(function);
                     funcinline.runFuncInline(functions);
-                    BranchOptimization branch_opt = BranchOptimization(function);
-                    branch_opt.run(&mem2reg.phi2AllocaMap);
                 }
             }
         }
