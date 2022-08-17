@@ -43,24 +43,22 @@ public:
         runBranchOptimization(function);
     }
 
-    bool runBranchOptimization(Function *f) {
-        bool remove_phi;
+    void runBranchOptimization(Function *f) {
+        
         while(1) {
             bool completed;
-            completed = removeUselessPhi(f);
-            remove_phi = !completed;
-            // completed &= onlyOndeUnconditionalBranch(f);
-            completed &= reduceConditionalBrach(f);
+            completed = reduceConditionalBrach(f);
             completed &= onlyOnePredSuccBranch(f);
             completed &= sameTargetBranch(f);
             completed &= removeEmptyScope(f->main_scope);
             completed &= removeEmptyBasicBlock(f);
+            completed &= removeUselessLoop(f);
             if (completed) {
                 break;
             }
         }
         cout << "----- Optimization Finished: Branch Optimization -----" << endl;
-        return remove_phi;
+        
     }
 
     bool removeUselessPhi(Function *f) {
@@ -475,16 +473,57 @@ public:
     }
 
     bool removeEmptyBasicBlock(Function *f) {
-        for(auto &&i: f->all_blocks) {
+        for (auto iter = f->all_blocks.begin(); iter != f->all_blocks.end(); ++iter) {
+            auto i = *iter;
+            cout << "in bb " << i->bb_idx << ": " << endl;
             if (i->bb_idx <= 0) { continue; }
             else if (i->preds.empty()) {
                 cout << ">> Erase [empty] basic block: " << i->bb_idx << endl;
                 blockFinder(f->main_scope, i->bb_idx, true);
-                f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i));
+                for(auto &&j: i->succs) {
+                    cout << "->>> succ: " << j.second->bb_idx << endl;
+                    j.second->preds.erase(i->bb_idx);
+                }
+                iter = f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i)) - 1;
             }
         }
         return true;
     }
+
+    void dfs(Function* f, int32_t bb_idx, set<int32_t> &visited) {
+        auto bb_node = f->getSpecificIdxBb(bb_idx);
+        visited.insert(bb_idx);
+        for (auto &p : bb_node->succs) {
+            if (p.second->bb_idx >= bb_idx) {
+                dfs(f, p.first, visited);
+            }
+        }
+    }
+
+    bool removeUselessLoop(Function *f) {
+        set<int32_t> visited;
+        dfs(f, 1, visited);
+
+        for(auto &&i: visited) {
+            cout << i << " ";
+        }
+
+        if (visited.size() < (f->all_blocks.size()-2)) {
+            for(auto iter = f->all_blocks.begin(); iter != f->all_blocks.end(); ++iter) {
+                BasicBlock* i = *iter;
+                if (i->bb_idx <= 0) { continue; }
+                else if (visited.find(i->bb_idx) == visited.end()) {
+                    cout << ">> Erase [useless] loop: " << i->bb_idx << endl;
+                    blockFinder(f->main_scope, i->bb_idx, true);
+                    iter = f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i)) - 1;
+                }
+            }
+        }
+
+        return true;
+    }
+
+
 
     bool isUsedInLoop(Function *f, int32_t bb_idx) {
         BasicBlock * cur_bb = f->getSpecificIdxBb(bb_idx);
@@ -673,17 +712,6 @@ public:
         return true;
     }
 
-    void dfs(BasicBlock *bb) {
-        if (!bb->dirty) {
-            bb->dirty = true;
-            if (!bb->succs.empty()) {
-                for (auto succ : bb->succs) {
-                    dfs(succ.second);
-                }
-            }
-        }
-    }
-
     // removeDeadBB：去掉除了entry之外的没有前驱的基本块 
     bool removeDeadBB (Function *func) {
         cout << ">> removeDeadBB:" << endl;
@@ -691,7 +719,7 @@ public:
         for (auto bb: func->all_blocks) {
             bb->dirty = false;
         }
-        dfs(func->all_blocks[0]);
+        // dfs(func->all_blocks[0]);
         
         // auto &&inst_iter = data_bb.begin(); inst_iter != data_bb.end(); ++inst_iter
         for (auto &&bb = func->all_blocks.begin()+1; bb != func->all_blocks.end(); ++bb) {
