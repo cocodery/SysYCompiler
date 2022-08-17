@@ -11,6 +11,7 @@
 #include "dead_code_elim.hh"
 #include "reg2mem.hh"
 #include "load_store_reordering.hh"
+#include "branch_opt.hh"
 
 class PassManager {
 public:
@@ -31,7 +32,7 @@ public:
                 function->buildIDom();
                 function->initBBDF();
 
-                for (int32_t idx = 0; idx < 2; ++idx) {
+                for (int32_t idx = 0; idx < 3; ++idx) {
                     Mem2Reg mem2reg = Mem2Reg(function);
                     if (function->func_info.func_name != "long_func") {
                         mem2reg.runMem2Reg();
@@ -55,8 +56,8 @@ public:
                     GvnGcm gvn_gcm2 = GvnGcm(function);
                     gvn_gcm2.runGvnGcm();
 
-                    // // Dce dce = Dce(function);
-                    // // dce.runDeadCodeElim();
+                    // Dce dce = Dce(function);
+                    // dce.runDeadCodeElim();
 
                     if (function->func_info.func_name != "long_func") {
                         Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
@@ -67,6 +68,8 @@ public:
 
                     FuncInline funcinline = FuncInline(function);
                     funcinline.runFuncInline(functions);
+                    BranchOptimization branch_opt = BranchOptimization(function);
+                    branch_opt.run(&mem2reg.phi2AllocaMap);
                 }
             }
         }
