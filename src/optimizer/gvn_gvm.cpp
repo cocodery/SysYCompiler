@@ -58,37 +58,6 @@ void GvnGcm::runGVN() {
 void GvnGcm::runGvnOnBlock(BasicBlock *block) {
     int32_t predSize = block->preds.size();
     list<Inst *> bb_list(block->basic_block.begin(), block->basic_block.end());
-    // for (auto &&iter = bb_list.begin(); iter != bb_list.end(); ) {
-    //     bool equal = true;
-    //     auto &&phi_inst1 = dynamic_cast<LLIR_PHI *>(*iter);
-    //     if (phi_inst1 == nullptr) {
-    //         break;
-    //     }
-    //     for (auto &&iter4phi = iter; iter4phi != bb_list.end(); ++iter4phi) {
-    //         auto &&phi_inst2 = dynamic_cast<LLIR_PHI *>(*iter4phi);
-    //         if (phi_inst2 == nullptr) {
-    //             break;
-    //         }
-    //         dbg(phi_inst1->ToString());
-    //         dbg(phi_inst2->ToString());
-    //         cout << endl;
-    //         for (int32_t idx = 0; idx < predSize; ++idx) {
-    //             if (!(phi_inst1->srcs[idx].first == phi_inst2->srcs[idx].first)) {
-    //                 equal = false;
-    //                 break;
-    //             }
-    //         }
-    //         if (equal) {
-    //             dbg(equal);
-    //             function->replaceSRCs(block, phi_inst1->dst.reg, phi_inst2->dst);
-    //             iter = bb_list.erase(iter);
-    //             break;
-    //         }
-    //     }
-    //     if (!equal) {
-    //         ++iter;
-    //     }
-    // }
 
     for (auto &&iter = bb_list.begin(); iter != bb_list.end(); ) {
         auto &&inst = *iter;

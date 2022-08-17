@@ -142,7 +142,7 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, SRC add
         if (initTable.size() < number) {
             vector<SRC> args;
             VirtReg *start_addr = new VirtReg(var_idx++, VarType(false, true, false, var.decl_type));
-            LLIR_GEP *gep_addr_inst = new LLIR_GEP(start_addr, ptr1, SRC(new CTValue(TypeInt, 0, 0)), VarType(var.decl_type));
+            LLIR_GEP *gep_addr_inst = new LLIR_GEP(start_addr, ptr1, SRC(new CTValue(TypeInt, 0, 0)), start_addr->type);
             cur_basicblock->basic_block.push_back(gep_addr_inst);
             FunctionInfo *func_info = nullptr;
             if (var.decl_type == TypeInt) {
@@ -164,7 +164,7 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, SRC add
             int32_t off = pair.first;
             SRC value = pair.second;
             VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, ptr1->type.decl_type));
-            LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), VarType(ptr1->type.decl_type));
+            LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, off, off)), ptr2->type);
             cur_basicblock->basic_block.push_back(gep_inst2);
             LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
             cur_basicblock->basic_block.push_back(store_inst);
@@ -181,7 +181,7 @@ void ASTVisitor::local_const_list_init(SRC reg, Variable *variable) {
     int32_t idx = 0;
     for (idx = 0; idx < variable->int_list.size(); ++idx) {
         VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, true, false, ptr1->type.decl_type));
-        LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, idx, idx)), VarType(ptr1->type.decl_type));
+        LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, SRC(new CTValue(TypeInt, idx, idx)), ptr2->type);
         cur_basicblock->basic_block.push_back(gep_inst2);
         SRC value = SRC(new CTValue(var.decl_type, variable->int_list[idx], variable->float_list[idx]));
         LLIR_STORE *store_inst = new LLIR_STORE(SRC(ptr2), value);
@@ -980,19 +980,19 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
     if (CTValue *ctv = variable.ToCTValue(); ctv != nullptr) {
         // dbg("exit visitLVal with a constant");
         return SRC(ctv);
-    } else { // 标量
-        VirtReg *reg = variable.ToVirtReg();
-        if (reg->type.is_array == false) {
-            // dbg("exit visitLVal with a scalar variable");
-            return SRC(reg);
-        }
+    } 
+    VirtReg *reg = variable.reg;
+    // dbg(reg->type.is_array);
+    if (reg->type.is_array == false) {
+        // dbg("exit visitLVal with a scalar variable");
+        return SRC(reg);
     }
-    VirtReg *reg = variable.ToVirtReg();
     // dbg(reg->reg_id, reg->global);
     SRC offset = SRC(new CTValue(TypeInt, 0, 0));
     vector<int32_t> arr_dim = reg->type.get_dims();
     int32_t size = ctx->exp().size();
     VarType type = reg->type;
+    // dbg(type.is_array);
     for (int32_t idx = 0; idx < size; ++idx) {
         SRC dim = ctx->exp()[idx]->accept(this);
         VirtReg *mul_off = new VirtReg(var_idx++, VarType(TypeInt));
@@ -1004,13 +1004,16 @@ antlrcpp::Any ASTVisitor::visitLVal(SysYParser::LValContext *ctx) {
         offset = SRC(add_off);
         type = type.move_down();
     }
+    // dbg(var_name);
     // 获取元素首地址
     VirtReg *ptr1 = new VirtReg(var_idx++, reg->type);
     LLIR_GEP *gep_inst1 = new LLIR_GEP(SRC(ptr1), variable, SRC(new CTValue(TypeInt, 0, 0)), reg->type);
     cur_basicblock->basic_block.push_back(gep_inst1);
     VirtReg *ptr2 = new VirtReg(var_idx++, VarType(false, type.is_array, false, reg->type.decl_type));
-    LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, offset, VarType(false, type.is_array, false, reg->type.decl_type));
+    dbg(type.is_array);
+    LLIR_GEP *gep_inst2 = new LLIR_GEP(ptr2, ptr1, offset, ptr2->type);
     cur_basicblock->basic_block.push_back(gep_inst2);
+    // dbg(gep_inst2->ToString(), gep_inst2->dst.reg->type.is_array);
     // dbg(reg->ToString());
     // dbg( "exit visitLVal with a variable or array");
     return SRC(ptr2);
