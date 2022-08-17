@@ -27,7 +27,7 @@ public:
 
                 FuncInline funcinline = FuncInline(function);
 
-                for (int32_t idx = 0; idx < 1; ++idx) {
+                for (int32_t idx = 0; idx < 2; ++idx) {
                     Mem2Reg mem2reg = Mem2Reg(function);
                     if (function->func_info.func_name != "long_func") {
                         mem2reg.runMem2Reg();
