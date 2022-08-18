@@ -4,29 +4,24 @@ void GlobalVarConst::runGlobalVarConst()
 {
     map<int32_t, SRC> to_replace;
     // 在main函数的bb1中找到可能被常量化的全局变量
-    for (auto &&function : functions) {
-        if (!function->func_info.is_used || function->func_info.func_name != "main")
-            continue;
-        // 找到了main函数，对于main函数bb1中的每个对全局变量对赋值进行分析
-        set<int32_t> not_to_replace;
-        for (auto &&instPtr : function->all_blocks[1]->basic_block) {
-            Case (LLIR_STORE, store_inst, instPtr) {
-                // 如果是全局变量
-                if (store_inst->dst.reg && store_inst->dst.reg->global) {
-                    // 如果是第一次找到这个全局变量的store，而且src是ctv，认为它是可能被替换的全局变量
-                    if (store_inst->src.ctv && to_replace.find(store_inst->dst.reg->reg_id) == to_replace.end()) {
-                        to_replace.insert(make_pair(store_inst->dst.reg->reg_id, store_inst->src));
-                    }
-                    // 如果不是第一次store，或者src是reg，那么认为这个全局变量不可以被替换
-                    else {
-                        not_to_replace.insert(store_inst->dst.reg->reg_id);
-                    }
+    set<int32_t> not_to_replace;
+    for (auto &&instPtr : functions.back()->all_blocks[1]->basic_block) {
+        Case (LLIR_STORE, store_inst, instPtr) {
+            // 如果是全局变量
+            if (store_inst->dst.reg && store_inst->dst.reg->global) {
+                // 如果是第一次找到这个全局变量的store，而且src是ctv，认为它是可能被替换的全局变量
+                if (store_inst->src.ctv && to_replace.find(store_inst->dst.reg->reg_id) == to_replace.end()) {
+                    to_replace.insert(make_pair(store_inst->dst.reg->reg_id, store_inst->src));
+                }
+                // 如果不是第一次store，或者src是reg，那么认为这个全局变量不可以被替换
+                else {
+                    not_to_replace.insert(store_inst->dst.reg->reg_id);
                 }
             }
         }
-        for (auto &&ntr : not_to_replace) {
-            to_replace.erase(ntr);
-        }
+    }
+    for (auto &&ntr : not_to_replace) {
+        to_replace.erase(ntr);
     }
     // 在所有is_used函数中寻找全局变量的store指令，但跳过main的bb1
     for (auto &&function : functions) {
@@ -34,7 +29,7 @@ void GlobalVarConst::runGlobalVarConst()
             continue;
         for (auto &&it = function->all_blocks.begin(); it != function->all_blocks.end(); ++it) {
             auto &&bbPtr = *it;
-            if (function->func_info.func_name == "main" && bbPtr->bb_idx == 1)
+            if (bbPtr->bb_idx == 1 && function == functions.back())
                 continue; // 跳过main函数的bb1
             for (auto &&instPtr : bbPtr->basic_block) {
                 Case (LLIR_STORE, store_inst, instPtr) {
