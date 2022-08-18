@@ -73,6 +73,12 @@ const char *FunctionRename(FunctionInfo *func)
     else return func->func_name.c_str();
 }
 
+const char *LSL_HASHTAG_NUMBER(int number)
+{
+    string *res = new string("lsl #" + std::to_string(number));
+    return res->c_str();
+}
+
 #define CTV_TO_WORD(_CTV_PTR) ((_CTV_PTR->type == TypeFloat) ? DoubleToWord(_CTV_PTR->float_value) : _CTV_PTR->int_value)
 
 #define GET_GLOBAL_PTR_NAME(_VAR_IDX) ((string(GLOB_PTR_PREFIX) + std::to_string(_VAR_IDX)).c_str())
@@ -227,7 +233,7 @@ public:
         DOT_LTORG, EOR, VADD, VSUB, VMUL,
         VDIV, VMOV, VCMP, VCVT_ITOF, VCVT_FTOI,
         FMSTAT, VPUSH, VPOP, VLDR, VSTR,
-        VMVN
+        VMVN, LSL
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -239,7 +245,7 @@ public:
         ".ltorg", "eor", "vadd.f32", "vsub.f32", "vmul.f32",
         "vdiv.f32", "vmov", "vcmp.f32", "vcvt.f32.s32", "vcvt.s32.f32",
         "fmstat", "vpush", "vpop", "vldr", "vstr",
-        "vmvn"
+        "vmvn", "lsl"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -542,11 +548,33 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
         assert(IsRReg(src1.val.r));
+        if (_i_typ == AsmInst::MUL) {
+            if (__builtin_popcount(src2.val.i) == 1) {
+                asm_insts.push_back(AsmCode(AsmInst::LSL, {Param(r), src1, Param(ffs(src2.val.i) - 1)}, indent));
+                return;
+            }
+            else if (__builtin_popcount(src2.val.i - 1) == 1) { // 3, 5, 9, 17, 33...
+                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(ffs(src2.val.i - 1) - 1))}, indent));
+                return;
+            }
+            else if (__builtin_popcount(src2.val.i + 1) == 1) { // 7, 15, 31, ...
+                asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(ffs(src2.val.i + 1) - 1))}, indent));
+                return;
+            }
+            else if (__builtin_popcount(src2.val.i) == 2) { // 7, 15, 31, ...
+                int least_significant_set_bit = ffs(src2.val.i);
+                int dis_between_set_bits = ffs(src2.val.i & (0xffffffff << least_significant_set_bit)) - least_significant_set_bit;
+                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(dis_between_set_bits))}, indent));
+                asm_insts.push_back(AsmCode(AsmInst::LSL, {Param(r), Param(r), Param(least_significant_set_bit - 1)}, indent));
+                return;
+            }
+        }
         AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
         asm_insts.push_back(AsmCode(_i_typ, {Param(r), src1, Param(r)}, indent));
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
     {
+        assert(_i_typ == AsmInst::SDIV);
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
         asm_insts.push_back(AsmCode(_i_typ, {Param(r), Param(r), src2}, indent));
     }
@@ -1139,30 +1167,10 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             int32_t size_shift_bits = 2;
             if (gep_inst->off.ctv) // offset is ctv
             {
-                if ((gep_inst->off.ctv->int_value << size_shift_bits) <= 256) // 偏移量<256，直接加
-                {
-                    AddAsmCodeAddSub(asm_insts, AsmInst::ADD, addr_reg, addr_reg, Param(gep_inst->off.ctv->int_value << size_shift_bits), indent);
-                    AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id), addr_reg, indent);
-                    if (borrow_addr) AddAsmCodePopRegisters(asm_insts, {addr_reg}, indent);
-                    return;
-                }
-                // 偏移量大于256
-                // 给off借用一个r_reg
-                REGs unused_reg = addr_got_first ? instPtr->GetSecondUnusedRRegister() : instPtr->GetFirstUnusedRRegister();
-                if (unused_reg != SPILL) // 有空闲的r寄存器，用空闲的
-                    offs_reg = unused_reg;  
-                else // 借用其他r寄存器，需要压栈
-                {
-                    borrow_offs = true;
-                    // 不能跟src和addr分配的寄存器冲突
-                    offs_reg = r0;
-                    while (GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id) == offs_reg
-                        ||addr_reg == offs_reg)
-                        offs_reg = (REGs)(offs_reg + 1);
-                    AddAsmCodePushRegisters(asm_insts, {offs_reg}, indent);
-                }
-                AddAsmCodeMoveIntToRegister(asm_insts, offs_reg, gep_inst->off.ctv->int_value << size_shift_bits, indent);
-                AddAsmCodeAddSub(asm_insts, AsmInst::ADD, addr_reg, addr_reg, offs_reg, indent);
+                AddAsmCodeAddSub(asm_insts, AsmInst::ADD, addr_reg, addr_reg, Param(gep_inst->off.ctv->int_value << size_shift_bits), indent);
+                AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id), addr_reg, indent);
+                if (borrow_addr) AddAsmCodePopRegisters(asm_insts, {addr_reg}, indent);
+                return;
             }
             else // offset is reg
             {
@@ -1191,7 +1199,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 {   addr_reg,
                     addr_reg,
                     offs_reg,
-                    Param(Param::Str, (string("lsl #") + std::to_string(size_shift_bits)).c_str())},
+                    Param(Param::Str, LSL_HASHTAG_NUMBER(size_shift_bits))},
                 indent));
             }
         }
