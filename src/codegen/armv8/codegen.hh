@@ -561,7 +561,7 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
                 asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(ffs(src2.val.i + 1) - 1))}, indent));
                 return;
             }
-            else if (__builtin_popcount(src2.val.i) == 2) { // 7, 15, 31, ...
+            else if (__builtin_popcount(src2.val.i) == 2) { // 6, 320, 8320 ...
                 int least_significant_set_bit = ffs(src2.val.i);
                 int dis_between_set_bits = ffs(src2.val.i & (0xffffffff << least_significant_set_bit)) - least_significant_set_bit;
                 asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(dis_between_set_bits))}, indent));
@@ -973,7 +973,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             src2 = Param(bin_inst->src2.ctv->int_value);
         else
             src2 = Param(GET_ALLOCATION_RESULT(funcPtr, bin_inst->src2.reg->reg_id));
-        if (bin_inst->op == BinOp::ADD && src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg)
+        if ((bin_inst->op == BinOp::ADD || bin_inst->op == BinOp::MUL) && src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg)
             std::swap(src1, src2);
         if (bin_inst->op == BinOp::MUL && src1.p_typ == Param::Reg && IsSReg(src1.val.r) && src2.p_typ == Param::Imm_int)
             std::swap(src1, src2);
