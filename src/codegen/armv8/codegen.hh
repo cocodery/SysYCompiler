@@ -574,6 +574,10 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
     {
+        if (_i_typ == AsmInst::MUL) {
+            AddAsmCodeMulDiv(asm_insts, AsmInst::MUL, r, src2, src1, indent);
+            return;
+        }
         assert(_i_typ == AsmInst::SDIV);
         AddAsmCodeMoveIntToRegister(asm_insts, r, src1.val.i, indent);
         asm_insts.push_back(AsmCode(_i_typ, {Param(r), Param(r), src2}, indent));
@@ -973,7 +977,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             src2 = Param(bin_inst->src2.ctv->int_value);
         else
             src2 = Param(GET_ALLOCATION_RESULT(funcPtr, bin_inst->src2.reg->reg_id));
-        if ((bin_inst->op == BinOp::ADD || bin_inst->op == BinOp::MUL) && src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg)
+        if (bin_inst->op == BinOp::ADD && src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg)
             std::swap(src1, src2);
         if (bin_inst->op == BinOp::MUL && src1.p_typ == Param::Reg && IsSReg(src1.val.r) && src2.p_typ == Param::Imm_int)
             std::swap(src1, src2);
