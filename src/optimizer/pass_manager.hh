@@ -12,6 +12,7 @@
 #include "reg2mem.hh"
 #include "load_store_reordering.hh"
 #include "branch_opt.hh"
+#include "global_var_const.hh"
 
 class PassManager {
 public:
@@ -26,13 +27,45 @@ public:
             function->func_info.side_effect  = funcinline.sideEffect();
         }
 
-        for (auto &&function : functions) {
-            if (function->func_info.is_used) {
-                function->buildDom();
-                function->buildIDom();
-                function->initBBDF();
+        for (int32_t idx = 0; idx < 3; ++idx) {
+    /* -------------------- 全局优化 -------------------- */
+            if (idx != 0) { // 如果不是第一次pass，则更新函数的call_count和is_used信息
+                // 给所有函数的call计数清零
+                for (auto &&function : functions)
+                    function->func_info.call_count = 0;
+                
+                // 给所有函数计算call次数
+                for (auto &&function : functions) {
+                    if (function->func_info.is_used) {
+                        for (auto &&bbPtr : function->all_blocks) {
+                            for (auto &&instPtr : bbPtr->basic_block) {
+                                Case (LLIR_CALL, call_inst, instPtr) {
+                                    ++call_inst->func_info->call_count;
+                                }
+                            }
+                        }
+                    }
+                }
 
-                for (int32_t idx = 0; idx < 3; ++idx) {
+                // 给所有函数更新is_used信息
+                for (auto &&function : functions) {
+                    if (function->func_info.is_used && function->func_info.func_name != "main") {
+                        if (function->func_info.call_count == 0)
+                            function->func_info.is_used = false;
+                    }
+                }
+            }
+
+            GlobalVarConst gvc(global_scope, functions);
+            gvc.runGlobalVarConst();
+
+    /* -------------------- 局部优化 -------------------- */
+            for (auto &&function : functions) {
+                if (function->func_info.is_used) {
+                    function->buildDom();
+                    function->buildIDom();
+                    function->initBBDF();
+
                     Mem2Reg mem2reg = Mem2Reg(function);
                     if (function->func_info.func_name != "long_func") {
                         mem2reg.runMem2Reg();
