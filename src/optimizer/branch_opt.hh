@@ -508,7 +508,7 @@ public:
         dfs(f, 1, visited);
 
         for(auto &&i: visited) {
-        //     cout << i << " ";
+            // cout << i << " ";
         }
 
         if (visited.size() < (f->all_blocks.size()-2)) {
