@@ -70,7 +70,7 @@ public:
                     function->initBBDF();
 
                     Mem2Reg mem2reg = Mem2Reg(function);
-                    if (function->func_info.func_name != "long_func") {
+                    if (0 && function->func_info.func_name != "long_func") {
                         mem2reg.runMem2Reg();
                     }
 
@@ -95,7 +95,7 @@ public:
                     // Dce dce = Dce(function);
                     // dce.runDeadCodeElim();
 
-                    if (function->func_info.func_name != "long_func") {
+                    if (0 && function->func_info.func_name != "long_func") {
                         Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                         reg2mem.runReg2Mem();
                     }
