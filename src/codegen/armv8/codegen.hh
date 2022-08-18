@@ -549,23 +549,39 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     {
         assert(IsRReg(src1.val.r));
         if (_i_typ == AsmInst::MUL) {
-            if (__builtin_popcount(src2.val.i) == 1) {
+            if (__builtin_popcount(src2.val.i) == 1) { // 2, 4, 8, 16...
                 asm_insts.push_back(AsmCode(AsmInst::LSL, {Param(r), src1, Param(ffs(src2.val.i) - 1)}, indent));
                 return;
             }
             else if (__builtin_popcount(src2.val.i - 1) == 1) { // 3, 5, 9, 17, 33...
-                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(ffs(src2.val.i - 1) - 1))}, indent));
+                asm_insts.push_back(AsmCode((src2.val.i - 1 < 0) ? AsmInst::SUB : AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(ffs(src2.val.i - 1) - 1))}, indent));
                 return;
             }
-            else if (__builtin_popcount(src2.val.i + 1) == 1) { // 7, 15, 31, ...
+            else if (__builtin_popcount(src2.val.i + 1) == 1) { // 7, 15, 31...
                 asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(ffs(src2.val.i + 1) - 1))}, indent));
                 return;
             }
-            else if (__builtin_popcount(src2.val.i) == 2) { // 6, 320, 8320 ...
+            else if (__builtin_popcount(src2.val.i) == 2) { // 6, 10, 18, 34, 66, 320, 8320...
                 int least_significant_set_bit = ffs(src2.val.i);
                 int dis_between_set_bits = ffs(src2.val.i & (0xffffffff << least_significant_set_bit)) - least_significant_set_bit;
-                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(dis_between_set_bits))}, indent));
+                asm_insts.push_back(AsmCode((src2.val.i < 0) ? AsmInst::SUB : AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(dis_between_set_bits))}, indent));
                 asm_insts.push_back(AsmCode(AsmInst::LSL, {Param(r), Param(r), Param(least_significant_set_bit - 1)}, indent));
+                return;
+            }
+            else if (__builtin_popcount(1 - src2.val.i) == 1) { // -3, -7, -15, -31...
+                asm_insts.push_back(AsmCode(AsmInst::SUB, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(ffs(1 - src2.val.i) - 1))}, indent));
+                return;
+            }
+            else if (__builtin_popcount(- 1 - src2.val.i) == 1) { // -5, -9, -17, -33...
+                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(ffs(- 1 - src2.val.i) - 1))}, indent));
+                asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), Param(r), Param(0)}, indent));
+                return;
+            }
+            else if (__builtin_popcount((1 << (32 - __builtin_clz(abs(src2.val.i)))) - abs(src2.val.i)) == 1) { // +-14, +-28, +-30, +-56, +-60...
+                int num2 = ffs((1 << (32 - __builtin_clz(abs(src2.val.i)))) - abs(src2.val.i)) - 1;
+                int num1 = ffs(abs(src2.val.i) / (1 << num2) + 1) - 1;
+                asm_insts.push_back(AsmCode((src2.val.i < 0) ? AsmInst::SUB : AsmInst::RSB, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(num1))}, indent));
+                asm_insts.push_back(AsmCode(AsmInst::LSL, {Param(r), Param(r), Param(num2)}, indent));
                 return;
             }
         }
