@@ -85,6 +85,7 @@ public:
     void buildDom();
     void buildIDom();
     void initBBDF();
+    bool multiReturn();
     void replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var);
     BasicBlock *getSpecificIdxBb(int32_t bb_idx);
 

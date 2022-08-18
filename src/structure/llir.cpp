@@ -148,7 +148,7 @@ string LLIR_FCMP::ToString() {
     std::stringstream ss;
     VirtReg *dst_reg = dst.ToVirtReg();
     assert(dst_reg->type.decl_type == TypeBool); 
-    assert(src1.getType() == TypeFloat && src2.getType() == TypeFloat);
+    // assert(src1.getType() == TypeFloat && src2.getType() == TypeFloat);
     ss << dst_reg->ToString() << " = fcmp " << RelOpToStr_float(op) << " float ";
     ss << src1.ToString();
     ss << ", ";

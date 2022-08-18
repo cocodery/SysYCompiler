@@ -399,6 +399,10 @@ void Function::initBBDF() {
     // }
 }
 
+bool Function::multiReturn() {
+    return (getSpecificIdxBb(-1)->preds.size() != 1);
+}
+
 void Function::replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var) {
     // for (auto &&block : all_blocks) {
     //     block->dirty = false;
@@ -543,7 +547,14 @@ void CompUnit::DebugUserFuncs() {
             llir << get_tabs() << function->func_info.printFunctionInfo() << endl;
             function->printCallInfo();
             llir << get_tabs() << "; side-effect : " << function->func_info.side_effect << endl;
-            function->main_scope->printScope();
+            // function->main_scope->printScope();
+            tab_num += 2;
+            for (auto &&block : function->all_blocks) {
+                if (block->bb_idx > 0) {
+                    block->printBlock();
+                }
+            }
+            tab_num -= 2;
             llir << get_tabs() << "}" << endl;
         }
     }
