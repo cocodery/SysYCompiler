@@ -18,10 +18,6 @@ bool FuncInline::isRecursive(FunctionInfo *to_check, FunctionInfo *now) {
     return false;
 }
 
-bool FuncInline::multiReturn() {
-    return (function->getSpecificIdxBb(-1)->preds.size() != 1);
-}
-
 bool FuncInline::sideEffect() {
     if (function->func_info.func_name == "main" || function->func_info.return_type != TypeVoid) {
         return true;

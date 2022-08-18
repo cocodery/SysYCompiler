@@ -21,14 +21,17 @@ public:
 public:
     PassManager(Scope *glb_scope, vector<Function *> funcs) : global_scope(glb_scope), functions(funcs) { }
     void excute_pass() {
+        map<string, Function *> funcMap;
         for (auto &&function : functions) {
             FuncInline funcinline = FuncInline(function);
             function->func_info.is_recursive = funcinline.isRecursive(&function->func_info, &function->func_info);
             function->func_info.side_effect  = funcinline.sideEffect();
+
+            funcMap.insert({function->func_info.func_name, function});
         }
 
         for (int32_t idx = 0; idx < 3; ++idx) {
-    /* -------------------- 全局优化 -------------------- */
+    /* -------------------- 过程间优化 -------------------- */
             if (idx != 0) { // 如果不是第一次pass，则更新函数的call_count和is_used信息
                 // 给所有函数的call计数清零
                 for (auto &&function : functions)
@@ -59,7 +62,7 @@ public:
             GlobalVarConst gvc(global_scope, functions);
             gvc.runGlobalVarConst();
 
-    /* -------------------- 局部优化 -------------------- */
+    /* -------------------- 过程内优化 -------------------- */
             for (auto &&function : functions) {
                 if (function->func_info.is_used) {
                     function->buildDom();
@@ -98,8 +101,9 @@ public:
                     }
 
                     LoadStoreReordering load_store_reordering(function);
+                    
                     BranchOptimization branch_opt = BranchOptimization(function);
-                    branch_opt.run(&mem2reg.phi2AllocaMap);
+                    branch_opt.runBranchOpt(&mem2reg.phi2AllocaMap);
 
                     FuncInline funcinline = FuncInline(function);
                     funcinline.runFuncInline(functions);

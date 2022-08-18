@@ -13,7 +13,6 @@ public:
     FuncInline(Function *func) : function(func) { }
 
     bool isRecursive(FunctionInfo *, FunctionInfo *);
-    bool multiReturn();
     bool sideEffect();
 
     void simpleInline();
