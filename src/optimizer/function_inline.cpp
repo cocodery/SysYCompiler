@@ -64,14 +64,14 @@ bool FuncInline::inLinable(string func_name, FuncMap &func_map) {
 }
 
 void FuncInline::initInlineMap(vector<SRC> caller_args, vector<pair<string, VarType>> callee_args) {
-    int32_t size = caller_args.size();
-    for (int32_t idx = 0; idx < size; ++idx) {
+    inlineMap.clear();
+    for (int32_t idx = 0; idx < caller_args.size(); ++idx) {
         inlineMap.insert({{idx, false}, caller_args[idx]});
     }
 }
 
 SRC FuncInline::findInMap(SRC src) {
-    if (src.ctv) { 
+    if (src.ctv || src.reg->global) { 
         return src;
     } else if (inlineMap.find({src.reg->reg_id, src.reg->global}) != inlineMap.end()) {
         return inlineMap[{src.reg->reg_id, src.reg->global}];
@@ -164,7 +164,7 @@ list<Inst *> FuncInline::insertBlock(BasicBlock *block, SRC &dst) {
             auto &&src = findInMap(store_inst->src);
             auto &&dst = findInMap(store_inst->dst);
             LLIR_STORE *inst_store = new LLIR_STORE(dst, src);
-            insertbb.push_back(inst_store); 
+            insertbb.push_back(inst_store);
         } 
         Case (LLIR_LOAD, load_inst, inst) {
             auto &&src = findInMap(load_inst->src);
@@ -189,8 +189,6 @@ void FuncInline::simpleInline(BasicBlock *block, Function *callee_func) {
             }
             // erase this call-inst
             iter = bb_list.erase(iter); 
-            // init caller-args --> callee-args
-            initInlineMap(call_inst->args, callee_func_info.func_args);
             auto &&new_call_dst = SRC();
             list<Inst *> insertbb = insertBlock(callee_func->all_blocks[1], new_call_dst);
             function->replaceSRCs(block, call_inst->dst.reg, new_call_dst);
@@ -198,20 +196,18 @@ void FuncInline::simpleInline(BasicBlock *block, Function *callee_func) {
             for (auto &&inst : insertbb) {
                 bb_list.insert(iter, inst);
             }
-            continue;
         } 
     }
     block->basic_block = vector<Inst *>(bb_list.begin(), bb_list.end());
 } 
 
 void FuncInline::excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *func) {
-    inlineMap.clear();
     if (func->all_blocks.size() == 3) {
         simpleInline(block, func);
     } 
 }
 
-void FuncInline::runFuncInline(FuncMap &func_map) {
+void FuncInline::runFuncInline(FuncMap &func_map, VariableTable *glb_table) {
     if (function->func_info.called_funcs.size() == 0) return;
     auto &&all_blocks = function->all_blocks;
     for (auto &&block : all_blocks) {
@@ -222,6 +218,8 @@ void FuncInline::runFuncInline(FuncMap &func_map) {
                     string callee_name = call_inst->func_info->func_name;
                     if (inLinable(callee_name, func_map)) {
                         auto &&inlined_func = func_map[callee_name];
+                        // init caller-args --> callee-args
+                        initInlineMap(call_inst->args, inlined_func->func_info.func_args);
                         excuteFuncInline(block, all_blocks, inlined_func);
                         changed = true;
                         break;

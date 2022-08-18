@@ -23,5 +23,5 @@ public:
     list<Inst *> insertBlock(BasicBlock *block, SRC &dst);
     void simpleInline(BasicBlock *block, Function *func);
     void excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *func);
-    void runFuncInline(FuncMap &func_map);
+    void runFuncInline(FuncMap &func_map, VariableTable  *local_table);
 };
