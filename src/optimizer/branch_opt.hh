@@ -475,7 +475,6 @@ public:
     bool removeEmptyBasicBlock(Function *f) {
         for (auto iter = f->all_blocks.begin(); iter != f->all_blocks.end(); ++iter) {
             auto i = *iter;
-            cout << "in bb " << i->bb_idx << ": " << endl;
             if (i->bb_idx <= 0) { continue; }
             else if (i->preds.empty()) {
                 cout << ">> Erase [empty] basic block: " << i->bb_idx << endl;
@@ -494,8 +493,11 @@ public:
         auto bb_node = f->getSpecificIdxBb(bb_idx);
         visited.insert(bb_idx);
         for (auto &p : bb_node->succs) {
-            if (p.second->bb_idx >= bb_idx) {
-                dfs(f, p.first, visited);
+            if (p.second->bb_idx == -1) return;
+            if (visited.find(p.second->bb_idx) == visited.end()) {
+                if (p.second->bb_idx >= bb_idx) {
+                    dfs(f, p.first, visited);
+                }
             }
         }
     }
@@ -504,16 +506,15 @@ public:
         set<int32_t> visited;
         dfs(f, 1, visited);
 
-        for(auto &&i: visited) {
-            cout << i << " ";
-        }
+        // for(auto &&i: visited) {
+        //     cout << i << " ";
+        // }
 
         if (visited.size() < (f->all_blocks.size()-2)) {
             for(auto iter = f->all_blocks.begin(); iter != f->all_blocks.end(); ++iter) {
                 BasicBlock* i = *iter;
                 if (i->bb_idx <= 0) { continue; }
                 else if (visited.find(i->bb_idx) == visited.end()) {
-                    cout << ">> Erase [useless] loop: " << i->bb_idx << endl;
                     blockFinder(f->main_scope, i->bb_idx, true);
                     iter = f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i)) - 1;
                 }
