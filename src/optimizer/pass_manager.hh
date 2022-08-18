@@ -108,7 +108,7 @@ public:
                     branch_opt.runBranchOpt(&mem2reg.phi2AllocaMap);
 
                     FuncInline funcinline = FuncInline(function);
-                    funcinline.runFuncInline(functions);
+                    // funcinline.runFuncInline(functions);
                 }
             }
         }
