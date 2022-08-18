@@ -22,6 +22,8 @@ public:
     vector<Function *> functions;
 public:
     PassManager(Scope *glb_scope, vector<Function *> funcs) : global_scope(glb_scope), functions(funcs) { }
+    bool do_not_run_m2r_r2m(Function *funcPtr);
+    int get_depth(Scope *now_scope, int now_depth);
     void excute_pass() {
         FuncMap funcMap;
         for (auto &&function : functions) {
@@ -72,7 +74,7 @@ public:
                     function->initBBDF();
 
                     Mem2Reg mem2reg = Mem2Reg(function);
-                    if (function->func_info.func_name != "long_func") {
+                    if (!do_not_run_m2r_r2m(function)) {
                         mem2reg.runMem2Reg();
                     }
 
@@ -97,7 +99,7 @@ public:
                     // Dce dce = Dce(function);
                     // dce.runDeadCodeElim();
 
-                    if (function->func_info.func_name != "long_func") {
+                    if (!do_not_run_m2r_r2m(function)) {
                         Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                         reg2mem.runReg2Mem();
                     }
@@ -108,7 +110,9 @@ public:
                     branch_opt.runBranchOpt(&mem2reg.phi2AllocaMap);
 
                     FuncInline funcinline = FuncInline(function);
+
                     funcinline.runFuncInline(funcMap);
+                    // funcinline.runFuncInline(functions);
                 }
             }
         }
