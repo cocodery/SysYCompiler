@@ -49,6 +49,17 @@ void InstCombine::runInstCombine() {
                         block->basic_block.push_back(inst1);
                     }
 
+                } else if (bin_inst1->op == MUL || bin_inst1->op == DIV) {
+                    if (bin_inst1->src1.ctv && bin_inst1->src1.ctv->int_value == -1 && bin_inst1->op == MUL) {
+                        bin_inst1->op = SUB;
+                        bin_inst1->src1.ctv->int_value = 0;
+                        bin_inst1->src1.ctv->float_value = 0;
+                    } else if (bin_inst1->src2.ctv && bin_inst1->src2.ctv->int_value == -1) {
+                        bin_inst1->op = SUB;
+                        std::swap(bin_inst1->src1, bin_inst1->src2);
+                        bin_inst1->src1.ctv->int_value = 0;
+                        bin_inst1->src1.ctv->float_value = 0;
+                    }
                 } else {
                     worklist.pop_front();
                     block->basic_block.push_back(inst1);
