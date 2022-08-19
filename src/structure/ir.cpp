@@ -172,10 +172,6 @@ void BasicBlock::replaceSRC(VirtReg *old_reg, SRC new_var) {
             store_inst->replaceDst(old_reg, new_var);
         } else Case (LLIR_LOAD, load_inst, inst) {
             load_inst->replaceSRC(old_reg, new_var);
-        } else Case (LLIR_ICMP, icmp_inst, inst) {
-            icmp_inst->replaceSRC(old_reg, new_var);
-        } else Case (LLIR_FCMP, fcmp_inst, inst) {
-            fcmp_inst->replaceSRC(old_reg, new_var);
         } else Case (LLIR_BR, br_inst, inst) {
             br_inst->replaceSRC(old_reg, new_var);
         } 

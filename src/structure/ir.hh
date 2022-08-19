@@ -71,6 +71,7 @@ class Function {
 public:
     FunctionInfo func_info;
     int32_t var_idx;
+    int32_t bb_idx;
     Scope *main_scope;
     vector<BasicBlock *> all_blocks;
     typedef pair<int32_t, int32_t> RANGE;

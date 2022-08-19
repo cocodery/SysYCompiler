@@ -122,11 +122,10 @@ public:
 
 class LLIR_ALLOCA: public Inst {
 public:
-    int32_t locatebb_idx;
     SRC reg;
     Variable *var;
 public:
-    LLIR_ALLOCA(int32_t idx, SRC _reg, Variable *_var) : locatebb_idx(idx), reg(_reg), var(_var) { }
+    LLIR_ALLOCA(SRC _reg, Variable *_var) : reg(_reg), var(_var) { }
     string ToString();
 };
 

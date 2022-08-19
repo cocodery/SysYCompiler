@@ -14,6 +14,8 @@
 #include "branch_opt.hh"
 #include "global_var_const.hh"
 
+using FuncMap = map<string, Function *>;
+
 class PassManager {
 public:
     Scope *global_scope;
@@ -23,7 +25,7 @@ public:
     bool do_not_run_m2r_r2m(Function *funcPtr);
     int get_depth(Scope *now_scope, int now_depth);
     void excute_pass() {
-        map<string, Function *> funcMap;
+        FuncMap funcMap;
         for (auto &&function : functions) {
             FuncInline funcinline = FuncInline(function);
             function->func_info.is_recursive = funcinline.isRecursive(&function->func_info, &function->func_info);
@@ -85,8 +87,8 @@ public:
                     MemAccessOpt mao = MemAccessOpt(function);
                     mao.runMemAccessOpt();
 
-                    InstCombine instcomb = InstCombine(function);
-                    instcomb.runInstCombine();
+                    // InstCombine instcomb = InstCombine(function);
+                    // instcomb.runInstCombine();
 
                     ConstantProg constantprog2 = ConstantProg(function);
                     constantprog2.runConstantProp();
@@ -108,7 +110,7 @@ public:
                     branch_opt.runBranchOpt(&mem2reg.phi2AllocaMap);
 
                     FuncInline funcinline = FuncInline(function);
-                    // funcinline.runFuncInline(functions);
+                    funcinline.runFuncInline(funcMap);
                 }
             }
         }
