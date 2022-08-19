@@ -87,8 +87,8 @@ public:
                     MemAccessOpt mao = MemAccessOpt(function);
                     mao.runMemAccessOpt();
 
-                    InstCombine instcomb = InstCombine(function);
-                    instcomb.runInstCombine();
+                    // InstCombine instcomb = InstCombine(function);
+                    // instcomb.runInstCombine();
 
                     ConstantProg constantprog2 = ConstantProg(function);
                     constantprog2.runConstantProp();
@@ -110,7 +110,7 @@ public:
                     branch_opt.runBranchOpt(&mem2reg.phi2AllocaMap);
 
                     FuncInline funcinline = FuncInline(function);
-                    funcinline.runFuncInline(funcMap, global_scope->local_table);
+                    funcinline.runFuncInline(funcMap);
                 }
             }
         }
