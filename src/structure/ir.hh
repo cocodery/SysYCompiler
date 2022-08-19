@@ -90,6 +90,12 @@ public:
     void replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var);
     BasicBlock *getSpecificIdxBb(int32_t bb_idx);
 
+    void buildDomInfo() {
+        buildDom();
+        buildIDom();
+        initBBDF();
+    }
+
     // codegen
     // 生成LiveInterval
     void ExtendRangeOrAddRange(int32_t varIdx, int32_t rangeStart, int32_t rangeEnd);
