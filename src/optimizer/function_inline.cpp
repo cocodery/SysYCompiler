@@ -1,6 +1,6 @@
 #include "function_inline.hh"
 
-bool FuncInline::isRecursive(FunctionInfo *to_check, FunctionInfo *now) {
+bool FuncInline::isRecursive(FunctionInfo *to_check, FunctionInfo *now, set<FunctionInfo *> &vis) {
     // auto &&now_function = info_to_function.at(now);
     for (auto &&called_func : now->called_funcs) {
         if (called_func == to_check) { // 找到递归调用
@@ -10,7 +10,7 @@ bool FuncInline::isRecursive(FunctionInfo *to_check, FunctionInfo *now) {
             continue;
         }
         vis.insert(called_func);
-        if (isRecursive(to_check, called_func)) { // 没找过这个函数，那就看能不能这里找到循环调用
+        if (isRecursive(to_check, called_func, vis)) { // 没找过这个函数，那就看能不能这里找到循环调用
             return true; // 找到了，返回真
         }
         // 没找到，继续
@@ -18,7 +18,7 @@ bool FuncInline::isRecursive(FunctionInfo *to_check, FunctionInfo *now) {
     return false;
 }
 
-bool FuncInline::sideEffect() {
+bool FuncInline::sideEffect(Function *function) {
     if (function->func_info.func_name == "main") {
         return true;
     }

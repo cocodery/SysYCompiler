@@ -30,9 +30,9 @@ public:
     void excute_pass() {
         FuncMap funcMap;
         for (auto &&function : functions) {
-            FuncInline funcinline = FuncInline(function);
-            function->func_info.is_recursive = funcinline.isRecursive(&function->func_info, &function->func_info);
-            function->func_info.side_effect  = funcinline.sideEffect();
+            set<FunctionInfo *> vis;
+            function->func_info.is_recursive = FuncInline::isRecursive(&function->func_info, &function->func_info, vis);
+            function->func_info.side_effect  = FuncInline::sideEffect(function);
 
             funcMap.insert({function->func_info.func_name, function});
         }

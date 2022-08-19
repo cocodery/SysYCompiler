@@ -18,18 +18,20 @@ bool PassManager::do_not_run_m2r_r2m(Function *funcPtr)
 }
 
 void PassManager::updateFuncInfo() {
-    // 给所有函数的call计数清零
-    for (auto &&function : functions)
-    function->func_info.call_count = 0;
-                
-    // 给所有函数计算call次数
+    // 给所有函数的call计数清零，清空所有函数的called_funcs
+    for (auto &&function : functions) {
+        function->func_info.call_count = 0;
+        function->func_info.called_funcs.clear();
+    }  
+    // 给所有函数计算call次数，并更新它的called_funcs
     for (auto &&function : functions) {
         if (function->func_info.is_used) {
             for (auto &&bbPtr : function->all_blocks) {
                 for (auto &&instPtr : bbPtr->basic_block) {
                     Case (LLIR_CALL, call_inst, instPtr) {
                         ++call_inst->func_info->call_count;
-                        }
+                        function->func_info.called_funcs.insert(call_inst->func_info);
+                    }
                 }
             }
         }
@@ -39,6 +41,14 @@ void PassManager::updateFuncInfo() {
         if (function->func_info.is_used && function->func_info.func_name != "main") {
             if (function->func_info.call_count == 0)
                 function->func_info.is_used = false;
+        }
+    }
+    // 更新所有函数的is_recursive、side_effect信息
+    for (auto &&function : functions) {
+        if (!function->func_info.is_used) {
+            set<FunctionInfo *> vis;
+            function->func_info.is_recursive = FuncInline::isRecursive(&function->func_info, &function->func_info, vis);
+            function->func_info.side_effect  = FuncInline::sideEffect(function);
         }
     }
 }
