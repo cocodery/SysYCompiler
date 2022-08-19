@@ -1142,6 +1142,10 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
     }
     /**/Case (LLIR_GEP, gep_inst, instPtr)
     {
+        // 跳过目的寄存器没有分配的语句
+        if(CONDITION_REGISTER_NOT_ALLOCATED(funcPtr, gep_inst->dst.reg->reg_id))
+            return;
+
         //cout << get_tabs() << gep_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, gep_inst->ToString(), indent);
         
@@ -1573,7 +1577,6 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
                     }
                     else // 数组，在data区存指针
                     {
-                        cout << "array var idx: " << varPtr->var_idx << endl;
                         dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_PTR_NAME(funcPtr, alloc_inst->reg.reg->reg_id), {Param(Param::Str, "0")}, "", 1));
                         if (!funcPtr->func_info.is_recursive) // 如果是非递归函数，把它的数组当成不需要初始化的全局数组
                         {
