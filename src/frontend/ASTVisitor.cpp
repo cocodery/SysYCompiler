@@ -93,6 +93,7 @@ vector<int32_t> arr_dim, int32_t off, vector<pair<int32_t, SRC>> &initTable) {
                     value = value_cast;
                 }
             }
+            dbg(off, value.ToString());
             initTable.push_back({off, value});
             ++off;
             ++cnt;
@@ -134,6 +135,12 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, SRC add
         auto node = dynamic_cast<SysYParser::ListInitvalContext *>(init_node);
         vector<pair<int32_t, SRC>> initTable;
         parse_variable_init(node, var, var.array_dims, 0, initTable);
+        if (cur_func->func_info.func_name == "main") {
+            dbg(cur_func->func_info.func_name);
+            for (auto &&pair : initTable) {
+                dbg(pair.first, pair.second.ToString());
+            }
+        }
         int32_t init_size = initTable.size();
         VirtReg *ptr1 = new VirtReg(var_idx++, var);
         LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, addr, SRC(new CTValue(TypeInt, 0, 0)), var);
@@ -1312,19 +1319,29 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->addExp()->accept(this);
     SRC rhs = ctx->mulExp()->accept(this);
+    dbg(lhs.ToString(), rhs.ToString());
     DeclType type = (lhs.getType() == rhs.getType()) ? lhs.getType() : TypeFloat;
     // 当两个操作数都是`CTValue`
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
-        int imul = 0;
-        float fmul = 0;
+        int iadd = 0;
+        float fadd = 0;
         if (op == "+") {
-            fmul = ctv1->float_value + ctv2->float_value;
-            imul = (type == TypeInt) ? ctv1->int_value + ctv2->int_value : fmul;
+            dbg(DeclTypeToStr(type));
+            iadd = ctv1->int_value + ctv2->int_value;
+            if (type == TypeInt) {
+                fadd  = iadd;
+            } else {
+                fadd = ctv1->float_value + ctv2->float_value;
+            }
         } else if (op == "-") {
-            fmul = ctv1->float_value - ctv2->float_value;
-            imul = (type == TypeInt) ? ctv1->int_value - ctv2->int_value : fmul;
+            iadd = ctv1->int_value - ctv2->int_value;
+            if (type == TypeInt) {
+                fadd  = iadd;
+            } else {
+                fadd = ctv1->float_value - ctv2->float_value;
+            }
         }
-        CTValue *add = new CTValue(type, imul, fmul);
+        CTValue *add = new CTValue(type, iadd, fadd);
         // dbg(add->ToString());
         // dbg("exit visitAdd2 with 2 CTValue");
         return SRC(add);
