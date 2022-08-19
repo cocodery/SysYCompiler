@@ -1569,7 +1569,7 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
                         if (varPtr->type.is_const) // 常量标量，跳过
                             continue;
                         // 变量标量，直接声明
-                        dot_data.push_back(AsmCode(AsmInst::DOT_WORD,  GET_LOCAL_PTR_NAME(funcPtr, alloc_inst->reg.reg->reg_id), {Param(Param::Str, "0")}, "", 1));
+                        dot_data.push_back(AsmCode(AsmInst::DOT_WORD,  GET_LOCAL_VAR_NAME(funcPtr, alloc_inst->reg.reg->reg_id), {Param(Param::Str, "0")}, "", 1));
                     }
                     else // 数组，在data区存指针
                     {
