@@ -1451,6 +1451,7 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->eqExp()->accept(this);
     SRC rhs = ctx->relExp()->accept(this);
+    dbg(op, lhs.ToString(), rhs.ToString());
     // 当两个操作数都是`CTValue`
     // dbg("enter process visitEq2");
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
@@ -1501,7 +1502,7 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
                 SRC cast_rhs = SRC(new VirtReg(var_idx++, TypeFloat));
                 LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(cast_rhs), rhs);
                 cur_basicblock->basic_block.push_back(itf_inst);
-                lhs = cast_rhs;
+                rhs = cast_rhs;
             }
             SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
             LLIR_FCMP *fcmp_inst = new LLIR_FCMP(StrToRelOp(op), dst, lhs, rhs);
