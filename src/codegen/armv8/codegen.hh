@@ -5,6 +5,7 @@
 #include "ir.hh"
 #include "liveness_info.hh"
 #include "register_allocation.hh"
+#include "sdiv_smod_bit_operation.hh"
 
 #include <sstream>
 
@@ -1765,6 +1766,11 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
 {
 
     ofstream ofs(asmfile);
+    
+    if (signed_div_rem(ir)) {
+        SIGNED_DIV_REM_IS_NEEDED
+    }
+
     ofs << ".cpu cortex-a72\n.arch armv8-a\n.fpu neon-fp-armv8\n.arch_extension crc\n";
 
     vector<AsmCode> data_init;
@@ -1970,7 +1976,6 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         // insert ltorg
         asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", 1));
     }
-
 
     for (auto &&asm_inst : asm_insts)
     {
