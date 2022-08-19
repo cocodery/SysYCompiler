@@ -233,7 +233,8 @@ public:
         DOT_LTORG, EOR, VADD, VSUB, VMUL,
         VDIV, VMOV, VCMP, VCVT_ITOF, VCVT_FTOI,
         FMSTAT, VPUSH, VPOP, VLDR, VSTR,
-        VMVN, LSL, ASR
+        VMVN, LSL, ASR, AND, UXTB,
+        BIC
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -245,7 +246,8 @@ public:
         ".ltorg", "eor", "vadd.f32", "vsub.f32", "vmul.f32",
         "vdiv.f32", "vmov", "vcmp.f32", "vcvt.f32.s32", "vcvt.s32.f32",
         "fmstat", "vpush", "vpop", "vldr", "vstr",
-        "vmvn", "lsl", "asr"
+        "vmvn", "lsl", "asr", "and", "uxtb",
+        "bic"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -624,7 +626,19 @@ void AddAsmCodeRem(vector<AsmCode> &asm_insts, REGs r, const Param &src1, const 
     }
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
-        assert(0 && "codegen: rem can't operate as reg%%imm");
+        assert(__builtin_popcount(src2.val.i) == 1);
+        if (ffs(src2.val.i) < 9) {
+            asm_insts.push_back(AsmCode(AsmInst::AND, {Param(r), src1, Param(src2.val.i - 1)}, indent));
+        }
+        else if (ffs(src2.val.i) == 9) {
+            asm_insts.push_back(AsmCode(AsmInst::UXTB, {Param(r), src1}, indent));
+        }
+        else if (ffs(src2.val.i) < 25) {
+            asm_insts.push_back(AsmCode(AsmInst::UXTB, {Param(r), src1, Param(0), Param(ffs(src2.val.i) - 1)}, indent));
+        }
+        else {
+            asm_insts.push_back(AsmCode(AsmInst::BIC, {Param(r), src1, Param(- src2.val.i)}, indent));
+        }
     }
     else if (src1.p_typ == Param::Imm_int && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
     {
@@ -1088,7 +1102,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
 
         // 如果是取模运算，还要给src2借用寄存器
-        if (bin_inst->op == BinOp::REM && src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int)
+        if (bin_inst->op == BinOp::REM && src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int && __builtin_popcount(src2.val.i) != 1)
         {
             REGs unused_reg = dst_got_first ? instPtr->GetSecondUnusedRRegister() :
                 (src2_got_second ? instPtr->GetThirdUnusedRRegister() : instPtr->GetSecondUnusedRRegister());
