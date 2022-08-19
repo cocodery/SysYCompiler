@@ -17,7 +17,7 @@ bool PassManager::do_not_run_m2r_r2m(Function *funcPtr)
          || funcPtr->func_info.func_name == "pseudo_sha1");
 }
 
-void PassManager::updateFuncInfo() {
+int PassManager::updateFuncInfo() {
     // 给所有函数的call计数清零，清空所有函数的called_funcs
     for (auto &&function : functions) {
         function->func_info.call_count = 0;
@@ -36,11 +36,15 @@ void PassManager::updateFuncInfo() {
             }
         }
     }
+    int32_t used_num = 0;
     // 给所有函数更新is_used信息
     for (auto &&function : functions) {
         if (function->func_info.is_used && function->func_info.func_name != "main") {
             if (function->func_info.call_count == 0)
                 function->func_info.is_used = false;
+        }
+        if (function->func_info.is_used) {
+            ++used_num;
         }
     }
     // 更新所有函数的is_recursive、side_effect信息
@@ -51,6 +55,7 @@ void PassManager::updateFuncInfo() {
             function->func_info.side_effect  = FuncInline::sideEffect(function);
         }
     }
+    return used_num;
 }
 
 void PassManager::interOpt() {

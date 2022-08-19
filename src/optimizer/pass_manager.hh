@@ -24,7 +24,7 @@ public:
     PassManager(Scope *glb_scope, vector<Function *> funcs) : global_scope(glb_scope), functions(funcs) { }
     bool do_not_run_m2r_r2m(Function *funcPtr);
     int get_depth(Scope *now_scope, int now_depth);
-    void updateFuncInfo();
+    int updateFuncInfo();
     void interOpt();
 
     void excute_pass() {
@@ -52,12 +52,23 @@ public:
         GlobalVarConst gvc3(global_scope, functions);
         gvc3.runGlobalVarConst();
         
-        for (auto &&function : functions) {
-            FuncInline funcinline = FuncInline(function);
-            funcinline.runFuncInline(funcMap);
+        bool fixed = true;
+        while (fixed) {
+            int32_t old_size = 0;
+            for (auto &&function : functions) {
+                if (function->func_info.is_used) {
+                    ++old_size;
+                }
+                FuncInline funcinline = FuncInline(function);
+                funcinline.runFuncInline(funcMap);
+            }
+            if (old_size == updateFuncInfo()) {
+                fixed = false;
+            }
         }
-        
+        interOpt();
         updateFuncInfo();
+        
         interOpt();
         updateFuncInfo();
 
