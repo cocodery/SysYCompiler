@@ -233,7 +233,7 @@ public:
         DOT_LTORG, EOR, VADD, VSUB, VMUL,
         VDIV, VMOV, VCMP, VCVT_ITOF, VCVT_FTOI,
         FMSTAT, VPUSH, VPOP, VLDR, VSTR,
-        VMVN, LSL
+        VMVN, LSL, ASR
     } i_typ; const vector<string> i_str {
         "", ".global", ".data", ".text", "bx",
         "mov", "movt", "movw", "str", "ldr",
@@ -245,7 +245,7 @@ public:
         ".ltorg", "eor", "vadd.f32", "vsub.f32", "vmul.f32",
         "vdiv.f32", "vmov", "vcmp.f32", "vcvt.f32.s32", "vcvt.s32.f32",
         "fmstat", "vpush", "vpop", "vldr", "vstr",
-        "vmvn", "lsl"
+        "vmvn", "lsl", "asr"
     };
 public:
     AsmInst(InstType _i_typ):i_typ(_i_typ) {}
@@ -582,6 +582,12 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
                 int num1 = ffs(abs(src2.val.i) / (1 << num2) + 1) - 1;
                 asm_insts.push_back(AsmCode((src2.val.i < 0) ? AsmInst::SUB : AsmInst::RSB, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(num1))}, indent));
                 asm_insts.push_back(AsmCode(AsmInst::LSL, {Param(r), Param(r), Param(num2)}, indent));
+                return;
+            }
+        }
+        else if (_i_typ == AsmInst::SDIV) {
+            if (__builtin_popcount(src2.val.i) == 1) { // 2, 4, 8, 16...
+                asm_insts.push_back(AsmCode(AsmInst::ASR, {Param(r), src1, Param(ffs(src2.val.i) - 1)}, indent));
                 return;
             }
         }
