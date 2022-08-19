@@ -56,8 +56,10 @@ public:
             FuncInline funcinline = FuncInline(function);
             funcinline.runFuncInline(funcMap);
         }
-
+        
+        updateFuncInfo();
         interOpt();
+        updateFuncInfo();
 
 
     //     for (int32_t idx = 0; idx < 3; ++idx) {
