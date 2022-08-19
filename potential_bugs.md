@@ -3,6 +3,7 @@
 1. 把浮点的inst改一下，如果是sreg则就地操作，不必移动至s0和s1
 2. 除法、模运算换成二进制
 3. pattern recognition (crypto-rotate/or/and)
+4. sub (-1, reg)
 
 注意事项：数组全是指针，标量全是变量
 
