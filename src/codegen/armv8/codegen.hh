@@ -1569,20 +1569,21 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
                         if (varPtr->type.is_const) // 常量标量，跳过
                             continue;
                         // 变量标量，直接声明
-                        dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_VAR_NAME(funcPtr, varPtr->var_idx), {Param(Param::Str, "0")}, "", 1));
+                        dot_data.push_back(AsmCode(AsmInst::DOT_WORD,  GET_LOCAL_PTR_NAME(funcPtr, alloc_inst->reg.reg->reg_id), {Param(Param::Str, "0")}, "", 1));
                     }
                     else // 数组，在data区存指针
                     {
-                        dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx), {Param(Param::Str, "0")}, "", 1));
+                        cout << "array var idx: " << varPtr->var_idx << endl;
+                        dot_data.push_back(AsmCode(AsmInst::DOT_WORD, GET_LOCAL_PTR_NAME(funcPtr, alloc_inst->reg.reg->reg_id), {Param(Param::Str, "0")}, "", 1));
                         if (!funcPtr->func_info.is_recursive) // 如果是非递归函数，把它的数组当成不需要初始化的全局数组
                         {
                             // 在栈上给数组分配空间，并赋值
-                            AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string(GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx)), 1);
+                            AddAsmCodeComment(data_underscore_init, "allocating stack memory for " + string( GET_LOCAL_PTR_NAME(funcPtr, alloc_inst->reg.reg->reg_id)), 1);
                             // 计算指针的地址
                             int allocation_bytes = varPtr->type.elements_number() * 4;
                             AddAsmCodeAddSub(data_underscore_init, AsmInst::SUB, sp, Param(sp), Param(allocation_bytes), 1);
                             // 储存指针的地址
-                            data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr, GET_LOCAL_PTR_NAME(funcPtr, varPtr->var_idx))}, 1));
+                            data_underscore_init.push_back(AsmCode(AsmInst::LDR, {Param(PRELLOC_REGISTER), Param(Param::Addr,  GET_LOCAL_PTR_NAME(funcPtr, alloc_inst->reg.reg->reg_id))}, 1));
                             data_underscore_init.push_back(AsmCode(AsmInst::STR, {Param(sp), Param(PRELLOC_REGISTER)}, 1));
                         }
                     }
