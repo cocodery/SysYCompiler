@@ -93,7 +93,7 @@ vector<int32_t> arr_dim, int32_t off, vector<pair<int32_t, SRC>> &initTable) {
                     value = value_cast;
                 }
             }
-            dbg(off, value.ToString());
+            // dbg(off, value.ToString());
             initTable.push_back({off, value});
             ++off;
             ++cnt;
@@ -135,12 +135,6 @@ void ASTVisitor::generate_varinit_ir(SysYParser::InitVarDefContext *ctx, SRC add
         auto node = dynamic_cast<SysYParser::ListInitvalContext *>(init_node);
         vector<pair<int32_t, SRC>> initTable;
         parse_variable_init(node, var, var.array_dims, 0, initTable);
-        if (cur_func->func_info.func_name == "main") {
-            dbg(cur_func->func_info.func_name);
-            for (auto &&pair : initTable) {
-                dbg(pair.first, pair.second.ToString());
-            }
-        }
         int32_t init_size = initTable.size();
         VirtReg *ptr1 = new VirtReg(var_idx++, var);
         LLIR_GEP *gep_inst1 = new LLIR_GEP(ptr1, addr, SRC(new CTValue(TypeInt, 0, 0)), var);
@@ -1319,14 +1313,13 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->addExp()->accept(this);
     SRC rhs = ctx->mulExp()->accept(this);
-    dbg(lhs.ToString(), rhs.ToString());
+    // dbg(lhs.ToString(), rhs.ToString());
     DeclType type = (lhs.getType() == rhs.getType()) ? lhs.getType() : TypeFloat;
     // 当两个操作数都是`CTValue`
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
         int iadd = 0;
         float fadd = 0;
         if (op == "+") {
-            dbg(DeclTypeToStr(type));
             iadd = ctv1->int_value + ctv2->int_value;
             if (type == TypeInt) {
                 fadd  = iadd;
@@ -1468,7 +1461,7 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->eqExp()->accept(this);
     SRC rhs = ctx->relExp()->accept(this);
-    dbg(op, lhs.ToString(), rhs.ToString());
+    // dbg(op, lhs.ToString(), rhs.ToString());
     // 当两个操作数都是`CTValue`
     // dbg("enter process visitEq2");
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
