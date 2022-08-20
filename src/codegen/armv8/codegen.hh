@@ -1732,7 +1732,7 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
             // 在栈上或使用malloc给数组分配空间，并赋值
             AddAsmCodeComment(data_underscore_init, "allocating memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
             int allocation_bytes = varPtr->type.elements_number() * 4;
-            if (allocation_bytes > 1 * 1000 * 1000) // call malloc for arrays bigger than 1MB
+            if (allocation_bytes > 2 * 1000 * 1000) // call malloc for arrays bigger than 2MB
             {
                 // 给全局非const数组malloc + memset
                 AddAsmCodeComment(data_underscore_init, "calling malloc & memset for big array", 1);
@@ -1852,7 +1852,7 @@ void PopPushEmit(vector<bool> &to_delete, const vector<AsmCode> &asm_insts)
         if (asm_insts[i].inst.i_typ != AsmInst::POP) {
             continue;
         }
-        if (asm_insts[i-1].inst.i_typ == AsmInst::BL || asm_insts[i-2].inst.i_typ == AsmInst::BL) {
+        if (asm_insts[i-1].inst.i_typ == AsmInst::BL || asm_insts[i-2].inst.i_typ == AsmInst::BL || asm_insts[i-3].inst.i_typ == AsmInst::BL) {
             continue;
         }
         // 找到push后的第一个非empty指令
@@ -1888,7 +1888,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         SIGNED_DIV_REM_IS_NEEDED
     }
 
-    ofs << "//19260817\n.cpu cortex-a72\n.arch armv8-a\n.fpu neon-fp-armv8\n.arch_extension crc\n";
+    ofs << "//20020523\n.cpu cortex-a72\n.arch armv8-a\n.fpu neon-fp-armv8\n.arch_extension crc\n";
 
     vector<AsmCode> data_init;
     vector<AsmCode> asm_insts(InitDotDataAndUnderscoreStart(ir, data_init));
