@@ -1842,6 +1842,40 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
     return dot_data;
 }
 
+void PopPushEmit(vector<bool> &to_delete, const vector<AsmCode> &asm_insts)
+{
+    for (int i = 0; i < asm_insts.size(); ++i) {
+        // 找到第一个pop
+        if (asm_insts[i].inst.i_typ != AsmInst::POP) {
+            continue;
+        }
+        if (asm_insts[i-1].inst.i_typ == AsmInst::BL || asm_insts[i-2].inst.i_typ == AsmInst::BL) {
+            continue;
+        }
+        // 找到push后的第一个非empty指令
+        int j = i + 1;
+        while (j < asm_insts.size() && asm_insts[j].inst.i_typ == AsmInst::EMPTY) {
+            ++j;
+        }
+        if (j < asm_insts.size() && asm_insts[j].inst.i_typ == AsmInst::PUSH && 
+        0 == strcmp(asm_insts[i].params.front().val.str, asm_insts[j].params.front().val.str)) {
+            to_delete[i] = true;
+            to_delete[j] = true;
+            if (asm_insts[i-1].inst.i_typ == AsmInst::ADD && asm_insts[j+1].inst.i_typ == AsmInst::SUB
+            && asm_insts[i-1].params.size() == 3 && asm_insts[j+1].params.size() == 3
+            && asm_insts[i-1].params[0].p_typ == Param::Reg && asm_insts[j+1].params[0].p_typ == Param::Reg
+            && asm_insts[i-1].params[0].val.r == sp && asm_insts[j+1].params[0].val.r == sp
+            && asm_insts[i-1].params[1].p_typ == Param::Reg && asm_insts[j+1].params[1].p_typ == Param::Reg
+            && asm_insts[i-1].params[1].val.r == sp && asm_insts[j+1].params[1].val.r == sp
+            && asm_insts[i-1].params[2].p_typ == Param::Imm_int && asm_insts[j+1].params[2].p_typ == Param::Imm_int
+            && asm_insts[i-1].params[2].val.i == 4 && asm_insts[j+1].params[2].val.i == 4) {
+                to_delete[i-1] = true;
+                to_delete[j+1] = true;
+            }
+        }
+    }
+}
+
 void GenerateAssembly(const string &asmfile, const CompUnit &ir)
 {
 
@@ -2057,9 +2091,15 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", 1));
     }
 
-    for (auto &&asm_inst : asm_insts)
+    vector<bool> to_delete(asm_insts.size(), false);
+    PopPushEmit(to_delete, asm_insts);
+
+    for (int i = 0; i < asm_insts.size(); ++i)
     {
-        ofs << asm_inst.ToString() << '\n';
+        if (to_delete[i]) {
+            continue;
+        }
+        ofs << asm_insts[i].ToString() << '\n';
     }
 
 }
