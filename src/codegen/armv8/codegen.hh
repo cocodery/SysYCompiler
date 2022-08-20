@@ -1301,7 +1301,11 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         // 移动（交换）寄存器
         for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)32); i < siz; ++i)
         {
-            while (!skip_because_is_ctv[CALL_INST_GET_ARGS_REGISTER_IDX(i)]
+            bool duplicate = false;
+            for (int j = 0; j < i; ++j)
+                if (should_be[CALL_INST_GET_ARGS_REGISTER_IDX(i)] == should_be[CALL_INST_GET_ARGS_REGISTER_IDX(j)])
+                    duplicate = true; // 多个参数共享同一个寄存器，暂时跳过它的交换
+            while (!duplicate && !skip_because_is_ctv[CALL_INST_GET_ARGS_REGISTER_IDX(i)]
             && registers[CALL_INST_GET_ARGS_REGISTER_IDX(i)] != should_be[CALL_INST_GET_ARGS_REGISTER_IDX(i)])
             {
                 int idx = 0;
@@ -1312,6 +1316,17 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
                 AddAsmCodeSwapRegisters(asm_insts, GET_ARGS_REGISTER(i), REGs((idx > 12) ? idx + 7 : idx), indent);
                 std::swap(registers[idx], registers[CALL_INST_GET_ARGS_REGISTER_IDX(i)]);
             }
+        }
+        /*cout << funcname << " should_be: ";
+        for (auto &&shit : should_be)
+            cout << shit << " ";
+        cout << endl;*/
+        // 移动“共享”的寄存器
+        for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)32); i < siz; ++i)
+        {
+            for (int j = 0; j < i; ++j)
+                if (should_be[CALL_INST_GET_ARGS_REGISTER_IDX(i)] == should_be[CALL_INST_GET_ARGS_REGISTER_IDX(j)])
+                    AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ARGS_REGISTER(i), GET_ARGS_REGISTER(j), indent);
         }
         // 移动常数，应该在交换寄存器之后进行
         for (size_t i = 0, siz = std::min(call_inst->args.size(), (size_t)32); i < siz; ++i)

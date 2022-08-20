@@ -14,11 +14,7 @@ int PassManager::get_depth(Scope *now_scope, int now_depth)
 bool PassManager::do_not_run_m2r_r2m(Function *funcPtr)
 {
     return (get_depth(funcPtr->main_scope, 1) > 8
-         || funcPtr->func_info.func_name == "pseudo_sha1"
-         || funcPtr->func_info.func_name == "fft"
-         || funcPtr->func_info.func_name == "memmove"
-         || funcPtr->func_info.func_name == "power"
-         || funcPtr->func_info.func_name == "multiply");
+         || funcPtr->func_info.func_name == "pseudo_sha1");
 }
 
 int PassManager::updateFuncInfo() {

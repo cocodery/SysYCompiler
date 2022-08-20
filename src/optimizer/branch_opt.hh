@@ -660,7 +660,8 @@ public:
         for (auto &&i: *phi2AllocaMap) {
             if (i.first == nullptr) return;
             Case (LLIR_PHI, phi_inst, i.first) {
-                if (phi_inst == nullptr);
+                if (phi_inst == nullptr)
+                    ;
                 // dbg(phi_inst->ToString());
                 for (auto &&j: phi_inst->srcs) {
                     
