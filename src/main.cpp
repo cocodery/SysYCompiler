@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
 
     // -------------------
 
-    //ir.GenerateLLIR(irfile);
+    ir.GenerateLLIR(irfile);
 
     // cout << "Compilation Complete" << endl;
 
