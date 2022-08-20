@@ -123,16 +123,9 @@ SRC GvnGcm::lookupOrAdd(int32_t idx, LLIR_BIN *bin_inst) {
     auto &&localValueTable = globalValueTable[idxMap[idx]];
     auto &&bin_inst_op = bin_inst->op;
     auto &&bin_inst_srcs = std::make_pair(bin_inst->src1, bin_inst->src2);
-    for (auto &&pair : localValueTable.bin2src) {
-        auto &&bin_op = pair.first.first;
-        auto &&bin_srcs = pair.first.second;
-        auto &&bin_dst = pair.second;
-        if (bin_inst_op == bin_op) {
-            if (bin_inst_srcs.first == bin_srcs.first && bin_inst_srcs.second == bin_srcs.second) {
-                return bin_dst;
-            }
-        }
-    }
+    auto &&lookup_result = localValueTable.bin2src.find({bin_inst_op, bin_inst_srcs});
+    if (lookup_result != localValueTable.bin2src.end())
+        return lookup_result->second;
     localValueTable.bin2src.insert({{bin_inst_op, bin_inst_srcs}, bin_inst->dst});
     return bin_inst->dst;
 }
@@ -141,16 +134,9 @@ SRC GvnGcm::lookupOrAdd(int32_t idx, LLIR_FBIN *fbin_inst) {
     auto &&localValueTable = globalValueTable[idxMap[idx]];
     auto &&fbin_inst_op = fbin_inst->op;
     auto &&fbin_inst_srcs = std::make_pair(fbin_inst->src1, fbin_inst->src2);
-    for (auto &&pair : localValueTable.bin2src) {
-        auto &&fbin_op = pair.first.first;
-        auto &&fbin_srcs = pair.first.second;
-        auto &&fbin_dst = pair.second;
-        if (fbin_inst_op == fbin_op) {
-            if (fbin_inst_srcs.first == fbin_srcs.first && fbin_inst_srcs.second == fbin_srcs.second) {
-                return fbin_dst;
-            }
-        }
-    }
+    auto &&lookup_result = localValueTable.bin2src.find({fbin_inst_op, fbin_inst_srcs});
+    if (lookup_result != localValueTable.bin2src.end())
+        return lookup_result->second;
     localValueTable.bin2src.insert({{fbin_inst_op, fbin_inst_srcs}, fbin_inst->dst});
     return fbin_inst->dst;
 }
@@ -159,16 +145,9 @@ SRC GvnGcm::lookupOrAdd(int32_t idx, LLIR_GEP *gep_inst) {
     auto &&localValueTable = globalValueTable[idxMap[idx]];
     auto &&gep_inst_op = GEP;
     auto &&gep_inst_srcs = std::make_pair(gep_inst->src, gep_inst->off);
-    for (auto &&pair : localValueTable.bin2src) {
-        auto &&gep_op = pair.first.first;
-        auto &&gep_srcs = pair.first.second;
-        auto &&gep_dst = pair.second;
-        if (gep_inst_op == gep_op) {
-            if (gep_inst_srcs.first == gep_srcs.first && gep_inst_srcs.second == gep_srcs.second) {
-                return gep_dst;
-            }
-        }
-    }
+    auto &&lookup_result = localValueTable.bin2src.find({gep_inst_op, gep_inst_srcs});
+    if (lookup_result != localValueTable.bin2src.end())
+        return lookup_result->second;
     gep_inst->dst.reg->type.is_array = true;
     localValueTable.bin2src.insert({{gep_inst_op, gep_inst_srcs}, gep_inst->dst});
     return gep_inst->dst;
@@ -177,22 +156,9 @@ SRC GvnGcm::lookupOrAdd(int32_t idx, LLIR_GEP *gep_inst) {
 SRC GvnGcm::lookupOrAdd(int32_t idx, LLIR_PHI *phi_inst) {
     auto &&localValueTable = globalValueTable[idxMap[idx]];
     auto &&phi_inst_srcs = phi_inst->srcs;
-    for (auto &&pair : localValueTable.phi2src) {
-        auto &&phi_srcs = pair.first;
-        auto &&phi_dst = pair.second;
-        if (phi_inst_srcs.size() == phi_srcs.size()) {
-            bool find = true;
-            for (int idxx = 0; idxx < phi_inst_srcs.size(); ++idxx) {
-                if (!(phi_inst_srcs[idxx].first == phi_srcs[idxx].first) || phi_inst_srcs[idxx].second != phi_srcs[idxx].second) {
-                    find = false;
-                    break;
-                }
-            }
-            if (find) {
-                return phi_dst;
-            }
-        }
-    }
+    auto &&lookup_result = localValueTable.phi2src.find(phi_inst_srcs);
+    if (lookup_result != localValueTable.phi2src.end())
+        return lookup_result->second;
     localValueTable.phi2src.insert({phi_inst_srcs, phi_inst->dst});
     return phi_inst->dst;
 }
@@ -201,22 +167,9 @@ SRC GvnGcm::lookupOrAdd(int32_t idx, LLIR_CALL *call_inst) {
     auto &&localValueTable = globalValueTable[idxMap[idx]];
     auto &&func_name = call_inst->func_info->func_name;
     auto &&func_args = call_inst->args;
-    for (auto &&pair : localValueTable.fun2src) {
-        auto &&func_rel = pair.first;
-        auto &&call_dst = pair.second;
-        if (func_rel.first == func_name) {
-            bool find = true;
-            for (int32_t idxx = 0; idxx < func_args.size(); ++idxx) {
-                if (!(func_args[idxx] == func_rel.second[idxx])) {
-                    find = false;
-                    break;
-                }
-            }
-            if (find) {
-                return call_dst;
-            }
-        }
-    }
+    auto &&lookup_result = localValueTable.fun2src.find(funcRel(func_name, func_args));
+    if (lookup_result != localValueTable.fun2src.end())
+        return lookup_result->second;
     localValueTable.fun2src.insert({funcRel(func_name, func_args), call_inst->dst});
     return call_inst->dst;
 }
