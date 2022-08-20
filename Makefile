@@ -135,9 +135,9 @@ asm:
 			$(ECHO) "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mLink Error\033[0m"
 		else
 			if [ -f "$${IN}" ]; then
-				timeout 10s ./exec <$${IN} 2>>$${LOG} >$${RES}
+				timeout 180s ./exec <$${IN} 2>>$${LOG} >$${RES}
 			else
-				timeout 10s ./exec 2>>$${LOG} >$${RES}
+				timeout 180s ./exec 2>>$${LOG} >$${RES}
 			fi
 			RETURN_VALUE=$$?
 			FINAL=`tail -c 1 $${RES}`
