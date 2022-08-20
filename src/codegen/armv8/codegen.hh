@@ -80,6 +80,12 @@ const char *LSL_HASHTAG_NUMBER(int number)
     return res->c_str();
 }
 
+const char *LSR_HASHTAG_NUMBER(int number)
+{
+    string *res = new string("lsr #" + std::to_string(number));
+    return res->c_str();
+}
+
 #define CTV_TO_WORD(_CTV_PTR) ((_CTV_PTR->type == TypeFloat) ? DoubleToWord(_CTV_PTR->float_value) : _CTV_PTR->int_value)
 
 #define GET_GLOBAL_PTR_NAME(_VAR_IDX) ((string(GLOB_PTR_PREFIX) + std::to_string(_VAR_IDX)).c_str())
@@ -590,13 +596,13 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
         }
         else if (_i_typ == AsmInst::SDIV && src2.val.i > 0) {
             if (src2.val.i == 2) {
-                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(31))}, indent));
+                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSR_HASHTAG_NUMBER(31))}, indent));
                 asm_insts.push_back(AsmCode(AsmInst::ASR, {Param(r), Param(r), Param(1)}, indent));
                 return;
             }
             else if (__builtin_popcount(src2.val.i) == 1) { // 4, 8, 16...
                 asm_insts.push_back(AsmCode(AsmInst::ASR, {Param(r), src1, Param(31)}, indent));
-                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, Param(r), Param(Param::Str, LSL_HASHTAG_NUMBER(33 - ffs(src2.val.i)))}, indent));
+                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, Param(r), Param(Param::Str, LSR_HASHTAG_NUMBER(33 - ffs(src2.val.i)))}, indent));
                 asm_insts.push_back(AsmCode(AsmInst::ASR, {Param(r), Param(r), Param(ffs(src2.val.i) - 1)}, indent));
                 return;
             }
