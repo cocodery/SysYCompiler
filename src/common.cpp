@@ -36,7 +36,7 @@ string BinOpToStr_int(BinOp op) {
     else if (op == MUL) return "mul";
     else if (op == DIV) return "sdiv";
     else if (op == REM) return "srem";
-    dbg("Unknown BinOp");
+    // dbg("Unknown BinOp");
     exit(EXIT_FAILURE);
 }
 
@@ -45,7 +45,7 @@ string BinOpToStr_float(BinOp op) {
     else if (op == SUB) return "fsub";
     else if (op == MUL) return "fmul";
     else if (op == DIV) return "fdiv";
-    dbg("Unknown BinOp");
+    // dbg("Unknown BinOp");
     exit(EXIT_FAILURE);
 }
 
@@ -55,7 +55,7 @@ BinOp StrToBinOp(string op) {
     else if (op == "*") return MUL;
     else if (op == "/") return DIV;
     else if (op == "%") return REM;
-    dbg("Unknown BinOp");
+    // dbg("Unknown BinOp");
     exit(EXIT_FAILURE);
 }
 
@@ -64,7 +64,7 @@ string RelOpToStr_int(RelOp op) {
     else if (op == LEQ) return "sle";
     else if (op == EQU) return "eq";
     else if (op == NEQ) return "ne";
-    dbg("Unknown RelOp");
+    // dbg("Unknown RelOp");
     exit(EXIT_FAILURE);
 }
 
@@ -73,7 +73,7 @@ string RelOpToStr_float(RelOp op) {
     else if (op == LEQ) return "ole";
     else if (op == EQU) return "oeq";
     else if (op == NEQ) return "one";
-    dbg("Unknown RelOp");
+    // dbg("Unknown RelOp");
     exit(EXIT_FAILURE);
 }
 
@@ -82,7 +82,7 @@ RelOp StrToRelOp(string op) {
     else if (op == "<=") return LEQ;
     else if (op == "==") return EQU;
     else if (op == "!=") return NEQ;
-    dbg("Unknown RelOp");
+    // dbg("Unknown RelOp");
     exit(EXIT_FAILURE);
 }
 
@@ -90,7 +90,7 @@ DeclType getDeclType(string type_str) {
     if (type_str == "int") return TypeInt;
     else if (type_str == "float") return TypeFloat;
     else if (type_str == "void") return TypeVoid;
-    dbg("Unknown String DeclType");
+    // dbg("Unknown String DeclType");
     exit(EXIT_FAILURE);
 }
 
@@ -103,6 +103,6 @@ string DeclTypeToStr(DeclType type) {
         case TypeByte: return "i8";
         default: break;
     }
-    dbg("Unknown Declare Type");
+    // dbg("Unknown Declare Type");
     exit(EXIT_FAILURE);
 }

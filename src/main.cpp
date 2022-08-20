@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     visitor.visitCompUnit(root);
     if (visitor.have_main_func == false) {
-        dbg("No main Function Found");
+        // dbg("No main Function Found");
         // exit(EXIT_FAILURE);
     }
 
