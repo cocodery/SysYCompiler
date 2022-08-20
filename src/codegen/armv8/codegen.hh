@@ -1677,7 +1677,7 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
             // 在栈上或使用malloc给数组分配空间，并赋值
             AddAsmCodeComment(data_underscore_init, "allocating memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
             int allocation_bytes = varPtr->type.elements_number() * 4;
-            if (allocation_bytes > 10 * 1024 * 1024) // call malloc for arrays bigger than 10MB
+            if (allocation_bytes > 4 * 1024 * 1024) // call malloc for arrays bigger than 4MB
             {
                 // 给全局非const数组malloc + memset
                 AddAsmCodeComment(data_underscore_init, "calling malloc & memset for big array", 1);
