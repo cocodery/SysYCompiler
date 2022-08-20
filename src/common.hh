@@ -1,7 +1,7 @@
 #pragma once
 
-// #define DBG_MARCO_NO_WARNING
-// #include "dbg.h"
+#define DBG_MARCO_NO_WARNING
+#include "dbg.h"
 
 #define FOUR_SPACES "    "
 #define EIGHT_SPACES "        "

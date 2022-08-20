@@ -15,12 +15,14 @@ public:
 
     static bool isRecursive(FunctionInfo *, FunctionInfo *, set<FunctionInfo *> &);
     static bool sideEffect(Function *);
+    int get_depth(Scope *now_scope, int now_depth);
 
     bool inLinable(string func_name, FuncMap &func_map);
     void initInlineMap(vector<SRC> caller_args, vector<pair<string, VarType>> callee_args);
     SRC findInMap(SRC src);
     list<Inst *> insertBlock(BasicBlock *block, SRC &dst);
-    void simpleInline(BasicBlock *block, Function *func);
+    void simpleInline(BasicBlock *block, Function *callee_func);
+    void ctrlflowInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *callee_func);
     void excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *func);
     void runFuncInline(FuncMap &func_map);
 };
