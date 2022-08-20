@@ -76,6 +76,7 @@ void AllocateRegistersForFunction(Function &func)
                 // 无可用寄存器，把活跃区间右侧最靠后的变量溢出，腾出寄存器
                 if (availRegs.empty())
                 {
+                    assert(0 && "register spilled");
                     auto &&spilled_var_idx = activeIntervals.back();
                     printf(FOUR_SPACES RED "var %d spilled!\n" RESET, spilled_var_idx);
                     if (varIndex != spilled_var_idx)
