@@ -727,8 +727,8 @@ void AddAsmCodeFloatBin(vector<AsmCode> &asm_insts, BinOp _bin_typ, REGs r, cons
     REGs src1_reg, src2_reg, res_reg;
     if (src1.p_typ == Param::Reg) {
         if (IsRReg(src1.val.r)) {
-            asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(FLOAT_BINOP_REGISTER_1), src1}, indent));
             src1_reg = FLOAT_BINOP_REGISTER_1;
+            AddAsmCodeMoveRegisterToRegister(asm_insts, src1_reg, src1.val.r, indent);
         }
         else {
             src1_reg = src1.val.r;
@@ -740,8 +740,8 @@ void AddAsmCodeFloatBin(vector<AsmCode> &asm_insts, BinOp _bin_typ, REGs r, cons
 
     if (src2.p_typ == Param::Reg) {
         if (IsRReg(src2.val.r)) {
-            asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(FLOAT_BINOP_REGISTER_2), src2}, indent));
             src2_reg = FLOAT_BINOP_REGISTER_2;
+            AddAsmCodeMoveRegisterToRegister(asm_insts, src2_reg, src2.val.r, indent);
         }
         else {
             src2_reg = src2.val.r;
@@ -792,27 +792,46 @@ void AddAsmCodeFloatBin(vector<AsmCode> &asm_insts, BinOp _bin_typ, REGs r, cons
 
 void AddAsmCodeFloatCmp(vector<AsmCode> &asm_insts, RelOp op, const Param &src1, const Param &src2, int indent)
 {
+    REGs src1_reg, src2_reg;
+    if (src1.p_typ == Param::Reg) {
+        if (IsRReg(src1.val.r)) {
+            src1_reg = FLOAT_BINOP_REGISTER_1;
+            AddAsmCodeMoveRegisterToRegister(asm_insts, src1_reg, src1.val.r, indent);
+        }
+        else {
+            src1_reg = src1.val.r;
+        }
+    }
+    else {
+        src1_reg = FLOAT_BINOP_REGISTER_1;
+    }
+
+    if (src2.p_typ == Param::Reg) {
+        if (IsRReg(src2.val.r)) {
+            src2_reg = FLOAT_BINOP_REGISTER_2;
+            AddAsmCodeMoveRegisterToRegister(asm_insts, src2_reg, src2.val.r, indent);
+        }
+        else {
+            src2_reg = src2.val.r;
+        }
+    }
+    else {
+        src2_reg = FLOAT_BINOP_REGISTER_2;
+    }
+
     if (src1.p_typ == Param::Reg && src2.p_typ == Param::Reg) // both reg
     {
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(FLOAT_BINOP_REGISTER_1), src1}, indent));
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(FLOAT_BINOP_REGISTER_2), src2}, indent));
-        asm_insts.push_back(AsmCode(AsmInst::VCMP, {Param(FLOAT_BINOP_REGISTER_1), Param(FLOAT_BINOP_REGISTER_2)}, indent));
+        asm_insts.push_back(AsmCode(AsmInst::VCMP, {Param(src1_reg), Param(src2_reg)}, indent));
     }
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_float) // src1 is reg, src2 is ctv
     {
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(FLOAT_BINOP_REGISTER_1), src1}, indent)); // 存src1原始值
-        AddAsmCodeMoveIntToRegister(asm_insts, src1.val.r, DoubleToWord(src2.val.f), indent);        // 借用src1
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(FLOAT_BINOP_REGISTER_2), src1}, indent)); // 借用src1
-        asm_insts.push_back(AsmCode(AsmInst::VCMP, {Param(FLOAT_BINOP_REGISTER_1), Param(FLOAT_BINOP_REGISTER_2)}, indent));
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {src1, Param(FLOAT_BINOP_REGISTER_1)}, indent)); // 取src1原始值
+        AddAsmCodeMoveIntToRegister(asm_insts, src2_reg, DoubleToWord(src2.val.f), indent); 
+        asm_insts.push_back(AsmCode(AsmInst::VCMP, {Param(src1_reg), Param(src2_reg)}, indent));
     }
     else if (src1.p_typ == Param::Imm_float && src2.p_typ == Param::Reg) // src1 is ctv, src2 is reg
     {
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(FLOAT_BINOP_REGISTER_2), src2}, indent)); // 存src2原始值
-        AddAsmCodeMoveIntToRegister(asm_insts, src2.val.r, DoubleToWord(src1.val.f), indent);        // 借用src2
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(FLOAT_BINOP_REGISTER_1), src2}, indent)); // 借用src2
-        asm_insts.push_back(AsmCode(AsmInst::VCMP, {Param(FLOAT_BINOP_REGISTER_1), Param(FLOAT_BINOP_REGISTER_2)}, indent));
-        asm_insts.push_back(AsmCode(AsmInst::VMOV, {src2, Param(FLOAT_BINOP_REGISTER_2)}, indent)); // 取src2原始值
+        AddAsmCodeMoveIntToRegister(asm_insts, src1_reg, DoubleToWord(src1.val.f), indent);
+        asm_insts.push_back(AsmCode(AsmInst::VCMP, {Param(src1_reg), Param(src2_reg)}, indent));
     }
     else if (src1.p_typ == Param::Imm_float && src2.p_typ == Param::Imm_float)// both ctv
     {
@@ -1585,11 +1604,26 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         //cout << get_tabs() << itf_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, itf_inst->ToString(), indent);
 
+        REGs src_reg, dst_reg;
+        if (IsRReg(GET_ALLOCATION_RESULT(funcPtr, itf_inst->src.reg->reg_id))) {
+            src_reg = FLOAT_BINOP_REGISTER_1;
+        }
+        else {
+            src_reg = GET_ALLOCATION_RESULT(funcPtr, itf_inst->src.reg->reg_id);
+        }
+        if (IsRReg(GET_ALLOCATION_RESULT(funcPtr, itf_inst->dst.reg->reg_id))) {
+            dst_reg = FLOAT_BINOP_REGISTER_1;
+        }
+        else {
+            dst_reg = GET_ALLOCATION_RESULT(funcPtr, itf_inst->dst.reg->reg_id);
+        }
+
+
         if (itf_inst->src.reg) // virtreg
         {
-            asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(FLOAT_BINOP_REGISTER_1), GET_ALLOCATION_RESULT(funcPtr, itf_inst->src.reg->reg_id)}, indent));
-            asm_insts.push_back(AsmCode(AsmInst::VCVT_ITOF, {Param(FLOAT_BINOP_REGISTER_1), Param(FLOAT_BINOP_REGISTER_1)}, indent));
-            asm_insts.push_back(AsmCode(AsmInst::VMOV, {GET_ALLOCATION_RESULT(funcPtr, itf_inst->dst.reg->reg_id), Param(FLOAT_BINOP_REGISTER_1)}, indent));
+            AddAsmCodeMoveRegisterToRegister(asm_insts, src_reg, GET_ALLOCATION_RESULT(funcPtr, itf_inst->src.reg->reg_id), indent);
+            asm_insts.push_back(AsmCode(AsmInst::VCVT_ITOF, {Param(dst_reg), Param(src_reg)}, indent));
+            AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, itf_inst->dst.reg->reg_id), dst_reg, indent);
         }
         else // ctv
             AddAsmCodeMoveIntToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, itf_inst->dst.reg->reg_id), IntToFloat(itf_inst->src.ctv->int_value), indent);
@@ -1605,11 +1639,25 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         //cout << get_tabs() << fti_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, fti_inst->ToString(), indent);
 
+        REGs src_reg, dst_reg;
+        if (IsRReg(GET_ALLOCATION_RESULT(funcPtr, fti_inst->src.reg->reg_id))) {
+            src_reg = FLOAT_BINOP_REGISTER_1;
+        }
+        else {
+            src_reg = GET_ALLOCATION_RESULT(funcPtr, fti_inst->src.reg->reg_id);
+        }
+        if (IsRReg(GET_ALLOCATION_RESULT(funcPtr, fti_inst->dst.reg->reg_id))) {
+            dst_reg = FLOAT_BINOP_REGISTER_1;
+        }
+        else {
+            dst_reg = GET_ALLOCATION_RESULT(funcPtr, fti_inst->dst.reg->reg_id);
+        }
+
         if (fti_inst->src.reg) // virtreg
         {
-            asm_insts.push_back(AsmCode(AsmInst::VMOV, {Param(FLOAT_BINOP_REGISTER_1), GET_ALLOCATION_RESULT(funcPtr, fti_inst->src.reg->reg_id)}, indent));
-            asm_insts.push_back(AsmCode(AsmInst::VCVT_FTOI, {Param(FLOAT_BINOP_REGISTER_1), Param(FLOAT_BINOP_REGISTER_1)}, indent));
-            asm_insts.push_back(AsmCode(AsmInst::VMOV, {GET_ALLOCATION_RESULT(funcPtr, fti_inst->dst.reg->reg_id), Param(FLOAT_BINOP_REGISTER_1)}, indent));
+            AddAsmCodeMoveRegisterToRegister(asm_insts, src_reg, GET_ALLOCATION_RESULT(funcPtr, fti_inst->src.reg->reg_id), indent);
+            asm_insts.push_back(AsmCode(AsmInst::VCVT_FTOI, {Param(dst_reg), Param(src_reg)}, indent));
+            AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, fti_inst->dst.reg->reg_id), dst_reg, indent);
         }
         else // ctv
             AddAsmCodeMoveIntToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, fti_inst->dst.reg->reg_id), (int)fti_inst->src.ctv->float_value, indent);
