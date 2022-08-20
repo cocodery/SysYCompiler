@@ -286,14 +286,24 @@ void Function::printCallInfo() {
 }
 
 void Function::buildAllBlocksCFG() {
+    all_blocks.front()->succs.clear();
+    all_blocks.back()->preds.clear();
+    //cout << "function: " << func_info.func_name << endl;
     for (auto &&bb_node : all_blocks) {
+        //cout << "idx: " << bb_node->bb_idx << endl;
         auto &&last_inst = bb_node->lastInst();
         if (last_inst == nullptr) {
+            //cout << "no inst\n";
             continue;
-        } else if (auto &&br_inst = dynamic_cast<LLIR_BR *>(last_inst); br_inst != nullptr) {
+        } else if (auto &&br_inst = dynamic_cast<LLIR_BR *>(last_inst)) {
+            //cout << "has_br\n";
             // BB-preds都是顺序填入的
             // 没有preds的BB属于不可达BB
             if (bb_node->valuable) {
+                if (all_blocks.front()->succs.empty()) {
+                    all_blocks.front()->succs.insert({bb_node->bb_idx, bb_node});
+                    bb_node->preds.insert({0, all_blocks.front()});
+                }
                 BasicBlock *child_bb1 = getSpecificIdxBb(br_inst->tar_true);
                 bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
                 child_bb1->preds.insert({bb_node->bb_idx, bb_node});
@@ -303,6 +313,12 @@ void Function::buildAllBlocksCFG() {
                     child_bb2->preds.insert({bb_node->bb_idx, bb_node});
                 }
             }
+        } else if (auto &&ret_inst = dynamic_cast<LLIR_RET *>(last_inst)) {
+                // 基本块的最后一个指令是`return instruction`
+                // 当前作用域在此基本块之后的`elements`全部无效
+                //cout << "has_return\n";
+                bb_node->succs.insert({-1, all_blocks.back()});
+                all_blocks.back()->preds.insert({bb_node->bb_idx, bb_node});
         }
     }
 }
