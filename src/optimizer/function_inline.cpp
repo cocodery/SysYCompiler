@@ -280,7 +280,7 @@ list<BasicBlock *> FuncInline::genInlineBlocks(Function *callee_func, SRC &dst) 
 
 void FuncInline::ctrlflowInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *callee_func) {
     auto &&callee_func_info = callee_func->func_info;
-    list<BasicBlock *> bb_list;
+    vector<BasicBlock *> bb_list;
     for (auto &&bb_iter = all_block.begin(); bb_iter != all_block.end(); ++bb_iter) {
         auto &&bb = *bb_iter;
         if (bb->bb_idx != block->bb_idx) {
@@ -323,7 +323,7 @@ void FuncInline::ctrlflowInline(BasicBlock *block, vector<BasicBlock *> &all_blo
             }
         }
     }
-    all_block = vector<BasicBlock *>(bb_list.begin(), bb_list.end());
+    all_block.assign(bb_list.begin(), bb_list.end());
 }
 
 void FuncInline::excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *func) {
@@ -341,24 +341,20 @@ void FuncInline::excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_b
 void FuncInline::runFuncInline(FuncMap &func_map) {
     if (function->func_info.called_funcs.size() == 0) return;
     auto &&all_blocks = function->all_blocks;
-    for (auto &&block : all_blocks) {
-        bool changed = true;
-        while (changed) {
-            for (auto &&inst : block->basic_block) {
-                Case (LLIR_CALL, call_inst, inst) {
-                    string callee_name = call_inst->func_info->func_name;
-                    if (inLinable(callee_name, func_map)) {
-                        dbg(call_inst->ToString());
-                        auto &&inlined_func = func_map[callee_name];
-                        // init caller-args --> callee-args
-                        dbg("inlined function is " + inlined_func->func_info.func_name);
-                        excuteFuncInline(block, all_blocks, inlined_func);
-                        changed = true;
-                        break;
-                    }
+    for (auto i_block = 0; i_block < all_blocks.size(); ++i_block) {
+        auto &&block = all_blocks[i_block];
+        for (auto iterator_inst = block->basic_block.begin(); iterator_inst != block->basic_block.end(); ++iterator_inst) {
+            Case (LLIR_CALL, call_inst, *iterator_inst) {
+                string callee_name = call_inst->func_info->func_name;
+                if (inLinable(callee_name, func_map)) {
+                    dbg(call_inst->ToString());
+                    auto &&inlined_func = func_map[callee_name];
+                    // init caller-args --> callee-args
+                    dbg("inlined function is " + inlined_func->func_info.func_name);
+                    excuteFuncInline(block, all_blocks, inlined_func);
+                    break;
                 }
             }
-            changed = false;
         }
     }
 }
