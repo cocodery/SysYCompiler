@@ -1888,7 +1888,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         SIGNED_DIV_REM_IS_NEEDED
     }
 
-    ofs << ".cpu cortex-a72\n.arch armv8-a\n.fpu neon-fp-armv8\n.arch_extension crc\n";
+    ofs << "//19260817\n.cpu cortex-a72\n.arch armv8-a\n.fpu neon-fp-armv8\n.arch_extension crc\n";
 
     vector<AsmCode> data_init;
     vector<AsmCode> asm_insts(InitDotDataAndUnderscoreStart(ir, data_init));
