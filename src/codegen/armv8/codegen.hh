@@ -588,12 +588,12 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
                 return;
             }
         }
-        else if (_i_typ == AsmInst::SDIV) {
+        /*else if (_i_typ == AsmInst::SDIV) {
             if (__builtin_popcount(src2.val.i) == 1) { // 2, 4, 8, 16...
                 asm_insts.push_back(AsmCode(AsmInst::ASR, {Param(r), src1, Param(ffs(src2.val.i) - 1)}, indent));
                 return;
             }
-        }
+        }*/
         AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
         asm_insts.push_back(AsmCode(_i_typ, {Param(r), src1, Param(r)}, indent));
     }
