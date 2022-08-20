@@ -291,7 +291,6 @@ void Function::buildAllBlocksCFG() {
         if (last_inst == nullptr) {
             continue;
         } else if (auto &&br_inst = dynamic_cast<LLIR_BR *>(last_inst); br_inst != nullptr) {
-            bb_node->valuable = (bb_node->preds.size() != 0);
             // BB-preds都是顺序填入的
             // 没有preds的BB属于不可达BB
             if (bb_node->valuable) {
