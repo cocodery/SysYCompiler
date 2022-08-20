@@ -588,9 +588,16 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
                 return;
             }
         }
-        else if (_i_typ == AsmInst::SDIV) {
-            if (__builtin_popcount(src2.val.i) == 1) { // 2, 4, 8, 16...
-                asm_insts.push_back(AsmCode(AsmInst::ASR, {Param(r), src1, Param(ffs(src2.val.i) - 1)}, indent));
+        else if (_i_typ == AsmInst::SDIV && src2.val.i > 0) {
+            if (src2.val.i == 2) {
+                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, src1, Param(Param::Str, LSL_HASHTAG_NUMBER(31))}, indent));
+                asm_insts.push_back(AsmCode(AsmInst::ASR, {Param(r), Param(r), Param(Param::Str, LSL_HASHTAG_NUMBER(1))}, indent));
+                return;
+            }
+            else if (__builtin_popcount(src2.val.i) == 1) { // 4, 8, 16...
+                asm_insts.push_back(AsmCode(AsmInst::ASR, {Param(r), src1, Param(31)}, indent));
+                asm_insts.push_back(AsmCode(AsmInst::ADD, {Param(r), src1, Param(r), Param(Param::Str, LSL_HASHTAG_NUMBER(33 - ffs(src2.val.i)))}, indent));
+                asm_insts.push_back(AsmCode(AsmInst::ASR, {Param(r), Param(r), Param(Param::Str, LSL_HASHTAG_NUMBER(ffs(src2.val.i) - 1))}, indent));
                 return;
             }
         }
