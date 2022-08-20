@@ -123,36 +123,6 @@ const char *LSR_HASHTAG_NUMBER(int number)
 
 #define R_REGISTER_IN_BRACES(x) ((string("{r") + std::to_string(x) + "}").c_str())
 
-#define IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(_BORROW, _X, _INST_PTR) \
-    (_BORROW ? _X : *_INST_PTR->availRegs.begin())
-
-#define IF_BORROW_SECOND_USE_X_OR_USE_LAST_AVAIL_REG(_BORROW_SECOND, _X, _INST_PTR) \
-    (_BORROW_SECOND ? _X : *_INST_PTR->availRegs.rbegin())
-
-#define DECLEAR_BORROW_PUSH(_INST_PTR, _REG) \
-    bool borrow = false;\
-    if (_INST_PTR->availRegs.empty())\
-    {\
-        AddAsmCodePushRegisters(asm_insts, {_REG}, indent);\
-        borrow = true;\
-    }
-
-#define DECLEAR_BORROW_SECOND_PUSH(_INST_PTR, _REG) \
-    bool borrow_second = false;\
-    if (_INST_PTR->availRegs.size() < 2)\
-    {\
-        AddAsmCodePushRegisters(asm_insts, {_REG}, indent);\
-        borrow_second = true;\
-    }
-
-#define DECLEAR_BORROW_POP(_REG) \
-    if (borrow)\
-        AddAsmCodePopRegisters(asm_insts, {_REG}, indent);
-
-#define DECLEAR_BORROW_SECOND_POP(_REG) \
-    if (borrow_second)\
-        AddAsmCodePopRegisters(asm_insts, {_REG}, indent);
-
 #define GET_BB_NAME(_FUNC_PTR, _BB_IDX) \
     ((_FUNC_PTR->func_info.func_name+"_block_"+std::to_string(_BB_IDX)).c_str())
 

@@ -11,11 +11,33 @@
 #include "common.hh"
 #include "ir.hh"
 
+bool InstNeedsSrcPreserved(Inst* instPtr)
+{
+    Case (LLIR_BIN, bin_inst, instPtr) {
+        return true;
+    }
+    Case (LLIR_LOAD, load_inst, instPtr) {
+        return true;
+    }
+    Case (LLIR_STORE, store_inst, instPtr) {
+        return true;
+    }
+    Case (LLIR_GEP, gep_inst, instPtr) {
+        return true;
+    }
+    return false;
+}
+
 void AllocateRegistersForFunction(Function &func)
 {
     // TODO : SPILL
     printf("In Function \"%s\":\n", func.func_info.func_name.c_str());
-    
+
+    // 初始化all_insts
+    for (auto &&bbPtr : func.all_blocks)
+        for (auto &&instPtr : bbPtr->basic_block)
+            func.all_insts.push_back(instPtr);
+
     CLAIM_AVAIL_REGS
     list<int32_t> activeIntervals;
     
@@ -46,6 +68,10 @@ void AllocateRegistersForFunction(Function &func)
     {
         auto &&varIndex = interval.first;
         auto &&varRange = interval.second;
+
+        // 如果src的值在此它的最后一次使用时不需要保留，那就把他的live_interval - 1
+        if (InstNeedsSrcPreserved(func.all_insts[varRange.second]))
+            --varRange.second;
 
         // 该变量已分配，跳过（r0-r3, s4-s31传参寄存器）
         if (func.AllocationResult.find(varIndex) != func.AllocationResult.end())
@@ -96,11 +122,6 @@ void AllocateRegistersForFunction(Function &func)
             }
         }
     }
-
-    // 初始化all_insts
-    for (auto &&bbPtr : func.all_blocks)
-        for (auto &&instPtr : bbPtr->basic_block)
-            func.all_insts.push_back(instPtr);
 
     // 给每个指令更新“在此处空闲的寄存器”信息
     for (auto &&interval : func.LiveInterval)
