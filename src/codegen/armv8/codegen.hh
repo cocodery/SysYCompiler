@@ -1199,7 +1199,15 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
 
         //cout << get_tabs() << gep_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, gep_inst->ToString(), indent);
+
+        bool offset_is_zero = gep_inst->off.ctv && gep_inst->off.ctv->int_value == 0;
+        bool src_comes_from_gep = gep_inst->src.reg->is_from_gep || gep_inst->src.reg->type.is_args && gep_inst->src.reg->type.is_array;
         
+        if (offset_is_zero && src_comes_from_gep) {
+            AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id), GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id), indent);
+            return;
+        }
+
         // dst = *(src + off)
         REGs addr_reg, offs_reg;
         bool borrow_addr = false, borrow_offs = false, addr_got_first = false;
@@ -1226,10 +1234,8 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         else
             addr_reg = GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id);
 
-        bool offset_is_zero = false;
-
-        // src是从gep来的，直接是元素指针
-        if (gep_inst->src.reg->is_from_gep || gep_inst->src.reg->type.is_args && gep_inst->src.reg->type.is_array)
+        // src是从gep来的，直接是元素指针，但offset不为0
+        if (src_comes_from_gep)
             AddAsmCodeMoveRegisterToRegister(asm_insts, addr_reg, GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id), indent);
         else // src是从alloca来的，没有被分配寄存器，需要分配一下寄存器(直接用dst)，再把指针load进来，此时offset一定为0
         {
@@ -1238,9 +1244,6 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             if (borrow_addr) AddAsmCodePopRegisters(asm_insts, {addr_reg}, indent);
             return;
         }
-
-        if (gep_inst->off.ctv && gep_inst->off.ctv->int_value == 0)
-            offset_is_zero = true;
 
         // 加上偏移量
         if (!offset_is_zero)

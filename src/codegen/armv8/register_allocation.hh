@@ -13,6 +13,9 @@
 
 bool InstNeedsSrcPreserved(Inst* instPtr)
 {
+    Case (LLIR_FBIN, fbin_inst, instPtr) {
+        return true;
+    }
     Case (LLIR_BIN, bin_inst, instPtr) {
         return true;
     }
@@ -23,7 +26,8 @@ bool InstNeedsSrcPreserved(Inst* instPtr)
         return true;
     }
     Case (LLIR_GEP, gep_inst, instPtr) {
-        return true;
+        if (gep_inst->off.ctv && gep_inst->off.ctv->int_value == 0) return false;
+        return gep_inst->src.reg->is_from_gep || gep_inst->src.reg->type.is_args && gep_inst->src.reg->type.is_array;
     }
     return false;
 }
@@ -69,10 +73,6 @@ void AllocateRegistersForFunction(Function &func)
         auto &&varIndex = interval.first;
         auto &&varRange = interval.second;
 
-        // 如果src的值在此它的最后一次使用时不需要保留，那就把他的live_interval - 1
-        if (InstNeedsSrcPreserved(func.all_insts[varRange.second]))
-            --varRange.second;
-
         // 该变量已分配，跳过（r0-r3, s4-s31传参寄存器）
         if (func.AllocationResult.find(varIndex) != func.AllocationResult.end())
             continue;
@@ -81,7 +81,9 @@ void AllocateRegistersForFunction(Function &func)
         for (auto &&activeIntervalIndexIt = activeIntervals.begin();
             activeIntervalIndexIt != activeIntervals.end();)
         {
-            if (func.LiveInterval.at(*activeIntervalIndexIt).second < varRange.first)
+            auto &&rangeEnd = func.LiveInterval.at(*activeIntervalIndexIt).second;
+            bool src_needed = InstNeedsSrcPreserved(func.all_insts[rangeEnd]);
+            if (src_needed && rangeEnd < varRange.first || !src_needed && rangeEnd <= varRange.first)
             {
                 availRegs.insert(func.AllocationResult.at(*activeIntervalIndexIt));
                 activeIntervalIndexIt = activeIntervals.erase(activeIntervalIndexIt);
