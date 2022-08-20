@@ -1605,11 +1605,11 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         AddAsmCodeComment(asm_insts, itf_inst->ToString(), indent);
 
         REGs src_reg, dst_reg;
-        if (IsRReg(GET_ALLOCATION_RESULT(funcPtr, itf_inst->src.reg->reg_id))) {
-            src_reg = FLOAT_BINOP_REGISTER_1;
+        if (itf_inst->src.reg && IsSReg(GET_ALLOCATION_RESULT(funcPtr, itf_inst->src.reg->reg_id))) {
+            src_reg = GET_ALLOCATION_RESULT(funcPtr, itf_inst->src.reg->reg_id);
         }
         else {
-            src_reg = GET_ALLOCATION_RESULT(funcPtr, itf_inst->src.reg->reg_id);
+            src_reg = FLOAT_BINOP_REGISTER_1;
         }
         if (IsRReg(GET_ALLOCATION_RESULT(funcPtr, itf_inst->dst.reg->reg_id))) {
             dst_reg = FLOAT_BINOP_REGISTER_1;
@@ -1640,11 +1640,11 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         AddAsmCodeComment(asm_insts, fti_inst->ToString(), indent);
 
         REGs src_reg, dst_reg;
-        if (IsRReg(GET_ALLOCATION_RESULT(funcPtr, fti_inst->src.reg->reg_id))) {
-            src_reg = FLOAT_BINOP_REGISTER_1;
+        if (fti_inst->src.reg && IsSReg(GET_ALLOCATION_RESULT(funcPtr, fti_inst->src.reg->reg_id))) {
+            src_reg = GET_ALLOCATION_RESULT(funcPtr, fti_inst->src.reg->reg_id);
         }
         else {
-            src_reg = GET_ALLOCATION_RESULT(funcPtr, fti_inst->src.reg->reg_id);
+            src_reg = FLOAT_BINOP_REGISTER_1;
         }
         if (IsRReg(GET_ALLOCATION_RESULT(funcPtr, fti_inst->dst.reg->reg_id))) {
             dst_reg = FLOAT_BINOP_REGISTER_1;
