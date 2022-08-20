@@ -25,7 +25,7 @@ using namespace antlr4;
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    freopen("/dev/null", "w", stdout);
+    //freopen("/dev/null", "w", stdout);
 
     int opt = 0;
     bool print_usage = false;

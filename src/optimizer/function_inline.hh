@@ -27,4 +27,5 @@ public:
     void ctrlflowInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *callee_func);
     void excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *func);
     void runFuncInline(FuncMap &func_map);
+    void buildAllBlocksCFG(Function *funcPtr);
 };

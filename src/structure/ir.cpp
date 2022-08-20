@@ -233,10 +233,10 @@ void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
                 // 没有preds的BB属于不可达BB
                 if (bb_node->valuable) {
                     BasicBlock *child_bb1 = all_blocks[br_inst->tar_true  - 1];
-                    BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
                     bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
                     child_bb1->preds.insert({bb_node->bb_idx, bb_node});
                     if (br_inst->has_cond) {
+                        BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
                         bb_node->succs.insert({child_bb2->bb_idx, child_bb2});
                         child_bb2->preds.insert({bb_node->bb_idx, bb_node});
                     }
@@ -283,6 +283,29 @@ void Function::printCallInfo() {
         llir << "`no function be called`";
     }
     llir << endl;
+}
+
+void Function::buildAllBlocksCFG() {
+    for (auto &&bb_node : all_blocks) {
+        auto &&last_inst = bb_node->lastInst();
+        if (last_inst == nullptr) {
+            continue;
+        } else if (auto &&br_inst = dynamic_cast<LLIR_BR *>(last_inst); br_inst != nullptr) {
+            bb_node->valuable = (bb_node->preds.size() != 0);
+            // BB-preds都是顺序填入的
+            // 没有preds的BB属于不可达BB
+            if (bb_node->valuable) {
+                BasicBlock *child_bb1 = getSpecificIdxBb(br_inst->tar_true);
+                bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
+                child_bb1->preds.insert({bb_node->bb_idx, bb_node});
+                if (br_inst->has_cond) {
+                    BasicBlock *child_bb2 = getSpecificIdxBb(br_inst->tar_false);
+                    bb_node->succs.insert({child_bb2->bb_idx, child_bb2});
+                    child_bb2->preds.insert({bb_node->bb_idx, bb_node});
+                }
+            }
+        }
+    }
 }
 
 void Function::buildCFG() {
