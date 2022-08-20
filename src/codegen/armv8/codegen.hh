@@ -525,10 +525,16 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     {
         assert(_i_typ == AsmInst::SUB);
         Param p2 = src2;
-        auto bytes = SplitInt(src1.val.i);
+        auto pos = SplitInt(src1.val.i), neg = SplitInt(-src1.val.i);
+        auto &&bytes = (neg.size() + 1 < pos.size()) ? neg : pos;
+        auto &&binop = (neg.size() + 1 < pos.size()) ? AsmInst::SUB : AsmInst::RSB;
+        if (neg.size() + 1 < pos.size()) {
+            asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(0)}, indent));
+            p2 = Param(r);
+        }
         for (auto &&byte : bytes)
         {
-            asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(byte)}, indent));
+            asm_insts.push_back(AsmCode(binop, {Param(r), p2, Param(byte)}, indent));
             p2 = Param(r);
         }
     }
