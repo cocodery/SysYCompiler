@@ -10,6 +10,7 @@ public:
     Function *function;
 
     map<pair<int32_t, bool>, SRC> inlineMap;
+    map<int32_t, int32_t> bbIdxMap;
 public:
     FuncInline(Function *func) : function(func) { }
 
@@ -22,6 +23,7 @@ public:
     SRC findInMap(SRC src);
     list<Inst *> insertBlock(BasicBlock *block, SRC &dst);
     void simpleInline(BasicBlock *block, Function *callee_func);
+    list<BasicBlock *> genInlineBlocks(Function *callee_func, SRC &dst);
     void ctrlflowInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *callee_func);
     void excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *func);
     void runFuncInline(FuncMap &func_map);
