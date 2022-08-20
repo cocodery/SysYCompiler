@@ -1103,7 +1103,7 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         }
 
         // 如果是取模运算，还要给src2借用寄存器
-        if (bin_inst->op == BinOp::REM && src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int && __builtin_popcount(src2.val.i) != 1)
+        if (bin_inst->op == BinOp::REM && src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int /*&& __builtin_popcount(src2.val.i) != 1*/)
         {
             REGs unused_reg = dst_got_first ? instPtr->GetSecondUnusedRRegister() :
                 (src2_got_second ? instPtr->GetThirdUnusedRRegister() : instPtr->GetSecondUnusedRRegister());
