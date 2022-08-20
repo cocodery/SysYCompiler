@@ -328,10 +328,13 @@ void FuncInline::ctrlflowInline(BasicBlock *block, vector<BasicBlock *> &all_blo
 
 void FuncInline::excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *func) {
     if (func->all_blocks.size() == 3) {
+        dbg("enter simple-inline");
         simpleInline(block, func);
+        dbg("exit  simple-inline");
     } else {
-        // dbg("inlined function " + func->func_info.func_name);
+        dbg("enter ctrlflow-inline");
         ctrlflowInline(block, all_block, func);
+        dbg("exit  ctrlflow-inline");
     }
 }
 
@@ -345,9 +348,10 @@ void FuncInline::runFuncInline(FuncMap &func_map) {
                 Case (LLIR_CALL, call_inst, inst) {
                     string callee_name = call_inst->func_info->func_name;
                     if (inLinable(callee_name, func_map)) {
+                        dbg(call_inst->ToString());
                         auto &&inlined_func = func_map[callee_name];
                         // init caller-args --> callee-args
-                        // dbg("inlined function is " + inlined_func->func_info.func_name);
+                        dbg("inlined function is " + inlined_func->func_info.func_name);
                         excuteFuncInline(block, all_blocks, inlined_func);
                         changed = true;
                         break;
