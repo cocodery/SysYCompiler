@@ -551,7 +551,7 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     else if (src1.p_typ == Param::Reg && src2.p_typ == Param::Imm_int) // src1 is reg, src2 is ctv
     {
         assert(IsRReg(src1.val.r));
-        /*if (_i_typ == AsmInst::MUL) {
+        if (_i_typ == AsmInst::MUL) {
             if (__builtin_popcount(src2.val.i) == 1) { // 2, 4, 8, 16...
                 asm_insts.push_back(AsmCode(AsmInst::LSL, {Param(r), src1, Param(ffs(src2.val.i) - 1)}, indent));
                 return;
@@ -587,13 +587,13 @@ void AddAsmCodeMulDiv(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
                 asm_insts.push_back(AsmCode(AsmInst::LSL, {Param(r), Param(r), Param(num2)}, indent));
                 return;
             }
-        }*/
-        /*else if (_i_typ == AsmInst::SDIV) {
+        }
+        else if (_i_typ == AsmInst::SDIV) {
             if (__builtin_popcount(src2.val.i) == 1) { // 2, 4, 8, 16...
                 asm_insts.push_back(AsmCode(AsmInst::ASR, {Param(r), src1, Param(ffs(src2.val.i) - 1)}, indent));
                 return;
             }
-        }*/
+        }
         AddAsmCodeMoveIntToRegister(asm_insts, r, src2.val.i, indent);
         asm_insts.push_back(AsmCode(_i_typ, {Param(r), src1, Param(r)}, indent));
     }
