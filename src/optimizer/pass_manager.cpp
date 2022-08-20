@@ -68,9 +68,6 @@ void PassManager::interOpt() {
                 mem2reg.runMem2Reg();
             }
 
-            GvnGcm gvn_gcm1 = GvnGcm(function);
-            gvn_gcm1.runGvnGcm();
-
             ConstantProg constantprog1 = ConstantProg(function);
             constantprog1.runConstantProp();
 
