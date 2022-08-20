@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
             function->buildCFG();
         }
     }
-    ir.GenerateLLIR("../main0.ll");
+    //ir.GenerateLLIR("../main0.ll");
 
     // cout << "Start Optimization" << endl;
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
 
     // -------------------
 
-    ir.GenerateLLIR(irfile);
+    //ir.GenerateLLIR(irfile);
 
     // cout << "Compilation Complete" << endl;
 
