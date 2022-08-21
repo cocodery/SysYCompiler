@@ -80,7 +80,9 @@ LoadStoreReordering::LoadStoreReordering(Function *function)
         bbPtr->basic_block.assign(rebuilt_bb.begin(), rebuilt_bb.end());
         
     }
+    // removeRedundantStore(function);
 }
+
 int LoadStoreReordering::GetDstRegId(Inst* instPtr) // returns dst_regid
 {
     int dst_regid = -1;
@@ -115,4 +117,27 @@ int LoadStoreReordering::GetDstRegId(Inst* instPtr) // returns dst_regid
     Case (LLIR_FPTOSI, fti_inst, instPtr)
         dst_regid = fti_inst->dst.reg->reg_id;
     return dst_regid;
+}
+
+void LoadStoreReordering::removeRedundantStore(Function *function) {
+    auto &&all_blocks = function->all_blocks;
+    for (auto &&block : all_blocks) {
+        set<pair<int32_t, bool>> storedAddr;
+        list<Inst *> bb_list(block->basic_block.rbegin(), block->basic_block.rend());
+        for (auto &&iter = bb_list.begin(); iter != bb_list.end(); ) {
+            auto &&inst = *iter;
+            Case (LLIR_STORE, store_inst, inst) {
+                auto &&store_dst = store_inst->dst.reg;
+                assert(store_dst);
+                if (storedAddr.find({store_dst->reg_id, store_dst->global}) != storedAddr.end()) {
+                    iter = bb_list.erase(iter);
+                    continue;
+                } else {
+                    storedAddr.insert({store_dst->reg_id, store_dst->global});
+                }
+            }
+            ++iter;
+        }
+        block->basic_block = vector<Inst *>(bb_list.rbegin(), bb_list.rend());
+    }
 }

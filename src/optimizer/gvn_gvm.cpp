@@ -145,16 +145,9 @@ SRC GvnGcm::lookupOrAdd(int32_t idx, LLIR_GEP *gep_inst) {
     auto &&localValueTable = globalValueTable[idxMap[idx]];
     auto &&gep_inst_op = GEP;
     auto &&gep_inst_srcs = std::make_pair(gep_inst->src, gep_inst->off);
-    for (auto &&pair : localValueTable.bin2src) {
-        auto &&gep_op = pair.first.first;
-        auto &&gep_srcs = pair.first.second;
-        auto &&gep_dst = pair.second;
-        if (gep_inst_op == gep_op) {
-            if (gep_inst_srcs.first == gep_srcs.first && gep_inst_srcs.second == gep_srcs.second) {
-                return gep_dst;
-            }
-        }
-    }
+    auto &&lookup_result = localValueTable.bin2src.find({gep_inst_op, gep_inst_srcs});
+    if (lookup_result != localValueTable.bin2src.end())
+        return lookup_result->second;
     gep_inst->dst.reg->type.is_array = true;
     localValueTable.bin2src.insert({{gep_inst_op, gep_inst_srcs}, gep_inst->dst});
     return gep_inst->dst;
