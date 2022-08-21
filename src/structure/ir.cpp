@@ -483,6 +483,10 @@ void Function::replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var) {
 
 BasicBlock *Function::getSpecificIdxBb(int32_t bb_idx) {
     for (auto &&block : all_blocks) {
+        cout << block->bb_idx << ' ' << block->valuable << endl;
+    }
+    dbg(bb_idx);
+    for (auto &&block : all_blocks) {
         if (block->bb_idx == bb_idx) {
             return block;
         }

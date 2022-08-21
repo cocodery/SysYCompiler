@@ -371,7 +371,21 @@ Scope *FuncInline::createNewScope(Function *callee_func, vector<BasicBlock *> in
     //         cur_scope->elements->push_back(insertbbs[idx++]);
     //     }
     // }
-    
+    Scope *insert_scope = recursionBuildScope(callee_func->main_scope, 0, insertbbs);
+    return insert_scope;
+}
+
+Scope *FuncInline::recursionBuildScope(Scope *callee_scope, int32_t idx, vector<BasicBlock *> insertbbs) {
+    Scope *scope = new Scope(0);
+    scope->elements = new vector<Info *>;
+    for (auto &&iter = callee_scope->elements->begin(); iter != callee_scope->elements->end(); ++iter) {
+        if (auto &&scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
+            scope->elements->push_back(recursionBuildScope(scope_node, idx, insertbbs));
+        } else {
+            scope->elements->push_back(insertbbs[idx++]);
+        }
+    }
+    return scope;
 }
 
 void FuncInline::runFuncInline(FuncMap &func_map) {
@@ -389,6 +403,9 @@ void FuncInline::runFuncInline(FuncMap &func_map) {
                     dbg("inlined function is " + inlined_func->func_info.func_name);
                     excuteFuncInline(block, all_blocks, inlined_func);
                     function->buildAllBlocksCFG();
+                    for (auto &&block : function->all_blocks) {
+                        cout << block->bb_idx << ' ' << block->valuable << endl;
+                    }
                     rebuildScope(block, inlined_func);
                     break;
                 }

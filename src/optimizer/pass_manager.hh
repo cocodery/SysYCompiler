@@ -70,11 +70,11 @@ public:
             function->buildAllBlocksCFG();
         }
 
-        // interOpt();
-        // updateFuncInfo();
+        interOpt();
+        updateFuncInfo();
         
-        // interOpt();
-        // updateFuncInfo();
+        interOpt();
+        updateFuncInfo();
 
 
     //     for (int32_t idx = 0; idx < 3; ++idx) {

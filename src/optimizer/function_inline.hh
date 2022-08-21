@@ -28,5 +28,6 @@ public:
     void excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *func);
     void rebuildScope(BasicBlock *block, Function *callee_func);
     Scope *createNewScope(Function *callee_func, vector<BasicBlock *> insertbbs);
+    Scope *recursionBuildScope(Scope *callee_scope, int32_t idx, vector<BasicBlock *> insertbbs);
     void runFuncInline(FuncMap &func_map);
 };
