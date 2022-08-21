@@ -123,36 +123,6 @@ const char *LSR_HASHTAG_NUMBER(int number)
 
 #define R_REGISTER_IN_BRACES(x) ((string("{r") + std::to_string(x) + "}").c_str())
 
-#define IF_BORROW_USE_X_OR_USE_FIRST_AVAIL_REG(_BORROW, _X, _INST_PTR) \
-    (_BORROW ? _X : *_INST_PTR->availRegs.begin())
-
-#define IF_BORROW_SECOND_USE_X_OR_USE_LAST_AVAIL_REG(_BORROW_SECOND, _X, _INST_PTR) \
-    (_BORROW_SECOND ? _X : *_INST_PTR->availRegs.rbegin())
-
-#define DECLEAR_BORROW_PUSH(_INST_PTR, _REG) \
-    bool borrow = false;\
-    if (_INST_PTR->availRegs.empty())\
-    {\
-        AddAsmCodePushRegisters(asm_insts, {_REG}, indent);\
-        borrow = true;\
-    }
-
-#define DECLEAR_BORROW_SECOND_PUSH(_INST_PTR, _REG) \
-    bool borrow_second = false;\
-    if (_INST_PTR->availRegs.size() < 2)\
-    {\
-        AddAsmCodePushRegisters(asm_insts, {_REG}, indent);\
-        borrow_second = true;\
-    }
-
-#define DECLEAR_BORROW_POP(_REG) \
-    if (borrow)\
-        AddAsmCodePopRegisters(asm_insts, {_REG}, indent);
-
-#define DECLEAR_BORROW_SECOND_POP(_REG) \
-    if (borrow_second)\
-        AddAsmCodePopRegisters(asm_insts, {_REG}, indent);
-
 #define GET_BB_NAME(_FUNC_PTR, _BB_IDX) \
     ((_FUNC_PTR->func_info.func_name+"_block_"+std::to_string(_BB_IDX)).c_str())
 
@@ -525,10 +495,16 @@ void AddAsmCodeAddSub(vector<AsmCode> &asm_insts, AsmInst::InstType _i_typ, REGs
     {
         assert(_i_typ == AsmInst::SUB);
         Param p2 = src2;
-        auto bytes = SplitInt(src1.val.i);
+        auto pos = SplitInt(src1.val.i), neg = SplitInt(-src1.val.i);
+        auto &&bytes = (neg.size() + 1 < pos.size()) ? neg : pos;
+        auto &&binop = (neg.size() + 1 < pos.size()) ? AsmInst::SUB : AsmInst::RSB;
+        if (neg.size() + 1 < pos.size()) {
+            asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(0)}, indent));
+            p2 = Param(r);
+        }
         for (auto &&byte : bytes)
         {
-            asm_insts.push_back(AsmCode(AsmInst::RSB, {Param(r), p2, Param(byte)}, indent));
+            asm_insts.push_back(AsmCode(binop, {Param(r), p2, Param(byte)}, indent));
             p2 = Param(r);
         }
     }
@@ -1223,7 +1199,15 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
 
         //cout << get_tabs() << gep_inst->ToString() << endl;
         AddAsmCodeComment(asm_insts, gep_inst->ToString(), indent);
+
+        bool offset_is_zero = gep_inst->off.ctv && gep_inst->off.ctv->int_value == 0;
+        bool src_comes_from_gep = gep_inst->src.reg->is_from_gep || gep_inst->src.reg->type.is_args && gep_inst->src.reg->type.is_array;
         
+        if (offset_is_zero && src_comes_from_gep) {
+            AddAsmCodeMoveRegisterToRegister(asm_insts, GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id), GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id), indent);
+            return;
+        }
+
         // dst = *(src + off)
         REGs addr_reg, offs_reg;
         bool borrow_addr = false, borrow_offs = false, addr_got_first = false;
@@ -1250,10 +1234,8 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
         else
             addr_reg = GET_ALLOCATION_RESULT(funcPtr, gep_inst->dst.reg->reg_id);
 
-        bool offset_is_zero = false;
-
-        // src是从gep来的，直接是元素指针
-        if (gep_inst->src.reg->is_from_gep || gep_inst->src.reg->type.is_args && gep_inst->src.reg->type.is_array)
+        // src是从gep来的，直接是元素指针，但offset不为0
+        if (src_comes_from_gep)
             AddAsmCodeMoveRegisterToRegister(asm_insts, addr_reg, GET_ALLOCATION_RESULT(funcPtr, gep_inst->src.reg->reg_id), indent);
         else // src是从alloca来的，没有被分配寄存器，需要分配一下寄存器(直接用dst)，再把指针load进来，此时offset一定为0
         {
@@ -1262,9 +1244,6 @@ void AddAsmCodeFromLLIR(vector<AsmCode> &asm_insts, Function *funcPtr, Inst *ins
             if (borrow_addr) AddAsmCodePopRegisters(asm_insts, {addr_reg}, indent);
             return;
         }
-
-        if (gep_inst->off.ctv && gep_inst->off.ctv->int_value == 0)
-            offset_is_zero = true;
 
         // 加上偏移量
         if (!offset_is_zero)
@@ -1753,7 +1732,7 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
             // 在栈上或使用malloc给数组分配空间，并赋值
             AddAsmCodeComment(data_underscore_init, "allocating memory for " + string(GET_GLOBAL_PTR_NAME(varPtr->var_idx)), 1);
             int allocation_bytes = varPtr->type.elements_number() * 4;
-            if (allocation_bytes > 1 * 1000 * 1000) // call malloc for arrays bigger than 1MB
+            if (allocation_bytes > 2 * 1000 * 1000) // call malloc for arrays bigger than 2MB
             {
                 // 给全局非const数组malloc + memset
                 AddAsmCodeComment(data_underscore_init, "calling malloc & memset for big array", 1);
@@ -1866,6 +1845,40 @@ vector<AsmCode> InitDotDataAndUnderscoreStart(const CompUnit &ir, vector<AsmCode
     return dot_data;
 }
 
+void PopPushEmit(vector<bool> &to_delete, const vector<AsmCode> &asm_insts)
+{
+    for (int i = 0; i < asm_insts.size(); ++i) {
+        // 找到第一个pop
+        if (asm_insts[i].inst.i_typ != AsmInst::POP) {
+            continue;
+        }
+        if (asm_insts[i-1].inst.i_typ == AsmInst::BL || asm_insts[i-2].inst.i_typ == AsmInst::BL || asm_insts[i-3].inst.i_typ == AsmInst::BL) {
+            continue;
+        }
+        // 找到push后的第一个非empty指令
+        int j = i + 1;
+        while (j < asm_insts.size() && asm_insts[j].inst.i_typ == AsmInst::EMPTY) {
+            ++j;
+        }
+        if (j < asm_insts.size() && asm_insts[j].inst.i_typ == AsmInst::PUSH && 
+        0 == strcmp(asm_insts[i].params.front().val.str, asm_insts[j].params.front().val.str)) {
+            to_delete[i] = true;
+            to_delete[j] = true;
+            if (asm_insts[i-1].inst.i_typ == AsmInst::ADD && asm_insts[j+1].inst.i_typ == AsmInst::SUB
+            && asm_insts[i-1].params.size() == 3 && asm_insts[j+1].params.size() == 3
+            && asm_insts[i-1].params[0].p_typ == Param::Reg && asm_insts[j+1].params[0].p_typ == Param::Reg
+            && asm_insts[i-1].params[0].val.r == sp && asm_insts[j+1].params[0].val.r == sp
+            && asm_insts[i-1].params[1].p_typ == Param::Reg && asm_insts[j+1].params[1].p_typ == Param::Reg
+            && asm_insts[i-1].params[1].val.r == sp && asm_insts[j+1].params[1].val.r == sp
+            && asm_insts[i-1].params[2].p_typ == Param::Imm_int && asm_insts[j+1].params[2].p_typ == Param::Imm_int
+            && asm_insts[i-1].params[2].val.i == 4 && asm_insts[j+1].params[2].val.i == 4) {
+                to_delete[i-1] = true;
+                to_delete[j+1] = true;
+            }
+        }
+    }
+}
+
 void GenerateAssembly(const string &asmfile, const CompUnit &ir)
 {
 
@@ -1875,7 +1888,7 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         SIGNED_DIV_REM_IS_NEEDED
     }
 
-    ofs << ".cpu cortex-a72\n.arch armv8-a\n.fpu neon-fp-armv8\n.arch_extension crc\n";
+    ofs << "//20020523\n.cpu cortex-a72\n.arch armv8-a\n.fpu neon-fp-armv8\n.arch_extension crc\n";
 
     vector<AsmCode> data_init;
     vector<AsmCode> asm_insts(InitDotDataAndUnderscoreStart(ir, data_init));
@@ -2081,9 +2094,15 @@ void GenerateAssembly(const string &asmfile, const CompUnit &ir)
         asm_insts.push_back(AsmCode(AsmInst::DOT_LTORG, "", "", 1));
     }
 
-    for (auto &&asm_inst : asm_insts)
+    vector<bool> to_delete(asm_insts.size(), false);
+    PopPushEmit(to_delete, asm_insts);
+
+    for (int i = 0; i < asm_insts.size(); ++i)
     {
-        ofs << asm_inst.ToString() << '\n';
+        if (to_delete[i]) {
+            continue;
+        }
+        ofs << asm_insts[i].ToString() << '\n';
     }
 
 }

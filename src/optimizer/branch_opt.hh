@@ -50,7 +50,7 @@ public:
             completed = reduceConditionalBrach(f);
             completed &= onlyOnePredSuccBranch(f);
             completed &= sameTargetBranch(f);
-            completed &= removeEmptyScope(f->main_scope);
+            // completed &= removeEmptyScope(f->main_scope);
             completed &= removeEmptyBasicBlock(f);
             completed &= removeUselessLoop(f);
             if (completed) {
@@ -120,7 +120,7 @@ public:
                     
                     bb_node->preds.clear();
                     
-                    scope->elements->erase(scope_iter);
+                    // scope->elements->erase(scope_iter);
                     return;
                 }
             }
@@ -268,8 +268,8 @@ public:
                     bb_node->preds.erase(bb_idx);
                     bb_node->succs.erase(bb_idx);
 
-                    bb_node->valuable = false;
-                    scope->elements->erase(iter);
+                    // bb_node->valuable = false;
+                    // scope->elements->erase(iter);
                     break;
                 }
             }
@@ -393,7 +393,7 @@ public:
 
 
                             if (is_phi_map_exist) fixPhiInst(i->bb_idx, pred_idx);
-                            blockFinder(f->main_scope, i->bb_idx, true);
+                            // blockFinder(f->main_scope, i->bb_idx, true);
                             
                             auto cur_iter = find(f->all_blocks.begin(), f->all_blocks.end(), i);
                             auto iter = f->all_blocks.erase(cur_iter)-1;
@@ -479,7 +479,7 @@ public:
             if (i->bb_idx <= 0) { continue; }
             else if (i->preds.empty()) {
                 // cout << ">> Erase [empty] basic block: " << i->bb_idx << endl;
-                blockFinder(f->main_scope, i->bb_idx, true);
+                // blockFinder(f->main_scope, i->bb_idx, true);
                 for(auto &&j: i->succs) {
                     // cout << "->>> succ: " << j.second->bb_idx << endl;
                     j.second->preds.erase(i->bb_idx);
@@ -511,7 +511,7 @@ public:
                 BasicBlock* i = *iter;
                 if (i->bb_idx <= 0) { continue; }
                 else if (visited.find(i->bb_idx) == visited.end()) {
-                    blockFinder(f->main_scope, i->bb_idx, true);
+                    // blockFinder(f->main_scope, i->bb_idx, true);
                     iter = f->all_blocks.erase(find(f->all_blocks.begin(), f->all_blocks.end(), i)) - 1;
                 }
             }

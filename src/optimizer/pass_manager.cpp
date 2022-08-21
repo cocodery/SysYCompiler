@@ -68,9 +68,6 @@ void PassManager::interOpt() {
                 mem2reg.runMem2Reg();
             }
 
-            GvnGcm gvn_gcm1 = GvnGcm(function);
-            gvn_gcm1.runGvnGcm();
-
             ConstantProg constantprog1 = ConstantProg(function);
             constantprog1.runConstantProp();
 
@@ -86,9 +83,6 @@ void PassManager::interOpt() {
             GvnGcm gvn_gcm2 = GvnGcm(function);
             gvn_gcm2.runGvnGcm();
 
-            // Dce dce = Dce(function);
-            // dce.runDeadCodeElim();
-
             if (!do_not_run_m2r_r2m(function)) {
                 Reg2Mem reg2mem = Reg2Mem(function, mem2reg);
                 reg2mem.runReg2Mem();
@@ -98,6 +92,9 @@ void PassManager::interOpt() {
                     
             BranchOptimization branch_opt = BranchOptimization(function);
             branch_opt.runBranchOpt(&mem2reg.phi2AllocaMap);
+
+            Dce dce = Dce(function);
+            dce.runDeadCodeElim();
         }
     }
 }
