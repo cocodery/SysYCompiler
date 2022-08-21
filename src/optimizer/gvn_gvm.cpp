@@ -28,29 +28,29 @@ void GvnGcm::moveCtv2Rhs() {
 
 void GvnGcm::runGVN() {
     auto &&all_blocks = function->all_blocks;
-    BasicBlock *entrybb = all_blocks[0];
-    stack<BasicBlock *>  postOrderStack = stack<BasicBlock *>();
-    list<BasicBlock *> reversePostOrder = list<BasicBlock *>();
+    // BasicBlock *entrybb = all_blocks[0];
+    // stack<BasicBlock *>  postOrderStack = stack<BasicBlock *>();
+    // list<BasicBlock *> reversePostOrder = list<BasicBlock *>();
+
+    // for (auto &&block : all_blocks) {
+    //     block->dirty = false;
+    // }
+    // postOrderStack.push(entrybb);
+    // BasicBlock *currbb = nullptr;
+    // while (!postOrderStack.empty()) {
+    //     currbb = postOrderStack.top();
+    //     postOrderStack.pop();
+    //     reversePostOrder.push_back(currbb);
+    //     for (auto &&pair : currbb->succs) {
+    //         auto &&succ = pair.second;
+    //         if (!succ->dirty) {
+    //             postOrderStack.push(succ);
+    //             succ->dirty = true;
+    //         }
+    //     }
+    // }
 
     for (auto &&block : all_blocks) {
-        block->dirty = false;
-    }
-    postOrderStack.push(entrybb);
-    BasicBlock *currbb = nullptr;
-    while (!postOrderStack.empty()) {
-        currbb = postOrderStack.top();
-        postOrderStack.pop();
-        reversePostOrder.push_back(currbb);
-        for (auto &&pair : currbb->succs) {
-            auto &&succ = pair.second;
-            if (!succ->dirty) {
-                postOrderStack.push(succ);
-                succ->dirty = true;
-            }
-        }
-    }
-
-    for (auto &&block : reversePostOrder) {
         runGvnOnBlock(block);
     }
 }
