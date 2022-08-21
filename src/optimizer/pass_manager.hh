@@ -66,10 +66,6 @@ public:
                 fixed = false;
             }
         }
-        for (auto &&function : functions) {
-            function->buildAllBlocksCFG();
-        }
-
         interOpt();
         updateFuncInfo();
         

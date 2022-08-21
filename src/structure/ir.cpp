@@ -233,10 +233,10 @@ void Scope::buildScopeCFG(vector<BasicBlock *> all_blocks) {
                 // 没有preds的BB属于不可达BB
                 if (bb_node->valuable) {
                     BasicBlock *child_bb1 = all_blocks[br_inst->tar_true  - 1];
+                    BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
                     bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
                     child_bb1->preds.insert({bb_node->bb_idx, bb_node});
                     if (br_inst->has_cond) {
-                        BasicBlock *child_bb2 = all_blocks[br_inst->tar_false - 1];
                         bb_node->succs.insert({child_bb2->bb_idx, child_bb2});
                         child_bb2->preds.insert({bb_node->bb_idx, bb_node});
                     }
@@ -283,64 +283,6 @@ void Function::printCallInfo() {
         llir << "`no function be called`";
     }
     llir << endl;
-}
-
-void Function::buildAllBlocksCFG() {
-    map<int32_t, int32_t> idxMap;
-    int32_t baseIdx = 1;
-    idxMap[0]  =  0;
-    idxMap[-1] = -1;
-    for (auto &&block : all_blocks) {
-        if (block->bb_idx > 0) {
-            idxMap[block->bb_idx] = baseIdx++;
-        }
-        block->preds.clear();
-        block->succs.clear();
-    }
-    for (auto &&block : all_blocks) {
-        if (block->bb_idx <= 0) continue;
-        block->bb_idx = idxMap[block->bb_idx];
-        auto &&lastInst = block->basic_block.back();
-        Case (LLIR_BR, br_inst, lastInst) {
-            dbg(br_inst->ToString());
-            br_inst->tar_true  = idxMap[br_inst->tar_true];
-            br_inst->tar_false = idxMap[br_inst->tar_false];
-        }
-    }
-
-    //cout << "function: " << func_info.func_name << endl;
-    for (auto &&bb_node : all_blocks) {
-        //cout << "idx: " << bb_node->bb_idx << endl;
-        auto &&last_inst = bb_node->lastInst();
-        if (last_inst == nullptr) {
-            //cout << "no inst\n";
-            continue;
-        } else if (auto &&br_inst = dynamic_cast<LLIR_BR *>(last_inst)) {
-            //cout << "has_br\n";
-            // BB-preds都是顺序填入的
-            // 没有preds的BB属于不可达BB
-            if (bb_node->valuable) {
-                if (all_blocks.front()->succs.empty()) {
-                    all_blocks.front()->succs.insert({bb_node->bb_idx, bb_node});
-                    bb_node->preds.insert({0, all_blocks.front()});
-                }
-                BasicBlock *child_bb1 = all_blocks[br_inst->tar_true];
-                bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
-                child_bb1->preds.insert({bb_node->bb_idx, bb_node});
-                if (br_inst->has_cond) {
-                    BasicBlock *child_bb2 = all_blocks[br_inst->tar_false];
-                    bb_node->succs.insert({child_bb2->bb_idx, child_bb2});
-                    child_bb2->preds.insert({bb_node->bb_idx, bb_node});
-                }
-            }
-        } else if (auto &&ret_inst = dynamic_cast<LLIR_RET *>(last_inst)) {
-                // 基本块的最后一个指令是`return instruction`
-                // 当前作用域在此基本块之后的`elements`全部无效
-                //cout << "has_return\n";
-                bb_node->succs.insert({-1, all_blocks.back()});
-                all_blocks.back()->preds.insert({bb_node->bb_idx, bb_node});
-        }
-    }
 }
 
 void Function::buildCFG() {
@@ -482,9 +424,7 @@ void Function::replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var) {
 }
 
 BasicBlock *Function::getSpecificIdxBb(int32_t bb_idx) {
-    dbg(bb_idx);
     for (auto &&block : all_blocks) {
-        cout << "looking for: " << bb_idx << ' ' << block->bb_idx << ' ' << block->valuable << endl;
         if (block->bb_idx == bb_idx) {
             return block;
         }

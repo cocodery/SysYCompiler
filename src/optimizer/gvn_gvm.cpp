@@ -28,29 +28,29 @@ void GvnGcm::moveCtv2Rhs() {
 
 void GvnGcm::runGVN() {
     auto &&all_blocks = function->all_blocks;
-    // BasicBlock *entrybb = all_blocks[0];
-    // stack<BasicBlock *>  postOrderStack = stack<BasicBlock *>();
-    // list<BasicBlock *> reversePostOrder = list<BasicBlock *>();
-
-    // for (auto &&block : all_blocks) {
-    //     block->dirty = false;
-    // }
-    // postOrderStack.push(entrybb);
-    // BasicBlock *currbb = nullptr;
-    // while (!postOrderStack.empty()) {
-    //     currbb = postOrderStack.top();
-    //     postOrderStack.pop();
-    //     reversePostOrder.push_back(currbb);
-    //     for (auto &&pair : currbb->succs) {
-    //         auto &&succ = pair.second;
-    //         if (!succ->dirty) {
-    //             postOrderStack.push(succ);
-    //             succ->dirty = true;
-    //         }
-    //     }
-    // }
+    BasicBlock *entrybb = all_blocks[0];
+    stack<BasicBlock *>  postOrderStack = stack<BasicBlock *>();
+    list<BasicBlock *> reversePostOrder = list<BasicBlock *>();
 
     for (auto &&block : all_blocks) {
+        block->dirty = false;
+    }
+    postOrderStack.push(entrybb);
+    BasicBlock *currbb = nullptr;
+    while (!postOrderStack.empty()) {
+        currbb = postOrderStack.top();
+        postOrderStack.pop();
+        reversePostOrder.push_back(currbb);
+        for (auto &&pair : currbb->succs) {
+            auto &&succ = pair.second;
+            if (!succ->dirty) {
+                postOrderStack.push(succ);
+                succ->dirty = true;
+            }
+        }
+    }
+
+    for (auto &&block : reversePostOrder) {
         runGvnOnBlock(block);
     }
 }
@@ -145,9 +145,16 @@ SRC GvnGcm::lookupOrAdd(int32_t idx, LLIR_GEP *gep_inst) {
     auto &&localValueTable = globalValueTable[idxMap[idx]];
     auto &&gep_inst_op = GEP;
     auto &&gep_inst_srcs = std::make_pair(gep_inst->src, gep_inst->off);
-    auto &&lookup_result = localValueTable.bin2src.find({gep_inst_op, gep_inst_srcs});
-    if (lookup_result != localValueTable.bin2src.end())
-        return lookup_result->second;
+    for (auto &&pair : localValueTable.bin2src) {
+        auto &&gep_op = pair.first.first;
+        auto &&gep_srcs = pair.first.second;
+        auto &&gep_dst = pair.second;
+        if (gep_inst_op == gep_op) {
+            if (gep_inst_srcs.first == gep_srcs.first && gep_inst_srcs.second == gep_srcs.second) {
+                return gep_dst;
+            }
+        }
+    }
     gep_inst->dst.reg->type.is_array = true;
     localValueTable.bin2src.insert({{gep_inst_op, gep_inst_srcs}, gep_inst->dst});
     return gep_inst->dst;

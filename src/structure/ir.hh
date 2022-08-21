@@ -89,7 +89,6 @@ public:
     bool multiReturn();
     void replaceSRCs(BasicBlock *block, VirtReg *old_reg, SRC new_var);
     BasicBlock *getSpecificIdxBb(int32_t bb_idx);
-    void buildAllBlocksCFG();
 
     void buildDomInfo() {
         buildDom();

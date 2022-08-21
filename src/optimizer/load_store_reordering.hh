@@ -10,5 +10,4 @@ public:
 public:
     LoadStoreReordering(Function *function);
     int GetDstRegId(Inst* instPtr); // returns dst_regid
-    void removeRedundantStore(Function *function);
 };

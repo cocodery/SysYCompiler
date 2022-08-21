@@ -49,17 +49,8 @@ public:
         // both operands are either ctv or reg
         if (ctv) // self is ctv
             return other.ctv ? (*ctv < *other.ctv) : true;
-        else { // self is reg
-            if (other.ctv) {
-                return false;
-            }
-            // global < local
-            if (reg->global) {
-                return other.reg->global ? reg->reg_id < other.reg->reg_id : true;
-            } else {
-                return other.reg->global ? false : reg->reg_id < other.reg->reg_id;
-            }
-        }
+        else // self is reg
+            return other.reg ? (reg->reg_id < other.reg->reg_id) : false;
     }
 };
 

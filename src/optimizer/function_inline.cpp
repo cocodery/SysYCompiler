@@ -52,32 +52,19 @@ bool FuncInline::sideEffect(Function *function) {
     return false;
 }
 
-int FuncInline::get_depth(Scope *now_scope, int now_depth) {
-    int max_depth = now_depth;
-    for (auto iter = now_scope->elements->begin(); iter != now_scope->elements->end(); ++iter) {
-        if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
-            max_depth = std::max(max_depth, get_depth(scope_node, now_depth + 1));
-        }
-    }
-    return max_depth;
-}
-
 bool FuncInline::inLinable(string func_name, FuncMap &func_map) {
     if (func_map.find(func_name) == func_map.end()) {
         return false;
     }
     auto &&func = func_map[func_name];
-    // dbg(func->func_info.func_name);
-    if (func->multiReturn() || func->func_info.is_recursive || get_depth(func->main_scope, 1) > 3) {
+    if (func->multiReturn() || func->func_info.is_recursive || func->all_blocks.size() > 3) {
         return false;
     }
-    // dbg("return true");
     return true;
 }
 
 void FuncInline::initInlineMap(vector<SRC> caller_args, vector<pair<string, VarType>> callee_args) {
     inlineMap.clear();
-    bbIdxMap.clear();
     // dbg("init inline-map");
     for (int32_t idx = 0; idx < caller_args.size(); ++idx) {
         inlineMap.insert({{idx, false}, caller_args[idx]});
@@ -109,15 +96,6 @@ list<Inst *> FuncInline::insertBlock(BasicBlock *block, SRC &dst) {
                 dst = ret_value;
             }
         } 
-        Case (LLIR_BR, br_inst, inst) {
-            auto &&cond = SRC();
-            if (br_inst->has_cond) {
-                cond = findInMap(br_inst->cond);
-            }
-            LLIR_BR *inst_br = new LLIR_BR(br_inst->has_cond, cond, bbIdxMap[br_inst->tar_true], bbIdxMap[br_inst->tar_false]);
-            // dbg(inst_br->ToString());
-            insertbb.push_back(inst_br);
-        }
         Case (LLIR_BIN, bin_inst, inst) {
             auto &&src1 = findInMap(bin_inst->src1);
             auto &&src2 = findInMap(bin_inst->src2);
@@ -171,7 +149,7 @@ list<Inst *> FuncInline::insertBlock(BasicBlock *block, SRC &dst) {
             // dbg(inst_fcmp->ToString());
             insertbb.push_back(inst_fcmp);
         } 
-        Case (LLIR_CALL, call_inst, inst) {
+         Case (LLIR_CALL, call_inst, inst) {
             // dbg(call_inst->ToString());
             auto &&dst = findInMap(call_inst->dst);
             vector<SRC> args;
@@ -229,9 +207,9 @@ void FuncInline::simpleInline(BasicBlock *block, Function *callee_func) {
     // dbg("excute simple-inline");
     auto &&callee_func_info = callee_func->func_info;
     
-    list<Inst *> inst_list(block->basic_block.begin(), block->basic_block.end());
+    list<Inst *> bb_list(block->basic_block.begin(), block->basic_block.end());
 
-    for (auto &&iter = inst_list.begin(); iter != inst_list.end(); ++iter) {
+    for (auto &&iter = bb_list.begin(); iter != bb_list.end(); ++iter) {
         auto &&inst = *iter;
         Case (LLIR_CALL, call_inst, inst) {
             if (call_inst->func_info->func_name != callee_func->func_info.func_name) {
@@ -241,7 +219,7 @@ void FuncInline::simpleInline(BasicBlock *block, Function *callee_func) {
             initInlineMap(call_inst->args, callee_func->func_info.func_args);
             // dbg(call_inst->ToString());
             // erase this call-inst
-            iter = inst_list.erase(iter); 
+            iter = bb_list.erase(iter); 
             auto &&new_call_dst = SRC();
             list<Inst *> insertbb = insertBlock(callee_func->all_blocks[1], new_call_dst);
             if (call_inst->func_info->return_type != TypeVoid) {
@@ -249,165 +227,42 @@ void FuncInline::simpleInline(BasicBlock *block, Function *callee_func) {
             }
             
             for (auto &&inst : insertbb) {
-                inst_list.insert(iter, inst);
+                bb_list.insert(iter, inst);
             }
         } 
     }
-    block->basic_block = vector<Inst *>(inst_list.begin(), inst_list.end());
+    block->basic_block = vector<Inst *>(bb_list.begin(), bb_list.end());
     // block->debugBlock();
     // dbg("exit simple-inline");
 } 
 
-list<BasicBlock *> FuncInline::genInlineBlocks(Function *callee_func, SRC &dst) {
-    list<BasicBlock *> blocks;
-    auto &&callee_allbbs = callee_func->all_blocks;
-    for (auto &&block : callee_allbbs) {
-        bbIdxMap.insert({block->bb_idx, function->bb_idx++});
-    }
-    for (auto &&block : callee_allbbs) {
-        if (block->bb_idx == 0 || block->bb_idx == -1) {
-            continue;
-        }
-        // dbg(block->bb_idx);
-        block->debugBlock();
-        auto &&insertbb = new BasicBlock(bbIdxMap[block->bb_idx], true);
-        auto &&instlist = insertBlock(block, dst);
-        insertbb->basic_block = vector<Inst *>(instlist.begin(), instlist.end());
-        blocks.push_back(insertbb);
-    }
-    return blocks;
-}
-
-void FuncInline::ctrlflowInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *callee_func) {
-    auto &&callee_func_info = callee_func->func_info;
-    vector<BasicBlock *> bb_list;
-    for (auto &&bb_iter = all_block.begin(); bb_iter != all_block.end(); ++bb_iter) {
-        auto &&bb = *bb_iter;
-        if (bb->bb_idx != block->bb_idx) {
-            bb_list.push_back(bb);
-        } else { // find the block
-            BasicBlock *split_bb = new BasicBlock(block->bb_idx, true);
-            for (auto &&inst_iter = block->basic_block.begin(); inst_iter != block->basic_block.end(); ++inst_iter) {
-                auto &&inst = *inst_iter;
-                Case (LLIR_CALL, call_inst, inst) { // meet call-inst
-                    if (call_inst->func_info->func_name != callee_func->func_info.func_name) {
-                        split_bb->basic_block.push_back(call_inst); // other-call-inst
-                    } else { // target-call-inst
-                        initInlineMap(call_inst->args, callee_func->func_info.func_args);
-                        SRC new_call_dst = SRC();
-                        auto &&insertbbs = genInlineBlocks(callee_func, new_call_dst);
-                        if (split_bb->basic_block.size()) { // if split-bb before call is not empty
-                            bb_list.push_back(split_bb);
-                            auto &&firstInsertbb = *insertbbs.begin();
-                            LLIR_BR *inst_br = new LLIR_BR(false, SRC(), firstInsertbb->bb_idx, 0);
-                            split_bb->basic_block.push_back(inst_br);
-                            // create a new split-bb
-                            split_bb = new BasicBlock(function->bb_idx++, true);
-                        }
-                        for (auto &&insertbb : insertbbs) {
-                            bb_list.push_back(insertbb); // insert inline-blocks to caller-blocks
-                        }
-                        if (call_inst->func_info->return_type != TypeVoid) { // replace if has ret-value
-                            function->replaceSRCs(block, call_inst->dst.reg, new_call_dst);
-                        }
-                        auto &&lastInsertbb = *insertbbs.rbegin();
-                        LLIR_BR *inst_br = new LLIR_BR(false, SRC(), split_bb->bb_idx, 0);
-                        lastInsertbb->basic_block.push_back(inst_br);
-                    }
-                } else { // other-inst
-                    split_bb->basic_block.push_back(inst);
-                }
-            }
-            if (split_bb->basic_block.size()) {
-                bb_list.push_back(split_bb);
-            }
-        }
-    }
-    all_block.assign(bb_list.begin(), bb_list.end());
-}
-
 void FuncInline::excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *func) {
     if (func->all_blocks.size() == 3) {
-        dbg("enter simple-inline");
         simpleInline(block, func);
-        dbg("exit  simple-inline");
-    } else {
-        dbg("enter ctrlflow-inline");
-        ctrlflowInline(block, all_block, func);
-        dbg("exit  ctrlflow-inline");
-    }
-}
-
-void FuncInline::rebuildScope(BasicBlock *block, Function *callee_func) {
-    auto scope = function->main_scope;
-    auto all_blocks = function->all_blocks;
-    for (auto &&iter = scope->elements->begin(); iter != scope->elements->end(); ++iter) {
-        if (auto block_node = dynamic_cast<BasicBlock *>(*iter); block_node != nullptr) {
-            if (block->bb_idx == block_node->bb_idx) {
-                int32_t callee_size = callee_func->all_blocks.size() - 2;
-                vector<BasicBlock *> insertbbs(all_blocks.begin() + block->bb_idx, all_blocks.begin() + block->bb_idx + callee_size);
-                iter = scope->elements->insert(iter, createNewScope(callee_func, insertbbs));
-                iter = scope->elements->insert(iter, *(all_blocks.begin() + block->bb_idx + callee_size + 1));
-                break;
-            }
-        }
-    }
-}
-
-Scope *FuncInline::createNewScope(Function *callee_func, vector<BasicBlock *> insertbbs) {
-    // int32_t idx = 0;
-    // auto &&scope = callee_func->main_scope;
-    // Scope *new_scope = new Scope(0);
-    // new_scope->elements = new vector<Info *>;
-    // stack<Scope *> scope_stack;
-    // scope_stack.push(new_scope);
-    // auto &&cur_scope = scope_stack.top();
-    // for (auto &&iter = scope->elements->begin(); iter != scope->elements->end(); ++iter) {
-    //     if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
-    //         Scope *n_scope = new Scope(0);
-    //         new_scope->elements = new vector<Info *>;
-    //         scope_stack.push(n_scope);
-    //         cur_scope = scope_stack.top();
-    //     } else {
-    //         cur_scope->elements->push_back(insertbbs[idx++]);
-    //     }
-    // }
-    Scope *insert_scope = recursionBuildScope(callee_func->main_scope, 0, insertbbs);
-    return insert_scope;
-}
-
-Scope *FuncInline::recursionBuildScope(Scope *callee_scope, int32_t idx, vector<BasicBlock *> insertbbs) {
-    Scope *scope = new Scope(0);
-    scope->elements = new vector<Info *>;
-    for (auto &&iter = callee_scope->elements->begin(); iter != callee_scope->elements->end(); ++iter) {
-        if (auto &&scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
-            scope->elements->push_back(recursionBuildScope(scope_node, idx, insertbbs));
-        } else {
-            scope->elements->push_back(insertbbs[idx++]);
-        }
-    }
-    return scope;
+    } 
 }
 
 void FuncInline::runFuncInline(FuncMap &func_map) {
     if (function->func_info.called_funcs.size() == 0) return;
     auto &&all_blocks = function->all_blocks;
-    for (auto i_block = 0; i_block < all_blocks.size(); ++i_block) {
-        auto block = all_blocks[i_block];
-        for (auto iterator_inst = block->basic_block.begin(); iterator_inst != block->basic_block.end(); ++iterator_inst) {
-            Case (LLIR_CALL, call_inst, *iterator_inst) {
-                string callee_name = call_inst->func_info->func_name;
-                if (inLinable(callee_name, func_map)) {
-                    dbg(call_inst->ToString());
-                    auto &&inlined_func = func_map[callee_name];
-                    // init caller-args --> callee-args
-                    dbg("inlined function is " + inlined_func->func_info.func_name);
-                    excuteFuncInline(block, all_blocks, inlined_func);
-                    function->buildAllBlocksCFG();
-                    rebuildScope(block, inlined_func);
-                    break;
+    for (auto &&block : all_blocks) {
+        bool changed = true;
+        while (changed) {
+            for (auto &&inst : block->basic_block) {
+                Case (LLIR_CALL, call_inst, inst) {
+                    string callee_name = call_inst->func_info->func_name;
+                    if (inLinable(callee_name, func_map)) {
+                        auto &&inlined_func = func_map[callee_name];
+                        // init caller-args --> callee-args
+                        // dbg("inlined function is " + inlined_func->func_info.func_name);
+                        initInlineMap(call_inst->args, inlined_func->func_info.func_args);
+                        excuteFuncInline(block, all_blocks, inlined_func);
+                        changed = true;
+                        break;
+                    }
                 }
             }
+            changed = false;
         }
     }
 }
