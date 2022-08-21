@@ -338,6 +338,42 @@ void FuncInline::excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_b
     }
 }
 
+void FuncInline::rebuildScope(BasicBlock *block, Function *callee_func) {
+    auto &&scope = function->main_scope;
+    auto &&all_blocks = function->all_blocks;
+    for (auto &&iter = scope->elements->begin(); iter != scope->elements->end(); ++iter) {
+        if (auto &&block_node = dynamic_cast<BasicBlock *>(*iter); block_node != nullptr) {
+            if (block->bb_idx == block_node->bb_idx) {
+                int32_t callee_size = callee_func->all_blocks.size() - 2;
+                vector<BasicBlock *> insertbbs(all_blocks.begin() + block->bb_idx, all_blocks.begin() + block->bb_idx + callee_size);
+                scope->elements->insert(iter, createNewScope(callee_func, insertbbs));
+                scope->elements->insert(iter, *(all_blocks.begin() + block->bb_idx + callee_size + 1));
+            }
+        }
+    }
+}
+
+Scope *FuncInline::createNewScope(Function *callee_func, vector<BasicBlock *> insertbbs) {
+    // int32_t idx = 0;
+    // auto &&scope = callee_func->main_scope;
+    // Scope *new_scope = new Scope(0);
+    // new_scope->elements = new vector<Info *>;
+    // stack<Scope *> scope_stack;
+    // scope_stack.push(new_scope);
+    // auto &&cur_scope = scope_stack.top();
+    // for (auto &&iter = scope->elements->begin(); iter != scope->elements->end(); ++iter) {
+    //     if (Scope *scope_node = dynamic_cast<Scope *>(*iter); scope_node != nullptr) {
+    //         Scope *n_scope = new Scope(0);
+    //         new_scope->elements = new vector<Info *>;
+    //         scope_stack.push(n_scope);
+    //         cur_scope = scope_stack.top();
+    //     } else {
+    //         cur_scope->elements->push_back(insertbbs[idx++]);
+    //     }
+    // }
+    
+}
+
 void FuncInline::runFuncInline(FuncMap &func_map) {
     if (function->func_info.called_funcs.size() == 0) return;
     auto &&all_blocks = function->all_blocks;
@@ -352,6 +388,8 @@ void FuncInline::runFuncInline(FuncMap &func_map) {
                     // init caller-args --> callee-args
                     dbg("inlined function is " + inlined_func->func_info.func_name);
                     excuteFuncInline(block, all_blocks, inlined_func);
+                    function->buildAllBlocksCFG();
+                    rebuildScope(block, inlined_func);
                     break;
                 }
             }

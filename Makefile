@@ -22,7 +22,7 @@ else
 	ECHO := echo
 endif
 MODE := func # func or perf, selet functional or performance
-TEST_MODE := performance # test case directory
+TEST_MODE := functional # test case directory
 
 # re-define 
 #ifeq ($(MODE), "func")

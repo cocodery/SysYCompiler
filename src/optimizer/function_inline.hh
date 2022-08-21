@@ -26,6 +26,7 @@ public:
     list<BasicBlock *> genInlineBlocks(Function *callee_func, SRC &dst);
     void ctrlflowInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *callee_func);
     void excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_block, Function *func);
+    void rebuildScope(BasicBlock *block, Function *callee_func);
+    Scope *createNewScope(Function *callee_func, vector<BasicBlock *> insertbbs);
     void runFuncInline(FuncMap &func_map);
-    void buildAllBlocksCFG(Function *funcPtr);
 };
