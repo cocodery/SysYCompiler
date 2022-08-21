@@ -50,7 +50,7 @@ public:
             completed = reduceConditionalBrach(f);
             completed &= onlyOnePredSuccBranch(f);
             completed &= sameTargetBranch(f);
-            completed &= removeEmptyScope(f->main_scope);
+            // completed &= removeEmptyScope(f->main_scope);
             completed &= removeEmptyBasicBlock(f);
             completed &= removeUselessLoop(f);
             if (completed) {
@@ -120,7 +120,7 @@ public:
                     
                     bb_node->preds.clear();
                     
-                    scope->elements->erase(scope_iter);
+                    // scope->elements->erase(scope_iter);
                     return;
                 }
             }
