@@ -286,8 +286,28 @@ void Function::printCallInfo() {
 }
 
 void Function::buildAllBlocksCFG() {
-    all_blocks.front()->succs.clear();
-    all_blocks.back()->preds.clear();
+    map<int32_t, int32_t> idxMap;
+    int32_t baseIdx = 1;
+    idxMap[0]  =  0;
+    idxMap[-1] = -1;
+    for (auto &&block : all_blocks) {
+        if (block->bb_idx > 0) {
+            idxMap[block->bb_idx] = baseIdx++;
+        }
+        block->preds.clear();
+        block->succs.clear();
+    }
+    for (auto &&block : all_blocks) {
+        if (block->bb_idx <= 0) continue;
+        block->bb_idx = idxMap[block->bb_idx];
+        auto &&lastInst = block->basic_block.back();
+        Case (LLIR_BR, br_inst, lastInst) {
+            dbg(br_inst->ToString());
+            br_inst->tar_true  = idxMap[br_inst->tar_true];
+            br_inst->tar_false = idxMap[br_inst->tar_false];
+        }
+    }
+
     //cout << "function: " << func_info.func_name << endl;
     for (auto &&bb_node : all_blocks) {
         //cout << "idx: " << bb_node->bb_idx << endl;
@@ -304,11 +324,11 @@ void Function::buildAllBlocksCFG() {
                     all_blocks.front()->succs.insert({bb_node->bb_idx, bb_node});
                     bb_node->preds.insert({0, all_blocks.front()});
                 }
-                BasicBlock *child_bb1 = getSpecificIdxBb(br_inst->tar_true);
+                BasicBlock *child_bb1 = all_blocks[br_inst->tar_true];
                 bb_node->succs.insert({child_bb1->bb_idx, child_bb1});
                 child_bb1->preds.insert({bb_node->bb_idx, bb_node});
                 if (br_inst->has_cond) {
-                    BasicBlock *child_bb2 = getSpecificIdxBb(br_inst->tar_false);
+                    BasicBlock *child_bb2 = all_blocks[br_inst->tar_false];
                     bb_node->succs.insert({child_bb2->bb_idx, child_bb2});
                     child_bb2->preds.insert({bb_node->bb_idx, bb_node});
                 }
