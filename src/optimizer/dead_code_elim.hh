@@ -8,6 +8,7 @@ public:
     Function *function;
 
     set<pair<int32_t, bool>> usefulRegSet;
+    set<Inst *> uselessInstSet;
     vector<BasicBlock *> dceAccessQueue;
 
     vector<list<BasicBlock *>> reverseOrder;
@@ -19,7 +20,7 @@ public:
     void insertToSet(VirtReg *reg);
     bool checkInSet(VirtReg *reg);
     void dfsReverseOrder(list<BasicBlock *> list, BasicBlock *block);
-    void buildUsefulRegSet(list<BasicBlock *> path);
+    void buildUsefulRegSet(Function *);
     void removeUselessInst();
     void runDeadCodeElim();
 };
