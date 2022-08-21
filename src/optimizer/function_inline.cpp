@@ -339,15 +339,16 @@ void FuncInline::excuteFuncInline(BasicBlock *block, vector<BasicBlock *> &all_b
 }
 
 void FuncInline::rebuildScope(BasicBlock *block, Function *callee_func) {
-    auto &&scope = function->main_scope;
-    auto &&all_blocks = function->all_blocks;
+    auto scope = function->main_scope;
+    auto all_blocks = function->all_blocks;
     for (auto &&iter = scope->elements->begin(); iter != scope->elements->end(); ++iter) {
-        if (auto &&block_node = dynamic_cast<BasicBlock *>(*iter); block_node != nullptr) {
+        if (auto block_node = dynamic_cast<BasicBlock *>(*iter); block_node != nullptr) {
             if (block->bb_idx == block_node->bb_idx) {
                 int32_t callee_size = callee_func->all_blocks.size() - 2;
                 vector<BasicBlock *> insertbbs(all_blocks.begin() + block->bb_idx, all_blocks.begin() + block->bb_idx + callee_size);
-                scope->elements->insert(iter, createNewScope(callee_func, insertbbs));
-                scope->elements->insert(iter, *(all_blocks.begin() + block->bb_idx + callee_size + 1));
+                iter = scope->elements->insert(iter, createNewScope(callee_func, insertbbs));
+                iter = scope->elements->insert(iter, *(all_blocks.begin() + block->bb_idx + callee_size + 1));
+                break;
             }
         }
     }
@@ -392,7 +393,7 @@ void FuncInline::runFuncInline(FuncMap &func_map) {
     if (function->func_info.called_funcs.size() == 0) return;
     auto &&all_blocks = function->all_blocks;
     for (auto i_block = 0; i_block < all_blocks.size(); ++i_block) {
-        auto &&block = all_blocks[i_block];
+        auto block = all_blocks[i_block];
         for (auto iterator_inst = block->basic_block.begin(); iterator_inst != block->basic_block.end(); ++iterator_inst) {
             Case (LLIR_CALL, call_inst, *iterator_inst) {
                 string callee_name = call_inst->func_info->func_name;
@@ -403,9 +404,6 @@ void FuncInline::runFuncInline(FuncMap &func_map) {
                     dbg("inlined function is " + inlined_func->func_info.func_name);
                     excuteFuncInline(block, all_blocks, inlined_func);
                     function->buildAllBlocksCFG();
-                    for (auto &&block : function->all_blocks) {
-                        cout << block->bb_idx << ' ' << block->valuable << endl;
-                    }
                     rebuildScope(block, inlined_func);
                     break;
                 }
