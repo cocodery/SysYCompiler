@@ -22,7 +22,7 @@ else
 	ECHO := echo
 endif
 MODE := func # func or perf, selet functional or performance
-TEST_MODE := functional # test case directory
+TEST_MODE := performance # test case directory
 
 # re-define 
 #ifeq ($(MODE), "func")
@@ -74,7 +74,7 @@ all:
 		OUT=$${file%.*}.out
 		FILE=$${file##*/}
 		FILE=$${FILE%.*}
-		timeout 500s ./$(BUILD_DIR)/$(TOPNAME) -S -o $${ASM} -l $${LL} $${file}  >> $${LOG}
+		timeout 180s ./$(BUILD_DIR)/$(TOPNAME) -S -o $${ASM} -l $${LL} $${file}  >> $${LOG}
 		RETURN_VALUE=$$? 
 		if [ $$RETURN_VALUE = 124 ]; then
 			$(ECHO) "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mCompile Timeout\033[0m"
@@ -89,9 +89,9 @@ all:
 			$(ECHO) "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mAssemble Error\033[0m"
 		else
 			if [ -f "$${IN}" ]; then
-				timeout 10s $(LLI) $${LL} <$${IN} 2>>$${LOG} >$${RES}
+				timeout 300s $(LLI) $${LL} <$${IN} 2>>$${LOG} >$${RES}
 			else
-				timeout 10s $(LLI) $${LL} 2>>$${LOG} >$${RES}
+				timeout 300s $(LLI) $${LL} 2>>$${LOG} >$${RES}
 			fi
 			RETURN_VALUE=$$?
 			FINAL=`tail -c 1 $${RES}`
@@ -135,9 +135,9 @@ asm:
 			$(ECHO) "\033[1;31mFAIL:\033[0m $${FILE}\t\033[1;31mLink Error\033[0m"
 		else
 			if [ -f "$${IN}" ]; then
-				timeout 10s ./exec <$${IN} 2>>$${LOG} >$${RES}
+				timeout 180s ./exec <$${IN} 2>>$${LOG} >$${RES}
 			else
-				timeout 10s ./exec 2>>$${LOG} >$${RES}
+				timeout 180s ./exec 2>>$${LOG} >$${RES}
 			fi
 			RETURN_VALUE=$$?
 			FINAL=`tail -c 1 $${RES}`

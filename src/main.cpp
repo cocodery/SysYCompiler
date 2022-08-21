@@ -25,6 +25,8 @@ using namespace antlr4;
 using namespace std;
 
 int main(int argc, char *argv[]) {
+    freopen("/dev/null", "w", stdout);
+
     int opt = 0;
     bool print_usage = false;
     string input, output, irfile;
@@ -75,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     visitor.visitCompUnit(root);
     if (visitor.have_main_func == false) {
-        dbg("No main Function Found");
+        // dbg("No main Function Found");
         // exit(EXIT_FAILURE);
     }
 
@@ -84,7 +86,7 @@ int main(int argc, char *argv[]) {
             function->buildCFG();
         }
     }
-    ir.GenerateLLIR("../main0.ll");
+    //ir.GenerateLLIR("../main0.ll");
 
     // cout << "Start Optimization" << endl;
 

@@ -17,7 +17,7 @@ string CTValue::ToString() {
     } else if (type == TypeByte) {
         ss << int_value;
     } else {
-        dbg("UnExpected DeclType");
+        // dbg("UnExpected DeclType");
     }
     return ss.str();
 }

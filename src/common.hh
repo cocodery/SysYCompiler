@@ -1,7 +1,7 @@
 #pragma once
 
-#define DBG_MARCO_NO_WARNING
-#include "dbg.h"
+// #define DBG_MARCO_NO_WARNING
+// #include "dbg.h"
 
 #define FOUR_SPACES "    "
 #define EIGHT_SPACES "        "
@@ -71,6 +71,7 @@ enum REGs { r0,  r1,  r2,  r3,  r4,  r5,  r6,  r7,  r8,  r9, r10, r11, r12,  sp,
 #include <map>
 #include <list>
 #include <deque>
+#include <sstream>
 
 using std::string;
 using std::vector;

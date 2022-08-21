@@ -1,4 +1,10 @@
 - CodeGen
+# TODO:
+1. 把浮点的inst改一下，如果是sreg则就地操作，不必移动至s0和s1
+2. 除法、模运算换成二进制
+3. pattern recognition (crypto-rotate/or/and)
+4. sub (-1, reg)
+
 注意事项：数组全是指针，标量全是变量
 
 1. LiveUse生成：如果一个函数的参数没有在函数体内被使用，可能会出问题（因为LiveUse和LiveDef中都没有它，但是传参的时候要用到）

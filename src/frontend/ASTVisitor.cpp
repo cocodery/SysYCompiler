@@ -93,6 +93,7 @@ vector<int32_t> arr_dim, int32_t off, vector<pair<int32_t, SRC>> &initTable) {
                     value = value_cast;
                 }
             }
+            // dbg(off, value.ToString());
             initTable.push_back({off, value});
             ++off;
             ++cnt;
@@ -198,7 +199,7 @@ void ASTVisitor::init_func_args(FunctionInfo *func_info) {
             variable->type = pair.second;
             cur_vartable->var_table.push_back(make_pair(pair.first, variable));
             VirtReg *reg = new VirtReg(variable->var_idx, variable->type.decl_type);
-            LLIR_ALLOCA *alloca_inst = new LLIR_ALLOCA(cur_basicblock->bb_idx, reg, variable);
+            LLIR_ALLOCA *alloca_inst = new LLIR_ALLOCA(reg, variable);
             cur_basicblock->basic_block.push_back(alloca_inst);
             LLIR_STORE *store_inst = new LLIR_STORE(reg, new VirtReg(arg_idx, func_info->func_args[arg_idx].second.decl_type));
             cur_basicblock->basic_block.push_back(store_inst);
@@ -299,7 +300,7 @@ antlrcpp::Any ASTVisitor::visitConstDef(SysYParser::ConstDefContext *ctx) {
     // 生成 LLIR
     if (&cur_func->func_info != nullptr && const_var.is_array == true) {
         VirtReg *reg = new VirtReg(const_variable->var_idx, const_variable->type);
-        LLIR_ALLOCA *alloca_inst = new LLIR_ALLOCA(cur_basicblock->bb_idx, SRC(reg), const_variable);
+        LLIR_ALLOCA *alloca_inst = new LLIR_ALLOCA(SRC(reg), const_variable);
         if (loop_mode == true) {
             alloca_insts.push_back(alloca_inst);
         } else {
@@ -355,7 +356,7 @@ antlrcpp::Any ASTVisitor::visitUninitVarDef(SysYParser::UninitVarDefContext *ctx
     cur_vartable->var_table.push_back(var_pair);
     if (&cur_func->func_info != nullptr) {
         VirtReg *reg = new VirtReg(variable->var_idx, variable->type);
-        LLIR_ALLOCA *alloca_inst = new LLIR_ALLOCA(cur_basicblock->bb_idx, SRC(reg), variable);
+        LLIR_ALLOCA *alloca_inst = new LLIR_ALLOCA(SRC(reg), variable);
         if (loop_mode == true) {
             alloca_insts.push_back(alloca_inst);
         } else {
@@ -395,7 +396,7 @@ antlrcpp::Any ASTVisitor::visitInitVarDef(SysYParser::InitVarDefContext *ctx) {
     if (&cur_func->func_info != nullptr) {
         SRC reg = SRC(new VirtReg(variable->var_idx, variable->type));
         addr = reg;
-        alloca_inst = new LLIR_ALLOCA(cur_basicblock->bb_idx, reg, variable);
+        alloca_inst = new LLIR_ALLOCA(reg, variable);
         if (loop_mode == true) {
             alloca_insts.push_back(alloca_inst);
         } else {
@@ -468,6 +469,7 @@ antlrcpp::Any ASTVisitor::visitFuncDef(SysYParser::FuncDefContext *ctx) {
     // parse function body
     func->main_scope = ctx->block()->accept(this);
     func->var_idx = var_idx;
+    func->bb_idx = bb_idx;
     // dbg(func->main_scope->get_last_bb()->bb_idx);
     auto last_block = func->main_scope->get_last_bb();
     int32_t lb_size = last_block->basic_block.size();
@@ -1311,19 +1313,28 @@ antlrcpp::Any ASTVisitor::visitAdd2(SysYParser::Add2Context *ctx) {
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->addExp()->accept(this);
     SRC rhs = ctx->mulExp()->accept(this);
+    // dbg(lhs.ToString(), rhs.ToString());
     DeclType type = (lhs.getType() == rhs.getType()) ? lhs.getType() : TypeFloat;
     // 当两个操作数都是`CTValue`
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
-        int imul = 0;
-        float fmul = 0;
+        int iadd = 0;
+        float fadd = 0;
         if (op == "+") {
-            fmul = ctv1->float_value + ctv2->float_value;
-            imul = (type == TypeInt) ? ctv1->int_value + ctv2->int_value : fmul;
+            iadd = ctv1->int_value + ctv2->int_value;
+            if (type == TypeInt) {
+                fadd  = iadd;
+            } else {
+                fadd = ctv1->float_value + ctv2->float_value;
+            }
         } else if (op == "-") {
-            fmul = ctv1->float_value - ctv2->float_value;
-            imul = (type == TypeInt) ? ctv1->int_value - ctv2->int_value : fmul;
+            iadd = ctv1->int_value - ctv2->int_value;
+            if (type == TypeInt) {
+                fadd  = iadd;
+            } else {
+                fadd = ctv1->float_value - ctv2->float_value;
+            }
         }
-        CTValue *add = new CTValue(type, imul, fmul);
+        CTValue *add = new CTValue(type, iadd, fadd);
         // dbg(add->ToString());
         // dbg("exit visitAdd2 with 2 CTValue");
         return SRC(add);
@@ -1450,6 +1461,7 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
     string op = ctx->children[1]->getText();
     SRC lhs = ctx->eqExp()->accept(this);
     SRC rhs = ctx->relExp()->accept(this);
+    // dbg(op, lhs.ToString(), rhs.ToString());
     // 当两个操作数都是`CTValue`
     // dbg("enter process visitEq2");
     if (CTValue *ctv1 = lhs.ToCTValue(), *ctv2 = rhs.ToCTValue(); ctv1 != nullptr && ctv2 != nullptr) {
@@ -1500,7 +1512,7 @@ antlrcpp::Any ASTVisitor::visitEq2(SysYParser::Eq2Context *ctx) {
                 SRC cast_rhs = SRC(new VirtReg(var_idx++, TypeFloat));
                 LLIR_SITOFP *itf_inst = new LLIR_SITOFP(SRC(cast_rhs), rhs);
                 cur_basicblock->basic_block.push_back(itf_inst);
-                lhs = cast_rhs;
+                rhs = cast_rhs;
             }
             SRC dst = SRC(new VirtReg(var_idx++, TypeBool));
             LLIR_FCMP *fcmp_inst = new LLIR_FCMP(StrToRelOp(op), dst, lhs, rhs);
